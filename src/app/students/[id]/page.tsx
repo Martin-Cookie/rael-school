@@ -211,6 +211,18 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
 
+  // ---- Photo delete ----
+  async function deletePhoto(photoId: string) {
+    if (!confirm(t('app.confirmDelete'))) return
+    try {
+      await fetch(`/api/students/${id}/photos`, {
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoId }),
+      })
+      await fetchStudent(); showMsg('success', t('app.deleteSuccess'))
+    } catch { showMsg('error', t('app.error')) }
+  }
+
   // ---- Sponsor handlers ----
   async function addSponsor() {
     if (!newSponsor.firstName || !newSponsor.lastName || !newSponsor.email) {
@@ -461,7 +473,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   <div key={photo.id} className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
                     {photo.filePath ? <img src={photo.filePath} alt={photo.description || ''} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-200 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400" /></div>}
                     <div className="p-3">
-                      <p className="text-sm font-medium text-gray-900">{photo.description || '-'}</p>
+                      <div className="flex items-start justify-between">
+                        <p className="text-sm font-medium text-gray-900">{photo.description || '-'}</p>
+                        {canEditData && <button onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}
+                      </div>
                       <div className="flex items-center justify-between mt-2">
                         <span className="text-xs text-gray-500">{formatDate(photo.takenAt, locale)}</span>
                         <span className={`badge ${photo.category === 'visit' ? 'badge-green' : photo.category === 'handover' ? 'badge-yellow' : 'badge-red'}`}>{photo.category === 'visit' ? t('photos.visit') : photo.category === 'handover' ? t('photos.handover') : t('photos.voucher')}</span>
@@ -533,17 +548,19 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             <div className="overflow-x-auto">
               <table className="w-full table-fixed"><thead><tr className="border-b border-gray-200">
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('vouchers.usageDate')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28"></th>
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-20">{t('vouchers.usedCount')}</th>
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
               </tr></thead><tbody>
                 {student.voucherUsages?.map((v: any) => (
                   <tr key={v.id} className="border-b border-gray-50">
                     <td className="py-3 px-2 text-sm text-gray-900">{formatDate(v.usageDate, locale)}</td>
+                    <td className="py-3 px-2 text-sm text-gray-400"></td>
                     <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
                     <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
                   </tr>
                 ))}
-                {(!student.voucherUsages || student.voucherUsages.length === 0) && <tr><td colSpan={3} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+                {(!student.voucherUsages || student.voucherUsages.length === 0) && <tr><td colSpan={4} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
               </tbody></table>
             </div>
           </div>
@@ -635,17 +652,17 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             )}
             {student.healthChecks?.length > 0 ? (
               <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('health.checkDate')}</th>
-                <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('health.checkType')}</th>
-                <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('health.notes')}</th>
-                {canEditData && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500 w-16">{t('app.actions')}</th>}
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('health.checkDate')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-24">{t('health.checkType')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('health.notes')}</th>
+                {canEditData && <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 w-12"></th>}
               </tr></thead><tbody>
                 {student.healthChecks.map((hc: any) => (
                   <tr key={hc.id} className="border-b border-gray-50">
-                    <td className="py-3 px-3 text-sm text-gray-900">{formatDate(hc.checkDate, locale)}</td>
-                    <td className="py-3 px-3 text-sm"><span className={`badge ${hc.checkType === 'urgent' ? 'badge-red' : hc.checkType === 'dentist' ? 'badge-yellow' : 'badge-green'}`}>{htLabel(hc.checkType)}</span></td>
-                    <td className="py-3 px-3 text-sm text-gray-700">{hc.notes || '-'}</td>
-                    {canEditData && <td className="py-3 px-3 text-right"><button onClick={() => deleteHealthCheck(hc.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+                    <td className="py-3 px-2 text-sm text-gray-900">{formatDate(hc.checkDate, locale)}</td>
+                    <td className="py-3 px-2 text-sm"><span className={`badge ${hc.checkType === 'urgent' ? 'badge-red' : hc.checkType === 'dentist' ? 'badge-yellow' : 'badge-green'}`}>{htLabel(hc.checkType)}</span></td>
+                    <td className="py-3 px-2 text-sm text-gray-700">{hc.notes || '-'}</td>
+                    {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteHealthCheck(hc.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                   </tr>
                 ))}
               </tbody></table></div>
