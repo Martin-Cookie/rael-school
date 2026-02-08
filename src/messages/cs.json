@@ -1,0 +1,173 @@
+{
+  "app": {
+    "title": "Škola Rael",
+    "subtitle": "Informační systém",
+    "loading": "Načítání...",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "edit": "Upravit",
+    "delete": "Smazat",
+    "add": "Přidat",
+    "close": "Zavřít",
+    "confirm": "Potvrdit",
+    "yes": "Ano",
+    "no": "Ne",
+    "back": "Zpět",
+    "search": "Hledat...",
+    "noData": "Žádná data",
+    "actions": "Akce",
+    "confirmSave": "Opravdu chcete uložit změny?",
+    "confirmDelete": "Opravdu chcete smazat tento záznam?",
+    "savedSuccess": "Úspěšně uloženo",
+    "deleteSuccess": "Úspěšně smazáno",
+    "error": "Došlo k chybě",
+    "editMode": "Režim úprav",
+    "viewMode": "Režim zobrazení"
+  },
+  "nav": {
+    "dashboard": "Přehled",
+    "students": "Studenti",
+    "sponsors": "Sponzoři",
+    "payments": "Platby",
+    "reports": "Statistiky",
+    "settings": "Nastavení",
+    "logout": "Odhlásit se"
+  },
+  "auth": {
+    "login": "Přihlášení",
+    "email": "E-mail",
+    "password": "Heslo",
+    "loginButton": "Přihlásit se",
+    "loginError": "Neplatný e-mail nebo heslo",
+    "logoutSuccess": "Úspěšně odhlášeno"
+  },
+  "dashboard": {
+    "title": "Přehled",
+    "totalStudents": "Celkem studentů",
+    "totalSponsors": "Celkem sponzorů",
+    "totalPayments": "Celkem plateb",
+    "activeSponsors": "Aktivní sponzoři",
+    "recentPayments": "Poslední platby",
+    "studentsNeedingAttention": "Studenti vyžadující pozornost"
+  },
+  "student": {
+    "list": "Seznam studentů",
+    "detail": "Detail studenta",
+    "new": "Nový student",
+    "studentNo": "Číslo studenta",
+    "firstName": "Jméno",
+    "lastName": "Příjmení",
+    "dateOfBirth": "Datum narození",
+    "age": "Věk",
+    "gender": "Pohlaví",
+    "male": "Muž",
+    "female": "Žena",
+    "className": "Třída",
+    "healthStatus": "Zdravotní stav",
+    "notes": "Poznámky",
+    "tabs": {
+      "personal": "Osobní údaje",
+      "photos": "Fotografie",
+      "vouchers": "Stravenky",
+      "sponsors": "Sponzoři",
+      "health": "Zdravotní prohlídky"
+    },
+    "family": {
+      "title": "Rodina",
+      "motherName": "Jméno matky",
+      "motherAlive": "Matka žije",
+      "fatherName": "Jméno otce",
+      "fatherAlive": "Otec žije",
+      "siblings": "Sourozenci"
+    }
+  },
+  "equipment": {
+    "title": "Vybavení",
+    "bed": "Postel",
+    "mattress": "Matrace",
+    "blanket": "Deka",
+    "mosquito_net": "Moskytiéra",
+    "condition": "Stav",
+    "new": "Nové",
+    "satisfactory": "Uspokojivé",
+    "poor": "Špatné",
+    "acquiredAt": "Datum pořízení",
+    "type": "Typ"
+  },
+  "needs": {
+    "title": "Potřeby a přání",
+    "description": "Popis",
+    "fulfilled": "Splněno",
+    "unfulfilled": "Nesplněno",
+    "fulfilledAt": "Datum splnění",
+    "addNeed": "Přidat potřebu"
+  },
+  "photos": {
+    "title": "Fotografie",
+    "upload": "Nahrát fotografii",
+    "category": "Kategorie",
+    "visit": "Z návštěvy",
+    "handover": "Z předání",
+    "voucher": "Ze stravenky",
+    "description": "Popis",
+    "takenAt": "Datum pořízení",
+    "filterAll": "Všechny",
+    "noPhotos": "Žádné fotografie"
+  },
+  "vouchers": {
+    "title": "Stravenky",
+    "purchases": "Zakoupené stravenky",
+    "usages": "Čerpané stravenky",
+    "purchaseDate": "Datum nákupu",
+    "amount": "Částka",
+    "count": "Počet stravenek",
+    "usageDate": "Datum čerpání",
+    "usedCount": "Čerpáno",
+    "totalAmount": "Celková částka",
+    "totalPurchased": "Celkem nakoupeno",
+    "totalUsed": "Celkem čerpáno",
+    "available": "Dostupné stravenky",
+    "addPurchase": "Přidat nákup",
+    "addUsage": "Přidat čerpání"
+  },
+  "sponsors": {
+    "title": "Sponzoři",
+    "name": "Jméno",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "startDate": "Začátek sponzorství",
+    "notes": "Poznámky",
+    "addSponsor": "Přidat sponzora",
+    "noSponsors": "Žádní sponzoři"
+  },
+  "health": {
+    "title": "Zdravotní prohlídky",
+    "checkDate": "Datum prohlídky",
+    "checkType": "Typ prohlídky",
+    "dentist": "Zubař",
+    "general": "Praktik",
+    "urgent": "Urgentní",
+    "notes": "Poznámka",
+    "addCheck": "Přidat prohlídku",
+    "noChecks": "Žádné prohlídky"
+  },
+  "payments": {
+    "title": "Platby",
+    "paymentDate": "Datum platby",
+    "amount": "Částka",
+    "notes": "Poznámka",
+    "source": "Zdroj",
+    "manual": "Manuální",
+    "bankImport": "Import z banky",
+    "addPayment": "Přidat platbu",
+    "importPayments": "Importovat platby",
+    "totalPayments": "Celkem plateb",
+    "noPayments": "Žádné platby"
+  },
+  "roles": {
+    "ADMIN": "Administrátor",
+    "MANAGER": "Manažer",
+    "SPONSOR": "Sponzor",
+    "VOLUNTEER": "Dobrovolník"
+  }
+}

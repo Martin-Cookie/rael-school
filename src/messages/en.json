@@ -1,0 +1,173 @@
+{
+  "app": {
+    "title": "Rael School",
+    "subtitle": "Information System",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "search": "Search...",
+    "noData": "No data",
+    "actions": "Actions",
+    "confirmSave": "Do you really want to save changes?",
+    "confirmDelete": "Do you really want to delete this record?",
+    "savedSuccess": "Successfully saved",
+    "deleteSuccess": "Successfully deleted",
+    "error": "An error occurred",
+    "editMode": "Edit mode",
+    "viewMode": "View mode"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "students": "Students",
+    "sponsors": "Sponsors",
+    "payments": "Payments",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Sign in",
+    "loginError": "Invalid email or password",
+    "logoutSuccess": "Successfully logged out"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalStudents": "Total students",
+    "totalSponsors": "Total sponsors",
+    "totalPayments": "Total payments",
+    "activeSponsors": "Active sponsors",
+    "recentPayments": "Recent payments",
+    "studentsNeedingAttention": "Students needing attention"
+  },
+  "student": {
+    "list": "Student list",
+    "detail": "Student detail",
+    "new": "New student",
+    "studentNo": "Student number",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "dateOfBirth": "Date of birth",
+    "age": "Age",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "className": "Class",
+    "healthStatus": "Health status",
+    "notes": "Notes",
+    "tabs": {
+      "personal": "Personal info",
+      "photos": "Photos",
+      "vouchers": "Vouchers",
+      "sponsors": "Sponsors",
+      "health": "Health checks"
+    },
+    "family": {
+      "title": "Family",
+      "motherName": "Mother's name",
+      "motherAlive": "Mother alive",
+      "fatherName": "Father's name",
+      "fatherAlive": "Father alive",
+      "siblings": "Siblings"
+    }
+  },
+  "equipment": {
+    "title": "Equipment",
+    "bed": "Bed",
+    "mattress": "Mattress",
+    "blanket": "Blanket",
+    "mosquito_net": "Mosquito net",
+    "condition": "Condition",
+    "new": "New",
+    "satisfactory": "Satisfactory",
+    "poor": "Poor",
+    "acquiredAt": "Acquired date",
+    "type": "Type"
+  },
+  "needs": {
+    "title": "Needs & wishes",
+    "description": "Description",
+    "fulfilled": "Fulfilled",
+    "unfulfilled": "Unfulfilled",
+    "fulfilledAt": "Fulfilled date",
+    "addNeed": "Add need"
+  },
+  "photos": {
+    "title": "Photos",
+    "upload": "Upload photo",
+    "category": "Category",
+    "visit": "Visit",
+    "handover": "Handover",
+    "voucher": "Voucher",
+    "description": "Description",
+    "takenAt": "Taken at",
+    "filterAll": "All",
+    "noPhotos": "No photos"
+  },
+  "vouchers": {
+    "title": "Meal vouchers",
+    "purchases": "Purchased vouchers",
+    "usages": "Used vouchers",
+    "purchaseDate": "Purchase date",
+    "amount": "Amount",
+    "count": "Voucher count",
+    "usageDate": "Usage date",
+    "usedCount": "Used",
+    "totalAmount": "Total amount",
+    "totalPurchased": "Total purchased",
+    "totalUsed": "Total used",
+    "available": "Available vouchers",
+    "addPurchase": "Add purchase",
+    "addUsage": "Add usage"
+  },
+  "sponsors": {
+    "title": "Sponsors",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "startDate": "Sponsorship start",
+    "notes": "Notes",
+    "addSponsor": "Add sponsor",
+    "noSponsors": "No sponsors"
+  },
+  "health": {
+    "title": "Health checks",
+    "checkDate": "Check date",
+    "checkType": "Check type",
+    "dentist": "Dentist",
+    "general": "General",
+    "urgent": "Urgent",
+    "notes": "Notes",
+    "addCheck": "Add check",
+    "noChecks": "No health checks"
+  },
+  "payments": {
+    "title": "Payments",
+    "paymentDate": "Payment date",
+    "amount": "Amount",
+    "notes": "Notes",
+    "source": "Source",
+    "manual": "Manual",
+    "bankImport": "Bank import",
+    "addPayment": "Add payment",
+    "importPayments": "Import payments",
+    "totalPayments": "Total payments",
+    "noPayments": "No payments"
+  },
+  "roles": {
+    "ADMIN": "Administrator",
+    "MANAGER": "Manager",
+    "SPONSOR": "Sponsor",
+    "VOLUNTEER": "Volunteer"
+  }
+}

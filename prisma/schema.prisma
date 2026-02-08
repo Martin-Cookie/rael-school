@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============ USERS & AUTH ============
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  phone     String?
+  role      String   @default("VOLUNTEER") // ADMIN, MANAGER, SPONSOR, VOLUNTEER
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sponsorships    Sponsorship[]
+  assignedStudents VolunteerAssignment[]
+}
+
+// ============ STUDENTS ============
+
+model Student {
+  id          String   @id @default(cuid())
+  studentNo   String   @unique // Unique student number
+  firstName   String
+  lastName    String
+  dateOfBirth DateTime?
+  gender      String?  // M, F
+  className   String?  // Class/grade
+  healthStatus String? // General health info
+  
+  // Family
+  motherName  String?
+  motherAlive Boolean?
+  fatherName  String?
+  fatherAlive Boolean?
+  siblings    String?  // JSON or text description
+  
+  isActive    Boolean  @default(true)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  equipment     Equipment[]
+  needs         Need[]
+  photos        Photo[]
+  vouchers      VoucherPurchase[]
+  voucherUsages VoucherUsage[]
+  sponsorships  Sponsorship[]
+  healthChecks  HealthCheck[]
+  payments      Payment[]
+  volunteers    VolunteerAssignment[]
+}
+
+// ============ EQUIPMENT ============
+
+model Equipment {
+  id         String   @id @default(cuid())
+  studentId  String
+  type       String   // bed, mattress, blanket, mosquito_net
+  condition  String   // new, satisfactory, poor
+  acquiredAt DateTime?
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// ============ NEEDS ============
+
+model Need {
+  id          String   @id @default(cuid())
+  studentId   String
+  description String
+  isFulfilled Boolean  @default(false)
+  fulfilledAt DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// ============ PHOTOS ============
+
+model Photo {
+  id          String   @id @default(cuid())
+  studentId   String
+  category    String   // visit, handover, voucher
+  fileName    String
+  filePath    String
+  description String?
+  takenAt     DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// ============ VOUCHERS (STRAVENKY) ============
+
+model VoucherPurchase {
+  id          String   @id @default(cuid())
+  studentId   String
+  purchaseDate DateTime
+  amount      Float    // Payment amount
+  count       Int      // Number of vouchers purchased
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model VoucherUsage {
+  id        String   @id @default(cuid())
+  studentId String
+  usageDate DateTime
+  count     Int      // Number of vouchers used
+  notes     String?
+  createdAt DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// ============ SPONSORS ============
+
+model Sponsorship {
+  id        String   @id @default(cuid())
+  studentId String
+  userId    String
+  startDate DateTime @default(now())
+  endDate   DateTime?
+  notes     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  sponsor User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============ HEALTH CHECKS ============
+
+model HealthCheck {
+  id        String   @id @default(cuid())
+  studentId String
+  checkDate DateTime
+  checkType String   // dentist, general, urgent
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// ============ PAYMENTS ============
+
+model Payment {
+  id          String   @id @default(cuid())
+  studentId   String?
+  paymentDate DateTime
+  amount      Float
+  notes       String?
+  source      String?  // manual, bank_import
+  createdAt   DateTime @default(now())
+
+  student Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+}
+
+// ============ VOLUNTEER ASSIGNMENTS ============
+
+model VolunteerAssignment {
+  id        String   @id @default(cuid())
+  userId    String
+  studentId String
+  createdAt DateTime @default(now())
+
+  volunteer User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, studentId])
+}

@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: #1a1a1a;
+  --background: #fafaf8;
+}
+
+* {
+  color: #1a1a1a;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Ensure all text is dark and readable */
+h1, h2, h3, h4, h5, h6, p, span, label, td, th, li, a, input, select, textarea {
+  color: #1a1a1a;
+}
+
+/* Override for white text contexts */
+.text-white, .text-white * {
+  color: #ffffff;
+}
+
+/* Input styling */
+input, select, textarea {
+  color: #1a1a1a !important;
+  background-color: #ffffff;
+}
+
+input::placeholder {
+  color: #9ca3af;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+}
+
+th {
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Scrollbar styling for webkit */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+/* Loading animation */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+/* Tab styling */
+.tab-active {
+  border-bottom: 3px solid #2d8a2d;
+  color: #2d8a2d;
+  font-weight: 600;
+}
+
+/* Card hover */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Status badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-green {
+  background-color: #d9eed9;
+  color: #1a531a;
+}
+
+.badge-yellow {
+  background-color: #fff8e6;
+  color: #806300;
+}
+
+.badge-red {
+  background-color: #fee2e2;
+  color: #991b1b;
+}

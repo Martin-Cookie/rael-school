@@ -1,0 +1,173 @@
+{
+  "app": {
+    "title": "Shule ya Rael",
+    "subtitle": "Mfumo wa Habari",
+    "loading": "Inapakia...",
+    "save": "Hifadhi",
+    "cancel": "Ghairi",
+    "edit": "Hariri",
+    "delete": "Futa",
+    "add": "Ongeza",
+    "close": "Funga",
+    "confirm": "Thibitisha",
+    "yes": "Ndiyo",
+    "no": "Hapana",
+    "back": "Rudi",
+    "search": "Tafuta...",
+    "noData": "Hakuna data",
+    "actions": "Vitendo",
+    "confirmSave": "Je, unataka kuhifadhi mabadiliko?",
+    "confirmDelete": "Je, unataka kufuta rekodi hii?",
+    "savedSuccess": "Imehifadhiwa",
+    "deleteSuccess": "Imefutwa",
+    "error": "Hitilafu imetokea",
+    "editMode": "Hali ya kuhariri",
+    "viewMode": "Hali ya kuangalia"
+  },
+  "nav": {
+    "dashboard": "Dashibodi",
+    "students": "Wanafunzi",
+    "sponsors": "Wadhamini",
+    "payments": "Malipo",
+    "reports": "Takwimu",
+    "settings": "Mipangilio",
+    "logout": "Ondoka"
+  },
+  "auth": {
+    "login": "Ingia",
+    "email": "Barua pepe",
+    "password": "Nywila",
+    "loginButton": "Ingia",
+    "loginError": "Barua pepe au nywila si sahihi",
+    "logoutSuccess": "Umetoka kwa mafanikio"
+  },
+  "dashboard": {
+    "title": "Dashibodi",
+    "totalStudents": "Wanafunzi wote",
+    "totalSponsors": "Wadhamini wote",
+    "totalPayments": "Malipo yote",
+    "activeSponsors": "Wadhamini hai",
+    "recentPayments": "Malipo ya hivi karibuni",
+    "studentsNeedingAttention": "Wanafunzi wanaohitaji msaada"
+  },
+  "student": {
+    "list": "Orodha ya wanafunzi",
+    "detail": "Maelezo ya mwanafunzi",
+    "new": "Mwanafunzi mpya",
+    "studentNo": "Nambari ya mwanafunzi",
+    "firstName": "Jina la kwanza",
+    "lastName": "Jina la mwisho",
+    "dateOfBirth": "Tarehe ya kuzaliwa",
+    "age": "Umri",
+    "gender": "Jinsia",
+    "male": "Mwanaume",
+    "female": "Mwanamke",
+    "className": "Darasa",
+    "healthStatus": "Hali ya afya",
+    "notes": "Maelezo",
+    "tabs": {
+      "personal": "Taarifa binafsi",
+      "photos": "Picha",
+      "vouchers": "Vocha za chakula",
+      "sponsors": "Wadhamini",
+      "health": "Ukaguzi wa afya"
+    },
+    "family": {
+      "title": "Familia",
+      "motherName": "Jina la mama",
+      "motherAlive": "Mama yuko hai",
+      "fatherName": "Jina la baba",
+      "fatherAlive": "Baba yuko hai",
+      "siblings": "Ndugu"
+    }
+  },
+  "equipment": {
+    "title": "Vifaa",
+    "bed": "Kitanda",
+    "mattress": "Godoro",
+    "blanket": "Blanketi",
+    "mosquito_net": "Chandarua",
+    "condition": "Hali",
+    "new": "Mpya",
+    "satisfactory": "Inaridhisha",
+    "poor": "Mbaya",
+    "acquiredAt": "Tarehe ya kununua",
+    "type": "Aina"
+  },
+  "needs": {
+    "title": "Mahitaji na matakwa",
+    "description": "Maelezo",
+    "fulfilled": "Imetimizwa",
+    "unfulfilled": "Haijatimizwa",
+    "fulfilledAt": "Tarehe ya kutimiza",
+    "addNeed": "Ongeza hitaji"
+  },
+  "photos": {
+    "title": "Picha",
+    "upload": "Pakia picha",
+    "category": "Kategoria",
+    "visit": "Ziara",
+    "handover": "Ukabidhi",
+    "voucher": "Vocha",
+    "description": "Maelezo",
+    "takenAt": "Tarehe ya picha",
+    "filterAll": "Zote",
+    "noPhotos": "Hakuna picha"
+  },
+  "vouchers": {
+    "title": "Vocha za chakula",
+    "purchases": "Vocha zilizununuliwa",
+    "usages": "Vocha zilizotumika",
+    "purchaseDate": "Tarehe ya kununua",
+    "amount": "Kiasi",
+    "count": "Idadi ya vocha",
+    "usageDate": "Tarehe ya kutumia",
+    "usedCount": "Zilizotumika",
+    "totalAmount": "Kiasi jumla",
+    "totalPurchased": "Jumla zilizununuliwa",
+    "totalUsed": "Jumla zilizotumika",
+    "available": "Vocha zinazopatikana",
+    "addPurchase": "Ongeza ununuzi",
+    "addUsage": "Ongeza matumizi"
+  },
+  "sponsors": {
+    "title": "Wadhamini",
+    "name": "Jina",
+    "email": "Barua pepe",
+    "phone": "Simu",
+    "startDate": "Tarehe ya kuanza udhamini",
+    "notes": "Maelezo",
+    "addSponsor": "Ongeza mdhamini",
+    "noSponsors": "Hakuna wadhamini"
+  },
+  "health": {
+    "title": "Ukaguzi wa afya",
+    "checkDate": "Tarehe ya ukaguzi",
+    "checkType": "Aina ya ukaguzi",
+    "dentist": "Daktari wa meno",
+    "general": "Daktari mkuu",
+    "urgent": "Dharura",
+    "notes": "Maelezo",
+    "addCheck": "Ongeza ukaguzi",
+    "noChecks": "Hakuna ukaguzi wa afya"
+  },
+  "payments": {
+    "title": "Malipo",
+    "paymentDate": "Tarehe ya malipo",
+    "amount": "Kiasi",
+    "notes": "Maelezo",
+    "source": "Chanzo",
+    "manual": "Mwenyewe",
+    "bankImport": "Kutoka benki",
+    "addPayment": "Ongeza malipo",
+    "importPayments": "Ingiza malipo",
+    "totalPayments": "Malipo jumla",
+    "noPayments": "Hakuna malipo"
+  },
+  "roles": {
+    "ADMIN": "Msimamizi",
+    "MANAGER": "Meneja",
+    "SPONSOR": "Mdhamini",
+    "VOLUNTEER": "Kujitolea"
+  }
+}
