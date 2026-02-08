@@ -4,7 +4,7 @@ import { getCurrentUser, canEdit } from '@/lib/auth'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const user = await getCurrentUser()
@@ -12,7 +12,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id: studentId } = await params
+    const { id: studentId } = params
     const { equipment } = await request.json()
 
     // Delete existing and recreate

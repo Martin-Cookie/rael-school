@@ -4,7 +4,7 @@ import { getCurrentUser, canEdit } from '@/lib/auth'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const user = await getCurrentUser()
@@ -12,7 +12,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id: studentId } = await params
+    const { id: studentId } = params
     const data = await request.json()
 
     if (data.type === 'purchase') {
