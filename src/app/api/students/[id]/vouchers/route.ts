@@ -23,6 +23,7 @@ export async function POST(
           amount: parseFloat(data.amount),
           count: parseInt(data.count),
           notes: data.notes || null,
+        donorName: data.donorName || null,
         },
       })
       return NextResponse.json({ purchase }, { status: 201 })
@@ -33,6 +34,7 @@ export async function POST(
           usageDate: new Date(data.date),
           count: parseInt(data.count),
           notes: data.notes || null,
+        donorName: data.donorName || null,
         },
       })
       return NextResponse.json({ usage }, { status: 201 })

@@ -47,7 +47,7 @@ export async function GET() {
           id: true, firstName: true, lastName: true, email: true, phone: true,
           sponsorships: {
             where: { isActive: true },
-            select: { student: { select: { firstName: true, lastName: true, studentNo: true } } },
+            select: { student: { select: { id: true, firstName: true, lastName: true, studentNo: true } } },
           },
         },
         orderBy: { lastName: 'asc' },

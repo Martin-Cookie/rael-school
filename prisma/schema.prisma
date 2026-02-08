@@ -21,45 +21,45 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
-  sponsorships    Sponsorship[]
+  sponsorships     Sponsorship[]
   assignedStudents VolunteerAssignment[]
+  sponsorPayments  SponsorPayment[]
 }
 
 // ============ STUDENTS ============
 
 model Student {
-  id          String   @id @default(cuid())
-  studentNo   String   @unique // Unique student number
-  firstName   String
-  lastName    String
-  dateOfBirth DateTime?
-  gender      String?  // M, F
-  className   String?  // Class/grade
-  healthStatus String? // General health info
+  id           String   @id @default(cuid())
+  studentNo    String   @unique
+  firstName    String
+  lastName     String
+  dateOfBirth  DateTime?
+  gender       String?
+  className    String?
+  healthStatus String?
+  profilePhoto String?  // Path to profile photo
   
-  // Family
-  motherName  String?
-  motherAlive Boolean?
-  fatherName  String?
-  fatherAlive Boolean?
-  siblings    String?  // JSON or text description
+  motherName   String?
+  motherAlive  Boolean?
+  fatherName   String?
+  fatherAlive  Boolean?
+  siblings     String?
   
-  isActive    Boolean  @default(true)
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isActive     Boolean  @default(true)
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  // Relations
-  equipment     Equipment[]
-  needs         Need[]
-  photos        Photo[]
-  vouchers      VoucherPurchase[]
-  voucherUsages VoucherUsage[]
-  sponsorships  Sponsorship[]
-  healthChecks  HealthCheck[]
-  payments      Payment[]
-  volunteers    VolunteerAssignment[]
+  equipment       Equipment[]
+  needs           Need[]
+  photos          Photo[]
+  vouchers        VoucherPurchase[]
+  voucherUsages   VoucherUsage[]
+  sponsorships    Sponsorship[]
+  healthChecks    HealthCheck[]
+  payments        Payment[]
+  volunteers      VolunteerAssignment[]
+  sponsorPayments SponsorPayment[]
 }
 
 // ============ EQUIPMENT ============
@@ -67,8 +67,8 @@ model Student {
 model Equipment {
   id         String   @id @default(cuid())
   studentId  String
-  type       String   // bed, mattress, blanket, mosquito_net
-  condition  String   // new, satisfactory, poor
+  type       String
+  condition  String
   acquiredAt DateTime?
   notes      String?
   createdAt  DateTime @default(now())
@@ -97,7 +97,7 @@ model Need {
 model Photo {
   id          String   @id @default(cuid())
   studentId   String
-  category    String   // visit, handover, voucher
+  category    String
   fileName    String
   filePath    String
   description String?
@@ -107,16 +107,17 @@ model Photo {
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
-// ============ VOUCHERS (STRAVENKY) ============
+// ============ VOUCHERS ============
 
 model VoucherPurchase {
-  id          String   @id @default(cuid())
-  studentId   String
+  id           String   @id @default(cuid())
+  studentId    String
   purchaseDate DateTime
-  amount      Float    // Payment amount
-  count       Int      // Number of vouchers purchased
-  notes       String?
-  createdAt   DateTime @default(now())
+  amount       Float
+  count        Int
+  donorName    String?  // Name of the person who donated
+  notes        String?
+  createdAt    DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
@@ -125,7 +126,7 @@ model VoucherUsage {
   id        String   @id @default(cuid())
   studentId String
   usageDate DateTime
-  count     Int      // Number of vouchers used
+  count     Int
   notes     String?
   createdAt DateTime @default(now())
 
@@ -155,7 +156,7 @@ model HealthCheck {
   id        String   @id @default(cuid())
   studentId String
   checkDate DateTime
-  checkType String   // dentist, general, urgent
+  checkType String
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -171,10 +172,27 @@ model Payment {
   paymentDate DateTime
   amount      Float
   notes       String?
-  source      String?  // manual, bank_import
+  source      String?
   createdAt   DateTime @default(now())
 
   student Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+}
+
+// ============ SPONSOR PAYMENTS ============
+
+model SponsorPayment {
+  id          String   @id @default(cuid())
+  studentId   String
+  sponsorId   String?
+  paymentDate DateTime
+  amount      Float
+  currency    String   @default("KES")
+  paymentType String   // tuition, medical, other
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  sponsor User?   @relation(fields: [sponsorId], references: [id], onDelete: SetNull)
 }
 
 // ============ VOLUNTEER ASSIGNMENTS ============

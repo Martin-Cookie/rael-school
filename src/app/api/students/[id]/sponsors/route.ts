@@ -96,6 +96,7 @@ export async function PUT(
         data: {
           firstName: data.firstName || undefined,
           lastName: data.lastName || undefined,
+          email: data.email || undefined,
           phone: data.phone || undefined,
         },
       })

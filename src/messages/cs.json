@@ -48,7 +48,8 @@
     "totalPayments": "Celkem plateb",
     "activeSponsors": "Aktivní sponzoři",
     "recentPayments": "Poslední platby",
-    "studentsNeedingAttention": "Studenti vyžadující pozornost"
+    "studentsNeedingAttention": "Studenti vyžadující pozornost",
+    "classOverview": "Přehled tříd"
   },
   "student": {
     "list": "Seznam studentů",
@@ -79,7 +80,8 @@
       "fatherName": "Jméno otce",
       "fatherAlive": "Otec žije",
       "siblings": "Sourozenci"
-    }
+    },
+    "profilePhoto": "Profilová fotka"
   },
   "equipment": {
     "title": "Vybavení",
@@ -128,7 +130,9 @@
     "totalUsed": "Celkem čerpáno",
     "available": "Dostupné stravenky",
     "addPurchase": "Přidat nákup",
-    "addUsage": "Přidat čerpání"
+    "addUsage": "Přidat čerpání",
+    "donorName": "Jméno dárce",
+    "selectSponsor": "Vybrat sponzora"
   },
   "sponsors": {
     "title": "Sponzoři",
@@ -157,7 +161,7 @@
     "amount": "Částka",
     "notes": "Poznámka",
     "source": "Zdroj",
-    "manual": "Manuální",
+    "manual": "Ruční",
     "bankImport": "Import z banky",
     "addPayment": "Přidat platbu",
     "importPayments": "Importovat platby",
@@ -169,5 +173,13 @@
     "MANAGER": "Manažer",
     "SPONSOR": "Sponzor",
     "VOLUNTEER": "Dobrovolník"
+  },
+  "sponsorPayments": {
+    "title": "Platby od sponzorů",
+    "paymentType": "Typ platby",
+    "tuition": "Školné",
+    "medical": "Lékař",
+    "other": "Jiné",
+    "selectSponsor": "Vybrat sponzora"
   }
 }

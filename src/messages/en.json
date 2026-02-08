@@ -48,7 +48,8 @@
     "totalPayments": "Total payments",
     "activeSponsors": "Active sponsors",
     "recentPayments": "Recent payments",
-    "studentsNeedingAttention": "Students needing attention"
+    "studentsNeedingAttention": "Students needing attention",
+    "classOverview": "Class Overview"
   },
   "student": {
     "list": "Student list",
@@ -79,7 +80,8 @@
       "fatherName": "Father's name",
       "fatherAlive": "Father alive",
       "siblings": "Siblings"
-    }
+    },
+    "profilePhoto": "Profile photo"
   },
   "equipment": {
     "title": "Equipment",
@@ -95,7 +97,7 @@
     "type": "Type"
   },
   "needs": {
-    "title": "Needs & wishes",
+    "title": "Needs & Wishes",
     "description": "Description",
     "fulfilled": "Fulfilled",
     "unfulfilled": "Unfulfilled",
@@ -110,7 +112,7 @@
     "handover": "Handover",
     "voucher": "Voucher",
     "description": "Description",
-    "takenAt": "Taken at",
+    "takenAt": "Date taken",
     "filterAll": "All",
     "noPhotos": "No photos"
   },
@@ -128,7 +130,9 @@
     "totalUsed": "Total used",
     "available": "Available vouchers",
     "addPurchase": "Add purchase",
-    "addUsage": "Add usage"
+    "addUsage": "Add usage",
+    "donorName": "Donor Name",
+    "selectSponsor": "Select sponsor"
   },
   "sponsors": {
     "title": "Sponsors",
@@ -169,5 +173,13 @@
     "MANAGER": "Manager",
     "SPONSOR": "Sponsor",
     "VOLUNTEER": "Volunteer"
+  },
+  "sponsorPayments": {
+    "title": "Sponsor Payments",
+    "paymentType": "Payment Type",
+    "tuition": "Tuition",
+    "medical": "Medical",
+    "other": "Other",
+    "selectSponsor": "Select sponsor"
   }
 }

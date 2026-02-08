@@ -48,7 +48,8 @@
     "totalPayments": "Malipo yote",
     "activeSponsors": "Wadhamini hai",
     "recentPayments": "Malipo ya hivi karibuni",
-    "studentsNeedingAttention": "Wanafunzi wanaohitaji msaada"
+    "studentsNeedingAttention": "Wanafunzi wanaohitaji msaada",
+    "classOverview": "Muhtasari wa Darasa"
   },
   "student": {
     "list": "Orodha ya wanafunzi",
@@ -79,7 +80,8 @@
       "fatherName": "Jina la baba",
       "fatherAlive": "Baba yuko hai",
       "siblings": "Ndugu"
-    }
+    },
+    "profilePhoto": "Picha ya wasifu"
   },
   "equipment": {
     "title": "Vifaa",
@@ -95,7 +97,7 @@
     "type": "Aina"
   },
   "needs": {
-    "title": "Mahitaji na matakwa",
+    "title": "Mahitaji na Matakwa",
     "description": "Maelezo",
     "fulfilled": "Imetimizwa",
     "unfulfilled": "Haijatimizwa",
@@ -128,7 +130,9 @@
     "totalUsed": "Jumla zilizotumika",
     "available": "Vocha zinazopatikana",
     "addPurchase": "Ongeza ununuzi",
-    "addUsage": "Ongeza matumizi"
+    "addUsage": "Ongeza matumizi",
+    "donorName": "Jina la Mtoaji",
+    "selectSponsor": "Chagua mdhamini"
   },
   "sponsors": {
     "title": "Wadhamini",
@@ -169,5 +173,13 @@
     "MANAGER": "Meneja",
     "SPONSOR": "Mdhamini",
     "VOLUNTEER": "Kujitolea"
+  },
+  "sponsorPayments": {
+    "title": "Malipo ya Wadhamini",
+    "paymentType": "Aina ya Malipo",
+    "tuition": "Karo",
+    "medical": "Matibabu",
+    "other": "Nyingine",
+    "selectSponsor": "Chagua mdhamini"
   }
 }

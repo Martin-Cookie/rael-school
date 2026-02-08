@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { getCurrentUser, canEdit } from '@/lib/auth'
+import { getCurrentUser, canEdit, isAdmin } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
@@ -28,6 +28,10 @@ export async function GET(
         },
         healthChecks: { orderBy: { checkDate: 'desc' } },
         payments: { orderBy: { paymentDate: 'desc' } },
+        sponsorPayments: {
+          include: { sponsor: { select: { id: true, firstName: true, lastName: true } } },
+          orderBy: { paymentDate: 'desc' },
+        },
       },
     })
 
@@ -65,9 +69,9 @@ export async function PUT(
         className: data.className || null,
         healthStatus: data.healthStatus || null,
         motherName: data.motherName || null,
-        motherAlive: data.motherAlive ?? null,
+        motherAlive: data.motherAlive,
         fatherName: data.fatherName || null,
-        fatherAlive: data.fatherAlive ?? null,
+        fatherAlive: data.fatherAlive,
         siblings: data.siblings || null,
         notes: data.notes || null,
       },
@@ -86,7 +90,7 @@ export async function DELETE(
 ) {
   try {
     const user = await getCurrentUser()
-    if (!user || !canEdit(user.role)) {
+    if (!user || !isAdmin(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
