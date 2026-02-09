@@ -127,6 +127,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       if (res.ok) { setNewVoucher({ type: 'purchase', date: '', amount: '', count: '', donorName: '', notes: '' }); setShowAddVoucher(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
+  async function deleteVoucher(voucherId: string, type: 'purchase' | 'usage') {
+    if (!confirm(t('app.confirmDelete'))) return
+    try {
+      const res = await fetch(`/api/students/${id}/vouchers`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ voucherId, type }) })
+      if (res.ok) { await fetchStudent(); showMsg('success', t('app.deleteSuccess')) }
+      else showMsg('error', t('app.error'))
+    } catch { showMsg('error', t('app.error')) }
+  }
   async function addHealthCheck() {
     if (!newHealth.checkDate) return
     try {
@@ -413,6 +421,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-16">{t('vouchers.count')}</th>
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-32">{t('vouchers.donorName')}</th>
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
+                {canEditData && <th className="w-10"></th>}
               </tr></thead><tbody>
                 {student.vouchers?.map((v: any) => (
                   <tr key={v.id} className="border-b border-gray-50">
@@ -421,9 +430,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
                     <td className="py-3 px-2 text-sm text-gray-700">{v.donorName || '-'}</td>
                     <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
+                    {canEditData && <td className="py-3 px-1 text-right"><button onClick={() => deleteVoucher(v.id, 'purchase')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                   </tr>
                 ))}
-                {(!student.vouchers || student.vouchers.length === 0) && <tr><td colSpan={5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+                {(!student.vouchers || student.vouchers.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
               </tbody></table>
             </div>
             <h4 className="text-sm font-semibold text-gray-700 mb-2">{t('vouchers.usages')}</h4>
@@ -434,6 +444,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-16">{t('vouchers.usedCount')}</th>
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-32"></th>
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
+                {canEditData && <th className="w-10"></th>}
               </tr></thead><tbody>
                 {student.voucherUsages?.map((v: any) => (
                   <tr key={v.id} className="border-b border-gray-50">
@@ -442,9 +453,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
                     <td className="py-3 px-2"></td>
                     <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
+                    {canEditData && <td className="py-3 px-1 text-right"><button onClick={() => deleteVoucher(v.id, 'usage')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                   </tr>
                 ))}
-                {(!student.voucherUsages || student.voucherUsages.length === 0) && <tr><td colSpan={5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+                {(!student.voucherUsages || student.voucherUsages.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
               </tbody></table>
             </div>
           </div>
