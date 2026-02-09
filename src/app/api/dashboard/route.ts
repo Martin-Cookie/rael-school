@@ -12,17 +12,17 @@ export async function GET() {
     const [
       totalStudents,
       totalSponsors,
-      totalPaymentsResult,
       activeSponsors,
       recentPayments,
       unfulfilledNeeds,
       students,
       sponsors,
       studentsWithNeeds,
+      sponsorPayments,
+      voucherPurchases,
     ] = await Promise.all([
       prisma.student.count({ where: { isActive: true } }),
       prisma.user.count({ where: { role: 'SPONSOR', isActive: true } }),
-      prisma.payment.aggregate({ _sum: { amount: true } }),
       prisma.sponsorship.count({ where: { isActive: true } }),
       prisma.payment.findMany({
         take: 50,
@@ -30,7 +30,6 @@ export async function GET() {
         include: { student: { select: { id: true, firstName: true, lastName: true, studentNo: true } } },
       }),
       prisma.need.count({ where: { isFulfilled: false } }),
-      // All students for the students tab
       prisma.student.findMany({
         where: { isActive: true },
         select: {
@@ -40,7 +39,6 @@ export async function GET() {
         },
         orderBy: { lastName: 'asc' },
       }),
-      // All sponsors
       prisma.user.findMany({
         where: { role: 'SPONSOR', isActive: true },
         select: {
@@ -52,7 +50,6 @@ export async function GET() {
         },
         orderBy: { lastName: 'asc' },
       }),
-      // Students with unfulfilled needs
       prisma.student.findMany({
         where: { isActive: true, needs: { some: { isFulfilled: false } } },
         select: {
@@ -61,17 +58,44 @@ export async function GET() {
         },
         orderBy: { lastName: 'asc' },
       }),
+      prisma.sponsorPayment.findMany({
+        orderBy: { paymentDate: 'desc' },
+        include: {
+          student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
+          sponsor: { select: { id: true, firstName: true, lastName: true } },
+        },
+      }),
+      prisma.voucherPurchase.findMany({
+        orderBy: { purchaseDate: 'desc' },
+        include: {
+          student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
+        },
+      }),
     ])
+
+    // Aggregate sponsor payments by currency
+    const sponsorPaymentsByCurrency: Record<string, number> = {}
+    sponsorPayments.forEach((p: any) => {
+      const cur = p.currency || 'KES'
+      sponsorPaymentsByCurrency[cur] = (sponsorPaymentsByCurrency[cur] || 0) + p.amount
+    })
+
+    // Aggregate voucher purchases by currency (vouchers don't have currency field, use KES as default)
+    const voucherTotalAmount = voucherPurchases.reduce((sum: number, v: any) => sum + v.amount, 0)
 
     return NextResponse.json({
       stats: {
         totalStudents,
         totalSponsors,
-        totalPayments: totalPaymentsResult._sum.amount || 0,
+        totalPayments: 0,
         activeSponsors,
         unfulfilledNeeds,
+        sponsorPaymentsByCurrency,
+        voucherTotalAmount,
       },
       recentPayments,
+      sponsorPayments,
+      voucherPurchases,
       students,
       sponsors,
       studentsWithNeeds,
