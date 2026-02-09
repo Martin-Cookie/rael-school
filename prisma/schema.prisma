@@ -208,3 +208,13 @@ model VolunteerAssignment {
 
   @@unique([userId, studentId])
 }
+
+// ============ CLASS ROOMS ============
+
+model ClassRoom {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

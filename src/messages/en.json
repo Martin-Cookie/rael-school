@@ -31,7 +31,8 @@
     "payments": "Payments",
     "reports": "Reports",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "admin": "Administration"
   },
   "auth": {
     "login": "Login",
@@ -181,5 +182,9 @@
     "medical": "Medical",
     "other": "Other",
     "selectSponsor": "Select sponsor"
+  },
+  "admin": {
+    "classrooms": "Class Directory",
+    "newClassName": "New class name"
   }
 }

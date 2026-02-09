@@ -31,7 +31,8 @@
     "payments": "Platby",
     "reports": "Statistiky",
     "settings": "Nastavení",
-    "logout": "Odhlásit se"
+    "logout": "Odhlásit se",
+    "admin": "Administrace"
   },
   "auth": {
     "login": "Přihlášení",
@@ -181,5 +182,9 @@
     "medical": "Lékař",
     "other": "Jiné",
     "selectSponsor": "Vybrat sponzora"
+  },
+  "admin": {
+    "classrooms": "Číselník tříd",
+    "newClassName": "Název nové třídy"
   }
 }

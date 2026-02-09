@@ -33,6 +33,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [showConfirm, setShowConfirm] = useState(false)
   const [userRole, setUserRole] = useState<string>('')
   const [currency, setCurrency] = useState('KES')
+  const [classrooms, setClassrooms] = useState<any[]>([])
 
   const [newNeed, setNewNeed] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
@@ -62,10 +63,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
+  }
+
+  async function fetchClassrooms() {
+    try { const res = await fetch('/api/admin/classrooms'); const d = await res.json(); setClassrooms(d.classrooms || []) } catch {}
   }
 
   async function fetchStudent() {
@@ -287,7 +292,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 <Field label={t('student.lastName')} value={editData.lastName} editMode={editMode} onChange={(v) => setEditData({ ...editData, lastName: v })} />
                 <Field label={t('student.dateOfBirth')} value={formatDateForInput(editData.dateOfBirth)} type="date" editMode={editMode} onChange={(v) => setEditData({ ...editData, dateOfBirth: v })} />
                 <SelectField label={t('student.gender')} value={editData.gender || ''} editMode={editMode} options={[{ value: '', label: '-' }, { value: 'M', label: t('student.male') }, { value: 'F', label: t('student.female') }]} displayValue={student.gender === 'M' ? t('student.male') : student.gender === 'F' ? t('student.female') : '-'} onChange={(v) => setEditData({ ...editData, gender: v })} />
-                <Field label={t('student.className')} value={editData.className} editMode={editMode} onChange={(v) => setEditData({ ...editData, className: v })} />
+                <SelectField label={t('student.className')} value={editData.className || ''} editMode={editMode} options={[{ value: '', label: '-' }, ...classrooms.map((c: any) => ({ value: c.name, label: c.name }))]} displayValue={student.className || '-'} onChange={(v) => setEditData({ ...editData, className: v })} />
                 <Field label={t('student.healthStatus')} value={editData.healthStatus} editMode={editMode} onChange={(v) => setEditData({ ...editData, healthStatus: v })} />
               </div>
             </div>

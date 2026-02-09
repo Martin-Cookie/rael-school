@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Users, CreditCard, BarChart3,
-  LogOut, Menu, X, Globe
+  LogOut, Menu, X, Globe, Settings
 } from 'lucide-react'
 
 import cs from '@/messages/cs.json'
@@ -51,6 +51,7 @@ export default function Sidebar({ user }: SidebarProps) {
     { href: '/students', icon: Users, label: t('nav.students') },
     { href: '/payments', icon: CreditCard, label: t('nav.payments'), roles: ['ADMIN', 'MANAGER'] },
     { href: '/reports', icon: BarChart3, label: t('nav.reports'), roles: ['ADMIN', 'MANAGER'] },
+    { href: '/admin', icon: Settings, label: t('nav.admin'), roles: ['ADMIN'] },
   ]
 
   const filteredNav = navItems.filter(item => !item.roles || item.roles.includes(user.role))

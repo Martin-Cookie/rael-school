@@ -31,7 +31,8 @@
     "payments": "Malipo",
     "reports": "Takwimu",
     "settings": "Mipangilio",
-    "logout": "Ondoka"
+    "logout": "Ondoka",
+    "admin": "Usimamizi"
   },
   "auth": {
     "login": "Ingia",
@@ -181,5 +182,9 @@
     "medical": "Matibabu",
     "other": "Nyingine",
     "selectSponsor": "Chagua mdhamini"
+  },
+  "admin": {
+    "classrooms": "Orodha ya Madarasa",
+    "newClassName": "Jina la darasa jipya"
   }
 }
