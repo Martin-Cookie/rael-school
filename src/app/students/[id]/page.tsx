@@ -190,6 +190,24 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { setSponsorResults([]) }
   }
 
+
+  async function removeSponsor(sponsorshipId: string) {
+    if (!confirm(t('app.confirmDelete'))) return
+    try {
+      const res = await fetch(`/api/students/${id}/sponsors`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sponsorshipId }),
+      })
+      if (res.ok) {
+        fetchStudent()
+        showMsg('success', t('app.deleteSuccess'))
+      } else {
+        showMsg('error', t('app.error'))
+      }
+    } catch { showMsg('error', t('app.error')) }
+  }
+
   async function addExistingSponsor(sponsorUserId: string) {
     try {
       const sponsor = sponsorResults.find((s: any) => s.id === sponsorUserId)
@@ -210,12 +228,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
         setSponsorResults([])
         setShowSponsorSearch(false)
         fetchStudent()
-        showToast('success', t('app.savedSuccess'))
+        showMsg('success', t('app.savedSuccess'))
       } else {
         const d = await res.json()
-        showToast('error', d.error || t('app.error'))
+        showMsg('error', d.error || t('app.error'))
       }
-    } catch { showToast('error', t('app.error')) }
+    } catch { showMsg('error', t('app.error')) }
   }
 
   async function addSponsor() {
@@ -636,6 +654,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                         <p className="text-sm text-gray-600">{sp.sponsor.email}</p>
                         {sp.sponsor.phone && <p className="text-sm text-gray-600">{sp.sponsor.phone}</p>}
                         <p className="text-xs text-gray-500 mt-2">{t('sponsors.startDate')}: {formatDate(sp.startDate, locale)}</p>
+                        {canEditData && <button onClick={() => removeSponsor(sp.id)} className="mt-2 flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-medium"><Trash2 className="w-3 h-3" /> {t('sponsors.removeSponsor')}</button>}
                         {sp.notes && <p className="text-sm text-gray-700 mt-2 italic">{sp.notes}</p>}
                         <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full font-medium ${sp.isActive ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600'}`}>{sp.isActive ? '● Active' : '○ Inactive'}</span>
                       </div>

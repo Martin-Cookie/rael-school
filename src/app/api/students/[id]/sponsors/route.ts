@@ -108,3 +108,33 @@ export async function PUT(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await getCurrentUser()
+    if (!user || !canEdit(user.role)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const data = await request.json()
+    const { sponsorshipId } = data
+
+    if (!sponsorshipId) {
+      return NextResponse.json({ error: 'Sponsorship ID required' }, { status: 400 })
+    }
+
+    // Deactivate sponsorship (soft delete)
+    await prisma.sponsorship.update({
+      where: { id: sponsorshipId },
+      data: { isActive: false, endDate: new Date() },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error removing sponsorship:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}

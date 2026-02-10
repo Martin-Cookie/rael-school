@@ -143,7 +143,8 @@
     "startDate": "Sponsorship start",
     "notes": "Notes",
     "addSponsor": "Add sponsor",
-    "noSponsors": "No sponsors"
+    "noSponsors": "No sponsors",
+    "removeSponsor": "Remove sponsor"
   },
   "health": {
     "title": "Health checks",
