@@ -81,7 +81,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Sponsorship ID required' }, { status: 400 })
     }
 
-    const sponsorship = await prisma.sponsorship.update({
+    const sponsorship = await prisma.sponsorship.delete({
       where: { id: sponsorshipId },
       data: {
         notes: notes ?? undefined,
@@ -126,10 +126,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Sponsorship ID required' }, { status: 400 })
     }
 
-    // Deactivate sponsorship (soft delete)
-    await prisma.sponsorship.update({
+    // Hard delete sponsorship
+    await prisma.sponsorship.delete({
       where: { id: sponsorshipId },
-      data: { isActive: false, endDate: new Date() },
     })
 
     return NextResponse.json({ success: true })
