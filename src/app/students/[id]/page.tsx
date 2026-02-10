@@ -35,6 +35,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [currency, setCurrency] = useState('KES')
   const [classrooms, setClassrooms] = useState<any[]>([])
   const [healthTypes, setHealthTypes] = useState<any[]>([])
+  const [paymentTypes, setPaymentTypes] = useState<any[]>([])
 
   const [newNeed, setNewNeed] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
@@ -50,7 +51,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [showAddPhoto, setShowAddPhoto] = useState(false)
   const [newPhoto, setNewPhoto] = useState({ category: 'visit', description: '', takenAt: '', file: null as File | null })
   const [showAddPayment, setShowAddPayment] = useState(false)
-  const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'KES', paymentType: 'tuition', sponsorId: '', notes: '' })
+  const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'KES', paymentType: '', sponsorId: '', notes: '' })
 
   const t = createTranslator(msgs[locale])
 
@@ -76,6 +77,22 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   async function fetchClassrooms() {
     try { const res = await fetch('/api/admin/classrooms'); const d = await res.json(); setClassrooms(d.classrooms || []) } catch {}
+  }
+
+  async function fetchHealthTypes() {
+    try { const res = await fetch('/api/admin/health-types'); const d = await res.json(); setHealthTypes(d.healthTypes || []) } catch {}
+  }
+
+  async function fetchPaymentTypes() {
+    try { const res = await fetch('/api/admin/payment-types'); const d = await res.json(); setPaymentTypes(d.paymentTypes || []) } catch {}
+  }
+
+  async function fetchHealthTypes() {
+    try { const res = await fetch('/api/admin/health-types'); const d = await res.json(); setHealthTypes(d.healthTypes || []) } catch {}
+  }
+
+  async function fetchPaymentTypes() {
+    try { const res = await fetch('/api/admin/payment-types'); const d = await res.json(); setPaymentTypes(d.paymentTypes || []) } catch {}
   }
 
   async function fetchStudent() {
@@ -193,7 +210,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     if (!newPayment.paymentDate || !newPayment.amount || !newPayment.paymentType) return
     try {
       const res = await fetch(`/api/students/${id}/sponsor-payments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newPayment) })
-      if (res.ok) { setNewPayment({ paymentDate: '', amount: '', currency: 'KES', paymentType: 'tuition', sponsorId: '', notes: '' }); setShowAddPayment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+      if (res.ok) { setNewPayment({ paymentDate: '', amount: '', currency: 'KES', paymentType: '', sponsorId: '', notes: '' }); setShowAddPayment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteSponsorPayment(paymentId: string) {
@@ -226,7 +243,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const condBadge = (c: string) => { const m: Record<string,string> = { new:'badge-green', satisfactory:'badge-yellow', poor:'badge-red' }; const l: Record<string,string> = { new:t('equipment.new'), satisfactory:t('equipment.satisfactory'), poor:t('equipment.poor') }; return <span className={`badge ${m[c]||'badge-yellow'}`}>{l[c]||c}</span> }
   const eqLabel = (type: string) => ({ bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net') }[type] || type)
   const htLabel = (type: string) => { const found = healthTypes.find((ht: any) => ht.name === type); return found ? found.name : type }
-  const ptLabel = (type: string) => ({ tuition:t('sponsorPayments.tuition'), medical:t('sponsorPayments.medical'), other:t('sponsorPayments.other') }[type] || type)
+  const ptLabel = (type: string) => { const found = paymentTypes.find((pt: any) => pt.name === type); return found ? found.name : type }
 
   const totalPurchased = student.vouchers?.reduce((s: number, v: any) => s + v.count, 0) || 0
   const totalUsed = student.voucherUsages?.reduce((s: number, v: any) => s + v.count, 0) || 0
@@ -574,7 +591,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
                   <input type="date" value={newPayment.paymentDate} onChange={(e) => setNewPayment({ ...newPayment, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                   <select value={newPayment.paymentType} onChange={(e) => setNewPayment({ ...newPayment, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
-                    <option value="tuition">{t('sponsorPayments.tuition')}</option><option value="medical">{t('sponsorPayments.medical')}</option><option value="other">{t('sponsorPayments.other')}</option>
+                    <option value="">{t('sponsorPayments.selectType')}</option>{paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{pt.name}</option>)}
                   </select>
                   <div className="flex gap-2">
                     <input type="number" value={newPayment.amount} onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm" />

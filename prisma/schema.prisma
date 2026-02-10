@@ -228,3 +228,15 @@ model HealthCheckType {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 }
+
+
+// ============ PAYMENT TYPES ============
+
+model PaymentType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+

@@ -257,3 +257,14 @@ main()
     })
   }
   console.log('✅ Health check types seeded')
+
+  // Payment Types
+  const paymentTypesList = ['Školné', 'Lékař', 'Uniforma', 'Učebnice', 'Jiné']
+  for (let i = 0; i < paymentTypesList.length; i++) {
+    await prisma.paymentType.upsert({
+      where: { name: paymentTypesList[i] },
+      update: { sortOrder: i, isActive: true },
+      create: { name: paymentTypesList[i], sortOrder: i },
+    })
+  }
+  console.log('✅ Payment types seeded')

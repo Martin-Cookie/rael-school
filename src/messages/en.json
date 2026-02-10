@@ -155,7 +155,7 @@
     "notes": "Notes",
     "addCheck": "Add check",
     "noChecks": "No health checks",
-    "selectType": "-- Select type --"
+    "selectType": "-- Select check type --"
   },
   "payments": {
     "title": "Payments",
@@ -182,12 +182,15 @@
     "tuition": "Tuition",
     "medical": "Medical",
     "other": "Other",
-    "selectSponsor": "Select sponsor"
+    "selectSponsor": "Select sponsor",
+    "selectType": "-- Select payment type --"
   },
   "admin": {
     "classrooms": "Class Directory",
     "newClassName": "New class name",
     "healthTypes": "Health Check Types",
-    "newHealthTypeName": "New health check type name"
+    "newHealthTypeName": "New health check type name",
+    "paymentTypes": "Sponsor Payment Types",
+    "newPaymentTypeName": "New payment type name"
   }
 }

@@ -155,7 +155,7 @@
     "notes": "Poznámka",
     "addCheck": "Přidat prohlídku",
     "noChecks": "Žádné prohlídky",
-    "selectType": "-- Vyberte typ --"
+    "selectType": "-- Vyberte typ prohlídky --"
   },
   "payments": {
     "title": "Platby",
@@ -182,12 +182,15 @@
     "tuition": "Školné",
     "medical": "Lékař",
     "other": "Jiné",
-    "selectSponsor": "Vybrat sponzora"
+    "selectSponsor": "Vybrat sponzora",
+    "selectType": "-- Vyberte typ platby --"
   },
   "admin": {
     "classrooms": "Číselník tříd",
     "newClassName": "Název nové třídy",
     "healthTypes": "Číselník druhů zdravotních prohlídek",
-    "newHealthTypeName": "Název nového typu prohlídky"
+    "newHealthTypeName": "Název nového typu prohlídky",
+    "paymentTypes": "Číselník typů plateb od sponzorů",
+    "newPaymentTypeName": "Název nového typu platby"
   }
 }
