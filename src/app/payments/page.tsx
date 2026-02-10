@@ -35,7 +35,7 @@ export default function PaymentsPage() {
   const [showAddSponsor, setShowAddSponsor] = useState(false)
   const [newSP, setNewSP] = useState({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'KES', paymentType: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
-  const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', count: '', donorName: '', notes: '' })
+  const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', count: '', sponsorId: '', notes: '' })
 
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -148,7 +148,7 @@ export default function PaymentsPage() {
         body: JSON.stringify({ type: 'voucher', ...newVP }),
       })
       if (res.ok) {
-        setNewVP({ studentId: '', purchaseDate: '', amount: '', count: '', donorName: '', notes: '' })
+        setNewVP({ studentId: '', purchaseDate: '', amount: '', count: '', sponsorId: '', notes: '' })
         setShowAddVoucher(false)
         await fetchData()
         showMsg('success', t('app.savedSuccess'))
@@ -211,7 +211,7 @@ export default function PaymentsPage() {
         purchaseDate: formatDateForInput(item.purchaseDate),
         amount: item.amount.toString(),
         count: item.count.toString(),
-        donorName: item.donorName || '',
+        sponsorId: item.sponsorId || item.sponsor?.id || '',
         notes: item.notes || '',
       })
     }
@@ -413,7 +413,10 @@ export default function PaymentsPage() {
                   <input type="date" value={newVP.purchaseDate} onChange={(e) => setNewVP({ ...newVP, purchaseDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                   <input type="number" value={newVP.amount} onChange={(e) => setNewVP({ ...newVP, amount: e.target.value })} placeholder={t('vouchers.amount') + ' (KES) *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                   <input type="number" value={newVP.count} onChange={(e) => setNewVP({ ...newVP, count: e.target.value })} placeholder={t('vouchers.count') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="text" value={newVP.donorName} onChange={(e) => setNewVP({ ...newVP, donorName: e.target.value })} placeholder={t('vouchers.donorName')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <select value={newVP.sponsorId} onChange={(e) => setNewVP({ ...newVP, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                    <option value="">{t('sponsors.title')}</option>
+                    {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                  </select>
                   <input type="text" value={newVP.notes} onChange={(e) => setNewVP({ ...newVP, notes: e.target.value })} placeholder={t('payments.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                 </div>
                 <div className="flex gap-2">
@@ -429,7 +432,7 @@ export default function PaymentsPage() {
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.amount')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.count')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.donorName')}</th>
+              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.notes')}</th>
               {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
@@ -445,7 +448,12 @@ export default function PaymentsPage() {
                         {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                       </select>
                     </td>
-                    <td className="py-2 px-3"><input type="text" value={editData.donorName || ''} onChange={(e) => setEditData({ ...editData, donorName: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
+                    <td className="py-2 px-3">
+                      <select value={editData.sponsorId || ''} onChange={(e) => setEditData({ ...editData, sponsorId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
+                        <option value="">—</option>
+                        {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                      </select>
+                    </td>
                     <td className="py-2 px-3"><input type="text" value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
                     <td className="py-2 px-3 text-right">
                       <div className="flex gap-1 justify-end">
@@ -460,7 +468,7 @@ export default function PaymentsPage() {
                     <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, 'KES')}</td>
                     <td className="py-3 px-3 text-sm text-gray-900">{formatNumber(v.count)}</td>
                     <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
-                    <td className="py-3 px-3 text-sm text-gray-700">{v.donorName || '-'}</td>
+                    <td className="py-3 px-3 text-sm text-gray-700">{v.sponsor ? `${v.sponsor.firstName} ${v.sponsor.lastName}` : (v.donorName || '-')}</td>
                     <td className="py-3 px-3 text-sm text-gray-500">{v.notes || '-'}</td>
                     {canEdit && (
                       <td className="py-3 px-3 text-right">

@@ -69,6 +69,7 @@ export async function GET() {
         orderBy: { purchaseDate: 'desc' },
         include: {
           student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
+          sponsor: { select: { id: true, firstName: true, lastName: true } },
         },
       }),
     ])

@@ -36,6 +36,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [classrooms, setClassrooms] = useState<any[]>([])
   const [healthTypes, setHealthTypes] = useState<any[]>([])
   const [paymentTypes, setPaymentTypes] = useState<any[]>([])
+  const [allSponsors, setAllSponsors] = useState<any[]>([])
 
   const [newNeed, setNewNeed] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
@@ -687,7 +688,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   </div>
                   <select value={newPayment.sponsorId} onChange={(e) => setNewPayment({ ...newPayment, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
                     <option value="">{t('sponsorPayments.selectSponsor')}</option>
-                    {student.sponsorships?.map((sp: any) => <option key={sp.sponsor.id} value={sp.sponsor.id}>{sp.sponsor.firstName} {sp.sponsor.lastName}</option>)}
+                    {allSponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                   </select>
                   <div className="sm:col-span-2 lg:col-span-2"><input type="text" value={newPayment.notes} onChange={(e) => setNewPayment({ ...newPayment, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" /></div>
                 </div>

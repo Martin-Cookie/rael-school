@@ -24,6 +24,7 @@ model User {
   sponsorships     Sponsorship[]
   assignedStudents VolunteerAssignment[]
   sponsorPayments  SponsorPayment[]
+  voucherPurchases VoucherPurchase[] @relation("VoucherSponsor")
 }
 
 // ============ STUDENTS ============
@@ -115,11 +116,13 @@ model VoucherPurchase {
   purchaseDate DateTime
   amount       Float
   count        Int
-  donorName    String?  // Name of the person who donated
+  donorName    String?  // Name of the person who donated (legacy)
+  sponsorId    String?
   notes        String?
   createdAt    DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  sponsor User?   @relation("VoucherSponsor", fields: [sponsorId], references: [id], onDelete: SetNull)
 }
 
 model VoucherUsage {
@@ -229,7 +232,6 @@ model HealthCheckType {
   createdAt DateTime @default(now())
 }
 
-
 // ============ PAYMENT TYPES ============
 
 model PaymentType {
@@ -239,4 +241,3 @@ model PaymentType {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 }
-
