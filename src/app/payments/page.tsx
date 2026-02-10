@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CreditCard, Ticket } from 'lucide-react'
-import { formatNumber, formatDate } from '@/lib/format'
+import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X } from 'lucide-react'
+import { formatNumber, formatDate, formatDateForInput } from '@/lib/format'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
 import { createTranslator, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
+const CURRENCIES = ['KES', 'CZK', 'USD', 'EUR']
 
 function fmtCurrency(amount: number, currency: string): string {
   return `${formatNumber(amount)} ${currency}`
@@ -22,6 +23,23 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true)
   const [locale, setLocale] = useState<Locale>('cs')
   const [activeTab, setActiveTab] = useState<'sponsor' | 'voucher'>('sponsor')
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  // Students & sponsors for dropdowns
+  const [students, setStudents] = useState<any[]>([])
+  const [sponsors, setSponsors] = useState<any[]>([])
+  const [paymentTypes, setPaymentTypes] = useState<any[]>([])
+  const [userRole, setUserRole] = useState('')
+
+  // Add forms
+  const [showAddSponsor, setShowAddSponsor] = useState(false)
+  const [newSP, setNewSP] = useState({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'KES', paymentType: '', notes: '' })
+  const [showAddVoucher, setShowAddVoucher] = useState(false)
+  const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', count: '', donorName: '', notes: '' })
+
+  // Edit state
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editData, setEditData] = useState<any>({})
 
   const t = createTranslator(msgs[locale])
 
@@ -34,13 +52,170 @@ export default function PaymentsPage() {
   }, [])
 
   useEffect(() => {
-    fetch('/api/dashboard').then(r => r.json()).then(data => {
+    fetchData()
+    fetch('/api/auth/me').then(r => r.json()).then(d => setUserRole(d.user?.role || '')).catch(() => {})
+    fetch('/api/admin/payment-types').then(r => r.json()).then(d => setPaymentTypes(d.paymentTypes || [])).catch(() => {})
+  }, [])
+
+  async function fetchData() {
+    try {
+      const res = await fetch('/api/dashboard')
+      const data = await res.json()
       setSponsorPayments(data.sponsorPayments || [])
       setVoucherPurchases(data.voucherPurchases || [])
       setStats(data.stats)
+      setStudents(data.students || [])
+      setSponsors(data.sponsors || [])
       setLoading(false)
-    }).catch(() => setLoading(false))
-  }, [])
+    } catch { setLoading(false) }
+  }
+
+  function showMsg(type: 'success' | 'error', text: string) {
+    setMessage({ type, text })
+    setTimeout(() => setMessage(null), 3000)
+  }
+
+  const canEdit = userRole && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(userRole)
+
+  // ===== SPONSOR PAYMENT CRUD =====
+  async function addSponsorPayment() {
+    if (!newSP.studentId || !newSP.paymentDate || !newSP.amount || !newSP.paymentType) {
+      showMsg('error', t('payments.fillRequired'))
+      return
+    }
+    try {
+      const res = await fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'sponsor', ...newSP }),
+      })
+      if (res.ok) {
+        setNewSP({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'KES', paymentType: '', notes: '' })
+        setShowAddSponsor(false)
+        await fetchData()
+        showMsg('success', t('app.savedSuccess'))
+      } else {
+        const d = await res.json()
+        showMsg('error', d.error || t('app.error'))
+      }
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  async function saveSponsorEdit(id: string) {
+    try {
+      const res = await fetch('/api/payments', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'sponsor', id, ...editData }),
+      })
+      if (res.ok) {
+        setEditingId(null)
+        await fetchData()
+        showMsg('success', t('app.savedSuccess'))
+      } else {
+        showMsg('error', t('app.error'))
+      }
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  async function deleteSponsorPayment(id: string) {
+    if (!confirm(t('app.confirmDelete'))) return
+    try {
+      const res = await fetch('/api/payments', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'sponsor', id }),
+      })
+      if (res.ok) {
+        await fetchData()
+        showMsg('success', t('app.deleteSuccess'))
+      } else {
+        showMsg('error', t('app.error'))
+      }
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  // ===== VOUCHER PURCHASE CRUD =====
+  async function addVoucherPurchase() {
+    if (!newVP.studentId || !newVP.purchaseDate || !newVP.amount || !newVP.count) {
+      showMsg('error', t('payments.fillRequired'))
+      return
+    }
+    try {
+      const res = await fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'voucher', ...newVP }),
+      })
+      if (res.ok) {
+        setNewVP({ studentId: '', purchaseDate: '', amount: '', count: '', donorName: '', notes: '' })
+        setShowAddVoucher(false)
+        await fetchData()
+        showMsg('success', t('app.savedSuccess'))
+      } else {
+        const d = await res.json()
+        showMsg('error', d.error || t('app.error'))
+      }
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  async function saveVoucherEdit(id: string) {
+    try {
+      const res = await fetch('/api/payments', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'voucher', id, ...editData }),
+      })
+      if (res.ok) {
+        setEditingId(null)
+        await fetchData()
+        showMsg('success', t('app.savedSuccess'))
+      } else {
+        showMsg('error', t('app.error'))
+      }
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  async function deleteVoucherPurchase(id: string) {
+    if (!confirm(t('app.confirmDelete'))) return
+    try {
+      const res = await fetch('/api/payments', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'voucher', id }),
+      })
+      if (res.ok) {
+        await fetchData()
+        showMsg('success', t('app.deleteSuccess'))
+      } else {
+        showMsg('error', t('app.error'))
+      }
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  function startEdit(item: any, type: 'sponsor' | 'voucher') {
+    setEditingId(item.id)
+    if (type === 'sponsor') {
+      setEditData({
+        studentId: item.studentId || item.student?.id || '',
+        sponsorId: item.sponsorId || item.sponsor?.id || '',
+        paymentDate: formatDateForInput(item.paymentDate),
+        amount: item.amount.toString(),
+        currency: item.currency || 'KES',
+        paymentType: item.paymentType || '',
+        notes: item.notes || '',
+      })
+    } else {
+      setEditData({
+        studentId: item.studentId || item.student?.id || '',
+        purchaseDate: formatDateForInput(item.purchaseDate),
+        amount: item.amount.toString(),
+        count: item.count.toString(),
+        donorName: item.donorName || '',
+        notes: item.notes || '',
+      })
+    }
+  }
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
 
@@ -48,6 +223,12 @@ export default function PaymentsPage() {
 
   return (
     <div>
+      {message && (
+        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>
+          {message.text}
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('payments.title')}</h1>
 
       {/* Tab switcher */}
@@ -61,6 +242,7 @@ export default function PaymentsPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
+        {/* ===== SPONSOR PAYMENTS ===== */}
         {activeTab === 'sponsor' && (
           <div>
             <div className="flex flex-wrap gap-3 mb-6">
@@ -72,6 +254,54 @@ export default function PaymentsPage() {
               ))}
               {Object.keys(spByCur).length === 0 && <p className="text-gray-400 text-sm">{t('app.noData')}</p>}
             </div>
+
+            {/* Add button */}
+            {canEdit && (
+              <div className="mb-4">
+                <button onClick={() => setShowAddSponsor(!showAddSponsor)} className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">
+                  <Plus className="w-4 h-4" /> {t('payments.addPayment')}
+                </button>
+              </div>
+            )}
+
+            {/* Add form */}
+            {showAddSponsor && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+                  <select value={newSP.studentId} onChange={(e) => setNewSP({ ...newSP, studentId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                    <option value="">{t('nav.students')} *</option>
+                    {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName} ({s.studentNo})</option>)}
+                  </select>
+                  <select value={newSP.sponsorId} onChange={(e) => setNewSP({ ...newSP, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                    <option value="">{t('sponsors.title')}</option>
+                    {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                  </select>
+                  <input type="date" value={newSP.paymentDate} onChange={(e) => setNewSP({ ...newSP, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <input type="number" value={newSP.amount} onChange={(e) => setNewSP({ ...newSP, amount: e.target.value })} placeholder={t('payments.amount') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <select value={newSP.currency} onChange={(e) => setNewSP({ ...newSP, currency: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                    {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <select value={newSP.paymentType} onChange={(e) => setNewSP({ ...newSP, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                    <option value="">{t('sponsorPayments.selectType')} *</option>
+                    {paymentTypes.length > 0
+                      ? paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{pt.name}</option>)
+                      : <>
+                          <option value="tuition">{t('sponsorPayments.tuition')}</option>
+                          <option value="medical">{t('sponsorPayments.medical')}</option>
+                          <option value="other">{t('sponsorPayments.other')}</option>
+                        </>
+                    }
+                  </select>
+                  <input type="text" value={newSP.notes} onChange={(e) => setNewSP({ ...newSP, notes: e.target.value })} placeholder={t('payments.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm sm:col-span-2 lg:col-span-3" />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={addSponsorPayment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                  <button onClick={() => setShowAddSponsor(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button>
+                </div>
+              </div>
+            )}
+
+            {/* Table */}
             <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.paymentDate')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('sponsorPayments.paymentType')}</th>
@@ -79,22 +309,77 @@ export default function PaymentsPage() {
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.notes')}</th>
+              {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
               {sponsorPayments.map((p: any) => (
-                <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50">
-                  <td className="py-3 px-3 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
-                  <td className="py-3 px-3 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{p.paymentType === 'tuition' ? t('sponsorPayments.tuition') : p.paymentType === 'medical' ? t('sponsorPayments.medical') : t('sponsorPayments.other')}</span></td>
-                  <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
-                  <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
-                  <td className="py-3 px-3 text-sm text-gray-700">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
-                  <td className="py-3 px-3 text-sm text-gray-500">{p.notes || '-'}</td>
-                </tr>
+                editingId === p.id ? (
+                  <tr key={p.id} className="border-b border-gray-50 bg-primary-50">
+                    <td className="py-2 px-3"><input type="date" value={editData.paymentDate || ''} onChange={(e) => setEditData({ ...editData, paymentDate: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
+                    <td className="py-2 px-3">
+                      <select value={editData.paymentType || ''} onChange={(e) => setEditData({ ...editData, paymentType: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
+                        {paymentTypes.length > 0
+                          ? paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{pt.name}</option>)
+                          : <>
+                              <option value="tuition">{t('sponsorPayments.tuition')}</option>
+                              <option value="medical">{t('sponsorPayments.medical')}</option>
+                              <option value="other">{t('sponsorPayments.other')}</option>
+                            </>
+                        }
+                      </select>
+                    </td>
+                    <td className="py-2 px-3">
+                      <div className="flex gap-1">
+                        <input type="number" value={editData.amount || ''} onChange={(e) => setEditData({ ...editData, amount: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-20" />
+                        <select value={editData.currency || 'KES'} onChange={(e) => setEditData({ ...editData, currency: e.target.value })} className="px-1 py-1 rounded border border-gray-300 text-sm w-16">
+                          {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                    </td>
+                    <td className="py-2 px-3">
+                      <select value={editData.studentId || ''} onChange={(e) => setEditData({ ...editData, studentId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
+                        <option value="">—</option>
+                        {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                      </select>
+                    </td>
+                    <td className="py-2 px-3">
+                      <select value={editData.sponsorId || ''} onChange={(e) => setEditData({ ...editData, sponsorId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
+                        <option value="">—</option>
+                        {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                      </select>
+                    </td>
+                    <td className="py-2 px-3"><input type="text" value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
+                    <td className="py-2 px-3 text-right">
+                      <div className="flex gap-1 justify-end">
+                        <button onClick={() => saveSponsorEdit(p.id)} className="p-1.5 text-primary-600 hover:text-primary-800"><Check className="w-4 h-4" /></button>
+                        <button onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50 group">
+                    <td className="py-3 px-3 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
+                    <td className="py-3 px-3 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{p.paymentType === 'tuition' ? t('sponsorPayments.tuition') : p.paymentType === 'medical' ? t('sponsorPayments.medical') : p.paymentType === 'other' ? t('sponsorPayments.other') : p.paymentType}</span></td>
+                    <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
+                    <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
+                    <td className="py-3 px-3 text-sm text-gray-700">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
+                    <td className="py-3 px-3 text-sm text-gray-500">{p.notes || '-'}</td>
+                    {canEdit && (
+                      <td className="py-3 px-3 text-right">
+                        <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => startEdit(p, 'sponsor')} className="p-1.5 text-gray-400 hover:text-primary-600"><Pencil className="w-4 h-4" /></button>
+                          <button onClick={() => deleteSponsorPayment(p.id)} className="p-1.5 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                )
               ))}
-              {sponsorPayments.length === 0 && <tr><td colSpan={6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+              {sponsorPayments.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
             </tbody></table></div>
           </div>
         )}
 
+        {/* ===== VOUCHER PURCHASES ===== */}
         {activeTab === 'voucher' && (
           <div>
             <div className="flex flex-wrap gap-3 mb-6">
@@ -107,6 +392,38 @@ export default function PaymentsPage() {
                 <p className="text-xl font-bold text-primary-900">{formatNumber(voucherPurchases.reduce((s: number, v: any) => s + v.count, 0))}</p>
               </div>
             </div>
+
+            {/* Add button */}
+            {canEdit && (
+              <div className="mb-4">
+                <button onClick={() => setShowAddVoucher(!showAddVoucher)} className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">
+                  <Plus className="w-4 h-4" /> {t('vouchers.addPurchase')}
+                </button>
+              </div>
+            )}
+
+            {/* Add form */}
+            {showAddVoucher && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+                  <select value={newVP.studentId} onChange={(e) => setNewVP({ ...newVP, studentId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                    <option value="">{t('nav.students')} *</option>
+                    {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName} ({s.studentNo})</option>)}
+                  </select>
+                  <input type="date" value={newVP.purchaseDate} onChange={(e) => setNewVP({ ...newVP, purchaseDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <input type="number" value={newVP.amount} onChange={(e) => setNewVP({ ...newVP, amount: e.target.value })} placeholder={t('vouchers.amount') + ' (KES) *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <input type="number" value={newVP.count} onChange={(e) => setNewVP({ ...newVP, count: e.target.value })} placeholder={t('vouchers.count') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <input type="text" value={newVP.donorName} onChange={(e) => setNewVP({ ...newVP, donorName: e.target.value })} placeholder={t('vouchers.donorName')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <input type="text" value={newVP.notes} onChange={(e) => setNewVP({ ...newVP, notes: e.target.value })} placeholder={t('payments.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={addVoucherPurchase} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                  <button onClick={() => setShowAddVoucher(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button>
+                </div>
+              </div>
+            )}
+
+            {/* Table */}
             <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.purchaseDate')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.amount')}</th>
@@ -114,18 +431,49 @@ export default function PaymentsPage() {
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.donorName')}</th>
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.notes')}</th>
+              {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
               {voucherPurchases.map((v: any) => (
-                <tr key={v.id} className="border-b border-gray-50 hover:bg-gray-50">
-                  <td className="py-3 px-3 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
-                  <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, 'KES')}</td>
-                  <td className="py-3 px-3 text-sm text-gray-900">{formatNumber(v.count)}</td>
-                  <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
-                  <td className="py-3 px-3 text-sm text-gray-700">{v.donorName || '-'}</td>
-                  <td className="py-3 px-3 text-sm text-gray-500">{v.notes || '-'}</td>
-                </tr>
+                editingId === v.id ? (
+                  <tr key={v.id} className="border-b border-gray-50 bg-primary-50">
+                    <td className="py-2 px-3"><input type="date" value={editData.purchaseDate || ''} onChange={(e) => setEditData({ ...editData, purchaseDate: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
+                    <td className="py-2 px-3"><input type="number" value={editData.amount || ''} onChange={(e) => setEditData({ ...editData, amount: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-24" /></td>
+                    <td className="py-2 px-3"><input type="number" value={editData.count || ''} onChange={(e) => setEditData({ ...editData, count: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-16" /></td>
+                    <td className="py-2 px-3">
+                      <select value={editData.studentId || ''} onChange={(e) => setEditData({ ...editData, studentId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
+                        <option value="">—</option>
+                        {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                      </select>
+                    </td>
+                    <td className="py-2 px-3"><input type="text" value={editData.donorName || ''} onChange={(e) => setEditData({ ...editData, donorName: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
+                    <td className="py-2 px-3"><input type="text" value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
+                    <td className="py-2 px-3 text-right">
+                      <div className="flex gap-1 justify-end">
+                        <button onClick={() => saveVoucherEdit(v.id)} className="p-1.5 text-primary-600 hover:text-primary-800"><Check className="w-4 h-4" /></button>
+                        <button onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr key={v.id} className="border-b border-gray-50 hover:bg-gray-50 group">
+                    <td className="py-3 px-3 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
+                    <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, 'KES')}</td>
+                    <td className="py-3 px-3 text-sm text-gray-900">{formatNumber(v.count)}</td>
+                    <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
+                    <td className="py-3 px-3 text-sm text-gray-700">{v.donorName || '-'}</td>
+                    <td className="py-3 px-3 text-sm text-gray-500">{v.notes || '-'}</td>
+                    {canEdit && (
+                      <td className="py-3 px-3 text-right">
+                        <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => startEdit(v, 'voucher')} className="p-1.5 text-gray-400 hover:text-primary-600"><Pencil className="w-4 h-4" /></button>
+                          <button onClick={() => deleteVoucherPurchase(v.id)} className="p-1.5 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                )
               ))}
-              {voucherPurchases.length === 0 && <tr><td colSpan={6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+              {voucherPurchases.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
             </tbody></table></div>
           </div>
         )}

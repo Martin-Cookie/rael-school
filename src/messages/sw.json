@@ -169,7 +169,8 @@
     "addPayment": "Ongeza malipo",
     "importPayments": "Ingiza malipo",
     "totalPayments": "Malipo jumla",
-    "noPayments": "Hakuna malipo"
+    "noPayments": "Hakuna malipo",
+    "fillRequired": "Tafadhali jaza sehemu zote zinazohitajika"
   },
   "roles": {
     "ADMIN": "Msimamizi",

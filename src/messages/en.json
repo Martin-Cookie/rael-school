@@ -169,7 +169,8 @@
     "addPayment": "Add payment",
     "importPayments": "Import payments",
     "totalPayments": "Total payments",
-    "noPayments": "No payments"
+    "noPayments": "No payments",
+    "fillRequired": "Please fill in all required fields"
   },
   "roles": {
     "ADMIN": "Administrator",

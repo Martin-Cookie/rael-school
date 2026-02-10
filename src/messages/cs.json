@@ -169,7 +169,8 @@
     "addPayment": "Přidat platbu",
     "importPayments": "Importovat platby",
     "totalPayments": "Celkem plateb",
-    "noPayments": "Žádné platby"
+    "noPayments": "Žádné platby",
+    "fillRequired": "Vyplňte všechna povinná pole"
   },
   "roles": {
     "ADMIN": "Administrátor",
