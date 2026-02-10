@@ -65,7 +65,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
@@ -79,21 +79,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     try { const res = await fetch('/api/admin/classrooms'); const d = await res.json(); setClassrooms(d.classrooms || []) } catch {}
   }
 
-  async function fetchHealthTypes() {
-    try { const res = await fetch('/api/admin/health-types'); const d = await res.json(); setHealthTypes(d.healthTypes || []) } catch {}
-  }
 
   async function fetchPaymentTypes() {
     try { const res = await fetch('/api/admin/payment-types'); const d = await res.json(); setPaymentTypes(d.paymentTypes || []) } catch {}
   }
 
-  async function fetchHealthTypes() {
-    try { const res = await fetch('/api/admin/health-types'); const d = await res.json(); setHealthTypes(d.healthTypes || []) } catch {}
-  }
 
-  async function fetchPaymentTypes() {
-    try { const res = await fetch('/api/admin/payment-types'); const d = await res.json(); setPaymentTypes(d.paymentTypes || []) } catch {}
-  }
 
   async function fetchStudent() {
     try {
