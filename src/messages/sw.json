@@ -154,7 +154,8 @@
     "urgent": "Dharura",
     "notes": "Maelezo",
     "addCheck": "Ongeza ukaguzi",
-    "noChecks": "Hakuna ukaguzi wa afya"
+    "noChecks": "Hakuna ukaguzi wa afya",
+    "selectType": "-- Chagua aina --"
   },
   "payments": {
     "title": "Malipo",
@@ -185,6 +186,8 @@
   },
   "admin": {
     "classrooms": "Orodha ya Madarasa",
-    "newClassName": "Jina la darasa jipya"
+    "newClassName": "Jina la darasa jipya",
+    "healthTypes": "Aina za Uchunguzi wa Afya",
+    "newHealthTypeName": "Jina la aina mpya ya uchunguzi"
   }
 }

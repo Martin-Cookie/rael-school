@@ -246,3 +246,14 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
+
+  // Health Check Types
+  const healthCheckTypes = ['Praktik', 'Zubař', 'Oční', 'Urgentní']
+  for (let i = 0; i < healthCheckTypes.length; i++) {
+    await prisma.healthCheckType.upsert({
+      where: { name: healthCheckTypes[i] },
+      update: { sortOrder: i, isActive: true },
+      create: { name: healthCheckTypes[i], sortOrder: i },
+    })
+  }
+  console.log('✅ Health check types seeded')

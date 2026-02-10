@@ -34,12 +34,13 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [userRole, setUserRole] = useState<string>('')
   const [currency, setCurrency] = useState('KES')
   const [classrooms, setClassrooms] = useState<any[]>([])
+  const [healthTypes, setHealthTypes] = useState<any[]>([])
 
   const [newNeed, setNewNeed] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
   const [newVoucher, setNewVoucher] = useState({ type: 'purchase', date: '', amount: '', count: '', donorName: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
-  const [newHealth, setNewHealth] = useState({ checkDate: '', checkType: 'general', notes: '' })
+  const [newHealth, setNewHealth] = useState({ checkDate: '', checkType: '', notes: '' })
   const [showAddHealth, setShowAddHealth] = useState(false)
   const [showAddSponsor, setShowAddSponsor] = useState(false)
   const [newSponsor, setNewSponsor] = useState({ firstName: '', lastName: '', email: '', phone: '', startDate: '', notes: '' })
@@ -63,10 +64,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
+  }
+
+  async function fetchHealthTypes() {
+    try { const res = await fetch("/api/admin/health-types"); const d = await res.json(); setHealthTypes(d.healthTypes || []) } catch {}
   }
 
   async function fetchClassrooms() {
@@ -141,10 +146,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function addHealthCheck() {
-    if (!newHealth.checkDate) return
+    if (!newHealth.checkDate || !newHealth.checkType) return
     try {
       const res = await fetch(`/api/students/${id}/health`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newHealth) })
-      if (res.ok) { setNewHealth({ checkDate: '', checkType: 'general', notes: '' }); setShowAddHealth(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+      if (res.ok) { setNewHealth({ checkDate: '', checkType: '', notes: '' }); setShowAddHealth(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteHealthCheck(checkId: string) {
@@ -220,7 +225,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   const condBadge = (c: string) => { const m: Record<string,string> = { new:'badge-green', satisfactory:'badge-yellow', poor:'badge-red' }; const l: Record<string,string> = { new:t('equipment.new'), satisfactory:t('equipment.satisfactory'), poor:t('equipment.poor') }; return <span className={`badge ${m[c]||'badge-yellow'}`}>{l[c]||c}</span> }
   const eqLabel = (type: string) => ({ bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net') }[type] || type)
-  const htLabel = (type: string) => ({ dentist:t('health.dentist'), general:t('health.general'), urgent:t('health.urgent') }[type] || type)
+  const htLabel = (type: string) => { const found = healthTypes.find((ht: any) => ht.name === type); return found ? found.name : type }
   const ptLabel = (type: string) => ({ tuition:t('sponsorPayments.tuition'), medical:t('sponsorPayments.medical'), other:t('sponsorPayments.other') }[type] || type)
 
   const totalPurchased = student.vouchers?.reduce((s: number, v: any) => s + v.count, 0) || 0
@@ -619,7 +624,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
                   <input type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <select value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="general">{t('health.general')}</option><option value="dentist">{t('health.dentist')}</option><option value="urgent">{t('health.urgent')}</option></select>
+                  <select value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{ht.name}</option>)}</select>
                   <input type="text" value={newHealth.notes} onChange={(e) => setNewHealth({ ...newHealth, notes: e.target.value })} placeholder={t('health.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                 </div>
                 <div className="flex gap-2"><button onClick={addHealthCheck} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddHealth(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>

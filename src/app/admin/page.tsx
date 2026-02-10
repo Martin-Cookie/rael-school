@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, ArrowLeft } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, ArrowLeft, Stethoscope } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -10,11 +10,105 @@ import { useRouter } from 'next/navigation'
 
 const msgs: Record<string, any> = { cs, en, sw }
 
+type CodelistItem = { id: string; name: string; sortOrder: number; isActive: boolean }
+
+function CodelistSection({
+  title,
+  icon: Icon,
+  items,
+  newName,
+  setNewName,
+  onAdd,
+  onDelete,
+  onMove,
+  placeholder,
+  t,
+}: {
+  title: string
+  icon: any
+  items: CodelistItem[]
+  newName: string
+  setNewName: (v: string) => void
+  onAdd: () => void
+  onDelete: (id: string) => void
+  onMove: (id: string, dir: 'up' | 'down') => void
+  placeholder: string
+  t: (key: string) => string
+}) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <Icon className="w-5 h-5 text-primary-600" />
+        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+      </div>
+
+      {/* Add new item */}
+      <div className="flex gap-2 mb-6">
+        <input
+          type="text"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+          onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+        />
+        <button
+          onClick={onAdd}
+          className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
+        >
+          <Plus className="w-4 h-4" /> {t('app.add')}
+        </button>
+      </div>
+
+      {/* List */}
+      {items.length > 0 ? (
+        <div className="space-y-2">
+          {items.map((item, idx) => (
+            <div key={item.id} className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 group">
+              <div className="flex flex-col gap-0.5">
+                <button
+                  onClick={() => onMove(item.id, 'up')}
+                  disabled={idx === 0}
+                  className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => onMove(item.id, 'down')}
+                  disabled={idx === items.length - 1}
+                  className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </div>
+              <Icon className="w-5 h-5 text-primary-500" />
+              <span className="flex-1 text-sm font-medium text-gray-900">{item.name}</span>
+              <button
+                onClick={() => onDelete(item.id)}
+                className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <Icon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <p className="text-gray-500 text-sm">{t('app.noData')}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function AdminPage() {
   const router = useRouter()
-  const [classrooms, setClassrooms] = useState<any[]>([])
+  const [classrooms, setClassrooms] = useState<CodelistItem[]>([])
+  const [healthTypes, setHealthTypes] = useState<CodelistItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [newName, setNewName] = useState('')
+  const [newClassName, setNewClassName] = useState('')
+  const [newHealthTypeName, setNewHealthTypeName] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
 
@@ -28,13 +122,18 @@ export default function AdminPage() {
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchClassrooms() }, [])
+  useEffect(() => { fetchAll() }, [])
 
-  async function fetchClassrooms() {
+  async function fetchAll() {
     try {
-      const res = await fetch('/api/admin/classrooms')
-      const data = await res.json()
-      setClassrooms(data.classrooms || [])
+      const [crRes, htRes] = await Promise.all([
+        fetch('/api/admin/classrooms'),
+        fetch('/api/admin/health-types'),
+      ])
+      const crData = await crRes.json()
+      const htData = await htRes.json()
+      setClassrooms(crData.classrooms || [])
+      setHealthTypes(htData.healthTypes || [])
       setLoading(false)
     } catch { setLoading(false) }
   }
@@ -43,35 +142,24 @@ export default function AdminPage() {
     setMessage({ type, text }); setTimeout(() => setMessage(null), 3000)
   }
 
+  // ---- Classrooms CRUD ----
   async function addClass() {
-    if (!newName.trim()) return
+    if (!newClassName.trim()) return
     try {
       const res = await fetch('/api/admin/classrooms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName.trim(), sortOrder: classrooms.length }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newClassName.trim(), sortOrder: classrooms.length }),
       })
-      if (res.ok) {
-        setNewName('')
-        await fetchClassrooms()
-        showMsg('success', t('app.savedSuccess'))
-      } else {
-        const d = await res.json()
-        showMsg('error', d.error || t('app.error'))
-      }
+      if (res.ok) { setNewClassName(''); await fetchAll(); showMsg('success', t('app.savedSuccess')) }
+      else { const d = await res.json(); showMsg('error', d.error || t('app.error')) }
     } catch { showMsg('error', t('app.error')) }
   }
 
   async function deleteClass(id: string) {
     if (!confirm(t('app.confirmDelete'))) return
     try {
-      await fetch('/api/admin/classrooms', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      })
-      await fetchClassrooms()
-      showMsg('success', t('app.deleteSuccess'))
+      await fetch('/api/admin/classrooms', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+      await fetchAll(); showMsg('success', t('app.deleteSuccess'))
     } catch { showMsg('error', t('app.error')) }
   }
 
@@ -79,21 +167,48 @@ export default function AdminPage() {
     const idx = classrooms.findIndex(c => c.id === id)
     if (direction === 'up' && idx <= 0) return
     if (direction === 'down' && idx >= classrooms.length - 1) return
-
     const updated = [...classrooms]
     const swapIdx = direction === 'up' ? idx - 1 : idx + 1
-    const temp = updated[idx]
-    updated[idx] = updated[swapIdx]
-    updated[swapIdx] = temp
-
+    ;[updated[idx], updated[swapIdx]] = [updated[swapIdx], updated[idx]]
     const orders = updated.map((c, i) => ({ id: c.id, sortOrder: i }))
     try {
-      await fetch('/api/admin/classrooms', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orders }),
+      await fetch('/api/admin/classrooms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orders }) })
+      await fetchAll()
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  // ---- Health Types CRUD ----
+  async function addHealthType() {
+    if (!newHealthTypeName.trim()) return
+    try {
+      const res = await fetch('/api/admin/health-types', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newHealthTypeName.trim(), sortOrder: healthTypes.length }),
       })
-      await fetchClassrooms()
+      if (res.ok) { setNewHealthTypeName(''); await fetchAll(); showMsg('success', t('app.savedSuccess')) }
+      else { const d = await res.json(); showMsg('error', d.error || t('app.error')) }
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  async function deleteHealthType(id: string) {
+    if (!confirm(t('app.confirmDelete'))) return
+    try {
+      await fetch('/api/admin/health-types', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+      await fetchAll(); showMsg('success', t('app.deleteSuccess'))
+    } catch { showMsg('error', t('app.error')) }
+  }
+
+  async function moveHealthType(id: string, direction: 'up' | 'down') {
+    const idx = healthTypes.findIndex(c => c.id === id)
+    if (direction === 'up' && idx <= 0) return
+    if (direction === 'down' && idx >= healthTypes.length - 1) return
+    const updated = [...healthTypes]
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    ;[updated[idx], updated[swapIdx]] = [updated[swapIdx], updated[idx]]
+    const orders = updated.map((c, i) => ({ id: c.id, sortOrder: i }))
+    try {
+      await fetch('/api/admin/health-types', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orders }) })
+      await fetchAll()
     } catch { showMsg('error', t('app.error')) }
   }
 
@@ -109,69 +224,32 @@ export default function AdminPage() {
         <h1 className="text-2xl font-bold text-gray-900">{t('nav.admin')}</h1>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.push("/dashboard")} className="p-2 rounded-lg hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
-          <GraduationCap className="w-5 h-5 text-primary-600" />
-          <h2 className="text-lg font-semibold text-gray-900">{t('admin.classrooms')}</h2>
-        </div>
+      <div className="space-y-6">
+        <CodelistSection
+          title={t('admin.classrooms')}
+          icon={GraduationCap}
+          items={classrooms}
+          newName={newClassName}
+          setNewName={setNewClassName}
+          onAdd={addClass}
+          onDelete={deleteClass}
+          onMove={moveClass}
+          placeholder={t('admin.newClassName')}
+          t={t}
+        />
 
-        {/* Add new class */}
-        <div className="flex gap-2 mb-6">
-          <input
-            type="text"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder={t('admin.newClassName')}
-            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-            onKeyDown={(e) => e.key === 'Enter' && addClass()}
-          />
-          <button
-            onClick={addClass}
-            className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
-          >
-            <Plus className="w-4 h-4" /> {t('app.add')}
-          </button>
-        </div>
-
-        {/* List */}
-        {classrooms.length > 0 ? (
-          <div className="space-y-2">
-            {classrooms.map((cls, idx) => (
-              <div key={cls.id} className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 group">
-                <div className="flex flex-col gap-0.5">
-                  <button
-                    onClick={() => moveClass(cls.id, 'up')}
-                    disabled={idx === 0}
-                    className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
-                  >
-                    <ChevronUp className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => moveClass(cls.id, 'down')}
-                    disabled={idx === classrooms.length - 1}
-                    className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
-                  >
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-                </div>
-                <GraduationCap className="w-5 h-5 text-primary-500" />
-                <span className="flex-1 text-sm font-medium text-gray-900">{cls.name}</span>
-                <button
-                  onClick={() => deleteClass(cls.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <GraduationCap className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-gray-500 text-sm">{t('app.noData')}</p>
-          </div>
-        )}
+        <CodelistSection
+          title={t('admin.healthTypes')}
+          icon={Stethoscope}
+          items={healthTypes}
+          newName={newHealthTypeName}
+          setNewName={setNewHealthTypeName}
+          onAdd={addHealthType}
+          onDelete={deleteHealthType}
+          onMove={moveHealthType}
+          placeholder={t('admin.newHealthTypeName')}
+          t={t}
+        />
       </div>
     </div>
   )

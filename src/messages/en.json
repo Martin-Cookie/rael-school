@@ -154,7 +154,8 @@
     "urgent": "Urgent",
     "notes": "Notes",
     "addCheck": "Add check",
-    "noChecks": "No health checks"
+    "noChecks": "No health checks",
+    "selectType": "-- Select type --"
   },
   "payments": {
     "title": "Payments",
@@ -185,6 +186,8 @@
   },
   "admin": {
     "classrooms": "Class Directory",
-    "newClassName": "New class name"
+    "newClassName": "New class name",
+    "healthTypes": "Health Check Types",
+    "newHealthTypeName": "New health check type name"
   }
 }

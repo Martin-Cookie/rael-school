@@ -154,7 +154,8 @@
     "urgent": "Urgentní",
     "notes": "Poznámka",
     "addCheck": "Přidat prohlídku",
-    "noChecks": "Žádné prohlídky"
+    "noChecks": "Žádné prohlídky",
+    "selectType": "-- Vyberte typ --"
   },
   "payments": {
     "title": "Platby",
@@ -185,6 +186,8 @@
   },
   "admin": {
     "classrooms": "Číselník tříd",
-    "newClassName": "Název nové třídy"
+    "newClassName": "Název nové třídy",
+    "healthTypes": "Číselník druhů zdravotních prohlídek",
+    "newHealthTypeName": "Název nového typu prohlídky"
   }
 }
