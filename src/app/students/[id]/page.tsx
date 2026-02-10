@@ -44,6 +44,9 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [newHealth, setNewHealth] = useState({ checkDate: '', checkType: '', notes: '' })
   const [showAddHealth, setShowAddHealth] = useState(false)
   const [showAddSponsor, setShowAddSponsor] = useState(false)
+  const [sponsorSearch, setSponsorSearch] = useState('')
+  const [sponsorResults, setSponsorResults] = useState<any[]>([])
+  const [showSponsorSearch, setShowSponsorSearch] = useState(false)
   const [newSponsor, setNewSponsor] = useState({ firstName: '', lastName: '', email: '', phone: '', startDate: '', notes: '' })
   const [editingSponsor, setEditingSponsor] = useState<string | null>(null)
   const [editSponsorData, setEditSponsorData] = useState<any>({})
@@ -176,6 +179,45 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     if (!confirm(t('app.confirmDelete'))) return
     try { await fetch(`/api/students/${id}/photos`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photoId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
+
+  async function searchSponsors(query: string) {
+    setSponsorSearch(query)
+    if (query.length < 1) { setSponsorResults([]); return }
+    try {
+      const res = await fetch('/api/sponsors/search?q=' + encodeURIComponent(query))
+      const data = await res.json()
+      setSponsorResults(data.sponsors || [])
+    } catch { setSponsorResults([]) }
+  }
+
+  async function addExistingSponsor(sponsorUserId: string) {
+    try {
+      const sponsor = sponsorResults.find((s: any) => s.id === sponsorUserId)
+      if (!sponsor) return
+      const res = await fetch(`/api/students/${id}/sponsors`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: sponsor.firstName,
+          lastName: sponsor.lastName,
+          email: sponsor.email,
+          phone: sponsor.phone || '',
+          startDate: new Date().toISOString().split('T')[0],
+        }),
+      })
+      if (res.ok) {
+        setSponsorSearch('')
+        setSponsorResults([])
+        setShowSponsorSearch(false)
+        fetchStudent()
+        showToast('success', t('app.savedSuccess'))
+      } else {
+        const d = await res.json()
+        showToast('error', d.error || t('app.error'))
+      }
+    } catch { showToast('error', t('app.error')) }
+  }
+
   async function addSponsor() {
     if (!newSponsor.firstName || !newSponsor.lastName || !newSponsor.email) { showMsg('error', 'Vyplňte jméno, příjmení a email'); return }
     try {
@@ -522,6 +564,42 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <h3 className="text-lg font-semibold text-gray-900">{t('sponsors.title')}</h3>
               {canEditData && <button onClick={() => setShowAddSponsor(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('sponsors.addSponsor')}</button>}
             </div>
+            {/* Search existing sponsor */}
+            {canEditData && (
+              <div className="mb-4">
+                <button
+                  onClick={() => setShowSponsorSearch(!showSponsorSearch)}
+                  className="text-sm text-primary-600 hover:text-primary-800 font-medium mb-2"
+                >
+                  {showSponsorSearch ? '✕ ' : '🔍 '}{t('sponsorPage.searchExisting')}
+                </button>
+                {showSponsorSearch && (
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={sponsorSearch}
+                      onChange={(e) => searchSponsors(e.target.value)}
+                      placeholder={t('sponsorPage.searchByName')}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                    {sponsorResults.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-48 overflow-y-auto">
+                        {sponsorResults.map((sr: any) => (
+                          <button
+                            key={sr.id}
+                            onClick={() => addExistingSponsor(sr.id)}
+                            className="w-full text-left px-4 py-2.5 hover:bg-primary-50 text-sm border-b border-gray-100 last:border-0"
+                          >
+                            <span className="font-medium text-gray-900">{sr.lastName} {sr.firstName}</span>
+                            <span className="text-gray-500 ml-2">{sr.email}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             {showAddSponsor && (
               <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <p className="text-xs text-gray-500 mb-3">Vyplňte údaje sponzora. Pokud v systému neexistuje, bude vytvořen.</p>

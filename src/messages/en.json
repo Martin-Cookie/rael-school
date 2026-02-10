@@ -192,5 +192,20 @@
     "newHealthTypeName": "New health check type name",
     "paymentTypes": "Sponsor Payment Types",
     "newPaymentTypeName": "New payment type name"
+  },
+  "sponsorPage": {
+    "addSponsor": "Add Sponsor",
+    "requiredFields": "Please fill in first name, last name and email",
+    "emailExists": "Email is already in use",
+    "inactive": "Inactive",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "confirmDeactivate": "Are you sure you want to deactivate this sponsor? All sponsorships will be ended.",
+    "confirmReactivate": "Are you sure you want to reactivate this sponsor?",
+    "students": "Students",
+    "noResults": "No sponsors found",
+    "searchExisting": "Search existing sponsor",
+    "searchByName": "Search by last name...",
+    "orAddNew": "or add new"
   }
 }

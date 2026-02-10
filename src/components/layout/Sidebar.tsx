@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  LayoutDashboard, Users, CreditCard, BarChart3,
+  LayoutDashboard, Users, Heart, CreditCard, BarChart3,
   LogOut, Menu, X, Globe, Settings
 } from 'lucide-react'
 
@@ -49,6 +49,7 @@ export default function Sidebar({ user }: SidebarProps) {
   const navItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { href: '/students', icon: Users, label: t('nav.students') },
+    { href: '/sponsors', icon: Heart, label: t('nav.sponsors'), roles: ['ADMIN', 'MANAGER', 'VOLUNTEER'] },
     { href: '/payments', icon: CreditCard, label: t('nav.payments'), roles: ['ADMIN', 'MANAGER'] },
     { href: '/reports', icon: BarChart3, label: t('nav.reports'), roles: ['ADMIN', 'MANAGER'] },
     { href: '/admin', icon: Settings, label: t('nav.admin'), roles: ['ADMIN'] },

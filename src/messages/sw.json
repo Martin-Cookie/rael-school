@@ -192,5 +192,20 @@
     "newHealthTypeName": "Jina la aina mpya ya uchunguzi",
     "paymentTypes": "Aina za Malipo ya Wadhamini",
     "newPaymentTypeName": "Jina la aina mpya ya malipo"
+  },
+  "sponsorPage": {
+    "addSponsor": "Ongeza Mfadhili",
+    "requiredFields": "Tafadhali jaza jina, jina la ukoo na barua pepe",
+    "emailExists": "Barua pepe tayari inatumika",
+    "inactive": "Haifanyi kazi",
+    "deactivate": "Lemaza",
+    "reactivate": "Amilisha tena",
+    "confirmDeactivate": "Una uhakika unataka kumlemaza mfadhili huyu?",
+    "confirmReactivate": "Una uhakika unataka kumamilisha tena mfadhili huyu?",
+    "students": "Wanafunzi",
+    "noResults": "Hakuna wafadhili waliopatikana",
+    "searchExisting": "Tafuta mfadhili aliyepo",
+    "searchByName": "Tafuta kwa jina la ukoo...",
+    "orAddNew": "au ongeza mpya"
   }
 }

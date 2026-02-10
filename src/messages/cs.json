@@ -192,5 +192,20 @@
     "newHealthTypeName": "Název nového typu prohlídky",
     "paymentTypes": "Číselník typů plateb od sponzorů",
     "newPaymentTypeName": "Název nového typu platby"
+  },
+  "sponsorPage": {
+    "addSponsor": "Přidat sponzora",
+    "requiredFields": "Vyplňte jméno, příjmení a email",
+    "emailExists": "Email je již použitý",
+    "inactive": "Neaktivní",
+    "deactivate": "Deaktivovat",
+    "reactivate": "Reaktivovat",
+    "confirmDeactivate": "Opravdu chcete deaktivovat tohoto sponzora? Všechna jeho sponzorství budou ukončena.",
+    "confirmReactivate": "Opravdu chcete reaktivovat tohoto sponzora?",
+    "students": "Studenti",
+    "noResults": "Žádní sponzoři nenalezeni",
+    "searchExisting": "Vyhledat existujícího sponzora",
+    "searchByName": "Hledat podle příjmení...",
+    "orAddNew": "nebo přidat nového"
   }
 }
