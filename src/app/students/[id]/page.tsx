@@ -37,6 +37,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [healthTypes, setHealthTypes] = useState<any[]>([])
   const [paymentTypes, setPaymentTypes] = useState<any[]>([])
   const [allSponsors, setAllSponsors] = useState<any[]>([])
+  useEffect(() => { fetch('/api/sponsors').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(() => {}) }, [])
 
   const [newNeed, setNewNeed] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
