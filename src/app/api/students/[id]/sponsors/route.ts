@@ -81,7 +81,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Sponsorship ID required' }, { status: 400 })
     }
 
-    const sponsorship = await prisma.sponsorship.delete({
+    const sponsorship = await prisma.sponsorship.update({
       where: { id: sponsorshipId },
       data: {
         notes: notes ?? undefined,
