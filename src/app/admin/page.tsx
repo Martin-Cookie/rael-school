@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, ChevronRight, ArrowLeft, Stethoscope, CreditCard } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, ArrowLeft, Stethoscope, CreditCard } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -23,7 +23,6 @@ function CodelistSection({
   onMove,
   placeholder,
   t,
-  defaultOpen = false,
 }: {
   title: string
   icon: any
@@ -35,81 +34,76 @@ function CodelistSection({
   onMove: (id: string, dir: 'up' | 'down') => void
   placeholder: string
   t: (key: string) => string
-  defaultOpen?: boolean
 }) {
-  const [open, setOpen] = useState(defaultOpen)
-
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      {/* Collapsible header */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 p-5 hover:bg-gray-50 transition-colors"
-      >
-        <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${open ? 'rotate-90' : ''}`} />
+    <div>
+      {/* Section header */}
+      <div className="flex items-center gap-3 mb-4">
         <Icon className="w-5 h-5 text-primary-600" />
-        <h2 className="text-lg font-semibold text-gray-900 flex-1 text-left">{title}</h2>
+        <h2 className="text-lg font-semibold text-gray-900 flex-1">{title}</h2>
         <span className="text-sm text-gray-400 font-medium">{items.length}</span>
-      </button>
+      </div>
 
-      {open && (
-        <div className="px-5 pb-5 border-t border-gray-100 pt-4">
-          {/* Add new item */}
-          <div className="flex gap-2 mb-4">
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder={placeholder}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-              onKeyDown={(e) => e.key === 'Enter' && onAdd()}
-            />
-            <button
-              onClick={onAdd}
-              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
-            >
-              <Plus className="w-4 h-4" /> {t('app.add')}
-            </button>
-          </div>
+      {/* Add new item */}
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+          onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+        />
+        <button
+          onClick={onAdd}
+          className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
+        >
+          <Plus className="w-4 h-4" /> {t('app.add')}
+        </button>
+      </div>
 
-          {/* List */}
-          {items.length > 0 ? (
-            <div className="space-y-2">
-              {items.map((item, idx) => (
-                <div key={item.id} className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 group">
-                  <div className="flex flex-col gap-0.5">
+      {/* Tile grid */}
+      {items.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {items.map((item, idx) => (
+            <div key={item.id} className="bg-white rounded-xl border border-gray-200 p-5 card-hover group">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-6 h-6 text-primary-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 truncate mb-2">{item.name}</h3>
+                  <div className="flex items-center gap-1">
                     <button
                       onClick={() => onMove(item.id, 'up')}
                       disabled={idx === 0}
-                      className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
+                      className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed rounded hover:bg-gray-100"
                     >
                       <ChevronUp className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => onMove(item.id, 'down')}
                       disabled={idx === items.length - 1}
-                      className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
+                      className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed rounded hover:bg-gray-100"
                     >
                       <ChevronDown className="w-4 h-4" />
                     </button>
+                    <button
+                      onClick={() => onDelete(item.id)}
+                      className="p-1 text-gray-400 hover:text-red-500 ml-auto opacity-0 group-hover:opacity-100 transition-opacity rounded hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <Icon className="w-5 h-5 text-primary-500" />
-                  <span className="flex-1 text-sm font-medium text-gray-900">{item.name}</span>
-                  <button
-                    onClick={() => onDelete(item.id)}
-                    className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
                 </div>
-              ))}
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-6">
-              <Icon className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-              <p className="text-gray-500 text-sm">{t('app.noData')}</p>
-            </div>
-          )}
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-gray-500">
+          <Icon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <p>{t('app.noData')}</p>
         </div>
       )}
     </div>
@@ -214,7 +208,7 @@ export default function AdminPage() {
         <h1 className="text-2xl font-bold text-gray-900">{t('nav.admin')}</h1>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-8">
         <CodelistSection
           title={t('admin.classrooms')}
           icon={GraduationCap}
@@ -226,7 +220,6 @@ export default function AdminPage() {
           onMove={classroomH.move}
           placeholder={t('admin.newClassName')}
           t={t}
-          defaultOpen={true}
         />
 
         <CodelistSection
