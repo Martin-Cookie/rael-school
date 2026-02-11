@@ -228,25 +228,6 @@ async function main() {
     console.log('✅ Volunteer assigned to RAEL-001')
   }
 
-  console.log('')
-  console.log('🎉 Database seeded successfully!')
-  console.log('')
-  console.log('📋 Test login credentials:')
-  console.log('   Admin:      admin@rael.school / admin123')
-  console.log('   Manager:    manager@rael.school / manager123')
-  console.log('   Sponsor:    sponsor@example.com / sponsor123')
-  console.log('   Volunteer:  volunteer@example.com / volunteer123')
-}
-
-main()
-  .catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
-
   // Health Check Types
   const healthCheckTypes = ['Praktik', 'Zubař', 'Oční', 'Urgentní']
   for (let i = 0; i < healthCheckTypes.length; i++) {
@@ -268,3 +249,22 @@ main()
     })
   }
   console.log('✅ Payment types seeded')
+
+  console.log('')
+  console.log('🎉 Database seeded successfully!')
+  console.log('')
+  console.log('📋 Test login credentials:')
+  console.log('   Admin:      admin@rael.school / admin123')
+  console.log('   Manager:    manager@rael.school / manager123')
+  console.log('   Sponsor:    sponsor@example.com / sponsor123')
+  console.log('   Volunteer:  volunteer@example.com / volunteer123')
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
