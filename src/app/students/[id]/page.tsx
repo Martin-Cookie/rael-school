@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
   HandHeart, Stethoscope, Plus, Check, Trash2, Upload,
@@ -21,6 +21,8 @@ function fmtCurrency(amount: number, currency: string): string { return `${forma
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
   const id = params.id
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const backUrl = searchParams.get('from') || '/students'
   const [student, setStudent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('personal')
@@ -312,7 +314,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       {/* Header with profile photo */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.back()} className="p-2 rounded-lg hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
+          <button onClick={() => router.push(backUrl)} className="p-2 rounded-lg hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
           <div className="relative group">
             {student.profilePhoto ? (
               <img src={student.profilePhoto} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-gray-200" />
