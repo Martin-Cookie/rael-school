@@ -331,7 +331,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             <p className="text-sm text-gray-500">{student.studentNo} • {student.className || '-'} • {calculateAge(student.dateOfBirth)} {locale === 'cs' ? 'let' : locale === 'sw' ? 'miaka' : 'years'}</p>
           </div>
         </div>
-        {canEditData && (
+        {canEditData && activeTab !== 'needs' && (
           <div className="flex items-center gap-2">
             {editMode ? (
               <>
