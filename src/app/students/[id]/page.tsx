@@ -312,7 +312,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       {/* Header with profile photo */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.push('/students')} className="p-2 rounded-lg hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
+          <button onClick={() => router.back()} className="p-2 rounded-lg hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
           <div className="relative group">
             {student.profilePhoto ? (
               <img src={student.profilePhoto} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-gray-200" />
