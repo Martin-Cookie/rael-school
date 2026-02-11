@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
   HandHeart, Stethoscope, Plus, Check, Trash2, Upload,
@@ -21,8 +21,7 @@ function fmtCurrency(amount: number, currency: string): string { return `${forma
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
   const id = params.id
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const backUrl = searchParams.get('from') || '/students'
+  const [backUrl, setBackUrl] = useState('/students')
   const [student, setStudent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('personal')
@@ -61,6 +60,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'KES', paymentType: '', sponsorId: '', notes: '' })
 
   const t = createTranslator(msgs[locale])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const from = params.get('from')
+    if (from) setBackUrl(from)
+  }, [])
 
   useEffect(() => {
     const saved = localStorage.getItem('rael-locale') as Locale
