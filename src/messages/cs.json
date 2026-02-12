@@ -202,7 +202,17 @@
     "purchased": "Nakoupeno",
     "used": "Čerpáno",
     "available": "Zbývá",
-    "total": "Celkem"
+    "total": "Celkem",
+    "sponsorPayments": "Platby od sponzorů",
+    "selectPaymentType": "Vyberte typ platby",
+    "allTypes": "Všechny typy",
+    "recorded": "Evidováno",
+    "notRecorded": "Neevidováno",
+    "amount": "Částka",
+    "hasPayment": "Ano",
+    "noPayment": "Ne",
+    "studentsWithPayment": "s platbou",
+    "studentsWithoutPayment": "bez platby"
   },
   "sponsorPage": {
     "addSponsor": "Přidat sponzora",

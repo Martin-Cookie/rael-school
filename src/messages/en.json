@@ -202,7 +202,17 @@
     "purchased": "Purchased",
     "used": "Used",
     "available": "Available",
-    "total": "Total"
+    "total": "Total",
+    "sponsorPayments": "Sponsor payments",
+    "selectPaymentType": "Select payment type",
+    "allTypes": "All types",
+    "recorded": "Recorded",
+    "notRecorded": "Not recorded",
+    "amount": "Amount",
+    "hasPayment": "Yes",
+    "noPayment": "No",
+    "studentsWithPayment": "with payment",
+    "studentsWithoutPayment": "without payment"
   },
   "sponsorPage": {
     "addSponsor": "Add Sponsor",

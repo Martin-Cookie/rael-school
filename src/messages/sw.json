@@ -202,7 +202,17 @@
     "purchased": "Zilizununuliwa",
     "used": "Zilizotumika",
     "available": "Zinazopatikana",
-    "total": "Jumla"
+    "total": "Jumla",
+    "sponsorPayments": "Malipo ya wadhamini",
+    "selectPaymentType": "Chagua aina ya malipo",
+    "allTypes": "Aina zote",
+    "recorded": "Imerekodiwa",
+    "notRecorded": "Haijarekodiwa",
+    "amount": "Kiasi",
+    "hasPayment": "Ndiyo",
+    "noPayment": "Hapana",
+    "studentsWithPayment": "wenye malipo",
+    "studentsWithoutPayment": "wasio na malipo"
   },
   "sponsorPage": {
     "addSponsor": "Ongeza Mfadhili",
