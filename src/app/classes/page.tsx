@@ -104,7 +104,7 @@ export default function ClassesPage() {
             {filteredClassNames.map(cn => {
               const count = students.filter((s: any) => s.className === cn).length
               return (
-                <button key={cn} onClick={() => { setSelectedClass(cn); setSortCol('') }} className="bg-gray-50 hover:bg-gray-100 rounded-xl p-4 border border-gray-200 text-left transition-colors">
+                <button key={cn} onClick={() => { setSelectedClass(cn); setSearch(''); setSortCol('') }} className="bg-gray-50 hover:bg-gray-100 rounded-xl p-4 border border-gray-200 text-left transition-colors">
                   <p className="text-lg font-bold text-gray-900">{cn}</p>
                   <p className="text-sm text-gray-500">{count} {locale === 'cs' ? 'studentů' : locale === 'sw' ? 'wanafunzi' : 'students'}</p>
                 </button>
