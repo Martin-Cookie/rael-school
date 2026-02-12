@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, ArrowLeft, Stethoscope, CreditCard } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
 import { createTranslator, type Locale } from '@/lib/i18n'
-import { useRouter } from 'next/navigation'
+
+
 
 const msgs: Record<string, any> = { cs, en, sw }
 
@@ -120,7 +121,6 @@ function CodelistSection({
 }
 
 export default function AdminPage() {
-  const router = useRouter()
   const [classrooms, setClassrooms] = useState<CodelistItem[]>([])
   const [healthTypes, setHealthTypes] = useState<CodelistItem[]>([])
   const [paymentTypes, setPaymentTypes] = useState<CodelistItem[]>([])
@@ -212,8 +212,9 @@ export default function AdminPage() {
       {message && <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>{message.text}</div>}
 
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.push("/dashboard")} className="p-2 rounded-lg hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
-        <Settings className="w-6 h-6 text-gray-600" />
+        <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
+          <Settings className="w-5 h-5 text-primary-600" />
+        </div>
         <h1 className="text-2xl font-bold text-gray-900">{t('nav.admin')}</h1>
       </div>
 
