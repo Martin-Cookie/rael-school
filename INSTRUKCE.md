@@ -34,6 +34,7 @@ Webový informační systém pro správu školy Rael v Keni. Sleduje studenty, s
 - Stránka Administrace — číselníky tříd, typů prohlídek a typů plateb (CRUD, řazení)
 - Stránkování (pagination) na stránkách Studenti (12/str), Sponzoři (10/str), Platby (15/str)
 - Znovupoužitelná komponenta `Pagination` s překlady ve 3 jazycích
+- Nahrávání fotek — klientská komprese obrázků (Canvas API, max 1600px galerie / 400px profil), validace typu a velikosti (max 10 MB), loading indikátor při nahrávání
 
 ## Struktura projektu
 
@@ -52,7 +53,7 @@ src/
   components/
     layout/           # Sidebar, Header
     Pagination.tsx    # Znovupoužitelná paginace
-  lib/                # DB, auth, formátování, i18n
+  lib/                # DB, auth, formátování, i18n, komprese obrázků
   messages/           # Překlady (cs.json, en.json, sw.json)
 prisma/
   schema.prisma       # Datový model (13 tabulek)
