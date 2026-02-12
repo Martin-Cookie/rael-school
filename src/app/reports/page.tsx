@@ -184,23 +184,23 @@ export default function ReportsPage() {
       </div>
 
       {/* Section: Vouchers per student */}
-      <div className="bg-white rounded-xl border border-gray-200 mb-4">
+      <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4">
         <button
           onClick={() => setOpenSection(openSection === 'vouchers' ? null : 'vouchers')}
-          className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors rounded-xl"
+          className="w-full p-5 flex items-center gap-4 text-left"
         >
-          <div className="flex items-center gap-3">
-            <UtensilsCrossed className="w-5 h-5 text-orange-500" />
-            <div>
-              <h2 className="font-semibold text-gray-900">{t('statistics.voucherPerStudent')}</h2>
-              <p className="text-sm text-gray-500">{t('statistics.total')}: {totalPurchased} {t('statistics.purchased').toLowerCase()}, {totalUsed} {t('statistics.used').toLowerCase()}</p>
-            </div>
+          <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <UtensilsCrossed className="w-6 h-6 text-orange-600" />
           </div>
-          {openSection === 'vouchers' ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-gray-900">{t('statistics.voucherPerStudent')}</h2>
+            <p className="text-sm text-gray-500">{t('statistics.total')}: {totalPurchased} {t('statistics.purchased').toLowerCase()}, {totalUsed} {t('statistics.used').toLowerCase()}</p>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openSection === 'vouchers' ? 'rotate-180' : ''}`} />
         </button>
 
         {openSection === 'vouchers' && (
-          <div className="px-5 pb-5">
+          <div className="px-5 pb-5 border-t border-gray-100 pt-4">
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -271,23 +271,23 @@ export default function ReportsPage() {
       </div>
 
       {/* Section: Sponsor payments per student */}
-      <div className="bg-white rounded-xl border border-gray-200 mb-4">
+      <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4">
         <button
           onClick={() => setOpenSection(openSection === 'sponsorPayments' ? null : 'sponsorPayments')}
-          className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors rounded-xl"
+          className="w-full p-5 flex items-center gap-4 text-left"
         >
-          <div className="flex items-center gap-3">
-            <CreditCard className="w-5 h-5 text-blue-500" />
-            <div>
-              <h2 className="font-semibold text-gray-900">{t('statistics.sponsorPayments')}</h2>
-              <p className="text-sm text-gray-500">{withPaymentCount} {t('statistics.studentsWithPayment')}, {withoutPaymentCount} {t('statistics.studentsWithoutPayment')}</p>
-            </div>
+          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <CreditCard className="w-6 h-6 text-blue-600" />
           </div>
-          {openSection === 'sponsorPayments' ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-gray-900">{t('statistics.sponsorPayments')}</h2>
+            <p className="text-sm text-gray-500">{withPaymentCount} {t('statistics.studentsWithPayment')}, {withoutPaymentCount} {t('statistics.studentsWithoutPayment')}</p>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openSection === 'sponsorPayments' ? 'rotate-180' : ''}`} />
         </button>
 
         {openSection === 'sponsorPayments' && (
-          <div className="px-5 pb-5">
+          <div className="px-5 pb-5 border-t border-gray-100 pt-4">
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
