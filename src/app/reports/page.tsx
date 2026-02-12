@@ -42,7 +42,7 @@ export default function ReportsPage() {
   const [voucherStats, setVoucherStats] = useState<VoucherStat[]>([])
   const [sponsorPaymentStats, setSponsorPaymentStats] = useState<SponsorPaymentStat[]>([])
   const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([])
-  const [openSection, setOpenSection] = useState<string | null>('vouchers')
+  const [openSection, setOpenSection] = useState<string | null>(null)
 
   // Voucher sort state
   const [vSortCol, setVSortCol] = useState<string>('lastName')
