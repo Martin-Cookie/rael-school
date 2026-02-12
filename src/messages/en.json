@@ -32,7 +32,8 @@
     "reports": "Reports",
     "settings": "Settings",
     "logout": "Logout",
-    "admin": "Administration"
+    "admin": "Administration",
+    "classes": "Classes"
   },
   "auth": {
     "login": "Login",

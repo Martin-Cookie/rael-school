@@ -32,7 +32,8 @@
     "reports": "Takwimu",
     "settings": "Mipangilio",
     "logout": "Ondoka",
-    "admin": "Usimamizi"
+    "admin": "Usimamizi",
+    "classes": "Madarasa"
   },
   "auth": {
     "login": "Ingia",

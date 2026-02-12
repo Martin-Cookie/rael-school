@@ -32,7 +32,8 @@
     "reports": "Statistiky",
     "settings": "Nastavení",
     "logout": "Odhlásit se",
-    "admin": "Administrace"
+    "admin": "Administrace",
+    "classes": "Třídy"
   },
   "auth": {
     "login": "Přihlášení",
