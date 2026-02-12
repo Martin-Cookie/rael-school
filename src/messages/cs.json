@@ -116,7 +116,9 @@
     "description": "Popis",
     "takenAt": "Datum pořízení",
     "filterAll": "Všechny",
-    "noPhotos": "Žádné fotografie"
+    "noPhotos": "Žádné fotografie",
+    "invalidType": "Nepodporovaný formát obrázku. Povolené: JPEG, PNG, WebP, GIF",
+    "tooLarge": "Obrázek je příliš velký (max 10 MB)"
   },
   "vouchers": {
     "title": "Stravenky",

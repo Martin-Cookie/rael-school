@@ -116,7 +116,9 @@
     "description": "Maelezo",
     "takenAt": "Tarehe ya picha",
     "filterAll": "Zote",
-    "noPhotos": "Hakuna picha"
+    "noPhotos": "Hakuna picha",
+    "invalidType": "Aina ya picha haistahimiliwi. Zinazoruhusiwa: JPEG, PNG, WebP, GIF",
+    "tooLarge": "Picha ni kubwa sana (upeo MB 10)"
   },
   "vouchers": {
     "title": "Vocha za chakula",

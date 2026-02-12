@@ -116,7 +116,9 @@
     "description": "Description",
     "takenAt": "Date taken",
     "filterAll": "All",
-    "noPhotos": "No photos"
+    "noPhotos": "No photos",
+    "invalidType": "Unsupported image format. Allowed: JPEG, PNG, WebP, GIF",
+    "tooLarge": "Image is too large (max 10 MB)"
   },
   "vouchers": {
     "title": "Meal vouchers",

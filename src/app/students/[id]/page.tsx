@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
   HandHeart, Stethoscope, Plus, Check, Trash2, Upload,
-  Pencil, Package, Heart, CreditCard
+  Pencil, Package, Heart, CreditCard, Loader2
 } from 'lucide-react'
 import { formatDate, formatDateForInput, formatNumber, calculateAge } from '@/lib/format'
+import { validateImageFile, compressImage } from '@/lib/imageUtils'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -56,6 +57,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [photoFilter, setPhotoFilter] = useState('all')
   const [showAddPhoto, setShowAddPhoto] = useState(false)
   const [newPhoto, setNewPhoto] = useState({ category: 'visit', description: '', takenAt: '', file: null as File | null })
+  const [uploading, setUploading] = useState(false)
   const [showAddPayment, setShowAddPayment] = useState(false)
   const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'CZK', paymentType: '', sponsorId: '', notes: '' })
 
@@ -174,11 +176,16 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }
   async function addPhoto() {
     if (!newPhoto.file) return
+    const validationError = validateImageFile(newPhoto.file)
+    if (validationError) { showMsg('error', t(`photos.${validationError}`)); return }
+    setUploading(true)
     try {
-      const fd = new FormData(); fd.append('file', newPhoto.file); fd.append('category', newPhoto.category); fd.append('description', newPhoto.description); if (newPhoto.takenAt) fd.append('takenAt', newPhoto.takenAt)
+      const compressed = await compressImage(newPhoto.file, 1600, 0.8)
+      const fd = new FormData(); fd.append('file', compressed); fd.append('category', newPhoto.category); fd.append('description', newPhoto.description); if (newPhoto.takenAt) fd.append('takenAt', newPhoto.takenAt)
       const res = await fetch(`/api/students/${id}/photos`, { method: 'POST', body: fd })
       if (res.ok) { setNewPhoto({ category: 'visit', description: '', takenAt: '', file: null }); setShowAddPhoto(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
+    setUploading(false)
   }
   async function deletePhoto(photoId: string) {
     if (!confirm(t('app.confirmDelete'))) return
@@ -255,11 +262,16 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function uploadProfilePhoto(file: File) {
+    const validationError = validateImageFile(file)
+    if (validationError) { showMsg('error', t(`photos.${validationError}`)); return }
+    setUploading(true)
     try {
-      const fd = new FormData(); fd.append('file', file)
+      const compressed = await compressImage(file, 400, 0.8)
+      const fd = new FormData(); fd.append('file', compressed)
       const res = await fetch(`/api/students/${id}/profile-photo`, { method: 'POST', body: fd })
       if (res.ok) { await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
+    setUploading(false)
   }
   async function addSponsorPayment() {
     if (!newPayment.paymentDate || !newPayment.amount || !newPayment.paymentType) return
@@ -338,9 +350,9 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               </div>
             )}
             {canEditData && (
-              <label className="absolute inset-0 rounded-2xl cursor-pointer bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all">
-                <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => { if (e.target.files?.[0]) uploadProfilePhoto(e.target.files[0]) }} />
+              <label className={`absolute inset-0 rounded-2xl cursor-pointer flex items-center justify-center transition-all ${uploading ? 'bg-black/40' : 'bg-black/0 group-hover:bg-black/30'}`}>
+                {uploading ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />}
+                <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={(e) => { if (e.target.files?.[0]) uploadProfilePhoto(e.target.files[0]) }} />
               </label>
             )}
           </div>
@@ -669,7 +681,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 <input type="text" value={newPhoto.description} onChange={(e) => setNewPhoto({ ...newPhoto, description: e.target.value })} placeholder={t('photos.description')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                 <input type="file" accept="image/*" onChange={(e) => setNewPhoto({ ...newPhoto, file: e.target.files?.[0] || null })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
               </div>
-              <div className="flex gap-2"><button onClick={addPhoto} disabled={!newPhoto.file} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">{t('photos.upload')}</button><button onClick={() => setShowAddPhoto(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+              <div className="flex gap-2"><button onClick={addPhoto} disabled={!newPhoto.file || uploading} className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">{uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('app.loading')}</> : t('photos.upload')}</button><button onClick={() => setShowAddPhoto(false)} disabled={uploading} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
             </div>
           )}
           {filteredPhotos.length > 0 ? (
