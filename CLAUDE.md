@@ -4,11 +4,11 @@
 
 1. **Udělej změnu kódu** podle pokynu uživatele
 2. **Commitni a pushni** na GitHub (aby si uživatel mohl stáhnout změny)
-3. **Pošli uživateli příkazy** pro aktualizaci na lokálním počítači:
+3. **Pošli uživateli jeden kombinovaný příkaz** pro aktualizaci a restart na lokálním počítači:
    ```bash
-   git pull origin <aktuální-branch>
+   git pull origin <aktuální-branch> && npm run dev
    ```
-   A připomeň restart dev serveru (Ctrl+C a `npm run dev`).
+   (Uživatel si sám předtím ukončí server pomocí Ctrl+C.)
 4. **Počkej** až uživatel otestuje změny na lokále
 5. Pokud něco není v pořádku, **oprav a znovu pushni**
 
