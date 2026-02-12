@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Search, Plus, User, Heart } from 'lucide-react'
 import { calculateAge } from '@/lib/format'
+import Pagination from '@/components/Pagination'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -15,7 +16,9 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
   const [locale, setLocale] = useState<Locale>('cs')
+  const PAGE_SIZE = 12
 
   const t = createTranslator(msgs[locale])
 
@@ -28,6 +31,7 @@ export default function StudentsPage() {
   }, [])
 
   useEffect(() => {
+    setCurrentPage(1)
     const timer = setTimeout(() => {
       fetch(`/api/students?search=${encodeURIComponent(search)}`)
         .then(r => r.json()).then(data => { setStudents(data.students || []); setLoading(false) })
@@ -35,6 +39,9 @@ export default function StudentsPage() {
     }, 300)
     return () => clearTimeout(timer)
   }, [search])
+
+  const paginatedStudents = students.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
 
   return (
     <div>
@@ -53,32 +60,35 @@ export default function StudentsPage() {
       ) : students.length === 0 ? (
         <div className="text-center py-12 text-gray-500"><User className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p>{t('app.noData')}</p></div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {students.map((student) => (
-            <Link key={student.id} href={`/students/${student.id}`} className="bg-white rounded-xl border border-gray-200 p-5 card-hover block">
-              <div className="flex items-start gap-4">
-                {student.profilePhoto ? (
-                  <img src={student.profilePhoto} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-200" />
-                ) : (
-                  <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <User className="w-6 h-6 text-primary-600" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-gray-900 truncate">{student.firstName} {student.lastName}</h3>
-                  </div>
-                  <p className="text-sm text-gray-500 mb-2">{student.studentNo}</p>
-                  <div className="flex flex-wrap gap-2 text-xs">
-                    {student.className && <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">{student.className}</span>}
-                    {student.dateOfBirth && <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{calculateAge(student.dateOfBirth)} {locale === 'cs' ? 'let' : locale === 'sw' ? 'miaka' : 'years'}</span>}
-                    {student._count?.needs > 0 && <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded-full flex items-center gap-1"><Heart className="w-3 h-3" />{student._count.needs}</span>}
-                    {student.sponsorships?.length > 0 && <span className="bg-accent-50 text-accent-700 px-2 py-0.5 rounded-full">{student.sponsorships[0].sponsor.firstName} {student.sponsorships[0].sponsor.lastName}</span>}
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {paginatedStudents.map((student) => (
+              <Link key={student.id} href={`/students/${student.id}`} className="bg-white rounded-xl border border-gray-200 p-5 card-hover block">
+                <div className="flex items-start gap-4">
+                  {student.profilePhoto ? (
+                    <img src={student.profilePhoto} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-200" />
+                  ) : (
+                    <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <User className="w-6 h-6 text-primary-600" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-gray-900 truncate">{student.firstName} {student.lastName}</h3>
+                    </div>
+                    <p className="text-sm text-gray-500 mb-2">{student.studentNo}</p>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      {student.className && <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">{student.className}</span>}
+                      {student.dateOfBirth && <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{calculateAge(student.dateOfBirth)} {locale === 'cs' ? 'let' : locale === 'sw' ? 'miaka' : 'years'}</span>}
+                      {student._count?.needs > 0 && <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded-full flex items-center gap-1"><Heart className="w-3 h-3" />{student._count.needs}</span>}
+                      {student.sponsorships?.length > 0 && <span className="bg-accent-50 text-accent-700 px-2 py-0.5 rounded-full">{student.sponsorships[0].sponsor.firstName} {student.sponsorships[0].sponsor.lastName}</span>}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
+          <Pagination currentPage={currentPage} totalItems={students.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
         </div>
       )}
     </div>

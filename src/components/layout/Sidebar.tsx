@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Users, Heart, CreditCard, BarChart3,
-  LogOut, Menu, X, Globe, Settings
+  LogOut, Menu, X, Globe, Settings, GraduationCap
 } from 'lucide-react'
 
 import cs from '@/messages/cs.json'
@@ -49,6 +49,7 @@ export default function Sidebar({ user }: SidebarProps) {
   const navItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { href: '/students', icon: Users, label: t('nav.students') },
+    { href: '/classes', icon: GraduationCap, label: t('nav.classes') },
     { href: '/sponsors', icon: Heart, label: t('nav.sponsors'), roles: ['ADMIN', 'MANAGER', 'VOLUNTEER'] },
     { href: '/payments', icon: CreditCard, label: t('nav.payments'), roles: ['ADMIN', 'MANAGER'] },
     { href: '/reports', icon: BarChart3, label: t('nav.reports'), roles: ['ADMIN', 'MANAGER'] },

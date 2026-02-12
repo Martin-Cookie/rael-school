@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, ChevronRight, ArrowLeft, Stethoscope, CreditCard } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
 import { createTranslator, type Locale } from '@/lib/i18n'
-import { useRouter } from 'next/navigation'
+
+
 
 const msgs: Record<string, any> = { cs, en, sw }
 
@@ -23,7 +24,6 @@ function CodelistSection({
   onMove,
   placeholder,
   t,
-  defaultOpen = false,
 }: {
   title: string
   icon: any
@@ -35,23 +35,27 @@ function CodelistSection({
   onMove: (id: string, dir: 'up' | 'down') => void
   placeholder: string
   t: (key: string) => string
-  defaultOpen?: boolean
 }) {
-  const [open, setOpen] = useState(defaultOpen)
+  const [open, setOpen] = useState(false)
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      {/* Collapsible header */}
+    <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden">
+      {/* Tile - clickable card */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 p-5 hover:bg-gray-50 transition-colors"
+        className="w-full p-5 flex items-center gap-4 text-left"
       >
-        <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${open ? 'rotate-90' : ''}`} />
-        <Icon className="w-5 h-5 text-primary-600" />
-        <h2 className="text-lg font-semibold text-gray-900 flex-1 text-left">{title}</h2>
-        <span className="text-sm text-gray-400 font-medium">{items.length}</span>
+        <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+          <Icon className="w-6 h-6 text-primary-600" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 truncate">{title}</h3>
+          <p className="text-sm text-gray-500">{items.length} {items.length === 1 ? 'položka' : items.length >= 2 && items.length <= 4 ? 'položky' : 'položek'}</p>
+        </div>
+        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
+      {/* Expanded content */}
       {open && (
         <div className="px-5 pb-5 border-t border-gray-100 pt-4">
           {/* Add new item */}
@@ -72,7 +76,7 @@ function CodelistSection({
             </button>
           </div>
 
-          {/* List */}
+          {/* Item list */}
           {items.length > 0 ? (
             <div className="space-y-2">
               {items.map((item, idx) => (
@@ -117,7 +121,6 @@ function CodelistSection({
 }
 
 export default function AdminPage() {
-  const router = useRouter()
   const [classrooms, setClassrooms] = useState<CodelistItem[]>([])
   const [healthTypes, setHealthTypes] = useState<CodelistItem[]>([])
   const [paymentTypes, setPaymentTypes] = useState<CodelistItem[]>([])
@@ -209,12 +212,13 @@ export default function AdminPage() {
       {message && <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>{message.text}</div>}
 
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.push("/dashboard")} className="p-2 rounded-lg hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
-        <Settings className="w-6 h-6 text-gray-600" />
+        <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
+          <Settings className="w-5 h-5 text-primary-600" />
+        </div>
         <h1 className="text-2xl font-bold text-gray-900">{t('nav.admin')}</h1>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <CodelistSection
           title={t('admin.classrooms')}
           icon={GraduationCap}
@@ -226,7 +230,6 @@ export default function AdminPage() {
           onMove={classroomH.move}
           placeholder={t('admin.newClassName')}
           t={t}
-          defaultOpen={true}
         />
 
         <CodelistSection

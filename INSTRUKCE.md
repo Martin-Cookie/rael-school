@@ -1,106 +1,82 @@
-# 🚀 INSTRUKCE: Jak nahrát projekt na Mac a spustit ho
+# Rael School — Informační systém
 
-## Co jsem vytvořil?
+## Popis projektu
 
-Kompletní Fázi 1 systému Rael School:
-- ✅ Databáze se všemi tabulkami (studenti, sponzoři, stravenky, vybavení, potřeby, zdravotní prohlídky, platby)
-- ✅ Přihlašovací systém s 4 rolemi (Admin, Manager, Sponzor, Dobrovolník)
-- ✅ Dashboard s přehledem statistik
-- ✅ Seznam studentů s vyhledáváním
-- ✅ Detail studenta se záložkami (osobní údaje, fotky, stravenky, sponzoři, zdravotní prohlídky)
-- ✅ Přidání nového studenta
-- ✅ Režim úprav s potvrzovacím dialogem
-- ✅ Trojjazyčnost (čeština, angličtina, svahilština)
-- ✅ 5 testovacích studentů s kompletními daty
-- ✅ Tmavý, dobře čitelný text
-- ✅ Formátování čísel na tisíce
+Webový informační systém pro správu školy Rael v Keni. Sleduje studenty, sponzory, stravenky, zdravotní prohlídky a platby.
 
----
+## Technologie
 
-## POSTUP INSTALACE (krok za krokem)
+- **Framework:** Next.js 14 (React 18)
+- **Databáze:** SQLite + Prisma ORM
+- **Styling:** Tailwind CSS
+- **Jazyk:** TypeScript
+- **Autentizace:** JWT + bcryptjs
+- **Jazyky rozhraní:** čeština, angličtina, svahilština
 
-### Krok 1: Stáhni soubory z tohoto chatu
+## Implementované funkce
 
-V tomto chatu stáhni soubor **rael-school-files.tar.gz** (tlačítko stažení).
+### Fáze 1 — Jádro systému
+- Databáze se všemi tabulkami (studenti, sponzoři, stravenky, vybavení, potřeby, zdravotní prohlídky, platby)
+- Přihlašovací systém se 4 rolemi (Admin, Manager, Sponzor, Dobrovolník)
+- Dashboard s přehledem statistik
+- Seznam studentů s vyhledáváním
+- Detail studenta se záložkami (osobní údaje, fotky, stravenky, sponzoři, zdravotní prohlídky, platby)
+- Přidání nového studenta (s výběrem třídy z číselníku)
+- Režim úprav s potvrzovacím dialogem
+- Trojjazyčnost (čeština, angličtina, svahilština)
+- Formátování čísel na tisíce
 
-### Krok 2: Rozbal soubory do projektu
+### Fáze 2 — Rozšíření
+- Stránka Sponzoři — seznam s vyhledáváním, přidání, editace, aktivace/deaktivace
+- Stránka Platby — záložky sponzorské platby a stravenky, CRUD operace
+- Stránka Třídy — přehled tříd se studenty, řazení
+- Stránka Statistiky — stravenky na studenta, platby od sponzorů, filtrování
+- Stránka Administrace — číselníky tříd, typů prohlídek a typů plateb (CRUD, řazení)
+- Stránkování (pagination) na stránkách Studenti (12/str), Sponzoři (10/str), Platby (15/str)
+- Znovupoužitelná komponenta `Pagination` s překlady ve 3 jazycích
 
-Otevři **Terminál** a zadej tyto příkazy JEDEN PO DRUHÉM:
+## Struktura projektu
 
-```bash
-# Přesuň se do složky projektu
-cd ~/Documents/rael-school
-
-# Smaž stávající README (nahradíme ho novým)
-rm -f README.md
+```
+src/
+  app/
+    api/              # API routes (students, sponsors, payments, dashboard, statistics, admin)
+    students/         # Seznam studentů, detail, nový student
+    sponsors/         # Seznam sponzorů
+    payments/         # Platby (sponzorské + stravenky)
+    dashboard/        # Přehledový dashboard
+    classes/          # Přehled tříd
+    reports/          # Statistiky
+    admin/            # Administrace číselníků
+    login/            # Přihlášení
+  components/
+    layout/           # Sidebar, Header
+    Pagination.tsx    # Znovupoužitelná paginace
+  lib/                # DB, auth, formátování, i18n
+  messages/           # Překlady (cs.json, en.json, sw.json)
+prisma/
+  schema.prisma       # Datový model (13 tabulek)
+  seed.ts             # Testovací data
 ```
 
-### Krok 3: Zkopíruj soubory
+## Instalace a spuštění
 
-Budu ti muset soubory předat jinak — viz alternativní postup níže.
-
-### ALTERNATIVNÍ POSTUP (jednodušší):
-
-Protože přesun souborů ze stažených je komplikovaný, udělej toto:
-
-**1. Smaž aktuální složku a znovu naklonuj:**
 ```bash
-cd ~/Documents
-rm -rf rael-school
-git clone https://github.com/martinkoci/rael-school.git
-cd rael-school
-```
-
-**2. V tomto chatu ti dám sadu příkazů, které vytvoří všechny soubory přímo v Terminálu.**
-
-Ale nejprve — nejjednodušší postup je takový:
-
----
-
-## ⭐ NEJJEDNODUŠŠÍ POSTUP — GIT PUSH Z MÉHO KÓDU
-
-Já vytvořím kompletní archiv, ty ho rozbalíš a pushneš na GitHub.
-
-### Krok 1: Stáhni archiv (ze souboru který ti připravím)
-
-### Krok 2: V Terminálu:
-```bash
-cd ~/Documents/rael-school
-
-# Zkopíruj všechny soubory z archivu sem
-# (instrukce budou záviset na formátu)
-
-# Nainstaluj závislosti
 npm install
-
-# Nastav databázi
-npm run setup
-
-# Spusť aplikaci
-npm run dev
+npm run setup        # Vytvoří databázi a naplní testovacími daty
+npm run dev          # Spustí vývojový server na http://localhost:3000
 ```
 
-### Krok 3: Otevři prohlížeč
-Jdi na **http://localhost:3000**
+## Testovací přihlášení
 
-Měla by se zobrazit přihlašovací stránka. Přihlas se jako:
-- **Email:** `admin@rael.school`
-- **Password:** `admin123`
+| Role         | Email                  | Heslo       |
+|--------------|------------------------|-------------|
+| Admin        | admin@rael.school      | admin123    |
+| Manager      | manager@rael.school    | manager123  |
+| Sponzor      | sponsor@rael.school    | sponsor123  |
+| Dobrovolník  | volunteer@rael.school  | volunteer123|
 
-### Krok 4: Nahraj na GitHub
-```bash
-git add .
-git commit -m "Phase 1: Initial project setup with auth, students, dashboard"
-git push
-```
+## Jak zastavit a znovu spustit
 
----
-
-## Jak zastavit aplikaci?
-V Terminálu stiskni **Ctrl + C**
-
-## Jak znovu spustit?
-```bash
-cd ~/Documents/rael-school
-npm run dev
-```
+- Zastavit: **Ctrl + C** v terminálu
+- Spustit znovu: `npm run dev`

@@ -128,7 +128,7 @@ export default function DashboardPage() {
             {sortData(students, sortCol).map((s: any) => (
               <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                 <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
-                <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
+                <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                 <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                 <td className="py-3 px-3 text-sm text-gray-900">{s.className || '-'}</td>
                 <td className="py-3 px-3 text-sm text-gray-900">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                 <td className="py-3 px-3 text-sm text-gray-600">{sp.phone || '-'}</td>
                 <td className="py-3 px-3 text-sm">
                   {sp.sponsorships?.length > 0 ? <div className="flex flex-wrap gap-1">{sp.sponsorships.map((s: any, i: number) => (
-                    <Link key={i} href={`/students/${s.student?.id || ''}`} className="badge badge-green hover:opacity-80">{s.student.firstName} {s.student.lastName}</Link>
+                    <Link key={i} href={`/students/${s.student?.id || ''}?from=/dashboard`} className="badge badge-green hover:opacity-80">{s.student.firstName} {s.student.lastName}</Link>
                   ))}</div> : <span className="text-gray-400">-</span>}
                 </td>
               </tr>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
                       <td className="py-3 px-3 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
                       <td className="py-3 px-3 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{p.paymentType === 'tuition' ? t('sponsorPayments.tuition') : p.paymentType === 'medical' ? t('sponsorPayments.medical') : t('sponsorPayments.other')}</span></td>
                       <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
-                      <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
+                      <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}?from=/dashboard`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
                       <td className="py-3 px-3 text-sm text-gray-700">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
                       <td className="py-3 px-3 text-sm text-gray-500">{p.notes || '-'}</td>
                     </tr>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
                       <td className="py-3 px-3 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
                       <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, 'KES')}</td>
                       <td className="py-3 px-3 text-sm text-gray-900">{formatNumber(v.count)}</td>
-                      <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
+                      <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}?from=/dashboard`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
                       <td className="py-3 px-3 text-sm text-gray-700">{v.donorName || '-'}</td>
                       <td className="py-3 px-3 text-sm text-gray-500">{v.notes || '-'}</td>
                     </tr>
@@ -267,7 +267,7 @@ export default function DashboardPage() {
             {sortData(studentsWithNeeds, sortCol).map((s: any) => (
               <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                 <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
-                <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
+                <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                 <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                 <td className="py-3 px-3 text-sm text-gray-900">{s.className || '-'}</td>
                 <td className="py-3 px-3 text-sm"><div className="space-y-1">{s.needs.map((n: any) => <div key={n.id} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span><span className="text-gray-700">{n.description}</span></div>)}</div></td>
@@ -308,7 +308,7 @@ export default function DashboardPage() {
                   {sortData(students.filter((s: any) => s.className === selectedClass), sortCol).map((s: any) => (
                     <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                       <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
-                      <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
+                      <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                       <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                       <td className="py-3 px-3 text-sm text-gray-900">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
                       <td className="py-3 px-3 text-sm text-right">{s._count.needs > 0 ? <span className="badge badge-red">{s._count.needs}</span> : <span className="text-gray-400">0</span>}</td>

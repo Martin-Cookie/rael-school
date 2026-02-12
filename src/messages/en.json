@@ -32,7 +32,8 @@
     "reports": "Reports",
     "settings": "Settings",
     "logout": "Logout",
-    "admin": "Administration"
+    "admin": "Administration",
+    "classes": "Classes"
   },
   "auth": {
     "login": "Login",
@@ -195,6 +196,24 @@
     "paymentTypes": "Sponsor Payment Types",
     "newPaymentTypeName": "New payment type name"
   },
+  "statistics": {
+    "title": "Statistics",
+    "voucherPerStudent": "Vouchers per student",
+    "purchased": "Purchased",
+    "used": "Used",
+    "available": "Available",
+    "total": "Total",
+    "sponsorPayments": "Sponsor payments",
+    "selectPaymentType": "Select payment type",
+    "allTypes": "All types",
+    "recorded": "Recorded",
+    "notRecorded": "Not recorded",
+    "amount": "Amount",
+    "hasPayment": "Yes",
+    "noPayment": "No",
+    "studentsWithPayment": "with payment",
+    "studentsWithoutPayment": "without payment"
+  },
   "sponsorPage": {
     "addSponsor": "Add Sponsor",
     "requiredFields": "Please fill in first name, last name and email",
@@ -209,5 +228,11 @@
     "searchExisting": "Search existing sponsor",
     "searchByName": "Search by last name...",
     "orAddNew": "or add new"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "of": "of",
+    "prev": "Previous",
+    "next": "Next"
   }
 }

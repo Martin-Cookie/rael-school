@@ -14,13 +14,14 @@ import sw from '@/messages/sw.json'
 import { createTranslator, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
-const CURRENCIES = ['KES', 'CZK', 'USD', 'EUR']
+const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
 type Tab = 'personal' | 'equipment' | 'needs' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments'
 function fmtCurrency(amount: number, currency: string): string { return `${formatNumber(amount)} ${currency}` }
 
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
   const id = params.id
   const router = useRouter()
+  const [backUrl, setBackUrl] = useState('/students')
   const [student, setStudent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('personal')
@@ -56,9 +57,15 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [showAddPhoto, setShowAddPhoto] = useState(false)
   const [newPhoto, setNewPhoto] = useState({ category: 'visit', description: '', takenAt: '', file: null as File | null })
   const [showAddPayment, setShowAddPayment] = useState(false)
-  const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'KES', paymentType: '', sponsorId: '', notes: '' })
+  const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'CZK', paymentType: '', sponsorId: '', notes: '' })
 
   const t = createTranslator(msgs[locale])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const from = params.get('from')
+    if (from) setBackUrl(from)
+  }, [])
 
   useEffect(() => {
     const saved = localStorage.getItem('rael-locale') as Locale
@@ -84,12 +91,9 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     try { const res = await fetch('/api/admin/classrooms'); const d = await res.json(); setClassrooms(d.classrooms || []) } catch {}
   }
 
-
   async function fetchPaymentTypes() {
     try { const res = await fetch('/api/admin/payment-types'); const d = await res.json(); setPaymentTypes(d.paymentTypes || []) } catch {}
   }
-
-
 
   async function fetchStudent() {
     try {
@@ -119,7 +123,6 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   function cancelEdit() { setEditData(student); setEditEquipment(student.equipment?.map((eq: any) => ({ ...eq })) || []); setEditMode(false) }
   function changeCurrency(c: string) { setCurrency(c); localStorage.setItem('rael-currency', c) }
 
-  // Get sponsor names for donor dropdown
   const sponsorNames = student?.sponsorships?.filter((s: any) => s.isActive).map((s: any) => `${s.sponsor.firstName} ${s.sponsor.lastName}`) || []
   const defaultDonor = sponsorNames[0] || ''
 
@@ -192,7 +195,6 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { setSponsorResults([]) }
   }
 
-
   async function removeSponsor(sponsorshipId: string) {
     if (!confirm(t('app.confirmDelete'))) return
     try {
@@ -263,7 +265,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     if (!newPayment.paymentDate || !newPayment.amount || !newPayment.paymentType) return
     try {
       const res = await fetch(`/api/students/${id}/sponsor-payments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newPayment) })
-      if (res.ok) { setNewPayment({ paymentDate: '', amount: '', currency: 'KES', paymentType: '', sponsorId: '', notes: '' }); setShowAddPayment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+      if (res.ok) { setNewPayment({ paymentDate: '', amount: '', currency: 'CZK', paymentType: '', sponsorId: '', notes: '' }); setShowAddPayment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteSponsorPayment(paymentId: string) {
@@ -306,154 +308,263 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   return (
     <div>
-      {showConfirm && <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"><div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl"><h3 className="text-lg font-semibold text-gray-900 mb-2">{t('app.confirm')}</h3><p className="text-gray-600 mb-6">{t('app.confirmSave')}</p><div className="flex gap-3"><button onClick={() => setShowConfirm(false)} className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">{t('app.cancel')}</button><button onClick={handleSave} className="flex-1 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 font-medium">{t('app.save')}</button></div></div></div>}
+      {/* Confirm dialog */}
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('app.confirm')}</h3>
+            <p className="text-gray-600 mb-6">{t('app.confirmSave')}</p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowConfirm(false)} className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">{t('app.cancel')}</button>
+              <button onClick={handleSave} className="flex-1 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 font-medium">{t('app.save')}</button>
+            </div>
+          </div>
+        </div>
+      )}
       {message && <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>{message.text}</div>}
 
-      {/* Header with profile photo */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="flex items-center gap-4">
-          <button onClick={() => router.push('/students')} className="p-2 rounded-lg hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
-          <div className="relative group">
+      {/* ===== HERO HEADER ===== */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-sm">
+        <div className="flex items-start gap-5">
+          <button onClick={() => router.push(backUrl)} className="p-2 rounded-lg hover:bg-gray-100 mt-1 flex-shrink-0">
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </button>
+          <div className="relative group flex-shrink-0">
             {student.profilePhoto ? (
-              <img src={student.profilePhoto} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-gray-200" />
+              <img src={student.profilePhoto} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-gray-100 shadow-sm" />
             ) : (
-              <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center border-2 border-gray-200"><User className="w-7 h-7 text-primary-600" /></div>
+              <div className="w-20 h-20 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl flex items-center justify-center border-2 border-primary-100">
+                <User className="w-10 h-10 text-primary-400" />
+              </div>
             )}
             {canEditData && (
-              <label className="absolute inset-0 rounded-full cursor-pointer bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all">
+              <label className="absolute inset-0 rounded-2xl cursor-pointer bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all">
                 <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                 <input type="file" accept="image/*" className="hidden" onChange={(e) => { if (e.target.files?.[0]) uploadProfilePhoto(e.target.files[0]) }} />
               </label>
             )}
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{student.firstName} {student.lastName}</h1>
-            <p className="text-sm text-gray-500">{student.studentNo} • {student.className || '-'} • {calculateAge(student.dateOfBirth)} {locale === 'cs' ? 'let' : locale === 'sw' ? 'miaka' : 'years'}</p>
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{student.firstName} {student.lastName}</h1>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-700">{student.studentNo}</span>
+                  {student.className && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-primary-50 text-xs font-medium text-primary-700">{student.className}</span>}
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 text-xs font-medium text-blue-700">{calculateAge(student.dateOfBirth)} {locale === 'cs' ? 'let' : locale === 'sw' ? 'miaka' : 'years'}</span>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 text-xs font-medium text-purple-700">{student.gender === 'M' ? t('student.male') : student.gender === 'F' ? t('student.female') : '-'}</span>
+                </div>
+              </div>
+              {canEditData && (activeTab === 'personal' || activeTab === 'equipment') && (
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {editMode ? (
+                    <>
+                      <button onClick={cancelEdit} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"><X className="w-4 h-4" /> {t('app.cancel')}</button>
+                      <button onClick={() => setShowConfirm(true)} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium disabled:opacity-50"><Save className="w-4 h-4" /> {saving ? '...' : t('app.save')}</button>
+                    </>
+                  ) : (
+                    <button onClick={() => { setEditMode(true); ensureEquipmentItems() }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"><Edit3 className="w-4 h-4" /> {t('app.edit')}</button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        {canEditData && (
-          <div className="flex items-center gap-2">
-            {editMode ? (
-              <>
-                <button onClick={cancelEdit} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"><X className="w-4 h-4" /> {t('app.cancel')}</button>
-                <button onClick={() => setShowConfirm(true)} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium disabled:opacity-50"><Save className="w-4 h-4" /> {saving ? '...' : t('app.save')}</button>
-              </>
-            ) : (
-              <button onClick={() => { setEditMode(true); ensureEquipmentItems() }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"><Edit3 className="w-4 h-4" /> {t('app.edit')}</button>
-            )}
-          </div>
-        )}
-      </div>
-      {editMode && <div className="mb-4 px-4 py-2 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800 font-medium">✏️ {t('app.editMode')}</div>}
 
-      {/* Tabs */}
-      <div className="flex gap-1 mb-6 overflow-x-auto border-b border-gray-200 pb-px">
+        {/* Quick stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-gray-100">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent-50">
+            <HandHeart className="w-5 h-5 text-accent-600 flex-shrink-0" />
+            <div>
+              <p className="text-xs text-accent-600 font-medium">{t('student.tabs.sponsors')}</p>
+              <p className="text-lg font-bold text-accent-900">{student.sponsorships?.filter((s: any) => s.isActive).length || 0}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50">
+            <Heart className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <div>
+              <p className="text-xs text-red-600 font-medium">{t('needs.title')}</p>
+              <p className="text-lg font-bold text-red-900">{student.needs?.filter((n: any) => !n.isFulfilled).length || 0}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-50">
+            <Ticket className="w-5 h-5 text-blue-500 flex-shrink-0" />
+            <div>
+              <p className="text-xs text-blue-600 font-medium">{t('vouchers.available')}</p>
+              <p className="text-lg font-bold text-blue-900">{formatNumber(available)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-green-50">
+            <Stethoscope className="w-5 h-5 text-green-500 flex-shrink-0" />
+            <div>
+              <p className="text-xs text-green-600 font-medium">{t('student.tabs.health')}</p>
+              <p className="text-lg font-bold text-green-900">{student.healthChecks?.length || 0}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {editMode && <div className="mb-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800 font-medium">✏️ {t('app.editMode')}</div>}
+
+      {/* ===== TABS - pill style ===== */}
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1">
         {tabs.map((tab) => (
-          <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-2 px-3 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${activeTab === tab.key ? 'border-primary-600 text-primary-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+          <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.key ? 'bg-primary-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'}`}>
             <tab.icon className="w-4 h-4" /> {tab.label}
           </button>
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      {/* ===== TAB CONTENT ===== */}
 
-        {/* ===== PERSONAL ===== */}
-        {activeTab === 'personal' && (
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('student.tabs.personal')}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label={t('student.firstName')} value={editData.firstName} editMode={editMode} onChange={(v) => setEditData({ ...editData, firstName: v })} />
-                <Field label={t('student.lastName')} value={editData.lastName} editMode={editMode} onChange={(v) => setEditData({ ...editData, lastName: v })} />
-                <Field label={t('student.dateOfBirth')} value={formatDateForInput(editData.dateOfBirth)} type="date" editMode={editMode} onChange={(v) => setEditData({ ...editData, dateOfBirth: v })} />
-                <SelectField label={t('student.gender')} value={editData.gender || ''} editMode={editMode} options={[{ value: '', label: '-' }, { value: 'M', label: t('student.male') }, { value: 'F', label: t('student.female') }]} displayValue={student.gender === 'M' ? t('student.male') : student.gender === 'F' ? t('student.female') : '-'} onChange={(v) => setEditData({ ...editData, gender: v })} />
-                <SelectField label={t('student.className')} value={editData.className || ''} editMode={editMode} options={[{ value: '', label: '-' }, ...classrooms.map((c: any) => ({ value: c.name, label: c.name }))]} displayValue={student.className || '-'} onChange={(v) => setEditData({ ...editData, className: v })} />
-                <Field label={t('student.healthStatus')} value={editData.healthStatus} editMode={editMode} onChange={(v) => setEditData({ ...editData, healthStatus: v })} />
-              </div>
+      {/* ===== PERSONAL ===== */}
+      {activeTab === 'personal' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Personal info card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="p-2 bg-primary-50 rounded-lg"><User className="w-4 h-4 text-primary-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('student.tabs.personal')}</h3>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('student.family.title')}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label={t('student.family.motherName')} value={editData.motherName} editMode={editMode} onChange={(v) => setEditData({ ...editData, motherName: v })} />
-                <SelectField label={t('student.family.motherAlive')} value={editData.motherAlive === null ? '' : String(editData.motherAlive)} editMode={editMode} options={[{ value:'',label:'-' },{ value:'true',label:t('app.yes') },{ value:'false',label:t('app.no') }]} displayValue={student.motherAlive === true ? t('app.yes') : student.motherAlive === false ? t('app.no') : '-'} onChange={(v) => setEditData({ ...editData, motherAlive: v === '' ? null : v === 'true' })} />
-                <Field label={t('student.family.fatherName')} value={editData.fatherName} editMode={editMode} onChange={(v) => setEditData({ ...editData, fatherName: v })} />
-                <SelectField label={t('student.family.fatherAlive')} value={editData.fatherAlive === null ? '' : String(editData.fatherAlive)} editMode={editMode} options={[{ value:'',label:'-' },{ value:'true',label:t('app.yes') },{ value:'false',label:t('app.no') }]} displayValue={student.fatherAlive === true ? t('app.yes') : student.fatherAlive === false ? t('app.no') : '-'} onChange={(v) => setEditData({ ...editData, fatherAlive: v === '' ? null : v === 'true' })} />
-                <div className="md:col-span-2"><Field label={t('student.family.siblings')} value={editData.siblings} editMode={editMode} onChange={(v) => setEditData({ ...editData, siblings: v })} /></div>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('student.notes')}</h3>
-              {editMode ? <textarea value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={4} className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none resize-none" /> : <p className="text-gray-700 whitespace-pre-wrap">{student.notes || '-'}</p>}
+            <div className="space-y-4">
+              <Field label={t('student.firstName')} value={editData.firstName} editMode={editMode} onChange={(v) => setEditData({ ...editData, firstName: v })} />
+              <Field label={t('student.lastName')} value={editData.lastName} editMode={editMode} onChange={(v) => setEditData({ ...editData, lastName: v })} />
+              <Field label={t('student.dateOfBirth')} value={formatDateForInput(editData.dateOfBirth)} type="date" editMode={editMode} onChange={(v) => setEditData({ ...editData, dateOfBirth: v })} />
+              <SelectField label={t('student.gender')} value={editData.gender || ''} editMode={editMode} options={[{ value: '', label: '-' }, { value: 'M', label: t('student.male') }, { value: 'F', label: t('student.female') }]} displayValue={student.gender === 'M' ? t('student.male') : student.gender === 'F' ? t('student.female') : '-'} onChange={(v) => setEditData({ ...editData, gender: v })} />
+              <SelectField label={t('student.className')} value={editData.className || ''} editMode={editMode} options={[{ value: '', label: '-' }, ...classrooms.map((c: any) => ({ value: c.name, label: c.name }))]} displayValue={student.className || '-'} onChange={(v) => setEditData({ ...editData, className: v })} />
+              <Field label={t('student.healthStatus')} value={editData.healthStatus} editMode={editMode} onChange={(v) => setEditData({ ...editData, healthStatus: v })} />
             </div>
           </div>
-        )}
 
-        {/* ===== EQUIPMENT ===== */}
-        {activeTab === 'equipment' && (
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('equipment.title')}</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full"><thead><tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('equipment.type')}</th>
-                <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('equipment.condition')}</th>
-                <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('equipment.acquiredAt')}</th>
-              </tr></thead><tbody>
-                {editMode ? editEquipment.map((eq: any, idx: number) => (
-                  <tr key={idx} className="border-b border-gray-50">
-                    <td className="py-3 px-3 text-sm text-gray-900 font-medium">{eqLabel(eq.type)}</td>
-                    <td className="py-3 px-3"><select value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none"><option value="new">{t('equipment.new')}</option><option value="satisfactory">{t('equipment.satisfactory')}</option><option value="poor">{t('equipment.poor')}</option></select></td>
-                    <td className="py-3 px-3"><input type="date" value={formatDateForInput(eq.acquiredAt)} onChange={(e) => updateEquipment(idx, 'acquiredAt', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" /></td>
-                  </tr>
-                )) : student.equipment?.length > 0 ? student.equipment.map((eq: any) => (
-                  <tr key={eq.id} className="border-b border-gray-50">
-                    <td className="py-3 px-3 text-sm text-gray-900 font-medium">{eqLabel(eq.type)}</td>
-                    <td className="py-3 px-3 text-sm">{condBadge(eq.condition)}</td>
-                    <td className="py-3 px-3 text-sm text-gray-900">{formatDate(eq.acquiredAt, locale)}</td>
-                  </tr>
-                )) : <tr><td colSpan={3} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
-              </tbody></table>
+          {/* Family card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="p-2 bg-accent-50 rounded-lg"><Heart className="w-4 h-4 text-accent-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('student.family.title')}</h3>
+            </div>
+            <div className="space-y-4">
+              <Field label={t('student.family.motherName')} value={editData.motherName} editMode={editMode} onChange={(v) => setEditData({ ...editData, motherName: v })} />
+              <SelectField label={t('student.family.motherAlive')} value={editData.motherAlive === null ? '' : String(editData.motherAlive)} editMode={editMode} options={[{ value:'',label:'-' },{ value:'true',label:t('app.yes') },{ value:'false',label:t('app.no') }]} displayValue={student.motherAlive === true ? t('app.yes') : student.motherAlive === false ? t('app.no') : '-'} onChange={(v) => setEditData({ ...editData, motherAlive: v === '' ? null : v === 'true' })} />
+              <Field label={t('student.family.fatherName')} value={editData.fatherName} editMode={editMode} onChange={(v) => setEditData({ ...editData, fatherName: v })} />
+              <SelectField label={t('student.family.fatherAlive')} value={editData.fatherAlive === null ? '' : String(editData.fatherAlive)} editMode={editMode} options={[{ value:'',label:'-' },{ value:'true',label:t('app.yes') },{ value:'false',label:t('app.no') }]} displayValue={student.fatherAlive === true ? t('app.yes') : student.fatherAlive === false ? t('app.no') : '-'} onChange={(v) => setEditData({ ...editData, fatherAlive: v === '' ? null : v === 'true' })} />
+              <Field label={t('student.family.siblings')} value={editData.siblings} editMode={editMode} onChange={(v) => setEditData({ ...editData, siblings: v })} />
             </div>
           </div>
-        )}
 
-        {/* ===== NEEDS ===== */}
-        {activeTab === 'needs' && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t('needs.title')}</h3>
-              {canEditData && <button onClick={() => setShowAddNeed(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('needs.addNeed')}</button>}
+          {/* Notes card - full width */}
+          <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="p-2 bg-blue-50 rounded-lg"><Edit3 className="w-4 h-4 text-blue-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('student.notes')}</h3>
             </div>
-            {showAddNeed && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200"><div className="flex gap-2">
+            {editMode ? <textarea value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={4} className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none resize-none" /> : <p className="text-gray-700 whitespace-pre-wrap">{student.notes || '-'}</p>}
+          </div>
+        </div>
+      )}
+
+      {/* ===== EQUIPMENT ===== */}
+      {activeTab === 'equipment' && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="p-2 bg-primary-50 rounded-lg"><Package className="w-4 h-4 text-primary-600" /></div>
+            <h3 className="text-base font-semibold text-gray-900">{t('equipment.title')}</h3>
+          </div>
+          {editMode ? (
+            <div className="space-y-3">
+              {editEquipment.map((eq: any, idx: number) => (
+                <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                  <span className="text-sm font-medium text-gray-900 sm:w-32">{eqLabel(eq.type)}</span>
+                  <select value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                    <option value="new">{t('equipment.new')}</option>
+                    <option value="satisfactory">{t('equipment.satisfactory')}</option>
+                    <option value="poor">{t('equipment.poor')}</option>
+                  </select>
+                  <input type="date" value={formatDateForInput(eq.acquiredAt)} onChange={(e) => updateEquipment(idx, 'acquiredAt', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                </div>
+              ))}
+            </div>
+          ) : student.equipment?.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {student.equipment.map((eq: any) => (
+                <div key={eq.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{eqLabel(eq.type)}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{formatDate(eq.acquiredAt, locale)}</p>
+                  </div>
+                  {condBadge(eq.condition)}
+                </div>
+              ))}
+            </div>
+          ) : <p className="text-gray-500 text-sm text-center py-8">{t('app.noData')}</p>}
+        </div>
+      )}
+
+      {/* ===== NEEDS ===== */}
+      {activeTab === 'needs' && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-red-50 rounded-lg"><Heart className="w-4 h-4 text-red-500" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('needs.title')}</h3>
+            </div>
+            {canEditData && <button onClick={() => setShowAddNeed(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('needs.addNeed')}</button>}
+          </div>
+          {showAddNeed && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="flex gap-2">
                 <input type="text" value={newNeed} onChange={(e) => setNewNeed(e.target.value)} placeholder={t('needs.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addNeed()} />
                 <button onClick={addNeed} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
                 <button onClick={() => { setShowAddNeed(false); setNewNeed('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
-              </div></div>
-            )}
-            <div className="space-y-2">
-              {student.needs?.map((need: any) => (
-                <div key={need.id} className={`flex items-center justify-between p-3 rounded-lg ${need.isFulfilled ? 'bg-primary-50' : 'bg-red-50'}`}>
-                  <div className="flex items-center gap-3">
-                    {canEditData ? <button onClick={() => toggleNeedFulfilled(need.id, need.isFulfilled)} className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${need.isFulfilled ? 'bg-primary-500 border-primary-500' : 'border-gray-300 hover:border-primary-400'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</button> : <div className={`w-6 h-6 rounded-full flex items-center justify-center ${need.isFulfilled ? 'bg-primary-500' : 'bg-gray-300'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</div>}
-                    <span className={`text-sm ${need.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{need.description}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {need.isFulfilled && <span className="text-xs text-gray-500">{formatDate(need.fulfilledAt, locale)}</span>}
-                    {canEditData && <button onClick={() => deleteNeed(need.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>}
-                  </div>
+              </div>
+            </div>
+          )}
+          <div className="space-y-2">
+            {student.needs?.map((need: any) => (
+              <div key={need.id} className={`flex items-center justify-between p-3 rounded-lg ${need.isFulfilled ? 'bg-primary-50' : 'bg-red-50'}`}>
+                <div className="flex items-center gap-3">
+                  {canEditData ? <button onClick={() => toggleNeedFulfilled(need.id, need.isFulfilled)} className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${need.isFulfilled ? 'bg-primary-500 border-primary-500' : 'border-gray-300 hover:border-primary-400'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</button> : <div className={`w-6 h-6 rounded-full flex items-center justify-center ${need.isFulfilled ? 'bg-primary-500' : 'bg-gray-300'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</div>}
+                  <span className={`text-sm ${need.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{need.description}</span>
                 </div>
-              ))}
-              {(!student.needs || student.needs.length === 0) && <p className="text-gray-500 text-sm text-center py-4">{t('app.noData')}</p>}
+                <div className="flex items-center gap-2">
+                  {need.isFulfilled && <span className="text-xs text-gray-500">{formatDate(need.fulfilledAt, locale)}</span>}
+                  {canEditData && <button onClick={() => deleteNeed(need.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>}
+                </div>
+              </div>
+            ))}
+            {(!student.needs || student.needs.length === 0) && <p className="text-gray-500 text-sm text-center py-8">{t('app.noData')}</p>}
+          </div>
+        </div>
+      )}
+
+      {/* ===== VOUCHERS ===== */}
+      {activeTab === 'vouchers' && (
+        <div className="space-y-6">
+          {/* Stats row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <p className="text-xs text-blue-600 font-medium">{t('vouchers.totalAmount')}</p>
+              <p className="text-xl font-bold text-blue-900">{fmtCurrency(totalAmount, currency)}</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <p className="text-xs text-primary-600 font-medium">{t('vouchers.totalPurchased')}</p>
+              <p className="text-xl font-bold text-primary-900">{formatNumber(totalPurchased)}</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <p className="text-xs text-accent-600 font-medium">{t('vouchers.totalUsed')}</p>
+              <p className="text-xl font-bold text-accent-900">{formatNumber(totalUsed)}</p>
+            </div>
+            <div className={`bg-white rounded-xl border p-4 shadow-sm ${available > 0 ? 'border-primary-200' : 'border-red-200'}`}>
+              <p className={`text-xs font-medium ${available > 0 ? 'text-primary-600' : 'text-red-600'}`}>{t('vouchers.available')}</p>
+              <p className={`text-xl font-bold ${available > 0 ? 'text-primary-900' : 'text-red-900'}`}>{formatNumber(available)}</p>
             </div>
           </div>
-        )}
 
-        {/* ===== VOUCHERS ===== */}
-        {activeTab === 'vouchers' && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
+          {/* Voucher tables card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <h3 className="text-lg font-semibold text-gray-900">{t('vouchers.title')}</h3>
+                <div className="p-2 bg-blue-50 rounded-lg"><Ticket className="w-4 h-4 text-blue-600" /></div>
+                <h3 className="text-base font-semibold text-gray-900">{t('vouchers.title')}</h3>
                 <select value={currency} onChange={(e) => changeCurrency(e.target.value)} className="px-2 py-1 rounded-lg border border-gray-300 text-xs font-medium focus:ring-2 focus:ring-primary-500 outline-none">{CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
               </div>
               {canEditData && <button onClick={() => { setNewVoucher({ ...newVoucher, donorName: defaultDonor }); setShowAddVoucher(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
@@ -487,13 +598,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 </div>
               </div>
             )}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-blue-50 rounded-xl p-4"><p className="text-xs text-blue-600 font-medium">{t('vouchers.totalAmount')}</p><p className="text-xl font-bold text-blue-900">{fmtCurrency(totalAmount, currency)}</p></div>
-              <div className="bg-primary-50 rounded-xl p-4"><p className="text-xs text-primary-600 font-medium">{t('vouchers.totalPurchased')}</p><p className="text-xl font-bold text-primary-900">{formatNumber(totalPurchased)}</p></div>
-              <div className="bg-accent-50 rounded-xl p-4"><p className="text-xs text-accent-600 font-medium">{t('vouchers.totalUsed')}</p><p className="text-xl font-bold text-accent-900">{formatNumber(totalUsed)}</p></div>
-              <div className={`rounded-xl p-4 ${available > 0 ? 'bg-primary-50' : 'bg-red-50'}`}><p className={`text-xs font-medium ${available > 0 ? 'text-primary-600' : 'text-red-600'}`}>{t('vouchers.available')}</p><p className={`text-xl font-bold ${available > 0 ? 'text-primary-900' : 'text-red-900'}`}>{formatNumber(available)}</p></div>
-            </div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">{t('vouchers.purchases')}</h4>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">{t('vouchers.purchases')}</h4>
             <div className="overflow-x-auto mb-6">
               <table className="w-full table-fixed"><thead><tr className="border-b border-gray-200">
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('vouchers.purchaseDate')}</th>
@@ -516,7 +621,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 {(!student.vouchers || student.vouchers.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
               </tbody></table>
             </div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">{t('vouchers.usages')}</h4>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">{t('vouchers.usages')}</h4>
             <div className="overflow-x-auto">
               <table className="w-full table-fixed"><thead><tr className="border-b border-gray-200">
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('vouchers.usageDate')}</th>
@@ -540,223 +645,235 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               </tbody></table>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* ===== PHOTOS ===== */}
-        {activeTab === 'photos' && (
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t('photos.title')}</h3>
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1 bg-gray-100 rounded-lg p-1">{[{ key:'all',label:t('photos.filterAll') },{ key:'visit',label:t('photos.visit') },{ key:'handover',label:t('photos.handover') },{ key:'voucher',label:t('photos.voucher') }].map(f => <button key={f.key} onClick={() => setPhotoFilter(f.key)} className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${photoFilter === f.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{f.label}</button>)}</div>
-                {canEditData && <button onClick={() => setShowAddPhoto(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"><Upload className="w-4 h-4" /> {t('photos.upload')}</button>}
-              </div>
+      {/* ===== PHOTOS ===== */}
+      {activeTab === 'photos' && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-purple-50 rounded-lg"><Camera className="w-4 h-4 text-purple-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('photos.title')}</h3>
             </div>
-            {showAddPhoto && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-                  <select value={newPhoto.category} onChange={(e) => setNewPhoto({ ...newPhoto, category: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="visit">{t('photos.visit')}</option><option value="handover">{t('photos.handover')}</option><option value="voucher">{t('photos.voucher')}</option></select>
-                  <input type="date" value={newPhoto.takenAt} onChange={(e) => setNewPhoto({ ...newPhoto, takenAt: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="text" value={newPhoto.description} onChange={(e) => setNewPhoto({ ...newPhoto, description: e.target.value })} placeholder={t('photos.description')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="file" accept="image/*" onChange={(e) => setNewPhoto({ ...newPhoto, file: e.target.files?.[0] || null })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                </div>
-                <div className="flex gap-2"><button onClick={addPhoto} disabled={!newPhoto.file} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">{t('photos.upload')}</button><button onClick={() => setShowAddPhoto(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
-              </div>
-            )}
-            {filteredPhotos.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{filteredPhotos.map((photo: any) => (
-                <div key={photo.id} className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
-                  {photo.filePath ? <img src={photo.filePath} alt={photo.description || ''} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-200 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400" /></div>}
-                  <div className="p-3">
-                    <div className="flex items-start justify-between"><p className="text-sm font-medium text-gray-900">{photo.description || '-'}</p>{canEditData && <button onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}</div>
-                    <div className="flex items-center justify-between mt-2"><span className="text-xs text-gray-500">{formatDate(photo.takenAt, locale)}</span><span className={`badge ${photo.category === 'visit' ? 'badge-green' : photo.category === 'handover' ? 'badge-yellow' : 'badge-red'}`}>{photo.category === 'visit' ? t('photos.visit') : photo.category === 'handover' ? t('photos.handover') : t('photos.voucher')}</span></div>
-                  </div>
-                </div>
-              ))}</div>
-            ) : <div className="text-center py-12"><Camera className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('photos.noPhotos')}</p></div>}
+            <div className="flex items-center gap-2">
+              <div className="flex gap-1 bg-gray-100 rounded-lg p-1">{[{ key:'all',label:t('photos.filterAll') },{ key:'visit',label:t('photos.visit') },{ key:'handover',label:t('photos.handover') },{ key:'voucher',label:t('photos.voucher') }].map(f => <button key={f.key} onClick={() => setPhotoFilter(f.key)} className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${photoFilter === f.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{f.label}</button>)}</div>
+              {canEditData && <button onClick={() => setShowAddPhoto(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"><Upload className="w-4 h-4" /> {t('photos.upload')}</button>}
+            </div>
           </div>
-        )}
-
-        {/* ===== SPONSORS ===== */}
-        {activeTab === 'sponsors' && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t('sponsors.title')}</h3>
-              {canEditData && <button onClick={() => setShowAddSponsor(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('sponsors.addSponsor')}</button>}
+          {showAddPhoto && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                <select value={newPhoto.category} onChange={(e) => setNewPhoto({ ...newPhoto, category: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="visit">{t('photos.visit')}</option><option value="handover">{t('photos.handover')}</option><option value="voucher">{t('photos.voucher')}</option></select>
+                <input type="date" value={newPhoto.takenAt} onChange={(e) => setNewPhoto({ ...newPhoto, takenAt: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="text" value={newPhoto.description} onChange={(e) => setNewPhoto({ ...newPhoto, description: e.target.value })} placeholder={t('photos.description')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="file" accept="image/*" onChange={(e) => setNewPhoto({ ...newPhoto, file: e.target.files?.[0] || null })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+              </div>
+              <div className="flex gap-2"><button onClick={addPhoto} disabled={!newPhoto.file} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">{t('photos.upload')}</button><button onClick={() => setShowAddPhoto(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
             </div>
-            {/* Search existing sponsor */}
-            {canEditData && (
-              <div className="mb-4">
-                <button
-                  onClick={() => setShowSponsorSearch(!showSponsorSearch)}
-                  className="text-sm text-primary-600 hover:text-primary-800 font-medium mb-2"
-                >
-                  {showSponsorSearch ? '✕ ' : '🔍 '}{t('sponsorPage.searchExisting')}
-                </button>
-                {showSponsorSearch && (
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={sponsorSearch}
-                      onChange={(e) => searchSponsors(e.target.value)}
-                      placeholder={t('sponsorPage.searchByName')}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                    />
-                    {sponsorResults.length > 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-48 overflow-y-auto">
-                        {sponsorResults.map((sr: any) => (
-                          <button
-                            key={sr.id}
-                            onClick={() => addExistingSponsor(sr.id)}
-                            className="w-full text-left px-4 py-2.5 hover:bg-primary-50 text-sm border-b border-gray-100 last:border-0"
-                          >
-                            <span className="font-medium text-gray-900">{sr.lastName} {sr.firstName}</span>
-                            <span className="text-gray-500 ml-2">{sr.email}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-            {showAddSponsor && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <p className="text-xs text-gray-500 mb-3">Vyplňte údaje sponzora. Pokud v systému neexistuje, bude vytvořen.</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                  <input type="text" value={newSponsor.firstName} onChange={(e) => setNewSponsor({ ...newSponsor, firstName: e.target.value })} placeholder={t('student.firstName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="text" value={newSponsor.lastName} onChange={(e) => setNewSponsor({ ...newSponsor, lastName: e.target.value })} placeholder={t('student.lastName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="email" value={newSponsor.email} onChange={(e) => setNewSponsor({ ...newSponsor, email: e.target.value })} placeholder={t('sponsors.email') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="text" value={newSponsor.phone} onChange={(e) => setNewSponsor({ ...newSponsor, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="date" value={newSponsor.startDate} onChange={(e) => setNewSponsor({ ...newSponsor, startDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="text" value={newSponsor.notes} onChange={(e) => setNewSponsor({ ...newSponsor, notes: e.target.value })} placeholder={t('sponsors.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+          )}
+          {filteredPhotos.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{filteredPhotos.map((photo: any) => (
+              <div key={photo.id} className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+                {photo.filePath ? <img src={photo.filePath} alt={photo.description || ''} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-200 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400" /></div>}
+                <div className="p-3">
+                  <div className="flex items-start justify-between"><p className="text-sm font-medium text-gray-900">{photo.description || '-'}</p>{canEditData && <button onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}</div>
+                  <div className="flex items-center justify-between mt-2"><span className="text-xs text-gray-500">{formatDate(photo.takenAt, locale)}</span><span className={`badge ${photo.category === 'visit' ? 'badge-green' : photo.category === 'handover' ? 'badge-yellow' : 'badge-red'}`}>{photo.category === 'visit' ? t('photos.visit') : photo.category === 'handover' ? t('photos.handover') : t('photos.voucher')}</span></div>
                 </div>
-                <div className="flex gap-2"><button onClick={addSponsor} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddSponsor(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
               </div>
-            )}
-            {student.sponsorships?.length > 0 ? (
-              <div className="space-y-4">{student.sponsorships.map((sp: any) => (
-                <div key={sp.id} className="bg-accent-50 rounded-xl p-5 border border-accent-200">
-                  {editingSponsor === sp.id ? (
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input type="text" value={editSponsorData.firstName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, firstName: e.target.value })} placeholder={t('student.firstName')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                        <input type="text" value={editSponsorData.lastName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, lastName: e.target.value })} placeholder={t('student.lastName')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                        <input type="email" value={editSponsorData.email || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, email: e.target.value })} placeholder={t('sponsors.email')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
-                        <input type="text" value={editSponsorData.phone || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                        <div className="sm:col-span-2"><input type="text" value={editSponsorData.notes || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, notes: e.target.value })} placeholder={t('sponsors.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" /></div>
-                      </div>
-                      <div className="flex gap-2"><button onClick={() => saveSponsorEdit(sp.id, sp.sponsor.id)} className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.save')}</button><button onClick={() => setEditingSponsor(null)} className="px-3 py-1.5 text-gray-500 text-sm">{t('app.cancel')}</button></div>
-                    </div>
-                  ) : (
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 bg-accent-200 rounded-full flex items-center justify-center flex-shrink-0"><HandHeart className="w-5 h-5 text-accent-700" /></div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{sp.sponsor.firstName} {sp.sponsor.lastName}</h4>
-                        <p className="text-sm text-gray-600">{sp.sponsor.email}</p>
-                        {sp.sponsor.phone && <p className="text-sm text-gray-600">{sp.sponsor.phone}</p>}
-                        <p className="text-xs text-gray-500 mt-2">{t('sponsors.startDate')}: {formatDate(sp.startDate, locale)}</p>
-                        {canEditData && <button onClick={() => removeSponsor(sp.id)} className="mt-2 flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-medium"><Trash2 className="w-3 h-3" /> {t('sponsors.removeSponsor')}</button>}
-                        {sp.notes && <p className="text-sm text-gray-700 mt-2 italic">{sp.notes}</p>}
-                        <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full font-medium ${sp.isActive ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600'}`}>{sp.isActive ? '● Active' : '○ Inactive'}</span>
-                      </div>
-                      {canEditData && <button onClick={() => { setEditingSponsor(sp.id); setEditSponsorData({ firstName: sp.sponsor.firstName, lastName: sp.sponsor.lastName, email: sp.sponsor.email, phone: sp.sponsor.phone || '', notes: sp.notes || '' }) }} className="p-2 text-gray-400 hover:text-gray-600"><Pencil className="w-4 h-4" /></button>}
+            ))}</div>
+          ) : <div className="text-center py-12"><Camera className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('photos.noPhotos')}</p></div>}
+        </div>
+      )}
+
+      {/* ===== SPONSORS ===== */}
+      {activeTab === 'sponsors' && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-accent-50 rounded-lg"><HandHeart className="w-4 h-4 text-accent-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('sponsors.title')}</h3>
+            </div>
+            {canEditData && <button onClick={() => setShowAddSponsor(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('sponsors.addSponsor')}</button>}
+          </div>
+          {/* Search existing sponsor */}
+          {canEditData && (
+            <div className="mb-4">
+              <button
+                onClick={() => setShowSponsorSearch(!showSponsorSearch)}
+                className="text-sm text-primary-600 hover:text-primary-800 font-medium mb-2"
+              >
+                {showSponsorSearch ? '✕ ' : '🔍 '}{t('sponsorPage.searchExisting')}
+              </button>
+              {showSponsorSearch && (
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={sponsorSearch}
+                    onChange={(e) => searchSponsors(e.target.value)}
+                    placeholder={t('sponsorPage.searchByName')}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  />
+                  {sponsorResults.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-48 overflow-y-auto">
+                      {sponsorResults.map((sr: any) => (
+                        <button
+                          key={sr.id}
+                          onClick={() => addExistingSponsor(sr.id)}
+                          className="w-full text-left px-4 py-2.5 hover:bg-primary-50 text-sm border-b border-gray-100 last:border-0"
+                        >
+                          <span className="font-medium text-gray-900">{sr.lastName} {sr.firstName}</span>
+                          <span className="text-gray-500 ml-2">{sr.email}</span>
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>
-              ))}</div>
-            ) : <div className="text-center py-12"><HandHeart className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('sponsors.noSponsors')}</p></div>}
-          </div>
-        )}
-
-        {/* ===== SPONSOR PAYMENTS ===== */}
-        {activeTab === 'sponsorPayments' && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t('sponsorPayments.title')}</h3>
-              {canEditData && <button onClick={() => { setNewPayment({ ...newPayment, sponsorId: student.sponsorships?.[0]?.sponsor?.id || '' }); setShowAddPayment(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
+              )}
             </div>
-            {showAddPayment && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
-                  <input type="date" value={newPayment.paymentDate} onChange={(e) => setNewPayment({ ...newPayment, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <select value={newPayment.paymentType} onChange={(e) => setNewPayment({ ...newPayment, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
-                    <option value="">{t('sponsorPayments.selectType')}</option>{paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{pt.name}</option>)}
-                  </select>
-                  <div className="flex gap-2">
-                    <input type="number" value={newPayment.amount} onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                    <select value={newPayment.currency} onChange={(e) => setNewPayment({ ...newPayment, currency: e.target.value })} className="px-2 py-2 rounded-lg border border-gray-300 text-sm w-20">{CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
+          )}
+          {showAddSponsor && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <p className="text-xs text-gray-500 mb-3">Vyplňte údaje sponzora. Pokud v systému neexistuje, bude vytvořen.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                <input type="text" value={newSponsor.firstName} onChange={(e) => setNewSponsor({ ...newSponsor, firstName: e.target.value })} placeholder={t('student.firstName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="text" value={newSponsor.lastName} onChange={(e) => setNewSponsor({ ...newSponsor, lastName: e.target.value })} placeholder={t('student.lastName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="email" value={newSponsor.email} onChange={(e) => setNewSponsor({ ...newSponsor, email: e.target.value })} placeholder={t('sponsors.email') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="text" value={newSponsor.phone} onChange={(e) => setNewSponsor({ ...newSponsor, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="date" value={newSponsor.startDate} onChange={(e) => setNewSponsor({ ...newSponsor, startDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="text" value={newSponsor.notes} onChange={(e) => setNewSponsor({ ...newSponsor, notes: e.target.value })} placeholder={t('sponsors.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+              </div>
+              <div className="flex gap-2"><button onClick={addSponsor} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddSponsor(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+            </div>
+          )}
+          {student.sponsorships?.length > 0 ? (
+            <div className="space-y-4">{student.sponsorships.map((sp: any) => (
+              <div key={sp.id} className="bg-accent-50 rounded-xl p-5 border border-accent-200">
+                {editingSponsor === sp.id ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input type="text" value={editSponsorData.firstName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, firstName: e.target.value })} placeholder={t('student.firstName')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                      <input type="text" value={editSponsorData.lastName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, lastName: e.target.value })} placeholder={t('student.lastName')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                      <input type="email" value={editSponsorData.email || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, email: e.target.value })} placeholder={t('sponsors.email')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                      <input type="text" value={editSponsorData.phone || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                      <div className="sm:col-span-2"><input type="text" value={editSponsorData.notes || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, notes: e.target.value })} placeholder={t('sponsors.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" /></div>
+                    </div>
+                    <div className="flex gap-2"><button onClick={() => saveSponsorEdit(sp.id, sp.sponsor.id)} className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.save')}</button><button onClick={() => setEditingSponsor(null)} className="px-3 py-1.5 text-gray-500 text-sm">{t('app.cancel')}</button></div>
                   </div>
-                  <select value={newPayment.sponsorId} onChange={(e) => setNewPayment({ ...newPayment, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
-                    <option value="">{t('sponsorPayments.selectSponsor')}</option>
-                    {allSponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
-                  </select>
-                  <div className="sm:col-span-2 lg:col-span-2"><input type="text" value={newPayment.notes} onChange={(e) => setNewPayment({ ...newPayment, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" /></div>
-                </div>
-                <div className="flex gap-2"><button onClick={addSponsorPayment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddPayment(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+                ) : (
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-accent-200 rounded-full flex items-center justify-center flex-shrink-0"><HandHeart className="w-5 h-5 text-accent-700" /></div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900">{sp.sponsor.firstName} {sp.sponsor.lastName}</h4>
+                      <p className="text-sm text-gray-600">{sp.sponsor.email}</p>
+                      {sp.sponsor.phone && <p className="text-sm text-gray-600">{sp.sponsor.phone}</p>}
+                      <p className="text-xs text-gray-500 mt-2">{t('sponsors.startDate')}: {formatDate(sp.startDate, locale)}</p>
+                      {canEditData && <button onClick={() => removeSponsor(sp.id)} className="mt-2 flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-medium"><Trash2 className="w-3 h-3" /> {t('sponsors.removeSponsor')}</button>}
+                      {sp.notes && <p className="text-sm text-gray-700 mt-2 italic">{sp.notes}</p>}
+                      <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full font-medium ${sp.isActive ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600'}`}>{sp.isActive ? '● Active' : '○ Inactive'}</span>
+                    </div>
+                    {canEditData && <button onClick={() => { setEditingSponsor(sp.id); setEditSponsorData({ firstName: sp.sponsor.firstName, lastName: sp.sponsor.lastName, email: sp.sponsor.email, phone: sp.sponsor.phone || '', notes: sp.notes || '' }) }} className="p-2 text-gray-400 hover:text-gray-600"><Pencil className="w-4 h-4" /></button>}
+                  </div>
+                )}
               </div>
-            )}
-            {student.sponsorPayments?.length > 0 ? (
-              <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('payments.paymentDate')}</th>
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('sponsorPayments.paymentType')}</th>
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('vouchers.amount')}</th>
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
-                {canEditData && <th className="w-10"></th>}
-              </tr></thead><tbody>
-                {student.sponsorPayments.map((p: any) => (
-                  <tr key={p.id} className="border-b border-gray-50">
-                    <td className="py-3 px-2 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
-                    <td className="py-3 px-2 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{ptLabel(p.paymentType)}</span></td>
-                    <td className="py-3 px-2 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
-                    <td className="py-3 px-2 text-sm text-gray-700">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
-                    <td className="py-3 px-2 text-sm text-gray-500">{p.notes || '-'}</td>
-                    {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteSponsorPayment(p.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
-                  </tr>
-                ))}
-              </tbody></table></div>
-            ) : <div className="text-center py-12"><CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('app.noData')}</p></div>}
-          </div>
-        )}
+            ))}</div>
+          ) : <div className="text-center py-12"><HandHeart className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('sponsors.noSponsors')}</p></div>}
+        </div>
+      )}
 
-        {/* ===== HEALTH ===== */}
-        {activeTab === 'health' && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t('health.title')}</h3>
-              {canEditData && <button onClick={() => setShowAddHealth(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('health.addCheck')}</button>}
+      {/* ===== SPONSOR PAYMENTS ===== */}
+      {activeTab === 'sponsorPayments' && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-green-50 rounded-lg"><CreditCard className="w-4 h-4 text-green-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('sponsorPayments.title')}</h3>
             </div>
-            {showAddHealth && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-                  <input type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <select value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{ht.name}</option>)}</select>
-                  <input type="text" value={newHealth.notes} onChange={(e) => setNewHealth({ ...newHealth, notes: e.target.value })} placeholder={t('health.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                </div>
-                <div className="flex gap-2"><button onClick={addHealthCheck} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddHealth(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
-              </div>
-            )}
-            {student.healthChecks?.length > 0 ? (
-              <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('health.checkDate')}</th>
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-24">{t('health.checkType')}</th>
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('health.notes')}</th>
-                {canEditData && <th className="w-10"></th>}
-              </tr></thead><tbody>
-                {student.healthChecks.map((hc: any) => (
-                  <tr key={hc.id} className="border-b border-gray-50">
-                    <td className="py-3 px-2 text-sm text-gray-900">{formatDate(hc.checkDate, locale)}</td>
-                    <td className="py-3 px-2 text-sm"><span className={`badge ${hc.checkType === 'urgent' ? 'badge-red' : hc.checkType === 'dentist' ? 'badge-yellow' : 'badge-green'}`}>{htLabel(hc.checkType)}</span></td>
-                    <td className="py-3 px-2 text-sm text-gray-700">{hc.notes || '-'}</td>
-                    {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteHealthCheck(hc.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
-                  </tr>
-                ))}
-              </tbody></table></div>
-            ) : <div className="text-center py-12"><Stethoscope className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('health.noChecks')}</p></div>}
+            {canEditData && <button onClick={() => { setNewPayment({ ...newPayment, sponsorId: student.sponsorships?.[0]?.sponsor?.id || '' }); setShowAddPayment(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
           </div>
-        )}
-      </div>
+          {showAddPayment && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+                <input type="date" value={newPayment.paymentDate} onChange={(e) => setNewPayment({ ...newPayment, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <select value={newPayment.paymentType} onChange={(e) => setNewPayment({ ...newPayment, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                  <option value="">{t('sponsorPayments.selectType')}</option>{paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{pt.name}</option>)}
+                </select>
+                <div className="flex gap-2">
+                  <input type="number" value={newPayment.amount} onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <select value={newPayment.currency} onChange={(e) => setNewPayment({ ...newPayment, currency: e.target.value })} className="px-2 py-2 rounded-lg border border-gray-300 text-sm w-20">{CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
+                </div>
+                <select value={newPayment.sponsorId} onChange={(e) => setNewPayment({ ...newPayment, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                  <option value="">{t('sponsorPayments.selectSponsor')}</option>
+                  {allSponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                </select>
+                <div className="sm:col-span-2 lg:col-span-2"><input type="text" value={newPayment.notes} onChange={(e) => setNewPayment({ ...newPayment, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" /></div>
+              </div>
+              <div className="flex gap-2"><button onClick={addSponsorPayment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddPayment(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+            </div>
+          )}
+          {student.sponsorPayments?.length > 0 ? (
+            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('payments.paymentDate')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('sponsorPayments.paymentType')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('vouchers.amount')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
+              {canEditData && <th className="w-10"></th>}
+            </tr></thead><tbody>
+              {student.sponsorPayments.map((p: any) => (
+                <tr key={p.id} className="border-b border-gray-50">
+                  <td className="py-3 px-2 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
+                  <td className="py-3 px-2 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{ptLabel(p.paymentType)}</span></td>
+                  <td className="py-3 px-2 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
+                  <td className="py-3 px-2 text-sm text-gray-700">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
+                  <td className="py-3 px-2 text-sm text-gray-500">{p.notes || '-'}</td>
+                  {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteSponsorPayment(p.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+                </tr>
+              ))}
+            </tbody></table></div>
+          ) : <div className="text-center py-12"><CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('app.noData')}</p></div>}
+        </div>
+      )}
+
+      {/* ===== HEALTH ===== */}
+      {activeTab === 'health' && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-green-50 rounded-lg"><Stethoscope className="w-4 h-4 text-green-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('health.title')}</h3>
+            </div>
+            {canEditData && <button onClick={() => setShowAddHealth(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('health.addCheck')}</button>}
+          </div>
+          {showAddHealth && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                <input type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <select value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{ht.name}</option>)}</select>
+                <input type="text" value={newHealth.notes} onChange={(e) => setNewHealth({ ...newHealth, notes: e.target.value })} placeholder={t('health.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+              </div>
+              <div className="flex gap-2"><button onClick={addHealthCheck} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddHealth(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+            </div>
+          )}
+          {student.healthChecks?.length > 0 ? (
+            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('health.checkDate')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-24">{t('health.checkType')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('health.notes')}</th>
+              {canEditData && <th className="w-10"></th>}
+            </tr></thead><tbody>
+              {student.healthChecks.map((hc: any) => (
+                <tr key={hc.id} className="border-b border-gray-50">
+                  <td className="py-3 px-2 text-sm text-gray-900">{formatDate(hc.checkDate, locale)}</td>
+                  <td className="py-3 px-2 text-sm"><span className={`badge ${hc.checkType === 'urgent' ? 'badge-red' : hc.checkType === 'dentist' ? 'badge-yellow' : 'badge-green'}`}>{htLabel(hc.checkType)}</span></td>
+                  <td className="py-3 px-2 text-sm text-gray-700">{hc.notes || '-'}</td>
+                  {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteHealthCheck(hc.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+                </tr>
+              ))}
+            </tbody></table></div>
+          ) : <div className="text-center py-12"><Stethoscope className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('health.noChecks')}</p></div>}
+        </div>
+      )}
     </div>
   )
 }

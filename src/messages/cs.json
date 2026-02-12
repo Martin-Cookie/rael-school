@@ -32,7 +32,8 @@
     "reports": "Statistiky",
     "settings": "Nastavení",
     "logout": "Odhlásit se",
-    "admin": "Administrace"
+    "admin": "Administrace",
+    "classes": "Třídy"
   },
   "auth": {
     "login": "Přihlášení",
@@ -195,6 +196,24 @@
     "paymentTypes": "Číselník typů plateb od sponzorů",
     "newPaymentTypeName": "Název nového typu platby"
   },
+  "statistics": {
+    "title": "Statistiky",
+    "voucherPerStudent": "Stravenky na studenta",
+    "purchased": "Nakoupeno",
+    "used": "Čerpáno",
+    "available": "Zbývá",
+    "total": "Celkem",
+    "sponsorPayments": "Platby od sponzorů",
+    "selectPaymentType": "Vyberte typ platby",
+    "allTypes": "Všechny typy",
+    "recorded": "Evidováno",
+    "notRecorded": "Neevidováno",
+    "amount": "Částka",
+    "hasPayment": "Ano",
+    "noPayment": "Ne",
+    "studentsWithPayment": "s platbou",
+    "studentsWithoutPayment": "bez platby"
+  },
   "sponsorPage": {
     "addSponsor": "Přidat sponzora",
     "requiredFields": "Vyplňte jméno, příjmení a email",
@@ -209,5 +228,11 @@
     "searchExisting": "Vyhledat existujícího sponzora",
     "searchByName": "Hledat podle příjmení...",
     "orAddNew": "nebo přidat nového"
+  },
+  "pagination": {
+    "showing": "Zobrazeno",
+    "of": "z",
+    "prev": "Předchozí",
+    "next": "Další"
   }
 }
