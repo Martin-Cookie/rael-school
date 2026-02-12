@@ -196,6 +196,14 @@
     "paymentTypes": "Aina za Malipo ya Wadhamini",
     "newPaymentTypeName": "Jina la aina mpya ya malipo"
   },
+  "statistics": {
+    "title": "Takwimu",
+    "voucherPerStudent": "Vocha kwa mwanafunzi",
+    "purchased": "Zilizununuliwa",
+    "used": "Zilizotumika",
+    "available": "Zinazopatikana",
+    "total": "Jumla"
+  },
   "sponsorPage": {
     "addSponsor": "Ongeza Mfadhili",
     "requiredFields": "Tafadhali jaza jina, jina la ukoo na barua pepe",

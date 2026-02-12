@@ -196,6 +196,14 @@
     "paymentTypes": "Číselník typů plateb od sponzorů",
     "newPaymentTypeName": "Název nového typu platby"
   },
+  "statistics": {
+    "title": "Statistiky",
+    "voucherPerStudent": "Stravenky na studenta",
+    "purchased": "Nakoupeno",
+    "used": "Čerpáno",
+    "available": "Zbývá",
+    "total": "Celkem"
+  },
   "sponsorPage": {
     "addSponsor": "Přidat sponzora",
     "requiredFields": "Vyplňte jméno, příjmení a email",

@@ -196,6 +196,14 @@
     "paymentTypes": "Sponsor Payment Types",
     "newPaymentTypeName": "New payment type name"
   },
+  "statistics": {
+    "title": "Statistics",
+    "voucherPerStudent": "Vouchers per student",
+    "purchased": "Purchased",
+    "used": "Used",
+    "available": "Available",
+    "total": "Total"
+  },
   "sponsorPage": {
     "addSponsor": "Add Sponsor",
     "requiredFields": "Please fill in first name, last name and email",
