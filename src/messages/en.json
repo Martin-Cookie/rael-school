@@ -228,5 +228,11 @@
     "searchExisting": "Search existing sponsor",
     "searchByName": "Search by last name...",
     "orAddNew": "or add new"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "of": "of",
+    "prev": "Previous",
+    "next": "Next"
   }
 }

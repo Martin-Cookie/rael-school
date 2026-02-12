@@ -6,6 +6,7 @@ import {
   Heart, Plus, Search, Pencil, X, Check, UserX, UserCheck,
   Mail, Phone, Users, CreditCard
 } from 'lucide-react'
+import Pagination from '@/components/Pagination'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -40,7 +41,9 @@ export default function SponsorsPage() {
   const [sponsors, setSponsors] = useState<Sponsor[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
   const [showAdd, setShowAdd] = useState(false)
+  const PAGE_SIZE = 10
   const [editingId, setEditingId] = useState<string | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
@@ -158,6 +161,12 @@ export default function SponsorsPage() {
       || (s.phone && s.phone.toLowerCase().includes(q))
   })
 
+  // Reset page when search changes
+  useEffect(() => { setCurrentPage(1) }, [search])
+
+  const paginatedSponsors = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
+
   const canEdit = user && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)
   const canDeactivate = user && ['ADMIN', 'MANAGER'].includes(user.role)
 
@@ -253,8 +262,9 @@ export default function SponsorsPage() {
 
       {/* Sponsor cards */}
       {filtered.length > 0 ? (
+        <div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {filtered.map((s) => (
+          {paginatedSponsors.map((s) => (
             <div key={s.id} className={`bg-white rounded-xl border ${s.isActive ? 'border-gray-200' : 'border-red-200 bg-red-50'} p-5 group`}>
               {editingId === s.id ? (
                 /* Edit mode */
@@ -389,6 +399,8 @@ export default function SponsorsPage() {
               )}
             </div>
           ))}
+        </div>
+        <Pagination currentPage={currentPage} totalItems={filtered.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
         </div>
       ) : (
         <div className="text-center py-12">

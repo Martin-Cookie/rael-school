@@ -228,5 +228,11 @@
     "searchExisting": "Vyhledat existujícího sponzora",
     "searchByName": "Hledat podle příjmení...",
     "orAddNew": "nebo přidat nového"
+  },
+  "pagination": {
+    "showing": "Zobrazeno",
+    "of": "z",
+    "prev": "Předchozí",
+    "next": "Další"
   }
 }

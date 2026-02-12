@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X } from 'lucide-react'
 import { formatNumber, formatDate, formatDateForInput } from '@/lib/format'
+import Pagination from '@/components/Pagination'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -23,6 +24,9 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true)
   const [locale, setLocale] = useState<Locale>('cs')
   const [activeTab, setActiveTab] = useState<'sponsor' | 'voucher'>('sponsor')
+  const [spPage, setSpPage] = useState(1)
+  const [vpPage, setVpPage] = useState(1)
+  const PAGE_SIZE = 15
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   // Students & sponsors for dropdowns
@@ -221,6 +225,10 @@ export default function PaymentsPage() {
 
   const spByCur = stats?.sponsorPaymentsByCurrency || {}
 
+  const paginatedSP = sponsorPayments.slice((spPage - 1) * PAGE_SIZE, spPage * PAGE_SIZE)
+  const paginatedVP = voucherPurchases.slice((vpPage - 1) * PAGE_SIZE, vpPage * PAGE_SIZE)
+  const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
+
   return (
     <div>
       {message && (
@@ -311,7 +319,7 @@ export default function PaymentsPage() {
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.notes')}</th>
               {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
-              {sponsorPayments.map((p: any) => (
+              {paginatedSP.map((p: any) => (
                 editingId === p.id ? (
                   <tr key={p.id} className="border-b border-gray-50 bg-primary-50">
                     <td className="py-2 px-3"><input type="date" value={editData.paymentDate || ''} onChange={(e) => setEditData({ ...editData, paymentDate: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
@@ -376,6 +384,7 @@ export default function PaymentsPage() {
               ))}
               {sponsorPayments.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
             </tbody></table></div>
+            <Pagination currentPage={spPage} totalItems={sponsorPayments.length} pageSize={PAGE_SIZE} onPageChange={setSpPage} labels={paginationLabels} />
           </div>
         )}
 
@@ -436,7 +445,7 @@ export default function PaymentsPage() {
               <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.notes')}</th>
               {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
-              {voucherPurchases.map((v: any) => (
+              {paginatedVP.map((v: any) => (
                 editingId === v.id ? (
                   <tr key={v.id} className="border-b border-gray-50 bg-primary-50">
                     <td className="py-2 px-3"><input type="date" value={editData.purchaseDate || ''} onChange={(e) => setEditData({ ...editData, purchaseDate: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
@@ -483,6 +492,7 @@ export default function PaymentsPage() {
               ))}
               {voucherPurchases.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
             </tbody></table></div>
+            <Pagination currentPage={vpPage} totalItems={voucherPurchases.length} pageSize={PAGE_SIZE} onPageChange={setVpPage} labels={paginationLabels} />
           </div>
         )}
       </div>

@@ -228,5 +228,11 @@
     "searchExisting": "Tafuta mfadhili aliyepo",
     "searchByName": "Tafuta kwa jina la ukoo...",
     "orAddNew": "au ongeza mpya"
+  },
+  "pagination": {
+    "showing": "Inaonyesha",
+    "of": "kati ya",
+    "prev": "Iliyotangulia",
+    "next": "Inayofuata"
   }
 }
