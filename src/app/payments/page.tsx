@@ -10,7 +10,7 @@ import sw from '@/messages/sw.json'
 import { createTranslator, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
-const CURRENCIES = ['KES', 'CZK', 'USD', 'EUR']
+const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
 
 function fmtCurrency(amount: number, currency: string): string {
   return `${formatNumber(amount)} ${currency}`
@@ -33,7 +33,7 @@ export default function PaymentsPage() {
 
   // Add forms
   const [showAddSponsor, setShowAddSponsor] = useState(false)
-  const [newSP, setNewSP] = useState({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'KES', paymentType: '', notes: '' })
+  const [newSP, setNewSP] = useState({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'CZK', paymentType: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
   const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', count: '', sponsorId: '', notes: '' })
 
@@ -90,7 +90,7 @@ export default function PaymentsPage() {
         body: JSON.stringify({ type: 'sponsor', ...newSP }),
       })
       if (res.ok) {
-        setNewSP({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'KES', paymentType: '', notes: '' })
+        setNewSP({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'CZK', paymentType: '', notes: '' })
         setShowAddSponsor(false)
         await fetchData()
         showMsg('success', t('app.savedSuccess'))

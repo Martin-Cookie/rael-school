@@ -14,7 +14,7 @@ import sw from '@/messages/sw.json'
 import { createTranslator, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
-const CURRENCIES = ['KES', 'CZK', 'USD', 'EUR']
+const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
 type Tab = 'personal' | 'equipment' | 'needs' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments'
 function fmtCurrency(amount: number, currency: string): string { return `${formatNumber(amount)} ${currency}` }
 
@@ -57,7 +57,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [showAddPhoto, setShowAddPhoto] = useState(false)
   const [newPhoto, setNewPhoto] = useState({ category: 'visit', description: '', takenAt: '', file: null as File | null })
   const [showAddPayment, setShowAddPayment] = useState(false)
-  const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'KES', paymentType: '', sponsorId: '', notes: '' })
+  const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'CZK', paymentType: '', sponsorId: '', notes: '' })
 
   const t = createTranslator(msgs[locale])
 
@@ -270,7 +270,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     if (!newPayment.paymentDate || !newPayment.amount || !newPayment.paymentType) return
     try {
       const res = await fetch(`/api/students/${id}/sponsor-payments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newPayment) })
-      if (res.ok) { setNewPayment({ paymentDate: '', amount: '', currency: 'KES', paymentType: '', sponsorId: '', notes: '' }); setShowAddPayment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+      if (res.ok) { setNewPayment({ paymentDate: '', amount: '', currency: 'CZK', paymentType: '', sponsorId: '', notes: '' }); setShowAddPayment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteSponsorPayment(paymentId: string) {
