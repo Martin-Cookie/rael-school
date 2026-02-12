@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { GraduationCap, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
+import { GraduationCap, ChevronUp, ChevronDown, ArrowUpDown, Search } from 'lucide-react'
 import { formatNumber } from '@/lib/format'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
@@ -18,6 +18,7 @@ export default function ClassesPage() {
   const [loading, setLoading] = useState(true)
   const [locale, setLocale] = useState<Locale>('cs')
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
 
@@ -63,6 +64,14 @@ export default function ClassesPage() {
 
   const classNames = [...new Set(students.map((s: any) => s.className).filter(Boolean))].sort() as string[]
 
+  const q = search.toLowerCase()
+  const filteredClassNames = search
+    ? classNames.filter(cn => cn.toLowerCase().includes(q) || students.some((s: any) => s.className === cn && (s.firstName.toLowerCase().includes(q) || s.lastName.toLowerCase().includes(q) || (s.studentNo && s.studentNo.toLowerCase().includes(q)))))
+    : classNames
+  const filteredStudentsInClass = selectedClass
+    ? students.filter((s: any) => s.className === selectedClass && (!search || s.firstName.toLowerCase().includes(q) || s.lastName.toLowerCase().includes(q) || (s.studentNo && s.studentNo.toLowerCase().includes(q))))
+    : []
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
@@ -75,10 +84,24 @@ export default function ClassesPage() {
         </div>
       </div>
 
+      {/* Search */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('app.search')}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+          />
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         {!selectedClass ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {classNames.map(cn => {
+            {filteredClassNames.map(cn => {
               const count = students.filter((s: any) => s.className === cn).length
               return (
                 <button key={cn} onClick={() => { setSelectedClass(cn); setSortCol('') }} className="bg-gray-50 hover:bg-gray-100 rounded-xl p-4 border border-gray-200 text-left transition-colors">
@@ -87,12 +110,12 @@ export default function ClassesPage() {
                 </button>
               )
             })}
-            {classNames.length === 0 && <p className="text-gray-500 text-sm col-span-full text-center py-8">{t('app.noData')}</p>}
+            {filteredClassNames.length === 0 && <p className="text-gray-500 text-sm col-span-full text-center py-8">{t('app.noData')}</p>}
           </div>
         ) : (
           <div>
-            <button onClick={() => setSelectedClass(null)} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
+            <button onClick={() => { setSelectedClass(null); setSearch('') }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">{selectedClass} ({filteredStudentsInClass.length})</h3>
             <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
               <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
               <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
@@ -101,7 +124,7 @@ export default function ClassesPage() {
               <SH col="_count.needs" className="text-right">{t('needs.title')}</SH>
               <SH col="_count.sponsorships" className="text-right">{t('sponsors.title')}</SH>
             </tr></thead><tbody>
-              {sortData(students.filter((s: any) => s.className === selectedClass), sortCol).map((s: any) => (
+              {sortData(filteredStudentsInClass, sortCol).map((s: any) => (
                 <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                   <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                   <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/classes`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
