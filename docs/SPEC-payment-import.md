@@ -24,9 +24,21 @@ Nahrání souboru (PDF/CSV/XLSX)
 
 | Formát | Priorita | Poznámka |
 |--------|----------|----------|
-| **PDF** | **Fáze 1 — nyní** | FIO banka, parser na míru |
-| CSV | Fáze 2 | Připravená struktura |
+| **CSV** | **Fáze 1 — nyní** | Strukturovaný soubor s hlavičkou |
+| PDF | Fáze 2 | FIO banka, parser na míru |
 | XLSX | Fáze 2 | Připravená struktura |
+
+### Formát CSV souboru (Fáze 1)
+
+Soubor musí obsahovat hlavičku s těmito sloupci:
+
+```csv
+datum,castka,mena,vs,zprava,odesilatel,ucet_odesilatele
+```
+
+- Oddělovač: čárka
+- Kódování: UTF-8
+- Testovací soubor: `data/test-bank-import.csv` (30 položek)
 
 ### Očekávaná pole z výpisu
 
@@ -323,12 +335,18 @@ Při schválení řádku (jednotlivě nebo hromadně):
 
 ---
 
-## 7. Zpracování PDF — FIO banka
+## 7. Zpracování souborů
 
+### Fáze 1: CSV parser
+- Standardní CSV s hlavičkou (viz sekce 2)
+- Knihovna: vestavěný parser nebo `papaparse`
+- Validace: povinné sloupce `datum`, `castka`, `mena`
+
+### Fáze 2: PDF parser (FIO banka)
 - Knihovna: **pdf-parse** (npm)
 - Extrakce textu z PDF → parsování tabulkové struktury
 - FIO výpis má specifický formát — parser na míru
-- **Potřeba:** Vzorový PDF výpis od uživatele pro přesné naprogramování parseru
+- Vzorový PDF: `data/fio-vypisek-vzor.pdf`
 
 ---
 
@@ -390,24 +408,55 @@ Nové klíče ve všech třech jazycích (cs/en/sw) pod sekcí `"paymentImport"`
 
 ## 10. Fáze implementace
 
-### Fáze 1 (nyní)
-1. Prisma schema — nové modely + rozšíření stávajících
-2. PDF parser pro FIO banku (potřeba vzorový PDF)
-3. Algoritmus automatického párování
-4. API endpointy
-5. UI — nahrání souboru, seznam importů, detail s tabulkou
-6. UI — inline editace (dropdowny sponzor/student/typ)
-7. UI — hromadné schválení/zamítnutí
-8. UI — split platby
-9. Překlady (cs/en/sw)
+### Fáze 1 (nyní) — rozděleno do etap
+
+**Etapa 1 — Databáze**
+- Prisma schema — nové modely (PaymentImport, PaymentImportRow)
+- Rozšíření stávajících modelů (User, SponsorPayment, VoucherPurchase)
+- Migrace + seed testovacích dat
+
+**Etapa 2 — CSV parser + API upload**
+- CSV parser (čtení, validace, uložení do DB)
+- POST /api/payment-imports (upload + parse)
+- GET /api/payment-imports (seznam)
+- GET /api/payment-imports/[id] (detail)
+- DELETE /api/payment-imports/[id] (zrušení)
+
+**Etapa 3 — Automatické párování**
+- Detekce duplikátů
+- Identifikace sponzora (VS → účet → jméno)
+- Identifikace studenta
+- Identifikace typu platby (klíčová slova)
+- Přiřazení statusu a confidence
+
+**Etapa 4 — UI: Seznam importů + Upload**
+- Stránka /payments/import
+- Upload drag & drop zóna
+- Tabulka historie importů
+- Odkaz z /payments
+
+**Etapa 5 — UI: Detail importu + Revize**
+- Stránka /payments/import/[id]
+- Statistický panel
+- Filtrovaná tabulka s barevnými statusy
+- Inline dropdowny (sponzor, student, typ platby)
+
+**Etapa 6 — UI: Akce (Schválení / Zamítnutí / Split)**
+- PUT /api/.../rows/[rowId] (editace řádku)
+- POST .../approve + .../reject (hromadně)
+- POST .../rows/[rowId]/split
+- Split modal
+- Zápis do SponsorPayment / VoucherPurchase
+- Překlady (cs/en/sw) průběžně u každé etapy
 
 ### Fáze 2 (později)
-- CSV a XLSX parser
+- PDF parser pro FIO banku
+- XLSX parser
 - Automatické přidělování VS sponzorům
 - Export přehledu importů
 
 ### Fáze 3 (budoucnost)
-- API napojení na banku (automatický stahování výpisů)
+- API napojení na banku (automatické stahování výpisů)
 - Notifikace sponzorům o přijaté platbě
 - Pravidelný scheduled import
 
@@ -415,13 +464,14 @@ Nové klíče ve všech třech jazycích (cs/en/sw) pod sekcí `"paymentImport"`
 
 ## 11. Závislosti (npm)
 
-| Balíček | Účel |
-|---------|------|
-| `pdf-parse` | Extrakce textu z PDF |
+| Balíček | Účel | Fáze |
+|---------|------|------|
+| `papaparse` | CSV parser | Fáze 1 |
+| `pdf-parse` | Extrakce textu z PDF | Fáze 2 |
 
 ---
 
-## 12. Blokující požadavek
+## 12. Testovací data
 
-> **Pro implementaci PDF parseru je potřeba vzorový PDF výpis z FIO banky.**
-> Uživatel nahraje vzorový soubor, na základě kterého bude parser naprogramován.
+- Testovací CSV: `data/test-bank-import.csv` — 30 položek pokrývajících všechny typy plateb
+- Vzorový FIO PDF: `data/fio-vypisek-vzor.pdf` — reálný výpis leden 2026
