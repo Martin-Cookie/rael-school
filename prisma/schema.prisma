@@ -37,15 +37,17 @@ model Student {
   dateOfBirth  DateTime?
   gender       String?
   className    String?
+  school       String?  // School name (e.g. "Rael", "Unga Primary", "Kodida Primary")
+  orphanStatus String?  // "total", "partial", or null
   healthStatus String?
   profilePhoto String?  // Path to profile photo
-  
+
   motherName   String?
   motherAlive  Boolean?
   fatherName   String?
   fatherAlive  Boolean?
   siblings     String?
-  
+
   isActive     Boolean  @default(true)
   notes        String?
   createdAt    DateTime @default(now())

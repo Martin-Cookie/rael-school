@@ -11,7 +11,6 @@ async function main() {
   // ============================================================
 
   const classRoomNames = [
-    'Baby Class',
     'PP1',
     'PP2',
     'Grade 1',
@@ -22,6 +21,10 @@ async function main() {
     'Grade 6',
     'Grade 7',
     'Grade 8',
+    'Grade 9',
+    'Grade 10',
+    'Grade 11',
+    'Grade 12',
   ]
   for (let i = 0; i < classRoomNames.length; i++) {
     await prisma.classRoom.upsert({
@@ -32,7 +35,7 @@ async function main() {
   }
   console.log('✅ ClassRooms seeded (' + classRoomNames.length + ')')
 
-  const healthCheckTypeNames = ['Praktik', 'Zubař', 'Oční', 'Urgentní']
+  const healthCheckTypeNames = ['Zdravotní', 'Zubař', 'Urgent']
   for (let i = 0; i < healthCheckTypeNames.length; i++) {
     await prisma.healthCheckType.upsert({
       where: { name: healthCheckTypeNames[i] },
@@ -42,7 +45,7 @@ async function main() {
   }
   console.log('✅ HealthCheckTypes seeded (' + healthCheckTypeNames.length + ')')
 
-  const paymentTypeNames = ['Školné', 'Lékař', 'Uniforma', 'Učebnice', 'Jiné']
+  const paymentTypeNames = ['Stravenky', 'Platba za kávu', 'Školné', 'Ordinace', 'Taneční klub', 'Semináře']
   for (let i = 0; i < paymentTypeNames.length; i++) {
     await prisma.paymentType.upsert({
       where: { name: paymentTypeNames[i] },
