@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
 import { parseCSV } from '@/lib/csvParser'
+import { runMatching } from '@/lib/paymentMatcher'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 
@@ -100,9 +101,18 @@ export async function POST(request: NextRequest) {
       return imp
     })
 
+    // Run automatic matching
+    const matchedRows = await runMatching(prisma, paymentImport.id)
+
+    // Reload import with updated stats
+    const updatedImport = await prisma.paymentImport.findUnique({
+      where: { id: paymentImport.id },
+    })
+
     return NextResponse.json({
-      import: paymentImport,
+      import: updatedImport,
       totalRows: rows.length,
+      matchedRows,
       parseErrors: errors.length > 0 ? errors : undefined,
     }, { status: 201 })
   } catch (error) {
