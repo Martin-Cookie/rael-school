@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { ArrowLeft, FileText, Info } from 'lucide-react'
+import { ArrowLeft, FileText, Info, CheckCircle2, XCircle, Scissors, X } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/format'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
@@ -56,6 +56,12 @@ interface Stats {
   split: number
 }
 
+interface SplitPart {
+  amount: string
+  studentId: string
+  paymentTypeId: string
+}
+
 const ROW_STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   NEW: { bg: 'bg-gray-100', text: 'text-gray-600' },
   MATCHED: { bg: 'bg-green-100', text: 'text-green-700' },
@@ -91,6 +97,16 @@ export default function ImportDetailPage() {
 
   // Tooltip
   const [tooltipRow, setTooltipRow] = useState<string | null>(null)
+
+  // Selection for bulk actions
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
+
+  // Split modal
+  const [splitRow, setSplitRow] = useState<ImportRow | null>(null)
+  const [splitParts, setSplitParts] = useState<SplitPart[]>([])
+
+  // Action loading
+  const [actionLoading, setActionLoading] = useState(false)
 
   const t = createTranslator(msgs[locale])
 
@@ -143,7 +159,7 @@ export default function ImportDetailPage() {
 
   function showMsg(type: 'success' | 'error', text: string) {
     setMessage({ type, text })
-    setTimeout(() => setMessage(null), 3000)
+    setTimeout(() => setMessage(null), 4000)
   }
 
   async function updateRow(rowId: string, field: string, value: string) {
@@ -155,13 +171,147 @@ export default function ImportDetailPage() {
       })
       if (res.ok) {
         await fetchImportDetail()
-        showMsg('success', t('app.savedSuccess'))
       } else {
         showMsg('error', t('app.error'))
       }
     } catch {
       showMsg('error', t('app.error'))
     }
+  }
+
+  // === Bulk actions ===
+
+  function toggleRow(rowId: string) {
+    setSelectedRows(prev => {
+      const next = new Set(prev)
+      if (next.has(rowId)) next.delete(rowId)
+      else next.add(rowId)
+      return next
+    })
+  }
+
+  function selectAllMatched() {
+    if (!importData) return
+    const matchedIds = importData.rows
+      .filter(r => r.status === 'MATCHED')
+      .map(r => r.id)
+    setSelectedRows(new Set(matchedIds))
+  }
+
+  function toggleSelectAll() {
+    if (!importData) return
+    const selectable = filteredRows.filter(r => canSelect(r))
+    if (selectedRows.size > 0 && selectable.every(r => selectedRows.has(r.id))) {
+      setSelectedRows(new Set())
+    } else {
+      setSelectedRows(new Set(selectable.map(r => r.id)))
+    }
+  }
+
+  async function approveSelected() {
+    if (selectedRows.size === 0) return
+    setActionLoading(true)
+    try {
+      const res = await fetch(`/api/payment-imports/${id}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rowIds: Array.from(selectedRows) }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        showMsg('success', `${t('paymentImport.approveSuccess')} (${data.approved})`)
+        setSelectedRows(new Set())
+        await fetchImportDetail()
+      } else {
+        const err = await res.json()
+        showMsg('error', err.error || t('app.error'))
+      }
+    } catch {
+      showMsg('error', t('app.error'))
+    }
+    setActionLoading(false)
+  }
+
+  async function rejectSelected() {
+    if (selectedRows.size === 0) return
+    setActionLoading(true)
+    try {
+      const res = await fetch(`/api/payment-imports/${id}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rowIds: Array.from(selectedRows) }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        showMsg('success', `${t('paymentImport.rejectSuccess')} (${data.rejected})`)
+        setSelectedRows(new Set())
+        await fetchImportDetail()
+      } else {
+        showMsg('error', t('app.error'))
+      }
+    } catch {
+      showMsg('error', t('app.error'))
+    }
+    setActionLoading(false)
+  }
+
+  // === Split ===
+
+  function openSplitModal(row: ImportRow) {
+    setSplitRow(row)
+    const half = Math.round(row.amount / 2 * 100) / 100
+    setSplitParts([
+      { amount: half.toString(), studentId: '', paymentTypeId: '' },
+      { amount: (row.amount - half).toString(), studentId: '', paymentTypeId: '' },
+    ])
+  }
+
+  function updateSplitPart(index: number, field: keyof SplitPart, value: string) {
+    setSplitParts(prev => {
+      const next = [...prev]
+      next[index] = { ...next[index], [field]: value }
+      return next
+    })
+  }
+
+  function addSplitPart() {
+    if (splitParts.length >= 5) return
+    setSplitParts(prev => [...prev, { amount: '0', studentId: '', paymentTypeId: '' }])
+  }
+
+  function removeSplitPart(index: number) {
+    if (splitParts.length <= 2) return
+    setSplitParts(prev => prev.filter((_, i) => i !== index))
+  }
+
+  async function submitSplit() {
+    if (!splitRow) return
+    setActionLoading(true)
+    try {
+      const parts = splitParts.map(p => ({
+        amount: parseFloat(p.amount) || 0,
+        studentId: p.studentId || undefined,
+        paymentTypeId: p.paymentTypeId || undefined,
+      }))
+
+      const res = await fetch(`/api/payment-imports/${id}/rows/${splitRow.id}/split`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ parts }),
+      })
+
+      if (res.ok) {
+        showMsg('success', t('paymentImport.splitSuccess'))
+        setSplitRow(null)
+        await fetchImportDetail()
+      } else {
+        const err = await res.json()
+        showMsg('error', err.error || t('app.error'))
+      }
+    } catch {
+      showMsg('error', t('app.error'))
+    }
+    setActionLoading(false)
   }
 
   function statusLabel(status: string): string {
@@ -208,6 +358,7 @@ export default function ImportDetailPage() {
   )
 
   const canEdit = (row: ImportRow) => !['APPROVED', 'REJECTED', 'DUPLICATE', 'SPLIT'].includes(row.status)
+  const canSelect = (row: ImportRow) => !['APPROVED', 'REJECTED', 'SPLIT'].includes(row.status)
 
   // Filter buttons with counts
   const filterButtons: { key: StatusFilter; label: string; count: number; color: string }[] = [
@@ -219,6 +370,10 @@ export default function ImportDetailPage() {
     { key: 'APPROVED', label: t('paymentImport.statusApproved'), count: stats?.approved || 0, color: 'bg-blue-100 text-blue-700' },
     { key: 'REJECTED', label: t('paymentImport.statusRejected'), count: stats?.rejected || 0, color: 'bg-red-100 text-red-700' },
   ]
+
+  // Split modal calculations
+  const splitSum = splitParts.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0)
+  const splitValid = splitRow ? Math.abs(splitSum - splitRow.amount) < 0.01 && splitParts.every(p => parseFloat(p.amount) > 0) : false
 
   return (
     <div>
@@ -261,12 +416,60 @@ export default function ImportDetailPage() {
         ))}
       </div>
 
+      {/* Bulk actions bar */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <button
+          onClick={selectAllMatched}
+          className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+        >
+          {t('paymentImport.selectAllMatched')}
+        </button>
+
+        {selectedRows.size > 0 && (
+          <>
+            <span className="text-sm text-gray-500">
+              {selectedRows.size} {t('paymentImport.selected')}
+            </span>
+            <button
+              onClick={approveSelected}
+              disabled={actionLoading}
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              {t('paymentImport.approveSelected')}
+            </button>
+            <button
+              onClick={rejectSelected}
+              disabled={actionLoading}
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+            >
+              <XCircle className="w-4 h-4" />
+              {t('paymentImport.rejectSelected')}
+            </button>
+            <button
+              onClick={() => setSelectedRows(new Set())}
+              className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700"
+            >
+              {t('app.cancel')}
+            </button>
+          </>
+        )}
+      </div>
+
       {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="py-2.5 px-2 w-10">
+                  <input
+                    type="checkbox"
+                    checked={filteredRows.filter(r => canSelect(r)).length > 0 && filteredRows.filter(r => canSelect(r)).every(r => selectedRows.has(r.id))}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                </th>
                 <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.status')}</th>
                 <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.date')}</th>
                 <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.sender')}</th>
@@ -276,7 +479,7 @@ export default function ImportDetailPage() {
                 <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.sponsor')}</th>
                 <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.student')}</th>
                 <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.paymentType')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase w-8"></th>
+                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase w-20">{t('app.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -284,9 +487,22 @@ export default function ImportDetailPage() {
                 const rowStyle = ROW_STATUS_STYLES[row.status] || ROW_STATUS_STYLES.NEW
                 const confStyle = CONFIDENCE_STYLES[row.matchConfidence] || CONFIDENCE_STYLES.NONE
                 const editable = canEdit(row)
+                const selectable = canSelect(row)
 
                 return (
-                  <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/50 group relative">
+                  <tr key={row.id} className={`border-b border-gray-50 hover:bg-gray-50/50 group ${selectedRows.has(row.id) ? 'bg-primary-50/50' : ''}`}>
+                    {/* Checkbox */}
+                    <td className="py-2.5 px-2">
+                      {selectable && (
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.has(row.id)}
+                          onChange={() => toggleRow(row.id)}
+                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        />
+                      )}
+                    </td>
+
                     {/* Status */}
                     <td className="py-2.5 px-3">
                       <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${rowStyle.bg} ${rowStyle.text}`}>
@@ -384,26 +600,37 @@ export default function ImportDetailPage() {
                       )}
                     </td>
 
-                    {/* Info tooltip */}
-                    <td className="py-2.5 px-2 relative">
-                      {row.matchNotes && (
-                        <div className="relative">
+                    {/* Actions */}
+                    <td className="py-2.5 px-2">
+                      <div className="flex items-center gap-1">
+                        {editable && (
                           <button
-                            onClick={() => setTooltipRow(tooltipRow === row.id ? null : row.id)}
-                            className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                            onClick={() => openSplitModal(row)}
+                            className="p-1 text-gray-400 hover:text-purple-600 rounded"
+                            title={t('paymentImport.split')}
                           >
-                            <Info className="w-4 h-4" />
+                            <Scissors className="w-4 h-4" />
                           </button>
-                          {tooltipRow === row.id && (
-                            <>
-                              <div className="fixed inset-0 z-40" onClick={() => setTooltipRow(null)} />
-                              <div className="absolute right-0 top-8 z-50 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl w-72 whitespace-pre-wrap">
-                                {row.matchNotes}
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      )}
+                        )}
+                        {row.matchNotes && (
+                          <div className="relative">
+                            <button
+                              onClick={() => setTooltipRow(tooltipRow === row.id ? null : row.id)}
+                              className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                            >
+                              <Info className="w-4 h-4" />
+                            </button>
+                            {tooltipRow === row.id && (
+                              <>
+                                <div className="fixed inset-0 z-40" onClick={() => setTooltipRow(null)} />
+                                <div className="absolute right-0 top-8 z-50 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl w-72 whitespace-pre-wrap">
+                                  {row.matchNotes}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )
@@ -411,7 +638,7 @@ export default function ImportDetailPage() {
 
               {filteredRows.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="py-12 text-center text-gray-500 text-sm">
+                  <td colSpan={11} className="py-12 text-center text-gray-500 text-sm">
                     {t('paymentImport.noRows')}
                   </td>
                 </tr>
@@ -425,6 +652,108 @@ export default function ImportDetailPage() {
           {t('pagination.showing')} {formatNumber(filteredRows.length)} {t('pagination.of')} {formatNumber(importData.rows.length)}
         </div>
       </div>
+
+      {/* Split modal */}
+      {splitRow && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setSplitRow(null)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-lg font-semibold text-gray-900">{t('paymentImport.splitPayment')}</h3>
+              <button onClick={() => setSplitRow(null)} className="p-1 text-gray-400 hover:text-gray-600 rounded">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Original amount */}
+            <div className="flex justify-between items-center mb-4 p-3 bg-gray-50 rounded-lg">
+              <span className="text-sm text-gray-600">{t('paymentImport.splitOriginalAmount')}</span>
+              <span className="text-lg font-bold text-gray-900">{formatNumber(splitRow.amount)} {splitRow.currency}</span>
+            </div>
+
+            {/* Parts */}
+            <div className="space-y-3 mb-4">
+              {splitParts.map((part, i) => (
+                <div key={i} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-500 w-6">{i + 1}.</span>
+                  <input
+                    type="number"
+                    value={part.amount}
+                    onChange={(e) => updateSplitPart(i, 'amount', e.target.value)}
+                    placeholder={t('paymentImport.amount')}
+                    className="w-24 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                    step="0.01"
+                  />
+                  <select
+                    value={part.studentId}
+                    onChange={(e) => updateSplitPart(i, 'studentId', e.target.value)}
+                    className="flex-1 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                  >
+                    <option value="">{t('paymentImport.selectStudent')}</option>
+                    {students.map((s: any) => (
+                      <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={part.paymentTypeId}
+                    onChange={(e) => updateSplitPart(i, 'paymentTypeId', e.target.value)}
+                    className="w-36 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                  >
+                    <option value="">{t('paymentImport.selectPaymentType')}</option>
+                    {paymentTypes.map((pt: any) => (
+                      <option key={pt.id} value={pt.id}>{pt.name}</option>
+                    ))}
+                  </select>
+                  {splitParts.length > 2 && (
+                    <button onClick={() => removeSplitPart(i)} className="p-1 text-gray-400 hover:text-red-500">
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Add part button */}
+            {splitParts.length < 5 && (
+              <button
+                onClick={addSplitPart}
+                className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4"
+              >
+                + {t('app.add')}
+              </button>
+            )}
+
+            {/* Sum validation */}
+            <div className={`flex justify-between items-center p-3 rounded-lg mb-5 ${splitValid ? 'bg-green-50' : 'bg-red-50'}`}>
+              <span className="text-sm text-gray-600">{t('paymentImport.splitRemaining')}</span>
+              <span className={`text-sm font-bold ${splitValid ? 'text-green-700' : 'text-red-700'}`}>
+                {formatNumber(Math.round((splitRow.amount - splitSum) * 100) / 100)} {splitRow.currency}
+              </span>
+            </div>
+
+            {!splitValid && (
+              <p className="text-xs text-red-600 mb-4">{t('paymentImport.splitSum')}</p>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setSplitRow(null)}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              >
+                {t('app.cancel')}
+              </button>
+              <button
+                onClick={submitSplit}
+                disabled={!splitValid || actionLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50"
+              >
+                {t('paymentImport.split')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
