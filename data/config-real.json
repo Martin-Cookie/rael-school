@@ -1,0 +1,217 @@
+{
+  "metadata": {
+    "generatedAt": "2026-02-14",
+    "source": "Číselníky a konfigurace RAEL School"
+  },
+
+  "classRooms": {
+    "description": "Třídy a jejich kapacity (počet dětí v každém streamu)",
+    "classes": [
+      {
+        "name": "PP1",
+        "ageRange": "3-5",
+        "streams": { "A": 28, "B": 36 },
+        "totalStudents": 64,
+        "sortOrder": 1
+      },
+      {
+        "name": "PP2",
+        "ageRange": "4-6",
+        "streams": { "A": 23, "B": 22 },
+        "totalStudents": 45,
+        "sortOrder": 2
+      },
+      {
+        "name": "Grade 1",
+        "ageRange": null,
+        "streams": { "A": 33, "B": 35 },
+        "totalStudents": 68,
+        "sortOrder": 3
+      },
+      {
+        "name": "Grade 2",
+        "ageRange": null,
+        "streams": { "A": 32, "B": 34 },
+        "totalStudents": 66,
+        "sortOrder": 4
+      },
+      {
+        "name": "Grade 3",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": 39,
+        "sortOrder": 5
+      },
+      {
+        "name": "Grade 4",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": 40,
+        "sortOrder": 6
+      },
+      {
+        "name": "Grade 5",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": 40,
+        "sortOrder": 7
+      },
+      {
+        "name": "Grade 6",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": 37,
+        "sortOrder": 8
+      },
+      {
+        "name": "Grade 7",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": 30,
+        "sortOrder": 9
+      },
+      {
+        "name": "Grade 8",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": 30,
+        "sortOrder": 10,
+        "note": "Junior Secondary"
+      },
+      {
+        "name": "Grade 9",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": 8,
+        "sortOrder": 11,
+        "note": "Junior Secondary"
+      },
+      {
+        "name": "Grade 10",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": null,
+        "sortOrder": 12,
+        "note": "Senior Secondary — zatím bez dětí, plánováno"
+      },
+      {
+        "name": "Grade 11",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": null,
+        "sortOrder": 13,
+        "note": "Senior Secondary — zatím bez dětí, plánováno"
+      },
+      {
+        "name": "Grade 12",
+        "ageRange": null,
+        "streams": null,
+        "totalStudents": null,
+        "sortOrder": 14,
+        "note": "Senior Secondary — zatím bez dětí, plánováno, konec střední školy"
+      }
+    ],
+    "totalActiveStudents": 467,
+    "schoolStructure": {
+      "primary": "PP1, PP2, Grade 1–6",
+      "juniorSecondary": "Grade 7–9",
+      "seniorSecondary": "Grade 10–12 (plánováno)"
+    }
+  },
+
+  "paymentTypes": {
+    "description": "Typy plateb, které sponzoři a dárci posílají",
+    "types": [
+      {
+        "name": "Stravenky",
+        "description": "Na stravenky pro děti, které sponzor podporuje",
+        "currency": "KES",
+        "sortOrder": 1
+      },
+      {
+        "name": "Platba za kávu",
+        "description": "Platby za kávu z kavárny/café",
+        "currency": null,
+        "sortOrder": 2
+      },
+      {
+        "name": "Školné",
+        "description": "Školné na celý rok nebo půl roku (nyní 2026)",
+        "currency": null,
+        "sortOrder": 3
+      },
+      {
+        "name": "Ordinace - měsíční příspěvek",
+        "description": "Pravidelné měsíční příspěvky na ordinaci",
+        "currency": "CZK",
+        "sortOrder": 4
+      },
+      {
+        "name": "Taneční klub - měsíční příspěvek",
+        "description": "Pravidelné měsíční příspěvky na taneční klub",
+        "currency": null,
+        "sortOrder": 5
+      },
+      {
+        "name": "Semináře pro náctileté - měsíční příspěvek",
+        "description": "Pravidelné měsíční příspěvky na semináře pro náctileté",
+        "currency": null,
+        "sortOrder": 6
+      }
+    ]
+  },
+
+  "schoolFees": {
+    "description": "Školné (ordinace = školné/provoz školy)",
+    "tiers": [
+      {
+        "grades": "PP1–Grade 6",
+        "annualFee": 3700,
+        "currency": "CZK",
+        "note": "Do 6. třídy včetně"
+      },
+      {
+        "grades": "Grade 7–Grade 12",
+        "annualFee": 4700,
+        "currency": "CZK",
+        "note": "Od 7. třídy výš"
+      }
+    ]
+  },
+
+  "healthCheckTypes": {
+    "description": "Typy zdravotních prohlídek",
+    "types": [
+      {
+        "name": "Zdravotní",
+        "description": "Obecná zdravotní prohlídka",
+        "sortOrder": 1
+      },
+      {
+        "name": "Zubař",
+        "description": "Zubní prohlídka",
+        "sortOrder": 2
+      },
+      {
+        "name": "Urgent",
+        "description": "Urgentní/akutní zdravotní problém",
+        "sortOrder": 3
+      }
+    ]
+  },
+
+  "monthlyClinicSponsors": {
+    "description": "Sponzoři, kteří přispívají měsíčně na ordinaci",
+    "sponsors": [
+      { "name": "René Finsterle", "monthlyAmount": 1500, "currency": "CZK" },
+      { "name": "Panglao", "monthlyAmount": 2500, "currency": "CZK" },
+      { "name": "Jaroslav Veselka", "monthlyAmount": 1500, "currency": "CZK" },
+      { "name": "Alena Kadaníková", "monthlyAmount": 500, "currency": "CZK" },
+      { "name": "Roman Kopecký", "monthlyAmount": 2500, "currency": "CZK" },
+      { "name": "Eva Mrázková", "monthlyAmount": 2000, "currency": "CZK" }
+    ],
+    "totalMonthly": 10500,
+    "totalAnnual": 126000,
+    "currency": "CZK"
+  }
+}
