@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -125,11 +125,13 @@ export default function AdminPage() {
   const [healthTypes, setHealthTypes] = useState<CodelistItem[]>([])
   const [paymentTypes, setPaymentTypes] = useState<CodelistItem[]>([])
   const [needTypes, setNeedTypes] = useState<CodelistItem[]>([])
+  const [equipmentTypes, setEquipmentTypes] = useState<CodelistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [newClassName, setNewClassName] = useState('')
   const [newHealthTypeName, setNewHealthTypeName] = useState('')
   const [newPaymentTypeName, setNewPaymentTypeName] = useState('')
   const [newNeedTypeName, setNewNeedTypeName] = useState('')
+  const [newEquipmentTypeName, setNewEquipmentTypeName] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
 
@@ -147,20 +149,23 @@ export default function AdminPage() {
 
   async function fetchAll() {
     try {
-      const [crRes, htRes, ptRes, ntRes] = await Promise.all([
+      const [crRes, htRes, ptRes, ntRes, etRes] = await Promise.all([
         fetch('/api/admin/classrooms'),
         fetch('/api/admin/health-types'),
         fetch('/api/admin/payment-types'),
         fetch('/api/admin/need-types'),
+        fetch('/api/admin/equipment-types'),
       ])
       const crData = await crRes.json()
       const htData = await htRes.json()
       const ptData = await ptRes.json()
       const ntData = await ntRes.json()
+      const etData = await etRes.json()
       setClassrooms(crData.classrooms || [])
       setHealthTypes(htData.healthTypes || [])
       setPaymentTypes(ptData.paymentTypes || [])
       setNeedTypes(ntData.needTypes || [])
+      setEquipmentTypes(etData.equipmentTypes || [])
       setLoading(false)
     } catch { setLoading(false) }
   }
@@ -210,6 +215,7 @@ export default function AdminPage() {
   const healthTypeH = makeHandlers('/api/admin/health-types', healthTypes)
   const paymentTypeH = makeHandlers('/api/admin/payment-types', paymentTypes)
   const needTypeH = makeHandlers('/api/admin/need-types', needTypes)
+  const equipmentTypeH = makeHandlers('/api/admin/equipment-types', equipmentTypes)
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
 
@@ -274,6 +280,19 @@ export default function AdminPage() {
           onDelete={needTypeH.del}
           onMove={needTypeH.move}
           placeholder={t('admin.newNeedTypeName')}
+          t={t}
+        />
+
+        <CodelistSection
+          title={t('admin.equipmentTypes')}
+          icon={Package}
+          items={equipmentTypes}
+          newName={newEquipmentTypeName}
+          setNewName={setNewEquipmentTypeName}
+          onAdd={() => equipmentTypeH.add(newEquipmentTypeName, () => setNewEquipmentTypeName(''))}
+          onDelete={equipmentTypeH.del}
+          onMove={equipmentTypeH.move}
+          placeholder={t('admin.newEquipmentTypeName')}
           t={t}
         />
       </div>

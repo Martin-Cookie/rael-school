@@ -39,6 +39,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [healthTypes, setHealthTypes] = useState<any[]>([])
   const [paymentTypes, setPaymentTypes] = useState<any[]>([])
   const [needTypes, setNeedTypes] = useState<any[]>([])
+  const [equipmentTypes, setEquipmentTypes] = useState<any[]>([])
   const [allSponsors, setAllSponsors] = useState<any[]>([])
   useEffect(() => { fetch('/api/sponsors').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(() => {}) }, [])
 
@@ -81,7 +82,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
@@ -101,6 +102,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   async function fetchNeedTypes() {
     try { const res = await fetch('/api/admin/need-types'); const d = await res.json(); setNeedTypes(d.needTypes || []) } catch {}
+  }
+
+  async function fetchEquipmentTypes() {
+    try { const res = await fetch('/api/admin/equipment-types'); const d = await res.json(); setEquipmentTypes(d.equipmentTypes || []) } catch {}
   }
 
   async function fetchStudent() {
@@ -293,11 +298,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }
 
   function updateEquipment(idx: number, field: string, value: string) { const u = [...editEquipment]; u[idx] = { ...u[idx], [field]: value }; setEditEquipment(u) }
-  function ensureEquipmentItems() {
-    const types = ['bed', 'mattress', 'blanket', 'mosquito_net']
-    const current = editEquipment.map((e: any) => e.type)
-    const missing = types.filter(t => !current.includes(t))
-    if (missing.length > 0) setEditEquipment([...editEquipment, ...missing.map(type => ({ type, condition: 'new', acquiredAt: '', notes: '' }))])
+  function addEquipmentItem(typeName: string) {
+    if (!typeName) return
+    setEditEquipment([...editEquipment, { type: typeName, condition: 'new', acquiredAt: '', notes: '' }])
+  }
+  function removeEquipmentItem(idx: number) {
+    setEditEquipment(editEquipment.filter((_: any, i: number) => i !== idx))
   }
 
   const tabs: { key: Tab; label: string; icon: any }[] = [
@@ -315,7 +321,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   if (!student) return <div className="text-center py-12 text-gray-500">Student not found</div>
 
   const condBadge = (c: string) => { const m: Record<string,string> = { new:'badge-green', satisfactory:'badge-yellow', poor:'badge-red' }; const l: Record<string,string> = { new:t('equipment.new'), satisfactory:t('equipment.satisfactory'), poor:t('equipment.poor') }; return <span className={`badge ${m[c]||'badge-yellow'}`}>{l[c]||c}</span> }
-  const eqLabel = (type: string) => ({ bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net') }[type] || type)
+  const eqLabel = (type: string) => {
+    const m: Record<string,string> = { bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net'), bedding:t('equipment.bedding'), uniform:t('equipment.uniform'), shoes:t('equipment.shoes'), school_bag:t('equipment.school_bag'), pillow:t('equipment.pillow'), wheelchair:t('equipment.wheelchair'), other:t('equipment.other'), received:t('equipment.received') }
+    return m[type] || type
+  }
   const htLabel = (type: string) => { const found = healthTypes.find((ht: any) => ht.name === type); return found ? found.name : type }
   const ptLabel = (type: string) => { const found = paymentTypes.find((pt: any) => pt.name === type); return found ? found.name : type }
 
@@ -382,7 +391,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                       <button onClick={() => setShowConfirm(true)} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium disabled:opacity-50"><Save className="w-4 h-4" /> {saving ? '...' : t('app.save')}</button>
                     </>
                   ) : (
-                    <button onClick={() => { setEditMode(true); ensureEquipmentItems() }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"><Edit3 className="w-4 h-4" /> {t('app.edit')}</button>
+                    <button onClick={() => setEditMode(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"><Edit3 className="w-4 h-4" /> {t('app.edit')}</button>
                   )}
                 </div>
               )}
@@ -492,15 +501,26 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             <div className="space-y-3">
               {editEquipment.map((eq: any, idx: number) => (
                 <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900 sm:w-32">{eqLabel(eq.type)}</span>
+                  <select value={eq.type} onChange={(e) => updateEquipment(idx, 'type', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none sm:w-40">
+                    <option value={eq.type}>{eqLabel(eq.type)}</option>
+                    {equipmentTypes.filter((et: any) => et.name !== eq.type).map((et: any) => <option key={et.id} value={et.name}>{et.name}</option>)}
+                  </select>
                   <select value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                     <option value="new">{t('equipment.new')}</option>
                     <option value="satisfactory">{t('equipment.satisfactory')}</option>
                     <option value="poor">{t('equipment.poor')}</option>
                   </select>
                   <input type="date" value={formatDateForInput(eq.acquiredAt)} onChange={(e) => updateEquipment(idx, 'acquiredAt', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <button onClick={() => removeEquipmentItem(idx)} className="p-1.5 text-gray-400 hover:text-red-500" title={t('equipment.removeItem')}><Trash2 className="w-4 h-4" /></button>
                 </div>
               ))}
+              <div className="flex gap-2 pt-2">
+                <select id="addEquipmentSelect" className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" defaultValue="">
+                  <option value="">{t('equipment.selectType')}</option>
+                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{et.name}</option>)}
+                </select>
+                <button onClick={() => { const sel = document.getElementById('addEquipmentSelect') as HTMLSelectElement; if (sel.value) { addEquipmentItem(sel.value); sel.value = '' } }} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>
+              </div>
             </div>
           ) : student.equipment?.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

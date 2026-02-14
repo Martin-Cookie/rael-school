@@ -74,6 +74,7 @@ async function main() {
   await prisma.healthCheckType.deleteMany()
   await prisma.paymentType.deleteMany()
   await prisma.needType.deleteMany()
+  await prisma.equipmentType.deleteMany()
   console.log('✅ Database cleared')
 
   // ============================================================
@@ -142,6 +143,25 @@ async function main() {
     })
   }
   console.log('✅ NeedTypes seeded (' + needTypeNames.length + ')')
+
+  const equipmentTypeNames = [
+    'Lůžkoviny',
+    'Matrace',
+    'Deka',
+    'Moskytiéra',
+    'Polštář',
+    'Uniforma',
+    'Boty',
+    'Školní taška',
+    'Invalidní vozík',
+    'Ostatní',
+  ]
+  for (let i = 0; i < equipmentTypeNames.length; i++) {
+    await prisma.equipmentType.create({
+      data: { name: equipmentTypeNames[i], sortOrder: i },
+    })
+  }
+  console.log('✅ EquipmentTypes seeded (' + equipmentTypeNames.length + ')')
 
   // ============================================================
   // 3. UŽIVATELÉ — Admin, Manager, Dobrovolníci

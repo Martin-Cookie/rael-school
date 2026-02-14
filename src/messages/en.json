@@ -91,12 +91,23 @@
     "mattress": "Mattress",
     "blanket": "Blanket",
     "mosquito_net": "Mosquito net",
+    "bedding": "Bedding",
+    "uniform": "Uniform",
+    "shoes": "Shoes",
+    "school_bag": "School bag",
+    "pillow": "Pillow",
+    "wheelchair": "Wheelchair",
+    "other": "Other",
+    "received": "Received",
     "condition": "Condition",
     "new": "New",
     "satisfactory": "Satisfactory",
     "poor": "Poor",
     "acquiredAt": "Acquired date",
-    "type": "Type"
+    "type": "Type",
+    "selectType": "-- Select equipment type --",
+    "addEquipment": "Add equipment",
+    "removeItem": "Remove"
   },
   "needs": {
     "title": "Needs & Wishes",
@@ -200,7 +211,9 @@
     "paymentTypes": "Sponsor Payment Types",
     "newPaymentTypeName": "New payment type name",
     "needTypes": "Need Types",
-    "newNeedTypeName": "New need type name"
+    "newNeedTypeName": "New need type name",
+    "equipmentTypes": "Equipment Types",
+    "newEquipmentTypeName": "New equipment type name"
   },
   "statistics": {
     "title": "Statistics & Reports",

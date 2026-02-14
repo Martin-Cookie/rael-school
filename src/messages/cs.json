@@ -91,12 +91,23 @@
     "mattress": "Matrace",
     "blanket": "Deka",
     "mosquito_net": "Moskytiéra",
+    "bedding": "Lůžkoviny",
+    "uniform": "Uniforma",
+    "shoes": "Boty",
+    "school_bag": "Školní taška",
+    "pillow": "Polštář",
+    "wheelchair": "Invalidní vozík",
+    "other": "Ostatní",
+    "received": "Přijato",
     "condition": "Stav",
     "new": "Nové",
     "satisfactory": "Uspokojivé",
     "poor": "Špatné",
     "acquiredAt": "Datum pořízení",
-    "type": "Typ"
+    "type": "Typ",
+    "selectType": "-- Vyberte typ vybavení --",
+    "addEquipment": "Přidat vybavení",
+    "removeItem": "Odebrat"
   },
   "needs": {
     "title": "Potřeby a přání",
@@ -200,7 +211,9 @@
     "paymentTypes": "Číselník typů plateb od sponzorů",
     "newPaymentTypeName": "Název nového typu platby",
     "needTypes": "Číselník potřeb",
-    "newNeedTypeName": "Název nové potřeby"
+    "newNeedTypeName": "Název nové potřeby",
+    "equipmentTypes": "Číselník vybavení",
+    "newEquipmentTypeName": "Název nového typu vybavení"
   },
   "statistics": {
     "title": "Statistiky a přehledy",

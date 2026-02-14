@@ -91,12 +91,23 @@
     "mattress": "Godoro",
     "blanket": "Blanketi",
     "mosquito_net": "Chandarua",
+    "bedding": "Matandiko",
+    "uniform": "Sare",
+    "shoes": "Viatu",
+    "school_bag": "Begi ya shule",
+    "pillow": "Mto",
+    "wheelchair": "Kiti cha magurudumu",
+    "other": "Nyingine",
+    "received": "Imepokelewa",
     "condition": "Hali",
     "new": "Mpya",
     "satisfactory": "Inaridhisha",
     "poor": "Mbaya",
     "acquiredAt": "Tarehe ya kununua",
-    "type": "Aina"
+    "type": "Aina",
+    "selectType": "-- Chagua aina ya kifaa --",
+    "addEquipment": "Ongeza kifaa",
+    "removeItem": "Ondoa"
   },
   "needs": {
     "title": "Mahitaji na Matakwa",
@@ -200,7 +211,9 @@
     "paymentTypes": "Aina za Malipo ya Wadhamini",
     "newPaymentTypeName": "Jina la aina mpya ya malipo",
     "needTypes": "Aina za Mahitaji",
-    "newNeedTypeName": "Jina la aina mpya ya hitaji"
+    "newNeedTypeName": "Jina la aina mpya ya hitaji",
+    "equipmentTypes": "Aina za Vifaa",
+    "newEquipmentTypeName": "Jina la aina mpya ya kifaa"
   },
   "statistics": {
     "title": "Takwimu na Ripoti",
