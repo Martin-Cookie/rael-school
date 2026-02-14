@@ -98,23 +98,33 @@ export default function ClassesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {!selectedClass ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {filteredClassNames.map(cn => {
-              const count = students.filter((s: any) => s.className === cn).length
-              return (
-                <button key={cn} onClick={() => { setSelectedClass(cn); setSearch(''); setSortCol('') }} className="bg-gray-50 hover:bg-gray-100 rounded-xl p-4 border border-gray-200 text-left transition-colors">
-                  <p className="text-lg font-bold text-gray-900">{cn}</p>
-                  <p className="text-sm text-gray-500">{count} {locale === 'cs' ? 'studentů' : locale === 'sw' ? 'wanafunzi' : 'students'}</p>
-                </button>
-              )
-            })}
-            {filteredClassNames.length === 0 && <p className="text-gray-500 text-sm col-span-full text-center py-8">{t('app.noData')}</p>}
+          filteredClassNames.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/50">
+                  <SH col="name" className="text-left">{t('student.className')}</SH>
+                  <SH col="count" className="text-right">{locale === 'cs' ? 'Počet studentů' : locale === 'sw' ? 'Idadi ya wanafunzi' : 'Student count'}</SH>
+                </tr>
+              </thead>
+              <tbody>
+                {sortData(filteredClassNames.map(cn => ({ name: cn, count: students.filter((s: any) => s.className === cn).length })), sortCol).map((row: any) => (
+                  <tr key={row.name} className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer" onClick={() => { setSelectedClass(row.name); setSearch(''); setSortCol('') }}>
+                    <td className="py-3 px-3 text-sm font-medium text-primary-600 hover:underline">{row.name}</td>
+                    <td className="py-3 px-3 text-sm text-gray-900 text-right">{row.count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+          ) : (
+            <p className="text-gray-500 text-sm text-center py-8 px-6">{t('app.noData')}</p>
+          )
         ) : (
-          <div>
-            <button onClick={() => { setSelectedClass(null); setSearch('') }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
+          <div className="p-6">
+            <button onClick={() => { setSelectedClass(null); setSearch(''); setSortCol('') }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">{selectedClass} ({filteredStudentsInClass.length})</h3>
             <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
               <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
