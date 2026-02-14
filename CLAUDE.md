@@ -41,6 +41,24 @@
 - Stravenky jsou vždy v KES
 - Každý nový text v UI musí mít klíč ve **všech třech** jazycích (cs, en, sw)
 
+## UI vzory
+
+### Třídění tabulek (SortHeader pattern)
+
+Všechny hlavní stránky se seznamy používají jednotný vzor tříditelné tabulky:
+
+- **`handleSort(col)`** — přepíná asc/desc, nebo nastaví nový sloupec
+- **`sortData(data, col)`** — třídí pole podle sloupce (čísla numericky, řetězce abecedně, `_count.*` pro Prisma relace)
+- **`SH` komponenta** — tříditelná hlavička `<th>` se šipkami (ChevronUp/ChevronDown/ArrowUpDown)
+
+Stránky s tímto vzorem:
+| Stránka | Soubor | Sloupce |
+|---------|--------|---------|
+| Přehled | `dashboard/page.tsx` | Studenti, Sponzoři, Platby, Potřeby, Třídy |
+| Studenti | `students/page.tsx` | Číslo, Příjmení, Jméno, Třída, Pohlaví, Věk, Potřeby, Sponzoři |
+| Sponzoři | `sponsors/page.tsx` | Příjmení, Jméno, Email, Telefon, Studenti, Platby |
+| Třídy | `classes/page.tsx` | Název třídy, Počet studentů + detail třídy se studenty |
+
 ## Uživatelské role
 
 | Role | Práva |
