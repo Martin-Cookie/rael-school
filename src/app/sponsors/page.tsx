@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Heart, Plus, Search, Pencil, X, Check, UserX, UserCheck,
-  Mail, Phone, Users, CreditCard
+  ChevronUp, ChevronDown, ArrowUpDown
 } from 'lucide-react'
 import Pagination from '@/components/Pagination'
 import cs from '@/messages/cs.json'
@@ -37,17 +37,21 @@ interface Sponsor {
   paymentsByCurrency: Record<string, number>
 }
 
+type SortDir = 'asc' | 'desc'
+
 export default function SponsorsPage() {
   const [sponsors, setSponsors] = useState<Sponsor[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [showAdd, setShowAdd] = useState(false)
-  const PAGE_SIZE = 10
+  const PAGE_SIZE = 20
   const [editingId, setEditingId] = useState<string | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
   const [user, setUser] = useState<any>(null)
+  const [sortCol, setSortCol] = useState<string>('')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
 
   // Form state for new sponsor
   const [newForm, setNewForm] = useState({ firstName: '', lastName: '', email: '', phone: '' })
@@ -151,6 +155,27 @@ export default function SponsorsPage() {
     return amount.toLocaleString('cs-CZ').replace(/,/g, ' ')
   }
 
+  function handleSort(col: string) {
+    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
+    else { setSortCol(col); setSortDir('asc') }
+  }
+
+  function sortData<T>(data: T[], col: string): T[] {
+    if (!col) return data
+    return [...data].sort((a: any, b: any) => {
+      let va = col === '_sponsorshipCount' ? (a.sponsorships?.length ?? 0) : a[col]
+      let vb = col === '_sponsorshipCount' ? (b.sponsorships?.length ?? 0) : b[col]
+      if (va == null) va = ''; if (vb == null) vb = ''
+      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
+      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
+    })
+  }
+
+  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
+    const isA = sortCol === col
+    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
+  }
+
   // Filter sponsors
   const filtered = sponsors.filter(s => {
     if (!search) return true
@@ -164,7 +189,8 @@ export default function SponsorsPage() {
   // Reset page when search changes
   useEffect(() => { setCurrentPage(1) }, [search])
 
-  const paginatedSponsors = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const sorted = sortData(filtered, sortCol)
+  const paginatedSponsors = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
   const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
 
   const canEdit = user && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)
@@ -260,147 +286,111 @@ export default function SponsorsPage() {
         </div>
       )}
 
-      {/* Sponsor cards */}
+      {/* Sponsor table */}
       {filtered.length > 0 ? (
         <div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {paginatedSponsors.map((s) => (
-            <div key={s.id} className={`bg-white rounded-xl border ${s.isActive ? 'border-gray-200' : 'border-red-200 bg-red-50'} p-5 group`}>
-              {editingId === s.id ? (
-                /* Edit mode */
-                <div>
-                  <div className="grid grid-cols-2 gap-3 mb-3">
-                    <input
-                      type="text"
-                      value={editForm.firstName}
-                      onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
-                      placeholder={t('student.firstName')}
-                      className="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                    />
-                    <input
-                      type="text"
-                      value={editForm.lastName}
-                      onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
-                      placeholder={t('student.lastName')}
-                      className="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                    />
-                    <input
-                      type="email"
-                      value={editForm.email}
-                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                      placeholder={t('sponsors.email')}
-                      className="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                    />
-                    <input
-                      type="text"
-                      value={editForm.phone}
-                      onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                      placeholder={t('sponsors.phone')}
-                      className="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => saveSponsor(s.id)} className="flex items-center gap-1 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-xs font-medium hover:bg-primary-700">
-                      <Check className="w-3 h-3" /> {t('app.save')}
-                    </button>
-                    <button onClick={() => setEditingId(null)} className="flex items-center gap-1 px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-300">
-                      <X className="w-3 h-3" /> {t('app.cancel')}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                /* View mode */
-                <div>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${s.isActive ? 'bg-accent-100' : 'bg-red-100'}`}>
-                        <span className={`text-sm font-bold ${s.isActive ? 'text-accent-700' : 'text-red-700'}`}>
-                          {s.firstName[0]}{s.lastName[0]}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{s.lastName} {s.firstName}</h3>
-                        {!s.isActive && (
-                          <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">
-                            {t('sponsorPage.inactive')}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {canEdit && (
-                        <button onClick={() => startEdit(s)} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-gray-100">
-                          <Pencil className="w-4 h-4" />
-                        </button>
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-100 bg-gray-50/50">
+                    <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
+                    <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
+                    <SH col="email" className="text-left">{t('sponsors.email')}</SH>
+                    <SH col="phone" className="text-left">{t('sponsors.phone')}</SH>
+                    <SH col="_sponsorshipCount" className="text-left">{t('nav.students')}</SH>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.title')}</th>
+                    {(canEdit || canDeactivate) && <th className="py-2 px-3 text-sm font-medium text-gray-500 w-20"></th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedSponsors.map((s) => (
+                    <tr key={s.id} className={`border-b border-gray-50 hover:bg-gray-50 group ${!s.isActive ? 'bg-red-50/50' : ''}`}>
+                      {editingId === s.id ? (
+                        <>
+                          <td className="py-2 px-3">
+                            <input type="text" value={editForm.lastName} onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+                          </td>
+                          <td className="py-2 px-3">
+                            <input type="text" value={editForm.firstName} onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+                          </td>
+                          <td className="py-2 px-3">
+                            <input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+                          </td>
+                          <td className="py-2 px-3">
+                            <input type="text" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+                          </td>
+                          <td className="py-2 px-3 text-sm text-gray-500" colSpan={2}>-</td>
+                          <td className="py-2 px-3">
+                            <div className="flex gap-1">
+                              <button onClick={() => saveSponsor(s.id)} className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg"><Check className="w-4 h-4" /></button>
+                              <button onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg"><X className="w-4 h-4" /></button>
+                            </div>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="py-3 px-3 text-sm font-medium text-gray-900">
+                            {s.lastName}
+                            {!s.isActive && <span className="ml-2 inline-block text-xs px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">{t('sponsorPage.inactive')}</span>}
+                          </td>
+                          <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
+                          <td className="py-3 px-3 text-sm text-gray-600">{s.email}</td>
+                          <td className="py-3 px-3 text-sm text-gray-600">{s.phone || '-'}</td>
+                          <td className="py-3 px-3 text-sm">
+                            {s.sponsorships.length > 0 ? (
+                              <div className="flex flex-wrap gap-1">
+                                {s.sponsorships.map((sp) => (
+                                  <Link
+                                    key={sp.id}
+                                    href={`/students/${sp.student.id}?from=/sponsors`}
+                                    className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium ${
+                                      sp.isActive
+                                        ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
+                                        : 'bg-gray-100 text-gray-500 line-through'
+                                    }`}
+                                  >
+                                    {sp.student.lastName} {sp.student.firstName}
+                                  </Link>
+                                ))}
+                              </div>
+                            ) : <span className="text-gray-400">-</span>}
+                          </td>
+                          <td className="py-3 px-3 text-sm text-gray-600">
+                            {Object.keys(s.paymentsByCurrency).length > 0 ? (
+                              Object.entries(s.paymentsByCurrency).map(([currency, amount], i) => (
+                                <span key={currency}>
+                                  {i > 0 && ' | '}
+                                  <span className="font-medium">{formatCurrency(amount)} {currency}</span>
+                                </span>
+                              ))
+                            ) : <span className="text-gray-400">-</span>}
+                          </td>
+                          {(canEdit || canDeactivate) && (
+                            <td className="py-3 px-3">
+                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {canEdit && (
+                                  <button onClick={() => startEdit(s)} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-gray-100">
+                                    <Pencil className="w-4 h-4" />
+                                  </button>
+                                )}
+                                {canDeactivate && (
+                                  <button onClick={() => toggleActive(s.id, s.isActive)} className="p-1.5 text-gray-400 hover:text-amber-600 rounded-lg hover:bg-gray-100" title={s.isActive ? t('sponsorPage.deactivate') : t('sponsorPage.reactivate')}>
+                                    {s.isActive ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          )}
+                        </>
                       )}
-                      {canDeactivate && (
-                        <button onClick={() => toggleActive(s.id, s.isActive)} className="p-1.5 text-gray-400 hover:text-amber-600 rounded-lg hover:bg-gray-100" title={s.isActive ? t('sponsorPage.deactivate') : t('sponsorPage.reactivate')}>
-                          {s.isActive ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Contact info */}
-                  <div className="space-y-1 mb-3 text-sm text-gray-700">
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-gray-400" />
-                      {s.email}
-                    </div>
-                    {s.phone && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-3.5 h-3.5 text-gray-400" />
-                        {s.phone}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Students */}
-                  {s.sponsorships.length > 0 && (
-                    <div className="mb-3">
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <Users className="w-3.5 h-3.5 text-gray-400" />
-                        <span className="text-xs font-medium text-gray-500">{t('sponsorPage.students')}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {s.sponsorships.map((sp) => (
-                          <Link
-                            key={sp.id}
-                            href={`/students/${sp.student.id}`}
-                            className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${
-                              sp.isActive
-                                ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
-                                : 'bg-gray-100 text-gray-500 line-through'
-                            }`}
-                          >
-                            {sp.student.lastName} {sp.student.firstName}
-                            {sp.student.className && <span className="text-gray-400">({sp.student.className})</span>}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Payments summary */}
-                  {Object.keys(s.paymentsByCurrency).length > 0 && (
-                    <div className="flex items-center gap-1.5">
-                      <CreditCard className="w-3.5 h-3.5 text-gray-400" />
-                      <span className="text-xs text-gray-500">
-                        {Object.entries(s.paymentsByCurrency).map(([currency, amount], i) => (
-                          <span key={currency}>
-                            {i > 0 && ' | '}
-                            <span className="font-medium text-gray-700">{formatCurrency(amount)} {currency}</span>
-                          </span>
-                        ))}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
-        <Pagination currentPage={currentPage} totalItems={filtered.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
+          </div>
+          <Pagination currentPage={currentPage} totalItems={filtered.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
         </div>
       ) : (
         <div className="text-center py-12">

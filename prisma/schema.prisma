@@ -37,15 +37,17 @@ model Student {
   dateOfBirth  DateTime?
   gender       String?
   className    String?
+  school       String?  // School name (e.g. "Rael", "Unga Primary", "Kodida Primary")
+  orphanStatus String?  // "total", "partial", or null
   healthStatus String?
   profilePhoto String?  // Path to profile photo
-  
+
   motherName   String?
   motherAlive  Boolean?
   fatherName   String?
   fatherAlive  Boolean?
   siblings     String?
-  
+
   isActive     Boolean  @default(true)
   notes        String?
   createdAt    DateTime @default(now())
@@ -235,6 +237,26 @@ model HealthCheckType {
 // ============ PAYMENT TYPES ============
 
 model PaymentType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ============ NEED TYPES ============
+
+model NeedType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ============ EQUIPMENT TYPES ============
+
+model EquipmentType {
   id        String   @id @default(cuid())
   name      String   @unique
   sortOrder Int      @default(0)

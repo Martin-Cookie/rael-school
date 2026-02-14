@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
   HandHeart, Stethoscope, Plus, Check, Trash2, Upload,
-  Pencil, Package, Heart, CreditCard
+  Pencil, Package, Heart, CreditCard, Loader2
 } from 'lucide-react'
 import { formatDate, formatDateForInput, formatNumber, calculateAge } from '@/lib/format'
+import { validateImageFile, compressImage } from '@/lib/imageUtils'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -37,15 +38,20 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [classrooms, setClassrooms] = useState<any[]>([])
   const [healthTypes, setHealthTypes] = useState<any[]>([])
   const [paymentTypes, setPaymentTypes] = useState<any[]>([])
+  const [needTypes, setNeedTypes] = useState<any[]>([])
+  const [equipmentTypes, setEquipmentTypes] = useState<any[]>([])
   const [allSponsors, setAllSponsors] = useState<any[]>([])
   useEffect(() => { fetch('/api/sponsors').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(() => {}) }, [])
 
   const [newNeed, setNewNeed] = useState('')
+  const [selectedNeedType, setSelectedNeedType] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
   const [newVoucher, setNewVoucher] = useState({ type: 'purchase', date: '', amount: '', count: '', donorName: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
   const [newHealth, setNewHealth] = useState({ checkDate: '', checkType: '', notes: '' })
   const [showAddHealth, setShowAddHealth] = useState(false)
+  const [showAddEquipment, setShowAddEquipment] = useState(false)
+  const [newEquipmentType, setNewEquipmentType] = useState('')
   const [showAddSponsor, setShowAddSponsor] = useState(false)
   const [sponsorSearch, setSponsorSearch] = useState('')
   const [sponsorResults, setSponsorResults] = useState<any[]>([])
@@ -56,6 +62,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [photoFilter, setPhotoFilter] = useState('all')
   const [showAddPhoto, setShowAddPhoto] = useState(false)
   const [newPhoto, setNewPhoto] = useState({ category: 'visit', description: '', takenAt: '', file: null as File | null })
+  const [uploading, setUploading] = useState(false)
   const [showAddPayment, setShowAddPayment] = useState(false)
   const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'CZK', paymentType: '', sponsorId: '', notes: '' })
 
@@ -77,7 +84,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
@@ -93,6 +100,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   async function fetchPaymentTypes() {
     try { const res = await fetch('/api/admin/payment-types'); const d = await res.json(); setPaymentTypes(d.paymentTypes || []) } catch {}
+  }
+
+  async function fetchNeedTypes() {
+    try { const res = await fetch('/api/admin/need-types'); const d = await res.json(); setNeedTypes(d.needTypes || []) } catch {}
+  }
+
+  async function fetchEquipmentTypes() {
+    try { const res = await fetch('/api/admin/equipment-types'); const d = await res.json(); setEquipmentTypes(d.equipmentTypes || []) } catch {}
   }
 
   async function fetchStudent() {
@@ -128,10 +143,11 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   // ---- CRUD handlers ----
   async function addNeed() {
-    if (!newNeed.trim()) return
+    const description = selectedNeedType === '__custom__' ? newNeed.trim() : selectedNeedType
+    if (!description) return
     try {
-      const res = await fetch(`/api/students/${id}/needs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description: newNeed }) })
-      if (res.ok) { setNewNeed(''); setShowAddNeed(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+      const res = await fetch(`/api/students/${id}/needs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description }) })
+      if (res.ok) { setNewNeed(''); setSelectedNeedType(''); setShowAddNeed(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function toggleNeedFulfilled(needId: string, current: boolean) {
@@ -144,6 +160,17 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   async function deleteNeed(needId: string) {
     if (!confirm(t('app.confirmDelete'))) return
     try { await fetch(`/api/students/${id}/needs`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+  }
+  async function addSingleEquipment() {
+    if (!newEquipmentType) return
+    try {
+      const res = await fetch(`/api/students/${id}/equipment`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: newEquipmentType, condition: 'new' }) })
+      if (res.ok) { setNewEquipmentType(''); setShowAddEquipment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+    } catch { showMsg('error', t('app.error')) }
+  }
+  async function deleteSingleEquipment(equipmentId: string) {
+    if (!confirm(t('app.confirmDelete'))) return
+    try { await fetch(`/api/students/${id}/equipment`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ equipmentId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addVoucher() {
     if (!newVoucher.date || !newVoucher.count) return
@@ -174,11 +201,16 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }
   async function addPhoto() {
     if (!newPhoto.file) return
+    const validationError = validateImageFile(newPhoto.file)
+    if (validationError) { showMsg('error', t(`photos.${validationError}`)); return }
+    setUploading(true)
     try {
-      const fd = new FormData(); fd.append('file', newPhoto.file); fd.append('category', newPhoto.category); fd.append('description', newPhoto.description); if (newPhoto.takenAt) fd.append('takenAt', newPhoto.takenAt)
+      const compressed = await compressImage(newPhoto.file, 1600, 0.8)
+      const fd = new FormData(); fd.append('file', compressed); fd.append('category', newPhoto.category); fd.append('description', newPhoto.description); if (newPhoto.takenAt) fd.append('takenAt', newPhoto.takenAt)
       const res = await fetch(`/api/students/${id}/photos`, { method: 'POST', body: fd })
       if (res.ok) { setNewPhoto({ category: 'visit', description: '', takenAt: '', file: null }); setShowAddPhoto(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
+    setUploading(false)
   }
   async function deletePhoto(photoId: string) {
     if (!confirm(t('app.confirmDelete'))) return
@@ -255,11 +287,16 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function uploadProfilePhoto(file: File) {
+    const validationError = validateImageFile(file)
+    if (validationError) { showMsg('error', t(`photos.${validationError}`)); return }
+    setUploading(true)
     try {
-      const fd = new FormData(); fd.append('file', file)
+      const compressed = await compressImage(file, 400, 0.8)
+      const fd = new FormData(); fd.append('file', compressed)
       const res = await fetch(`/api/students/${id}/profile-photo`, { method: 'POST', body: fd })
       if (res.ok) { await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
+    setUploading(false)
   }
   async function addSponsorPayment() {
     if (!newPayment.paymentDate || !newPayment.amount || !newPayment.paymentType) return
@@ -274,11 +311,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }
 
   function updateEquipment(idx: number, field: string, value: string) { const u = [...editEquipment]; u[idx] = { ...u[idx], [field]: value }; setEditEquipment(u) }
-  function ensureEquipmentItems() {
-    const types = ['bed', 'mattress', 'blanket', 'mosquito_net']
-    const current = editEquipment.map((e: any) => e.type)
-    const missing = types.filter(t => !current.includes(t))
-    if (missing.length > 0) setEditEquipment([...editEquipment, ...missing.map(type => ({ type, condition: 'new', acquiredAt: '', notes: '' }))])
+  function addEquipmentItem(typeName: string) {
+    if (!typeName) return
+    setEditEquipment([...editEquipment, { type: typeName, condition: 'new', acquiredAt: '', notes: '' }])
+  }
+  function removeEquipmentItem(idx: number) {
+    setEditEquipment(editEquipment.filter((_: any, i: number) => i !== idx))
   }
 
   const tabs: { key: Tab; label: string; icon: any }[] = [
@@ -296,7 +334,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   if (!student) return <div className="text-center py-12 text-gray-500">Student not found</div>
 
   const condBadge = (c: string) => { const m: Record<string,string> = { new:'badge-green', satisfactory:'badge-yellow', poor:'badge-red' }; const l: Record<string,string> = { new:t('equipment.new'), satisfactory:t('equipment.satisfactory'), poor:t('equipment.poor') }; return <span className={`badge ${m[c]||'badge-yellow'}`}>{l[c]||c}</span> }
-  const eqLabel = (type: string) => ({ bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net') }[type] || type)
+  const eqLabel = (type: string) => {
+    const m: Record<string,string> = { bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net'), bedding:t('equipment.bedding'), uniform:t('equipment.uniform'), shoes:t('equipment.shoes'), school_bag:t('equipment.school_bag'), pillow:t('equipment.pillow'), wheelchair:t('equipment.wheelchair'), other:t('equipment.other'), received:t('equipment.received') }
+    return m[type] || type
+  }
   const htLabel = (type: string) => { const found = healthTypes.find((ht: any) => ht.name === type); return found ? found.name : type }
   const ptLabel = (type: string) => { const found = paymentTypes.find((pt: any) => pt.name === type); return found ? found.name : type }
 
@@ -338,9 +379,9 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               </div>
             )}
             {canEditData && (
-              <label className="absolute inset-0 rounded-2xl cursor-pointer bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all">
-                <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => { if (e.target.files?.[0]) uploadProfilePhoto(e.target.files[0]) }} />
+              <label className={`absolute inset-0 rounded-2xl cursor-pointer flex items-center justify-center transition-all ${uploading ? 'bg-black/40' : 'bg-black/0 group-hover:bg-black/30'}`}>
+                {uploading ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />}
+                <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={(e) => { if (e.target.files?.[0]) uploadProfilePhoto(e.target.files[0]) }} />
               </label>
             )}
           </div>
@@ -363,7 +404,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                       <button onClick={() => setShowConfirm(true)} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium disabled:opacity-50"><Save className="w-4 h-4" /> {saving ? '...' : t('app.save')}</button>
                     </>
                   ) : (
-                    <button onClick={() => { setEditMode(true); ensureEquipmentItems() }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"><Edit3 className="w-4 h-4" /> {t('app.edit')}</button>
+                    <button onClick={() => setEditMode(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"><Edit3 className="w-4 h-4" /> {t('app.edit')}</button>
                   )}
                 </div>
               )}
@@ -465,33 +506,62 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       {/* ===== EQUIPMENT ===== */}
       {activeTab === 'equipment' && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-5">
-            <div className="p-2 bg-primary-50 rounded-lg"><Package className="w-4 h-4 text-primary-600" /></div>
-            <h3 className="text-base font-semibold text-gray-900">{t('equipment.title')}</h3>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-primary-50 rounded-lg"><Package className="w-4 h-4 text-primary-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('equipment.title')}</h3>
+            </div>
+            {canEditData && !editMode && <button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>}
           </div>
+          {showAddEquipment && !editMode && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select value={newEquipmentType} onChange={(e) => setNewEquipmentType(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                  <option value="">{t('equipment.selectType')}</option>
+                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
+                </select>
+                <button onClick={addSingleEquipment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                <button onClick={() => { setShowAddEquipment(false); setNewEquipmentType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
+              </div>
+            </div>
+          )}
           {editMode ? (
             <div className="space-y-3">
               {editEquipment.map((eq: any, idx: number) => (
                 <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900 sm:w-32">{eqLabel(eq.type)}</span>
+                  <select value={eq.type} onChange={(e) => updateEquipment(idx, 'type', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none sm:w-40">
+                    <option value={eq.type}>{eqLabel(eq.type)}</option>
+                    {equipmentTypes.filter((et: any) => et.name !== eq.type).map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
+                  </select>
                   <select value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                     <option value="new">{t('equipment.new')}</option>
                     <option value="satisfactory">{t('equipment.satisfactory')}</option>
                     <option value="poor">{t('equipment.poor')}</option>
                   </select>
                   <input type="date" value={formatDateForInput(eq.acquiredAt)} onChange={(e) => updateEquipment(idx, 'acquiredAt', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <button onClick={() => removeEquipmentItem(idx)} className="p-1.5 text-gray-400 hover:text-red-500" title={t('equipment.removeItem')}><Trash2 className="w-4 h-4" /></button>
                 </div>
               ))}
+              <div className="flex gap-2 pt-2">
+                <select id="addEquipmentSelect" className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" defaultValue="">
+                  <option value="">{t('equipment.selectType')}</option>
+                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
+                </select>
+                <button onClick={() => { const sel = document.getElementById('addEquipmentSelect') as HTMLSelectElement; if (sel.value) { addEquipmentItem(sel.value); sel.value = '' } }} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>
+              </div>
             </div>
           ) : student.equipment?.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {student.equipment.map((eq: any) => (
-                <div key={eq.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div key={eq.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl group">
                   <div>
                     <p className="text-sm font-medium text-gray-900">{eqLabel(eq.type)}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{formatDate(eq.acquiredAt, locale)}</p>
                   </div>
-                  {condBadge(eq.condition)}
+                  <div className="flex items-center gap-2">
+                    {condBadge(eq.condition)}
+                    {canEditData && <button onClick={() => deleteSingleEquipment(eq.id)} className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>}
+                  </div>
                 </div>
               ))}
             </div>
@@ -511,10 +581,17 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           </div>
           {showAddNeed && (
             <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <div className="flex gap-2">
-                <input type="text" value={newNeed} onChange={(e) => setNewNeed(e.target.value)} placeholder={t('needs.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addNeed()} />
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select value={selectedNeedType} onChange={(e) => { setSelectedNeedType(e.target.value); if (e.target.value !== '__custom__') setNewNeed('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                  <option value="">{t('needs.selectType')}</option>
+                  {needTypes.map((nt: any) => <option key={nt.id} value={nt.name}>{nt.name}</option>)}
+                  <option value="__custom__">{t('needs.customNeed')}</option>
+                </select>
+                {selectedNeedType === '__custom__' && (
+                  <input type="text" value={newNeed} onChange={(e) => setNewNeed(e.target.value)} placeholder={t('needs.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addNeed()} />
+                )}
                 <button onClick={addNeed} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
-                <button onClick={() => { setShowAddNeed(false); setNewNeed('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
+                <button onClick={() => { setShowAddNeed(false); setNewNeed(''); setSelectedNeedType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
               </div>
             </div>
           )}
@@ -669,7 +746,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 <input type="text" value={newPhoto.description} onChange={(e) => setNewPhoto({ ...newPhoto, description: e.target.value })} placeholder={t('photos.description')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                 <input type="file" accept="image/*" onChange={(e) => setNewPhoto({ ...newPhoto, file: e.target.files?.[0] || null })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
               </div>
-              <div className="flex gap-2"><button onClick={addPhoto} disabled={!newPhoto.file} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">{t('photos.upload')}</button><button onClick={() => setShowAddPhoto(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+              <div className="flex gap-2"><button onClick={addPhoto} disabled={!newPhoto.file || uploading} className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">{uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('app.loading')}</> : t('photos.upload')}</button><button onClick={() => setShowAddPhoto(false)} disabled={uploading} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
             </div>
           )}
           {filteredPhotos.length > 0 ? (

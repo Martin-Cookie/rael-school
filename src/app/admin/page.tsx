@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -24,6 +24,7 @@ function CodelistSection({
   onMove,
   placeholder,
   t,
+  labelFn,
 }: {
   title: string
   icon: any
@@ -35,6 +36,7 @@ function CodelistSection({
   onMove: (id: string, dir: 'up' | 'down') => void
   placeholder: string
   t: (key: string) => string
+  labelFn?: (name: string) => string
 }) {
   const [open, setOpen] = useState(false)
 
@@ -98,7 +100,7 @@ function CodelistSection({
                     </button>
                   </div>
                   <Icon className="w-5 h-5 text-primary-500" />
-                  <span className="flex-1 text-sm font-medium text-gray-900">{item.name}</span>
+                  <span className="flex-1 text-sm font-medium text-gray-900">{labelFn ? labelFn(item.name) : item.name}</span>
                   <button
                     onClick={() => onDelete(item.id)}
                     className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -124,10 +126,14 @@ export default function AdminPage() {
   const [classrooms, setClassrooms] = useState<CodelistItem[]>([])
   const [healthTypes, setHealthTypes] = useState<CodelistItem[]>([])
   const [paymentTypes, setPaymentTypes] = useState<CodelistItem[]>([])
+  const [needTypes, setNeedTypes] = useState<CodelistItem[]>([])
+  const [equipmentTypes, setEquipmentTypes] = useState<CodelistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [newClassName, setNewClassName] = useState('')
   const [newHealthTypeName, setNewHealthTypeName] = useState('')
   const [newPaymentTypeName, setNewPaymentTypeName] = useState('')
+  const [newNeedTypeName, setNewNeedTypeName] = useState('')
+  const [newEquipmentTypeName, setNewEquipmentTypeName] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
 
@@ -145,17 +151,23 @@ export default function AdminPage() {
 
   async function fetchAll() {
     try {
-      const [crRes, htRes, ptRes] = await Promise.all([
+      const [crRes, htRes, ptRes, ntRes, etRes] = await Promise.all([
         fetch('/api/admin/classrooms'),
         fetch('/api/admin/health-types'),
         fetch('/api/admin/payment-types'),
+        fetch('/api/admin/need-types'),
+        fetch('/api/admin/equipment-types'),
       ])
       const crData = await crRes.json()
       const htData = await htRes.json()
       const ptData = await ptRes.json()
+      const ntData = await ntRes.json()
+      const etData = await etRes.json()
       setClassrooms(crData.classrooms || [])
       setHealthTypes(htData.healthTypes || [])
       setPaymentTypes(ptData.paymentTypes || [])
+      setNeedTypes(ntData.needTypes || [])
+      setEquipmentTypes(etData.equipmentTypes || [])
       setLoading(false)
     } catch { setLoading(false) }
   }
@@ -204,6 +216,8 @@ export default function AdminPage() {
   const classroomH = makeHandlers('/api/admin/classrooms', classrooms)
   const healthTypeH = makeHandlers('/api/admin/health-types', healthTypes)
   const paymentTypeH = makeHandlers('/api/admin/payment-types', paymentTypes)
+  const needTypeH = makeHandlers('/api/admin/need-types', needTypes)
+  const equipmentTypeH = makeHandlers('/api/admin/equipment-types', equipmentTypes)
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
 
@@ -256,6 +270,33 @@ export default function AdminPage() {
           onMove={paymentTypeH.move}
           placeholder={t('admin.newPaymentTypeName')}
           t={t}
+        />
+
+        <CodelistSection
+          title={t('admin.needTypes')}
+          icon={Heart}
+          items={needTypes}
+          newName={newNeedTypeName}
+          setNewName={setNewNeedTypeName}
+          onAdd={() => needTypeH.add(newNeedTypeName, () => setNewNeedTypeName(''))}
+          onDelete={needTypeH.del}
+          onMove={needTypeH.move}
+          placeholder={t('admin.newNeedTypeName')}
+          t={t}
+        />
+
+        <CodelistSection
+          title={t('admin.equipmentTypes')}
+          icon={Package}
+          items={equipmentTypes}
+          newName={newEquipmentTypeName}
+          setNewName={setNewEquipmentTypeName}
+          onAdd={() => equipmentTypeH.add(newEquipmentTypeName, () => setNewEquipmentTypeName(''))}
+          onDelete={equipmentTypeH.del}
+          onMove={equipmentTypeH.move}
+          placeholder={t('admin.newEquipmentTypeName')}
+          t={t}
+          labelFn={(name) => { const m: Record<string,string> = { bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net'), bedding:t('equipment.bedding'), uniform:t('equipment.uniform'), shoes:t('equipment.shoes'), school_bag:t('equipment.school_bag'), pillow:t('equipment.pillow'), wheelchair:t('equipment.wheelchair'), other:t('equipment.other') }; return m[name] || name }}
         />
       </div>
     </div>
