@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X } from 'lucide-react'
+import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload } from 'lucide-react'
 import { formatNumber, formatDate, formatDateForInput } from '@/lib/format'
 import Pagination from '@/components/Pagination'
 import cs from '@/messages/cs.json'
@@ -237,7 +237,14 @@ export default function PaymentsPage() {
         </div>
       )}
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('payments.title')}</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">{t('payments.title')}</h1>
+        {canEdit && (
+          <Link href="/payments/import" className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">
+            <Upload className="w-4 h-4" /> {t('payments.importPayments')}
+          </Link>
+        )}
+      </div>
 
       {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit">
