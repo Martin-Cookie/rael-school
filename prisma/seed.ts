@@ -145,16 +145,16 @@ async function main() {
   console.log('✅ NeedTypes seeded (' + needTypeNames.length + ')')
 
   const equipmentTypeNames = [
-    'Lůžkoviny',
-    'Matrace',
-    'Deka',
-    'Moskytiéra',
-    'Polštář',
-    'Uniforma',
-    'Boty',
-    'Školní taška',
-    'Invalidní vozík',
-    'Ostatní',
+    'bedding',
+    'mattress',
+    'blanket',
+    'mosquito_net',
+    'pillow',
+    'uniform',
+    'shoes',
+    'school_bag',
+    'wheelchair',
+    'other',
   ]
   for (let i = 0; i < equipmentTypeNames.length; i++) {
     await prisma.equipmentType.create({

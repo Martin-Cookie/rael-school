@@ -50,6 +50,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [showAddVoucher, setShowAddVoucher] = useState(false)
   const [newHealth, setNewHealth] = useState({ checkDate: '', checkType: '', notes: '' })
   const [showAddHealth, setShowAddHealth] = useState(false)
+  const [showAddEquipment, setShowAddEquipment] = useState(false)
+  const [newEquipmentType, setNewEquipmentType] = useState('')
   const [showAddSponsor, setShowAddSponsor] = useState(false)
   const [sponsorSearch, setSponsorSearch] = useState('')
   const [sponsorResults, setSponsorResults] = useState<any[]>([])
@@ -158,6 +160,17 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   async function deleteNeed(needId: string) {
     if (!confirm(t('app.confirmDelete'))) return
     try { await fetch(`/api/students/${id}/needs`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+  }
+  async function addSingleEquipment() {
+    if (!newEquipmentType) return
+    try {
+      const res = await fetch(`/api/students/${id}/equipment`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: newEquipmentType, condition: 'new' }) })
+      if (res.ok) { setNewEquipmentType(''); setShowAddEquipment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+    } catch { showMsg('error', t('app.error')) }
+  }
+  async function deleteSingleEquipment(equipmentId: string) {
+    if (!confirm(t('app.confirmDelete'))) return
+    try { await fetch(`/api/students/${id}/equipment`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ equipmentId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addVoucher() {
     if (!newVoucher.date || !newVoucher.count) return
@@ -493,17 +506,32 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       {/* ===== EQUIPMENT ===== */}
       {activeTab === 'equipment' && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-5">
-            <div className="p-2 bg-primary-50 rounded-lg"><Package className="w-4 h-4 text-primary-600" /></div>
-            <h3 className="text-base font-semibold text-gray-900">{t('equipment.title')}</h3>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-primary-50 rounded-lg"><Package className="w-4 h-4 text-primary-600" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('equipment.title')}</h3>
+            </div>
+            {canEditData && !editMode && <button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>}
           </div>
+          {showAddEquipment && !editMode && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select value={newEquipmentType} onChange={(e) => setNewEquipmentType(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                  <option value="">{t('equipment.selectType')}</option>
+                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
+                </select>
+                <button onClick={addSingleEquipment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                <button onClick={() => { setShowAddEquipment(false); setNewEquipmentType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
+              </div>
+            </div>
+          )}
           {editMode ? (
             <div className="space-y-3">
               {editEquipment.map((eq: any, idx: number) => (
                 <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 rounded-xl">
                   <select value={eq.type} onChange={(e) => updateEquipment(idx, 'type', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none sm:w-40">
                     <option value={eq.type}>{eqLabel(eq.type)}</option>
-                    {equipmentTypes.filter((et: any) => et.name !== eq.type).map((et: any) => <option key={et.id} value={et.name}>{et.name}</option>)}
+                    {equipmentTypes.filter((et: any) => et.name !== eq.type).map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
                   </select>
                   <select value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                     <option value="new">{t('equipment.new')}</option>
@@ -517,7 +545,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="flex gap-2 pt-2">
                 <select id="addEquipmentSelect" className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" defaultValue="">
                   <option value="">{t('equipment.selectType')}</option>
-                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{et.name}</option>)}
+                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
                 </select>
                 <button onClick={() => { const sel = document.getElementById('addEquipmentSelect') as HTMLSelectElement; if (sel.value) { addEquipmentItem(sel.value); sel.value = '' } }} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>
               </div>
@@ -525,12 +553,15 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           ) : student.equipment?.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {student.equipment.map((eq: any) => (
-                <div key={eq.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div key={eq.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl group">
                   <div>
                     <p className="text-sm font-medium text-gray-900">{eqLabel(eq.type)}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{formatDate(eq.acquiredAt, locale)}</p>
                   </div>
-                  {condBadge(eq.condition)}
+                  <div className="flex items-center gap-2">
+                    {condBadge(eq.condition)}
+                    {canEditData && <button onClick={() => deleteSingleEquipment(eq.id)} className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>}
+                  </div>
                 </div>
               ))}
             </div>

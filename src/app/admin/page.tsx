@@ -24,6 +24,7 @@ function CodelistSection({
   onMove,
   placeholder,
   t,
+  labelFn,
 }: {
   title: string
   icon: any
@@ -35,6 +36,7 @@ function CodelistSection({
   onMove: (id: string, dir: 'up' | 'down') => void
   placeholder: string
   t: (key: string) => string
+  labelFn?: (name: string) => string
 }) {
   const [open, setOpen] = useState(false)
 
@@ -98,7 +100,7 @@ function CodelistSection({
                     </button>
                   </div>
                   <Icon className="w-5 h-5 text-primary-500" />
-                  <span className="flex-1 text-sm font-medium text-gray-900">{item.name}</span>
+                  <span className="flex-1 text-sm font-medium text-gray-900">{labelFn ? labelFn(item.name) : item.name}</span>
                   <button
                     onClick={() => onDelete(item.id)}
                     className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -294,6 +296,7 @@ export default function AdminPage() {
           onMove={equipmentTypeH.move}
           placeholder={t('admin.newEquipmentTypeName')}
           t={t}
+          labelFn={(name) => { const m: Record<string,string> = { bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net'), bedding:t('equipment.bedding'), uniform:t('equipment.uniform'), shoes:t('equipment.shoes'), school_bag:t('equipment.school_bag'), pillow:t('equipment.pillow'), wheelchair:t('equipment.wheelchair'), other:t('equipment.other') }; return m[name] || name }}
         />
       </div>
     </div>
