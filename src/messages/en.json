@@ -104,7 +104,9 @@
     "fulfilled": "Fulfilled",
     "unfulfilled": "Unfulfilled",
     "fulfilledAt": "Fulfilled date",
-    "addNeed": "Add need"
+    "addNeed": "Add need",
+    "selectType": "-- Select need type --",
+    "customNeed": "Custom (type your own)"
   },
   "photos": {
     "title": "Photos",
@@ -196,7 +198,9 @@
     "healthTypes": "Health Check Types",
     "newHealthTypeName": "New health check type name",
     "paymentTypes": "Sponsor Payment Types",
-    "newPaymentTypeName": "New payment type name"
+    "newPaymentTypeName": "New payment type name",
+    "needTypes": "Need Types",
+    "newNeedTypeName": "New need type name"
   },
   "statistics": {
     "title": "Statistics & Reports",

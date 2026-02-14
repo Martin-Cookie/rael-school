@@ -104,7 +104,9 @@
     "fulfilled": "Imetimizwa",
     "unfulfilled": "Haijatimizwa",
     "fulfilledAt": "Tarehe ya kutimiza",
-    "addNeed": "Ongeza hitaji"
+    "addNeed": "Ongeza hitaji",
+    "selectType": "-- Chagua aina ya hitaji --",
+    "customNeed": "Mwingine (andika yako)"
   },
   "photos": {
     "title": "Picha",
@@ -196,7 +198,9 @@
     "healthTypes": "Aina za Uchunguzi wa Afya",
     "newHealthTypeName": "Jina la aina mpya ya uchunguzi",
     "paymentTypes": "Aina za Malipo ya Wadhamini",
-    "newPaymentTypeName": "Jina la aina mpya ya malipo"
+    "newPaymentTypeName": "Jina la aina mpya ya malipo",
+    "needTypes": "Aina za Mahitaji",
+    "newNeedTypeName": "Jina la aina mpya ya hitaji"
   },
   "statistics": {
     "title": "Takwimu na Ripoti",

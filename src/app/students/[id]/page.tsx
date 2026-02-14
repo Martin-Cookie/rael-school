@@ -38,10 +38,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [classrooms, setClassrooms] = useState<any[]>([])
   const [healthTypes, setHealthTypes] = useState<any[]>([])
   const [paymentTypes, setPaymentTypes] = useState<any[]>([])
+  const [needTypes, setNeedTypes] = useState<any[]>([])
   const [allSponsors, setAllSponsors] = useState<any[]>([])
   useEffect(() => { fetch('/api/sponsors').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(() => {}) }, [])
 
   const [newNeed, setNewNeed] = useState('')
+  const [selectedNeedType, setSelectedNeedType] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
   const [newVoucher, setNewVoucher] = useState({ type: 'purchase', date: '', amount: '', count: '', donorName: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
@@ -79,7 +81,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
@@ -95,6 +97,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   async function fetchPaymentTypes() {
     try { const res = await fetch('/api/admin/payment-types'); const d = await res.json(); setPaymentTypes(d.paymentTypes || []) } catch {}
+  }
+
+  async function fetchNeedTypes() {
+    try { const res = await fetch('/api/admin/need-types'); const d = await res.json(); setNeedTypes(d.needTypes || []) } catch {}
   }
 
   async function fetchStudent() {
@@ -130,10 +136,11 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   // ---- CRUD handlers ----
   async function addNeed() {
-    if (!newNeed.trim()) return
+    const description = selectedNeedType === '__custom__' ? newNeed.trim() : selectedNeedType
+    if (!description) return
     try {
-      const res = await fetch(`/api/students/${id}/needs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description: newNeed }) })
-      if (res.ok) { setNewNeed(''); setShowAddNeed(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+      const res = await fetch(`/api/students/${id}/needs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description }) })
+      if (res.ok) { setNewNeed(''); setSelectedNeedType(''); setShowAddNeed(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function toggleNeedFulfilled(needId: string, current: boolean) {
@@ -523,10 +530,17 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           </div>
           {showAddNeed && (
             <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <div className="flex gap-2">
-                <input type="text" value={newNeed} onChange={(e) => setNewNeed(e.target.value)} placeholder={t('needs.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addNeed()} />
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select value={selectedNeedType} onChange={(e) => { setSelectedNeedType(e.target.value); if (e.target.value !== '__custom__') setNewNeed('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                  <option value="">{t('needs.selectType')}</option>
+                  {needTypes.map((nt: any) => <option key={nt.id} value={nt.name}>{nt.name}</option>)}
+                  <option value="__custom__">{t('needs.customNeed')}</option>
+                </select>
+                {selectedNeedType === '__custom__' && (
+                  <input type="text" value={newNeed} onChange={(e) => setNewNeed(e.target.value)} placeholder={t('needs.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addNeed()} />
+                )}
                 <button onClick={addNeed} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
-                <button onClick={() => { setShowAddNeed(false); setNewNeed('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
+                <button onClick={() => { setShowAddNeed(false); setNewNeed(''); setSelectedNeedType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
               </div>
             </div>
           )}

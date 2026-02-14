@@ -243,3 +243,13 @@ model PaymentType {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 }
+
+// ============ NEED TYPES ============
+
+model NeedType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

@@ -104,7 +104,9 @@
     "fulfilled": "Splněno",
     "unfulfilled": "Nesplněno",
     "fulfilledAt": "Datum splnění",
-    "addNeed": "Přidat potřebu"
+    "addNeed": "Přidat potřebu",
+    "selectType": "-- Vyberte typ potřeby --",
+    "customNeed": "Vlastní (napište vlastní)"
   },
   "photos": {
     "title": "Fotografie",
@@ -196,7 +198,9 @@
     "healthTypes": "Číselník druhů zdravotních prohlídek",
     "newHealthTypeName": "Název nového typu prohlídky",
     "paymentTypes": "Číselník typů plateb od sponzorů",
-    "newPaymentTypeName": "Název nového typu platby"
+    "newPaymentTypeName": "Název nového typu platby",
+    "needTypes": "Číselník potřeb",
+    "newNeedTypeName": "Název nové potřeby"
   },
   "statistics": {
     "title": "Statistiky a přehledy",
