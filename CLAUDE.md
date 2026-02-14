@@ -119,6 +119,37 @@ cp prisma/seed-demo.ts prisma/seed.ts && npm run db:seed
 | Sponzor | `<jmeno.prijmeni>@sponsor.rael.school` | sponsor123 |
 | Dobrovolník | volunteer@rael.school | volunteer123 |
 
+## Čistá instalace a obnovení lokálu z GitHubu
+
+Kompletní postup pro rozběhání aplikace na čistém lokále (nebo po ztrátě `.env` / databáze):
+
+```bash
+# 1. Stáhnout poslední změny
+git pull origin <aktuální-branch>
+
+# 2. Nainstalovat závislosti
+npm install
+
+# 3. Vytvořit .env (soubor je v .gitignore, nepřenáší se)
+echo 'DATABASE_URL="file:./dev.db"' > .env
+
+# 4. Vytvořit tabulky + naseedit data (148 studentů, 137 sponzorů, číselníky)
+npx prisma db push && npm run db:seed
+
+# 5. Spustit vývojový server
+npm run dev
+```
+
+**Jednořádková verze (vše najednou):**
+```bash
+npm install && echo 'DATABASE_URL="file:./dev.db"' > .env && npx prisma db push && npm run db:seed && npm run dev
+```
+
+**Pozn.:** Soubor `.env` stačí vytvořit jednou. Při běžných aktualizacích pak stačí:
+```bash
+git pull origin <aktuální-branch> && npm run dev
+```
+
 ### Statistiky reálných dat
 
 - **148 studentů** (8 bez sponzora)
