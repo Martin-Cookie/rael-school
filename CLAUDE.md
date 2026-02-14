@@ -49,3 +49,65 @@
 | MANAGER | Editace studentů, přidávání dat, přehledy |
 | SPONSOR | Pouze své přiřazené studenty (read-only) |
 | VOLUNTEER | Editace studentů, přidávání dat |
+
+## Zálohy databáze a dat
+
+### Záložní soubory
+
+| Soubor | Obsah | Obnovení |
+|--------|-------|----------|
+| `prisma/dev.db.primary` | **VSTUPNÍ PRIMÁRNÍ DATA** — 148 reálných studentů, 137 sponzorů | `cp prisma/dev.db.primary prisma/dev.db` |
+| `prisma/dev.db.backup` | Demo data — 30 testovacích studentů | `cp prisma/dev.db.backup prisma/dev.db` |
+| `prisma/seed-demo.ts` | Demo seed script (30 testovacích studentů) | `cp prisma/seed-demo.ts prisma/seed.ts && npm run db:seed` |
+
+### Zdrojová data
+
+| Soubor | Obsah |
+|--------|-------|
+| `data/students-real.json` | 148 studentů — kompletní strukturovaná data (DOB, třída, škola, sponzoři, zdravotní stav, rodinná situace, 30 sourozeneckých skupin, přijaté předměty, zubní prohlídky) |
+| `data/config-real.json` | Číselníky — třídy (PP1–Grade 12), typy plateb, školné, typy zdravotních prohlídek, měsíční sponzoři ordinace |
+
+### Obnovení dat
+
+**Obnovit primární reálná data:**
+```bash
+cp prisma/dev.db.primary prisma/dev.db
+```
+
+**Obnovit demo data:**
+```bash
+cp prisma/dev.db.backup prisma/dev.db
+```
+
+**Znovu naseedit reálná data (ze JSON):**
+```bash
+npx prisma db push && npm run db:seed
+```
+
+**Znovu naseedit demo data:**
+```bash
+cp prisma/seed-demo.ts prisma/seed.ts && npm run db:seed
+```
+
+**Jak se dostat k datům při ztrátě kontextu:**
+Řekněte: _"Přečti si soubory `data/students-real.json` a `data/config-real.json`."_
+
+### Přihlašovací údaje
+
+| Účet | Email | Heslo |
+|------|-------|-------|
+| Admin | admin@rael.school | admin123 |
+| Manager | manager@rael.school | manager123 |
+| Sponzor | `<jmeno.prijmeni>@sponsor.rael.school` | sponsor123 |
+| Dobrovolník | volunteer@rael.school | volunteer123 |
+
+### Statistiky reálných dat
+
+- **148 studentů** (8 bez sponzora)
+- **137 unikátních sponzorů**
+- **160 sponzorských vazeb**
+- **224 položek vybavení**
+- **31 zdravotních prohlídek**
+- **30 sourozeneckých skupin**
+- **14 tříd** (PP1–Grade 12), celkem 467 aktivních žáků
+- **Školné:** 3 700 CZK (do Grade 6), 4 700 CZK (od Grade 7)
