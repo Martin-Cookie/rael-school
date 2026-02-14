@@ -8,9 +8,15 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getCurrentUser()
-    if (!user || !isManager(user.role)) {
+    const jwtUser = await getCurrentUser()
+    if (!jwtUser || !isManager(jwtUser.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Look up user in DB by email (JWT may have stale id after re-seed)
+    const user = await prisma.user.findUnique({ where: { email: jwtUser.email } })
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 })
     }
 
     const { rowIds } = await request.json()

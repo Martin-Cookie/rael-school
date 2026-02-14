@@ -32,9 +32,15 @@ export async function GET() {
 // POST /api/payment-imports — upload CSV file, parse, save rows
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
-    if (!user || !isManager(user.role)) {
+    const jwtUser = await getCurrentUser()
+    if (!jwtUser || !isManager(jwtUser.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Look up user in DB by email (JWT may have stale id after re-seed)
+    const dbUser = await prisma.user.findUnique({ where: { email: jwtUser.email } })
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 })
     }
 
     const formData = await request.formData()
@@ -74,7 +80,7 @@ export async function POST(request: NextRequest) {
         data: {
           fileName: file.name,
           fileType: 'csv',
-          importedById: user.id,
+          importedById: dbUser.id,
           totalRows: rows.length,
           matchedRows: 0,
           status: 'READY', // CSV is parsed synchronously, so immediately READY
