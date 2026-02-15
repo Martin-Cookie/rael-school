@@ -75,28 +75,30 @@ function CodelistSection({
       {open && (
         <div className="px-5 pb-5 border-t border-gray-100 pt-4">
           {/* Add new item */}
-          <div className="flex gap-2 mb-4">
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder={placeholder}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-              onKeyDown={(e) => e.key === 'Enter' && onAdd()}
-            />
-            {showPrice && setNewPrice && (
+          <div className="mb-4 space-y-2">
+            <div className="flex gap-2">
               <input
-                type="number"
-                value={newPrice || ''}
-                onChange={(e) => setNewPrice(e.target.value)}
-                placeholder={t('admin.priceCZK')}
-                className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder={placeholder}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                 onKeyDown={(e) => e.key === 'Enter' && onAdd()}
               />
-            )}
+              {showPrice && setNewPrice && (
+                <input
+                  type="number"
+                  value={newPrice || ''}
+                  onChange={(e) => setNewPrice(e.target.value)}
+                  placeholder={t('admin.priceCZK')}
+                  className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+                />
+              )}
+            </div>
             <button
               onClick={onAdd}
-              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
+              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
             >
               <Plus className="w-4 h-4" /> {t('app.add')}
             </button>
