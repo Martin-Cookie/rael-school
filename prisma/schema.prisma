@@ -68,6 +68,7 @@ model Student {
   volunteers      VolunteerAssignment[]
   sponsorPayments SponsorPayment[]
   importRows      PaymentImportRow[]
+  wishes          Wish[]
 }
 
 // ============ EQUIPMENT ============
@@ -258,6 +259,7 @@ model PaymentType {
 model NeedType {
   id        String   @id @default(cuid())
   name      String   @unique
+  price     Float?   // Orientační cena v CZK
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -268,9 +270,40 @@ model NeedType {
 model EquipmentType {
   id        String   @id @default(cuid())
   name      String   @unique
+  price     Float?   // Orientační cena v CZK
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+}
+
+// ============ WISH TYPES ============
+
+model WishType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  price     Float?   // Orientační cena v CZK
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  wishes    Wish[]
+}
+
+// ============ WISHES ============
+
+model Wish {
+  id          String    @id @default(cuid())
+  studentId   String
+  wishTypeId  String?
+  description String
+  isFulfilled Boolean   @default(false)
+  fulfilledAt DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  wishType WishType? @relation(fields: [wishTypeId], references: [id], onDelete: SetNull)
 }
 
 // ============ PAYMENT IMPORTS ============
