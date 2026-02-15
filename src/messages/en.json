@@ -413,6 +413,8 @@
     "conditionNew": "New",
     "conditionSatisfactory": "Satisfactory",
     "conditionPoor": "Poor",
+    "sponsorSection": "Sponsors",
+    "sponsorNone": "No assigned sponsor",
     "generalNotes": "General visit notes",
     "pageOf": "Card {current} of {total}"
   },

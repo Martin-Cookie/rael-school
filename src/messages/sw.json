@@ -413,6 +413,8 @@
     "conditionNew": "Mpya",
     "conditionSatisfactory": "Inaridhisha",
     "conditionPoor": "Mbaya",
+    "sponsorSection": "Wadhamini",
+    "sponsorNone": "Hakuna mdhamini aliyepewa",
     "generalNotes": "Maelezo ya jumla ya ziara",
     "pageOf": "Kadi {current} kati ya {total}"
   },

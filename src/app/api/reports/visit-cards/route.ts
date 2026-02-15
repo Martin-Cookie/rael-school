@@ -44,6 +44,14 @@ export async function GET(req: NextRequest) {
           select: { id: true, description: true, notes: true, wishType: { select: { id: true, name: true } } },
           orderBy: { createdAt: 'desc' },
         },
+        sponsorships: {
+          where: { isActive: true },
+          select: {
+            sponsor: {
+              select: { firstName: true, lastName: true, email: true, phone: true },
+            },
+          },
+        },
       },
     })
 

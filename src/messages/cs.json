@@ -413,6 +413,8 @@
     "conditionNew": "Nové",
     "conditionSatisfactory": "Dostatečné",
     "conditionPoor": "Špatné",
+    "sponsorSection": "Sponzoři",
+    "sponsorNone": "Žádný přiřazený sponzor",
     "generalNotes": "Obecné poznámky k návštěvě",
     "pageOf": "Karta {current} z {total}"
   },

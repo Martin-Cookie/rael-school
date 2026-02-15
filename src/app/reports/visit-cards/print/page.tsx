@@ -30,6 +30,7 @@ interface StudentData {
   equipment: { id: string; type: string; condition: string; acquiredAt: string | null; notes: string | null }[]
   needs: { id: string; description: string; notes: string | null }[]
   wishes: { id: string; description: string; notes: string | null; wishType: { id: string; name: string } | null }[]
+  sponsorships: { sponsor: { firstName: string; lastName: string; email: string | null; phone: string | null } }[]
 }
 
 interface LookupType {
@@ -208,6 +209,38 @@ export default function VisitCardsPrintPage() {
               <div className="text-right text-xs text-gray-500 no-print">
                 {idx + 1} / {students.length}
               </div>
+            </div>
+
+            {/* Sponsors */}
+            <div className="mb-3">
+              <h3 className="section-title text-xs font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                {t('visitCards.sponsorSection')}
+                {student.sponsorships.length > 0 && <span className="ml-2 font-normal text-gray-500">({student.sponsorships.length})</span>}
+              </h3>
+              {student.sponsorships.length === 0 ? (
+                <p className="text-xs text-gray-400 px-2 italic">{t('visitCards.sponsorNone')}</p>
+              ) : (
+                <table className="w-full text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-gray-300">
+                      <th className="text-left py-1 px-2 font-medium text-gray-500">{t('student.lastName')}</th>
+                      <th className="text-left py-1 px-2 font-medium text-gray-500">{t('student.firstName')}</th>
+                      <th className="text-left py-1 px-2 font-medium text-gray-500">{t('sponsors.email')}</th>
+                      <th className="text-left py-1 px-2 font-medium text-gray-500">{t('sponsors.phone')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {student.sponsorships.map((sp, i) => (
+                      <tr key={i} className="border-b border-gray-100">
+                        <td className="py-1 px-2 font-medium">{sp.sponsor.lastName}</td>
+                        <td className="py-1 px-2">{sp.sponsor.firstName}</td>
+                        <td className="py-1 px-2 text-gray-500">{sp.sponsor.email || '-'}</td>
+                        <td className="py-1 px-2 text-gray-500">{sp.sponsor.phone || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             {/* Basic Info */}
