@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload } from 'lucide-react'
+import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
 import { formatNumber, formatDate, formatDateForInput } from '@/lib/format'
 import Pagination from '@/components/Pagination'
 import cs from '@/messages/cs.json'
@@ -80,6 +80,40 @@ export default function PaymentsPage() {
   }
 
   const canEdit = userRole && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(userRole)
+
+  // Sorting
+  const [sortCol, setSortCol] = useState('')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+
+  function handleSort(col: string) {
+    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
+    else { setSortCol(col); setSortDir('asc') }
+    if (activeTab === 'sponsor') setSpPage(1); else setVpPage(1)
+  }
+
+  function sortData<T>(data: T[], col: string): T[] {
+    if (!col) return data
+    return [...data].sort((a: any, b: any) => {
+      let va: any, vb: any
+      if (col === '_studentName') {
+        va = a.student ? `${a.student.lastName} ${a.student.firstName}` : ''
+        vb = b.student ? `${b.student.lastName} ${b.student.firstName}` : ''
+      } else if (col === '_sponsorName') {
+        va = a.sponsor ? `${a.sponsor.lastName} ${a.sponsor.firstName}` : (a.donorName || '')
+        vb = b.sponsor ? `${b.sponsor.lastName} ${b.sponsor.firstName}` : (b.donorName || '')
+      } else {
+        va = a[col]; vb = b[col]
+      }
+      if (va == null) va = ''; if (vb == null) vb = ''
+      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
+      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
+    })
+  }
+
+  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
+    const isA = sortCol === col
+    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
+  }
 
   // ===== SPONSOR PAYMENT CRUD =====
   async function addSponsorPayment() {
@@ -225,8 +259,10 @@ export default function PaymentsPage() {
 
   const spByCur = stats?.sponsorPaymentsByCurrency || {}
 
-  const paginatedSP = sponsorPayments.slice((spPage - 1) * PAGE_SIZE, spPage * PAGE_SIZE)
-  const paginatedVP = voucherPurchases.slice((vpPage - 1) * PAGE_SIZE, vpPage * PAGE_SIZE)
+  const sortedSP = sortData(sponsorPayments, activeTab === 'sponsor' ? sortCol : '')
+  const sortedVP = sortData(voucherPurchases, activeTab === 'voucher' ? sortCol : '')
+  const paginatedSP = sortedSP.slice((spPage - 1) * PAGE_SIZE, spPage * PAGE_SIZE)
+  const paginatedVP = sortedVP.slice((vpPage - 1) * PAGE_SIZE, vpPage * PAGE_SIZE)
   const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
 
   return (
@@ -248,10 +284,10 @@ export default function PaymentsPage() {
 
       {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit">
-        <button onClick={() => setActiveTab('sponsor')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'sponsor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+        <button onClick={() => { setActiveTab('sponsor'); setSortCol(''); setSortDir('asc') }} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'sponsor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
           <CreditCard className="w-4 h-4" /> {t('sponsorPayments.title')} ({sponsorPayments.length})
         </button>
-        <button onClick={() => setActiveTab('voucher')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'voucher' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+        <button onClick={() => { setActiveTab('voucher'); setSortCol(''); setSortDir('asc') }} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'voucher' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
           <Ticket className="w-4 h-4" /> {t('vouchers.purchases')} ({voucherPurchases.length})
         </button>
       </div>
@@ -318,12 +354,12 @@ export default function PaymentsPage() {
 
             {/* Table */}
             <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.paymentDate')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('sponsorPayments.paymentType')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.amount')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.notes')}</th>
+              <SH col="paymentDate" className="text-left">{t('payments.paymentDate')}</SH>
+              <SH col="paymentType" className="text-left">{t('sponsorPayments.paymentType')}</SH>
+              <SH col="amount" className="text-left">{t('payments.amount')}</SH>
+              <SH col="_studentName" className="text-left">{t('nav.students')}</SH>
+              <SH col="_sponsorName" className="text-left">{t('sponsors.title')}</SH>
+              <SH col="notes" className="text-left">{t('payments.notes')}</SH>
               {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
               {paginatedSP.map((p: any) => (
@@ -444,12 +480,12 @@ export default function PaymentsPage() {
 
             {/* Table */}
             <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.purchaseDate')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.amount')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('vouchers.count')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
-              <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.notes')}</th>
+              <SH col="purchaseDate" className="text-left">{t('vouchers.purchaseDate')}</SH>
+              <SH col="amount" className="text-left">{t('vouchers.amount')}</SH>
+              <SH col="count" className="text-left">{t('vouchers.count')}</SH>
+              <SH col="_studentName" className="text-left">{t('nav.students')}</SH>
+              <SH col="_sponsorName" className="text-left">{t('sponsors.title')}</SH>
+              <SH col="notes" className="text-left">{t('payments.notes')}</SH>
               {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
               {paginatedVP.map((v: any) => (
