@@ -77,7 +77,8 @@ export default function VisitCardsPrintPage() {
 ${parentStyles}
 <style>
   @page { size: A4; margin: 8mm; }
-  body { margin: 0; padding: 0; background: white; }
+  body { margin: 0; padding: 0; background: white; color: #000 !important; }
+  * { color: #000 !important; }
   .no-print { display: none !important; }
   .print-page {
     page-break-after: always;
