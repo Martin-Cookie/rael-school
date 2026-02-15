@@ -475,10 +475,10 @@ export default function ImportDetailPage() {
                 <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.sender')}</th>
                 <th className="text-right py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.amount')}</th>
                 <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.variableSymbol')}</th>
-                <th className="text-left py-2.5 px-2 text-xs font-medium text-gray-500 uppercase min-w-[280px]">{t('paymentImport.message')}</th>
-                <th className="text-left py-2.5 px-2 text-xs font-medium text-gray-500 uppercase min-w-[200px]">{t('paymentImport.sponsor')}</th>
-                <th className="text-left py-2.5 px-2 text-xs font-medium text-gray-500 uppercase min-w-[220px]">{t('paymentImport.student')}</th>
-                <th className="text-left py-2.5 px-2 text-xs font-medium text-gray-500 uppercase min-w-[180px]">{t('paymentImport.paymentType')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.message')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[160px]">{t('paymentImport.sponsor')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[170px]">{t('paymentImport.student')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[140px]">{t('paymentImport.paymentType')}</th>
                 <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase w-16">{t('app.actions')}</th>
               </tr>
             </thead>
@@ -504,44 +504,46 @@ export default function ImportDetailPage() {
                     </td>
 
                     {/* Status */}
-                    <td className="py-2.5 px-1.5 whitespace-nowrap">
+                    <td className="py-1.5 px-1.5">
                       <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${rowStyle.bg} ${rowStyle.text}`}>
                         {statusLabel(row.status)}
                       </span>
                       {row.matchConfidence !== 'NONE' && (
-                        <span className={`inline-block ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium ${confStyle.bg} ${confStyle.text}`}>
-                          {confidenceLabel(row.matchConfidence)}
-                        </span>
+                        <div className="mt-0.5">
+                          <span className={`inline-block px-1.5 py-0.5 rounded-full text-[10px] font-medium ${confStyle.bg} ${confStyle.text}`}>
+                            {confidenceLabel(row.matchConfidence)}
+                          </span>
+                        </div>
                       )}
                     </td>
 
                     {/* Date */}
-                    <td className="py-2.5 px-1.5 text-sm text-gray-900 whitespace-nowrap">
+                    <td className="py-2 px-1.5 text-xs text-gray-900 whitespace-nowrap">
                       {formatDate(row.transactionDate, locale)}
                     </td>
 
                     {/* Sender */}
-                    <td className="py-2.5 px-1.5 text-sm text-gray-700 whitespace-nowrap" title={row.senderName || ''}>
+                    <td className="py-2 px-1.5 text-xs text-gray-700 max-w-[140px] truncate" title={row.senderName || ''}>
                       {row.senderName || '-'}
                     </td>
 
                     {/* Amount */}
-                    <td className="py-2.5 px-1.5 text-sm text-gray-900 font-medium text-right whitespace-nowrap">
+                    <td className="py-2 px-1.5 text-xs text-gray-900 font-medium text-right whitespace-nowrap">
                       {formatNumber(row.amount)} {row.currency}
                     </td>
 
                     {/* VS */}
-                    <td className="py-2.5 px-1.5 text-sm text-gray-500 whitespace-nowrap">
+                    <td className="py-2 px-1.5 text-xs text-gray-500 whitespace-nowrap">
                       {row.variableSymbol || '-'}
                     </td>
 
                     {/* Message */}
-                    <td className="py-2.5 px-2 text-sm text-gray-500 min-w-[280px]">
+                    <td className="py-2 px-1.5 text-xs text-gray-500 max-w-[180px] truncate" title={row.message || ''}>
                       {row.message || '-'}
                     </td>
 
                     {/* Sponsor dropdown */}
-                    <td className="py-1.5 px-2 min-w-[200px]">
+                    <td className="py-1.5 px-1.5 min-w-[160px]">
                       {editable ? (
                         <select
                           value={row.sponsorId || ''}
@@ -561,7 +563,7 @@ export default function ImportDetailPage() {
                     </td>
 
                     {/* Student dropdown */}
-                    <td className="py-1.5 px-2 min-w-[220px]">
+                    <td className="py-1.5 px-1.5 min-w-[170px]">
                       {editable ? (
                         <select
                           value={row.studentId || ''}
@@ -581,7 +583,7 @@ export default function ImportDetailPage() {
                     </td>
 
                     {/* Payment type dropdown */}
-                    <td className="py-1.5 px-2 min-w-[180px]">
+                    <td className="py-1.5 px-1.5 min-w-[140px]">
                       {editable ? (
                         <select
                           value={row.paymentTypeId || ''}
