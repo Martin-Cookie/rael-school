@@ -110,7 +110,7 @@
     "removeItem": "Odebrat"
   },
   "needs": {
-    "title": "Potřeby a přání",
+    "title": "Potřeby",
     "description": "Popis",
     "fulfilled": "Splněno",
     "unfulfilled": "Nesplněno",

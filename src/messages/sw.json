@@ -110,7 +110,7 @@
     "removeItem": "Ondoa"
   },
   "needs": {
-    "title": "Mahitaji na Matakwa",
+    "title": "Mahitaji",
     "description": "Maelezo",
     "fulfilled": "Imetimizwa",
     "unfulfilled": "Haijatimizwa",

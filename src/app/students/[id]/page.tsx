@@ -548,7 +548,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="flex flex-col sm:flex-row gap-2">
                 <select value={newEquipmentType} onChange={(e) => setNewEquipmentType(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                   <option value="">{t('equipment.selectType')}</option>
-                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
+                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}{et.price ? ` (${formatNumber(et.price)} CZK)` : ''}</option>)}
                 </select>
                 <button onClick={addSingleEquipment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
                 <button onClick={() => { setShowAddEquipment(false); setNewEquipmentType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
@@ -575,7 +575,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="flex gap-2 pt-2">
                 <select id="addEquipmentSelect" className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" defaultValue="">
                   <option value="">{t('equipment.selectType')}</option>
-                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
+                  {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}{et.price ? ` (${formatNumber(et.price)} CZK)` : ''}</option>)}
                 </select>
                 <button onClick={() => { const sel = document.getElementById('addEquipmentSelect') as HTMLSelectElement; if (sel.value) { addEquipmentItem(sel.value); sel.value = '' } }} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>
               </div>
@@ -585,7 +585,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               {student.equipment.map((eq: any) => (
                 <div key={eq.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl group">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{eqLabel(eq.type)}</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {eqLabel(eq.type)}
+                      {(() => { const et = equipmentTypes.find((t: any) => t.name === eq.type); return et?.price ? <span className="ml-2 text-xs font-normal text-gray-500">({formatNumber(et.price)} CZK)</span> : null })()}
+                    </p>
                     <p className="text-xs text-gray-500 mt-0.5">{formatDate(eq.acquiredAt, locale)}</p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -614,7 +617,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="flex flex-col sm:flex-row gap-2">
                 <select value={selectedNeedType} onChange={(e) => { setSelectedNeedType(e.target.value); if (e.target.value !== '__custom__') setNewNeed('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                   <option value="">{t('needs.selectType')}</option>
-                  {needTypes.map((nt: any) => <option key={nt.id} value={nt.name}>{nt.name}</option>)}
+                  {needTypes.map((nt: any) => <option key={nt.id} value={nt.name}>{nt.name}{nt.price ? ` (${formatNumber(nt.price)} CZK)` : ''}</option>)}
                   <option value="__custom__">{t('needs.customNeed')}</option>
                 </select>
                 {selectedNeedType === '__custom__' && (
@@ -630,7 +633,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div key={need.id} className={`flex items-center justify-between p-3 rounded-lg ${need.isFulfilled ? 'bg-primary-50' : 'bg-red-50'}`}>
                 <div className="flex items-center gap-3">
                   {canEditData ? <button onClick={() => toggleNeedFulfilled(need.id, need.isFulfilled)} className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${need.isFulfilled ? 'bg-primary-500 border-primary-500' : 'border-gray-300 hover:border-primary-400'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</button> : <div className={`w-6 h-6 rounded-full flex items-center justify-center ${need.isFulfilled ? 'bg-primary-500' : 'bg-gray-300'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</div>}
-                  <span className={`text-sm ${need.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{need.description}</span>
+                  <div>
+                    <span className={`text-sm ${need.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{need.description}</span>
+                    {(() => { const nt = needTypes.find((t: any) => t.name === need.description); return nt?.price ? <span className="ml-2 text-xs text-gray-500">({formatNumber(nt.price)} CZK)</span> : null })()}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {need.isFulfilled && <span className="text-xs text-gray-500">{formatDate(need.fulfilledAt, locale)}</span>}

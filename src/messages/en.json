@@ -110,7 +110,7 @@
     "removeItem": "Remove"
   },
   "needs": {
-    "title": "Needs & Wishes",
+    "title": "Needs",
     "description": "Description",
     "fulfilled": "Fulfilled",
     "unfulfilled": "Unfulfilled",
