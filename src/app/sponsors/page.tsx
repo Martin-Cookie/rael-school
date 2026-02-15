@@ -333,12 +333,12 @@ export default function SponsorsPage() {
                           <td className="py-3 px-3 text-sm text-gray-600">{s.phone || '-'}</td>
                           <td className="py-3 px-3 text-sm">
                             {s.sponsorships.length > 0 ? (
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-nowrap gap-1 overflow-hidden max-h-6">
                                 {s.sponsorships.map((sp) => (
                                   <Link
                                     key={sp.id}
                                     href={`/students/${sp.student.id}?from=/sponsors`}
-                                    className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium ${
+                                    className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
                                       sp.isActive
                                         ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
                                         : 'bg-gray-100 text-gray-500 line-through'
