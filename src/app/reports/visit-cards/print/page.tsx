@@ -142,8 +142,19 @@ export default function VisitCardsPrintPage() {
 
   return (
     <>
-      {/* Print styles */}
+      {/* Print styles — hide parent layout sidebar & reset wrappers */}
       <style jsx global>{`
+        /* Hide sidebar and mobile header from parent layout (both screen & print) */
+        aside { display: none !important; }
+        /* Reset parent layout <main> and its inner wrapper */
+        main {
+          margin-left: 0 !important;
+          padding-top: 0 !important;
+        }
+        main > div {
+          padding: 0 !important;
+          max-width: none !important;
+        }
         @media print {
           body { margin: 0; padding: 0; }
           .no-print { display: none !important; }
