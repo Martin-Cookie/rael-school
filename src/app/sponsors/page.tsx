@@ -331,7 +331,7 @@ export default function SponsorsPage() {
                           <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                           <td className="py-3 px-3 text-sm text-gray-600">{s.email}</td>
                           <td className="py-3 px-3 text-sm text-gray-600">{s.phone || '-'}</td>
-                          <td className="py-3 px-3 text-sm">
+                          <td className="py-2 px-3 text-sm">
                             {s.sponsorships.length > 0 ? (
                               <div className="flex flex-nowrap gap-1 overflow-hidden max-h-6">
                                 {s.sponsorships.map((sp) => (
@@ -361,7 +361,7 @@ export default function SponsorsPage() {
                             ) : <span className="text-gray-400">-</span>}
                           </td>
                           {(canEdit || canDeactivate) && (
-                            <td className="py-3 px-3">
+                            <td className="py-1 px-3">
                               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 {canEdit && (
                                   <button onClick={() => startEdit(s)} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-gray-100">
