@@ -215,7 +215,10 @@
     "equipmentTypes": "Číselník vybavení",
     "newEquipmentTypeName": "Název nového typu vybavení",
     "wishTypes": "Číselník přání",
-    "newWishTypeName": "Název nového přání"
+    "newWishTypeName": "Název nového přání",
+    "priceCZK": "Cena (CZK)",
+    "editPrice": "Upravit cenu",
+    "noPrice": "bez ceny"
   },
   "wishes": {
     "title": "Přání",

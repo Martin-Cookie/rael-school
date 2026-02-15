@@ -21,19 +21,19 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const { name, sortOrder } = await request.json()
+    const { name, sortOrder, price } = await request.json()
     if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     const existing = await prisma.needType.findUnique({ where: { name: name.trim() } })
     if (existing) {
       if (!existing.isActive) {
         const reactivated = await prisma.needType.update({
-          where: { id: existing.id }, data: { isActive: true, sortOrder: sortOrder ?? 0 },
+          where: { id: existing.id }, data: { isActive: true, sortOrder: sortOrder ?? 0, price: price ?? null },
         })
         return NextResponse.json({ needType: reactivated }, { status: 201 })
       }
       return NextResponse.json({ error: 'Already exists' }, { status: 409 })
     }
-    const needType = await prisma.needType.create({ data: { name: name.trim(), sortOrder: sortOrder ?? 0 } })
+    const needType = await prisma.needType.create({ data: { name: name.trim(), sortOrder: sortOrder ?? 0, price: price ?? null } })
     return NextResponse.json({ needType }, { status: 201 })
   } catch (error) {
     console.error('Error creating need type:', error)
@@ -45,10 +45,15 @@ export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const { orders } = await request.json()
-    if (!orders || !Array.isArray(orders)) return NextResponse.json({ error: 'Orders array required' }, { status: 400 })
-    for (const item of orders) {
-      await prisma.needType.update({ where: { id: item.id }, data: { sortOrder: item.sortOrder } })
+    const body = await request.json()
+    if (body.orders && Array.isArray(body.orders)) {
+      for (const item of body.orders) {
+        await prisma.needType.update({ where: { id: item.id }, data: { sortOrder: item.sortOrder } })
+      }
+    } else if (body.id) {
+      await prisma.needType.update({ where: { id: body.id }, data: { price: body.price ?? null } })
+    } else {
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
     return NextResponse.json({ success: true })
   } catch (error) {
