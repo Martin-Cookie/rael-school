@@ -354,6 +354,23 @@
     "missingFields": "Some rows are missing student or payment type",
     "selected": "selected"
   },
+  "visitCards": {
+    "title": "Visit Cards",
+    "selectStudents": "Select Students",
+    "selectedCount": "Selected",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "filterByClass": "Filter by class",
+    "allClasses": "All classes",
+    "generateCards": "Generate cards",
+    "uploadCsv": "Upload CSV",
+    "csvHint": "CSV with columns: Last name, First name",
+    "csvMatched": "Matched",
+    "csvNotFound": "Not found",
+    "csvNotFoundList": "Students not found in CSV",
+    "noStudentsSelected": "Select at least one student",
+    "price": "Price"
+  },
   "pagination": {
     "showing": "Showing",
     "of": "of",

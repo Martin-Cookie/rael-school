@@ -5,7 +5,7 @@ import Sidebar from '@/components/layout/Sidebar'
 export default async function ReportsLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser()
   if (!user) redirect('/login')
-  if (!['ADMIN', 'MANAGER'].includes(user.role)) redirect('/dashboard')
+  if (!['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)) redirect('/dashboard')
 
   return (
     <div className="min-h-screen bg-[#fafaf8]">

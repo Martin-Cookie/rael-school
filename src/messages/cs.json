@@ -354,6 +354,23 @@
     "missingFields": "Některé řádky nemají vyplněného studenta nebo typ platby",
     "selected": "vybráno"
   },
+  "visitCards": {
+    "title": "Karty pro návštěvy",
+    "selectStudents": "Výběr studentů",
+    "selectedCount": "Vybráno",
+    "selectAll": "Vybrat vše",
+    "deselectAll": "Zrušit vše",
+    "filterByClass": "Filtr podle třídy",
+    "allClasses": "Všechny třídy",
+    "generateCards": "Generovat karty",
+    "uploadCsv": "Nahrát CSV",
+    "csvHint": "CSV se sloupci: Příjmení, Jméno",
+    "csvMatched": "Nalezeno",
+    "csvNotFound": "Nenalezeno",
+    "csvNotFoundList": "Nenalezení studenti z CSV",
+    "noStudentsSelected": "Vyberte alespoň jednoho studenta",
+    "price": "Cena"
+  },
   "pagination": {
     "showing": "Zobrazeno",
     "of": "z",
