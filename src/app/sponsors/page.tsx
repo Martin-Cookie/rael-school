@@ -45,7 +45,7 @@ export default function SponsorsPage() {
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [showAdd, setShowAdd] = useState(false)
-  const PAGE_SIZE = 20
+  const PAGE_SIZE = 12
   const [editingId, setEditingId] = useState<string | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')

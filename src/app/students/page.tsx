@@ -22,7 +22,7 @@ export default function StudentsPage() {
   const [locale, setLocale] = useState<Locale>('cs')
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const PAGE_SIZE = 20
+  const PAGE_SIZE = 12
 
   const t = createTranslator(msgs[locale])
 
