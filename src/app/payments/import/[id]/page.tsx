@@ -261,8 +261,8 @@ export default function ImportDetailPage() {
     setSplitRow(row)
     const half = Math.round(row.amount / 2 * 100) / 100
     setSplitParts([
-      { amount: half.toString(), studentId: '', paymentTypeId: '' },
-      { amount: (row.amount - half).toString(), studentId: '', paymentTypeId: '' },
+      { amount: half.toString(), studentId: row.studentId || '', paymentTypeId: row.paymentTypeId || '' },
+      { amount: (row.amount - half).toString(), studentId: row.studentId || '', paymentTypeId: row.paymentTypeId || '' },
     ])
   }
 
@@ -276,7 +276,7 @@ export default function ImportDetailPage() {
 
   function addSplitPart() {
     if (splitParts.length >= 5) return
-    setSplitParts(prev => [...prev, { amount: '0', studentId: '', paymentTypeId: '' }])
+    setSplitParts(prev => [...prev, { amount: '0', studentId: splitRow?.studentId || '', paymentTypeId: splitRow?.paymentTypeId || '' }])
   }
 
   function removeSplitPart(index: number) {
@@ -657,7 +657,7 @@ export default function ImportDetailPage() {
       {splitRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50" onClick={() => setSplitRow(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-6">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-semibold text-gray-900">{t('paymentImport.splitPayment')}</h3>
               <button onClick={() => setSplitRow(null)} className="p-1 text-gray-400 hover:text-gray-600 rounded">
@@ -674,41 +674,47 @@ export default function ImportDetailPage() {
             {/* Parts */}
             <div className="space-y-3 mb-4">
               {splitParts.map((part, i) => (
-                <div key={i} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-500 w-6">{i + 1}.</span>
-                  <input
-                    type="number"
-                    value={part.amount}
-                    onChange={(e) => updateSplitPart(i, 'amount', e.target.value)}
-                    placeholder={t('paymentImport.amount')}
-                    className="w-24 px-2 py-1.5 rounded border border-gray-300 text-sm"
-                    step="0.01"
-                  />
-                  <select
-                    value={part.studentId}
-                    onChange={(e) => updateSplitPart(i, 'studentId', e.target.value)}
-                    className="flex-1 px-2 py-1.5 rounded border border-gray-300 text-sm"
-                  >
-                    <option value="">{t('paymentImport.selectStudent')}</option>
-                    {students.map((s: any) => (
-                      <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={part.paymentTypeId}
-                    onChange={(e) => updateSplitPart(i, 'paymentTypeId', e.target.value)}
-                    className="w-36 px-2 py-1.5 rounded border border-gray-300 text-sm"
-                  >
-                    <option value="">{t('paymentImport.selectPaymentType')}</option>
-                    {paymentTypes.map((pt: any) => (
-                      <option key={pt.id} value={pt.id}>{pt.name}</option>
-                    ))}
-                  </select>
-                  {splitParts.length > 2 && (
-                    <button onClick={() => removeSplitPart(i)} className="p-1 text-gray-400 hover:text-red-500">
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
+                <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-500 w-6">{i + 1}.</span>
+                    <input
+                      type="number"
+                      value={part.amount}
+                      onChange={(e) => updateSplitPart(i, 'amount', e.target.value)}
+                      placeholder={t('paymentImport.amount')}
+                      className="w-28 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                      step="0.01"
+                    />
+                    <span className="text-sm text-gray-400">{splitRow?.currency}</span>
+                    <div className="flex-1" />
+                    {splitParts.length > 2 && (
+                      <button onClick={() => removeSplitPart(i)} className="p-1 text-gray-400 hover:text-red-500">
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 ml-8">
+                    <select
+                      value={part.studentId}
+                      onChange={(e) => updateSplitPart(i, 'studentId', e.target.value)}
+                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                    >
+                      <option value="">{t('paymentImport.selectStudent')}</option>
+                      {students.map((s: any) => (
+                        <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={part.paymentTypeId}
+                      onChange={(e) => updateSplitPart(i, 'paymentTypeId', e.target.value)}
+                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                    >
+                      <option value="">{t('paymentImport.selectPaymentType')}</option>
+                      {paymentTypes.map((pt: any) => (
+                        <option key={pt.id} value={pt.id}>{pt.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               ))}
             </div>
