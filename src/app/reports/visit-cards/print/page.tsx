@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Printer } from 'lucide-react'
+import { Printer, X } from 'lucide-react'
 import { formatNumber, formatDate, calculateAge } from '@/lib/format'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
@@ -87,8 +87,12 @@ ${parentStyles}
     margin: 0;
   }
   .print-page:last-child { page-break-after: auto; }
-  table { font-size: 10px !important; }
-  h2, h3, .section-title { font-size: 11px !important; }
+  .print-page { display: flex; flex-direction: column; min-height: calc(297mm - 16mm); box-sizing: border-box; }
+  table { font-size: 12px !important; }
+  td, th { padding-top: 3px !important; padding-bottom: 3px !important; }
+  h2, h3, .section-title { font-size: 13px !important; }
+  .notes-fill { flex: 1; display: flex; flex-direction: column; }
+  .notes-fill .notes-box { flex: 1; }
 </style>
 </head><body>${content.innerHTML}</body></html>`)
     iframeDoc.close()
@@ -234,13 +238,22 @@ ${parentStyles}
             {t('visitCards.pageOf', { current: String(students.length * 2), total: String(students.length * 2) })}
           </span>
         </div>
-        <button
-          onClick={handlePrint}
-          className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 flex items-center gap-2"
-        >
-          <Printer className="w-4 h-4" />
-          {t('visitCards.print')}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handlePrint}
+            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 flex items-center gap-2"
+          >
+            <Printer className="w-4 h-4" />
+            {t('visitCards.print')}
+          </button>
+          <button
+            onClick={() => window.close()}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 border border-gray-300 flex items-center gap-2"
+          >
+            <X className="w-4 h-4" />
+            {t('app.close')}
+          </button>
+        </div>
       </div>
 
       {/* Cards */}
@@ -270,29 +283,29 @@ ${parentStyles}
 
               {/* Sponsors */}
               <div className="mb-3">
-                <h3 className="section-title text-xs font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.sponsorSection')}
                   {student.sponsorships.length > 0 && <span className="ml-2 font-normal text-gray-500">({student.sponsorships.length})</span>}
                 </h3>
                 {student.sponsorships.length === 0 ? (
                   <p className="text-xs text-gray-400 px-2 italic">{t('visitCards.sponsorNone')}</p>
                 ) : (
-                  <table className="w-full text-xs border-collapse">
+                  <table className="w-full text-sm border-collapse">
                     <thead>
                       <tr className="border-b-2 border-gray-400">
-                        <th className="text-left py-1 px-2 font-bold text-gray-600">{t('student.lastName')}</th>
-                        <th className="text-left py-1 px-2 font-bold text-gray-600">{t('student.firstName')}</th>
-                        <th className="text-left py-1 px-2 font-bold text-gray-600">{t('sponsors.email')}</th>
-                        <th className="text-left py-1 px-2 font-bold text-gray-600">{t('sponsors.phone')}</th>
+                        <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('student.lastName')}</th>
+                        <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('student.firstName')}</th>
+                        <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('sponsors.email')}</th>
+                        <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('sponsors.phone')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {student.sponsorships.map((sp, i) => (
                         <tr key={i} className="border-b border-gray-300">
-                          <td className="py-1 px-2 font-bold">{sp.sponsor.lastName}</td>
-                          <td className="py-1 px-2">{sp.sponsor.firstName}</td>
-                          <td className="py-1 px-2">{sp.sponsor.email || '-'}</td>
-                          <td className="py-1 px-2">{sp.sponsor.phone || '-'}</td>
+                          <td className="py-1.5 px-2 font-bold">{sp.sponsor.lastName}</td>
+                          <td className="py-1.5 px-2">{sp.sponsor.firstName}</td>
+                          <td className="py-1.5 px-2">{sp.sponsor.email || '-'}</td>
+                          <td className="py-1.5 px-2">{sp.sponsor.phone || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -302,50 +315,50 @@ ${parentStyles}
 
               {/* Basic Info */}
               <div className="mb-3">
-                <h3 className="section-title text-xs font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.basicInfo')}
                 </h3>
-                <table className="w-full text-xs border-collapse">
+                <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1 px-2 w-1/4 font-bold text-gray-600"></th>
-                      <th className="text-left py-1 px-2 w-1/3 font-bold text-gray-600">{t('visitCards.currentValue')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600">{t('visitCards.newValue')}</th>
+                      <th className="text-left py-1.5 px-2 w-1/4 font-bold text-gray-600"></th>
+                      <th className="text-left py-1.5 px-2 w-1/3 font-bold text-gray-600">{t('visitCards.currentValue')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.newValue')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('student.className')}</td>
-                      <td className="py-1 px-2">{student.className || '-'}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('student.className')}</td>
+                      <td className="py-1.5 px-2">{student.className || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('visitCards.school')}</td>
-                      <td className="py-1 px-2">{student.school || '-'}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.school')}</td>
+                      <td className="py-1.5 px-2">{student.school || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('visitCards.dateOfBirth')}</td>
-                      <td className="py-1 px-2">
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.dateOfBirth')}</td>
+                      <td className="py-1.5 px-2">
                         {formatDate(student.dateOfBirth, locale)}
                         {student.dateOfBirth && (() => { const age = calculateAge(student.dateOfBirth); return age !== null ? ` (${age} ${t('student.age').toLowerCase()})` : '' })()}
                       </td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('student.gender')}</td>
-                      <td className="py-1 px-2">{formatGender(student.gender)}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('student.gender')}</td>
+                      <td className="py-1.5 px-2">{formatGender(student.gender)}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('visitCards.orphanStatus')}</td>
-                      <td className="py-1 px-2">{formatOrphanStatus(student.orphanStatus)}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.orphanStatus')}</td>
+                      <td className="py-1.5 px-2">{formatOrphanStatus(student.orphanStatus)}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('student.healthStatus')}</td>
-                      <td className="py-1 px-2">{student.healthStatus || '-'}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('student.healthStatus')}</td>
+                      <td className="py-1.5 px-2">{student.healthStatus || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                   </tbody>
                 </table>
@@ -353,42 +366,42 @@ ${parentStyles}
 
               {/* Family Info */}
               <div className="mb-3">
-                <h3 className="section-title text-xs font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.familyInfo')}
                 </h3>
-                <table className="w-full text-xs border-collapse">
+                <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1 px-2 w-1/4 font-bold text-gray-600"></th>
-                      <th className="text-left py-1 px-2 w-1/3 font-bold text-gray-600">{t('visitCards.currentValue')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600">{t('visitCards.newValue')}</th>
+                      <th className="text-left py-1.5 px-2 w-1/4 font-bold text-gray-600"></th>
+                      <th className="text-left py-1.5 px-2 w-1/3 font-bold text-gray-600">{t('visitCards.currentValue')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.newValue')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('student.family.motherName')}</td>
-                      <td className="py-1 px-2">{student.motherName || '-'}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('student.family.motherName')}</td>
+                      <td className="py-1.5 px-2">{student.motherName || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('visitCards.motherAlive')}</td>
-                      <td className="py-1 px-2">{formatBool(student.motherAlive)}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.motherAlive')}</td>
+                      <td className="py-1.5 px-2">{formatBool(student.motherAlive)}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('student.family.fatherName')}</td>
-                      <td className="py-1 px-2">{student.fatherName || '-'}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('student.family.fatherName')}</td>
+                      <td className="py-1.5 px-2">{student.fatherName || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('visitCards.fatherAlive')}</td>
-                      <td className="py-1 px-2">{formatBool(student.fatherAlive)}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.fatherAlive')}</td>
+                      <td className="py-1.5 px-2">{formatBool(student.fatherAlive)}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                     <tr className="border-b border-gray-300">
-                      <td className="py-1 px-2 font-bold">{t('student.family.siblings')}</td>
-                      <td className="py-1 px-2">{student.siblings || '-'}</td>
-                      <td className="py-1 px-2 border-b border-dotted border-gray-400"></td>
+                      <td className="py-1.5 px-2 font-bold">{t('student.family.siblings')}</td>
+                      <td className="py-1.5 px-2">{student.siblings || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
                     </tr>
                   </tbody>
                 </table>
@@ -396,18 +409,18 @@ ${parentStyles}
 
               {/* Equipment Section */}
               <div className="mb-3">
-                <h3 className="section-title text-xs font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.equipmentSection')}
                   {student.equipment.length > 0 && <span className="ml-2 font-normal text-gray-500">({t('visitCards.currentEquipment')}: {student.equipment.length})</span>}
                 </h3>
-                <table className="w-full text-xs border-collapse">
+                <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1 px-2 w-8"></th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600">{t('equipment.type')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600 w-20">{t('visitCards.price')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600 w-20">{t('equipment.condition')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
+                      <th className="text-left py-1.5 px-2 w-8"></th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('equipment.type')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600 w-14">{t('visitCards.price')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600 w-14">{t('equipment.condition')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -415,15 +428,15 @@ ${parentStyles}
                       const existing = student.equipment.find(e => e.type === eqType.name)
                       return (
                         <tr key={eqType.id} className="border-b border-gray-300">
-                          <td className="py-1 px-2">
+                          <td className="py-1.5 px-2">
                             <div className={`w-3.5 h-3.5 border rounded ${existing ? 'bg-gray-800 border-gray-800' : 'border-gray-400'}`}>
                               {existing && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                             </div>
                           </td>
-                          <td className={`py-1 px-2 ${existing ? 'font-bold' : ''}`}>{eqType.name}</td>
-                          <td className="py-1 px-2 text-gray-400">{eqType.price ? `${formatNumber(eqType.price)} CZK` : ''}</td>
-                          <td className="py-1 px-2">{existing ? formatCondition(existing.condition) : <span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span>}</td>
-                          <td className="py-1 px-2">{existing?.notes || <span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span>}</td>
+                          <td className={`py-1.5 px-2 ${existing ? 'font-bold' : ''}`}>{eqType.name}</td>
+                          <td className="py-1.5 px-2 text-gray-400">{eqType.price ? `${formatNumber(eqType.price)} CZK` : ''}</td>
+                          <td className="py-1.5 px-2">{existing ? formatCondition(existing.condition) : <span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span>}</td>
+                          <td className="py-1.5 px-2">{existing?.notes || <span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span>}</td>
                         </tr>
                       )
                     })}
@@ -453,17 +466,17 @@ ${parentStyles}
 
               {/* Needs Section */}
               <div className="mb-3">
-                <h3 className="section-title text-xs font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.needsSection')}
                   {student.needs.length > 0 && <span className="ml-2 font-normal text-red-600">({t('needs.unfulfilled')}: {student.needs.length})</span>}
                 </h3>
-                <table className="w-full text-xs border-collapse">
+                <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1 px-2 w-8"></th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600">{t('needs.description')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600 w-20">{t('visitCards.price')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
+                      <th className="text-left py-1.5 px-2 w-8"></th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('needs.description')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600 w-14">{t('visitCards.price')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -471,14 +484,14 @@ ${parentStyles}
                       const hasNeed = student.needs.some(n => n.description === nt.name)
                       return (
                         <tr key={nt.id} className="border-b border-gray-300">
-                          <td className="py-1 px-2">
+                          <td className="py-1.5 px-2">
                             <div className={`w-3.5 h-3.5 border rounded ${hasNeed ? 'bg-red-600 border-red-600' : 'border-gray-400'}`}>
                               {hasNeed && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                             </div>
                           </td>
-                          <td className={`py-1 px-2 ${hasNeed ? 'font-bold text-red-700' : ''}`}>{nt.name}</td>
-                          <td className="py-1 px-2 text-gray-400">{nt.price ? `${formatNumber(nt.price)} CZK` : ''}</td>
-                          <td className="py-1 px-2"><span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span></td>
+                          <td className={`py-1.5 px-2 ${hasNeed ? 'font-bold text-red-700' : ''}`}>{nt.name}</td>
+                          <td className="py-1.5 px-2 text-gray-400">{nt.price ? `${formatNumber(nt.price)} CZK` : ''}</td>
+                          <td className="py-1.5 px-2"><span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span></td>
                         </tr>
                       )
                     })}
@@ -488,17 +501,17 @@ ${parentStyles}
 
               {/* Wishes Section */}
               <div className="mb-3">
-                <h3 className="section-title text-xs font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.wishesSection')}
                   {student.wishes.length > 0 && <span className="ml-2 font-normal text-blue-600">({t('needs.unfulfilled')}: {student.wishes.length})</span>}
                 </h3>
-                <table className="w-full text-xs border-collapse">
+                <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1 px-2 w-8"></th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600">{t('needs.description')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600 w-20">{t('visitCards.price')}</th>
-                      <th className="text-left py-1 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
+                      <th className="text-left py-1.5 px-2 w-8"></th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('needs.description')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600 w-14">{t('visitCards.price')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -506,14 +519,14 @@ ${parentStyles}
                       const hasWish = student.wishes.some(w => w.wishType?.name === wt.name)
                       return (
                         <tr key={wt.id} className="border-b border-gray-300">
-                          <td className="py-1 px-2">
+                          <td className="py-1.5 px-2">
                             <div className={`w-3.5 h-3.5 border rounded ${hasWish ? 'bg-blue-600 border-blue-600' : 'border-gray-400'}`}>
                               {hasWish && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                             </div>
                           </td>
-                          <td className={`py-1 px-2 ${hasWish ? 'font-bold text-blue-700' : ''}`}>{wt.name}</td>
-                          <td className="py-1 px-2 text-gray-400">{wt.price ? `${formatNumber(wt.price)} CZK` : ''}</td>
-                          <td className="py-1 px-2"><span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span></td>
+                          <td className={`py-1.5 px-2 ${hasWish ? 'font-bold text-blue-700' : ''}`}>{wt.name}</td>
+                          <td className="py-1.5 px-2 text-gray-400">{wt.price ? `${formatNumber(wt.price)} CZK` : ''}</td>
+                          <td className="py-1.5 px-2"><span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span></td>
                         </tr>
                       )
                     })}
@@ -521,18 +534,16 @@ ${parentStyles}
                 </table>
               </div>
 
-              {/* General notes area */}
-              <div>
-                <h3 className="section-title text-xs font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+              {/* General notes area - fills remaining page space */}
+              <div className="notes-fill">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.generalNotes')}
                 </h3>
                 {student.notes && (
-                  <p className="text-xs text-gray-600 px-2 mb-1">{student.notes}</p>
+                  <p className="text-sm text-gray-600 px-2 mb-1">{student.notes}</p>
                 )}
-                <div className="border border-gray-400 rounded p-2 min-h-[40px]">
-                  <div className="border-b border-dotted border-gray-400 mb-3">&nbsp;</div>
-                  <div className="border-b border-dotted border-gray-400 mb-3">&nbsp;</div>
-                  <div className="border-b border-dotted border-gray-400">&nbsp;</div>
+                <div className="notes-box border border-gray-400 rounded p-2 min-h-[60px]">
+                  &nbsp;
                 </div>
               </div>
             </div>
