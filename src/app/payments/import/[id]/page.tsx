@@ -503,7 +503,7 @@ export default function ImportDetailPage() {
                     className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                 </th>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.status')}</th>
+                <SH col="status" className="text-left">{t('paymentImport.status')}</SH>
                 <SH col="transactionDate" className="text-left">{t('paymentImport.date')}</SH>
                 <SH col="senderName" className="text-left">{t('paymentImport.sender')}</SH>
                 <SH col="amount" className="text-right">{t('paymentImport.amount')}</SH>
