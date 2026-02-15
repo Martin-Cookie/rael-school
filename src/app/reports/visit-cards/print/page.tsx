@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Printer } from 'lucide-react'
 import { formatNumber, formatDate, calculateAge } from '@/lib/format'
 import cs from '@/messages/cs.json'
@@ -47,8 +47,85 @@ export default function VisitCardsPrintPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [locale, setLocale] = useState<Locale>('cs')
+  const printContentRef = useRef<HTMLDivElement>(null)
 
   const t = createTranslator(msgs[locale])
+
+  // Iframe-based print: creates isolated HTML snapshot unaffected by React lifecycle
+  const handlePrint = useCallback(() => {
+    const content = printContentRef.current
+    if (!content) return
+
+    const iframe = document.createElement('iframe')
+    iframe.style.cssText = 'position:fixed;width:0;height:0;border:0;left:-9999px;top:-9999px;'
+    document.body.appendChild(iframe)
+
+    const iframeDoc = iframe.contentDocument
+    const iframeWin = iframe.contentWindow
+    if (!iframeDoc || !iframeWin) {
+      document.body.removeChild(iframe)
+      return
+    }
+
+    // Copy all stylesheets from the parent document (Tailwind + globals.css)
+    const parentStyles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+      .map(el => el.outerHTML)
+      .join('\n')
+
+    iframeDoc.open()
+    iframeDoc.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+${parentStyles}
+<style>
+  @page { size: A4; margin: 8mm; }
+  body { margin: 0; padding: 0; background: white; }
+  .no-print { display: none !important; }
+  .print-page {
+    page-break-after: always;
+    page-break-inside: avoid;
+    padding: 8mm;
+    margin: 0;
+  }
+  .print-page:last-child { page-break-after: auto; }
+  table { font-size: 10px !important; }
+  h2, h3, .section-title { font-size: 11px !important; }
+</style>
+</head><body>${content.innerHTML}</body></html>`)
+    iframeDoc.close()
+
+    let printed = false
+    const doPrint = () => {
+      if (printed) return
+      printed = true
+      iframeWin.focus()
+      iframeWin.print()
+      // Clean up after print dialog closes
+      iframeWin.addEventListener('afterprint', () => {
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe)
+      })
+      // Fallback cleanup (e.g. if afterprint doesn't fire)
+      setTimeout(() => {
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe)
+      }, 60000)
+    }
+
+    // Wait for external stylesheets to load in the iframe
+    const links = Array.from(iframeDoc.querySelectorAll('link[rel="stylesheet"]'))
+    if (links.length === 0) {
+      doPrint()
+    } else {
+      let loaded = 0
+      const onStyleLoad = () => {
+        loaded++
+        if (loaded >= links.length) doPrint()
+      }
+      links.forEach(link => {
+        link.addEventListener('load', onStyleLoad)
+        link.addEventListener('error', onStyleLoad)
+      })
+      // Fallback: print after 3s even if styles haven't loaded
+      setTimeout(doPrint, 3000)
+    }
+  }, [])
 
   useEffect(() => {
     const saved = localStorage.getItem('rael-locale') as Locale
@@ -157,7 +234,7 @@ export default function VisitCardsPrintPage() {
           </span>
         </div>
         <button
-          onClick={() => window.print()}
+          onClick={handlePrint}
           className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 flex items-center gap-2"
         >
           <Printer className="w-4 h-4" />
@@ -168,6 +245,7 @@ export default function VisitCardsPrintPage() {
       {/* Cards */}
       <div className="no-print h-14" /> {/* Spacer for fixed toolbar */}
       <div className="bg-gray-100 min-h-screen py-4 no-print-bg">
+        <div ref={printContentRef}>
         {students.map((student, idx) => (
           <div key={student.id} className="print-page">
             {/* Header */}
@@ -436,6 +514,7 @@ export default function VisitCardsPrintPage() {
             </div>
           </div>
         ))}
+        </div>
       </div>
     </>
   )
