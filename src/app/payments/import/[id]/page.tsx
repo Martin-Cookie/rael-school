@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { ArrowLeft, FileText, Info, CheckCircle2, XCircle, Scissors, X } from 'lucide-react'
+import { ArrowLeft, FileText, Info, CheckCircle2, XCircle, Scissors, X, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/format'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
@@ -107,6 +107,10 @@ export default function ImportDetailPage() {
 
   // Action loading
   const [actionLoading, setActionLoading] = useState(false)
+
+  // Sorting
+  const [sortCol, setSortCol] = useState('')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   const t = createTranslator(msgs[locale])
 
@@ -337,6 +341,35 @@ export default function ImportDetailPage() {
     return map[conf] || conf
   }
 
+  function handleSort(col: string) {
+    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
+    else { setSortCol(col); setSortDir('asc') }
+  }
+
+  function sortData(data: ImportRow[]): ImportRow[] {
+    if (!sortCol) return data
+    return [...data].sort((a: any, b: any) => {
+      let va = a[sortCol]
+      let vb = b[sortCol]
+      if (va == null) va = ''
+      if (vb == null) vb = ''
+      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
+      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
+    })
+  }
+
+  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
+    const isA = sortCol === col
+    return (
+      <th className={`py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none whitespace-nowrap ${className}`} onClick={() => handleSort(col)}>
+        <div className="flex items-center gap-1">
+          {children}
+          {isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+        </div>
+      </th>
+    )
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -353,9 +386,9 @@ export default function ImportDetailPage() {
     )
   }
 
-  const filteredRows = importData.rows.filter(
+  const filteredRows = sortData(importData.rows.filter(
     (r) => filter === 'ALL' || r.status === filter
-  )
+  ))
 
   const canEdit = (row: ImportRow) => !['APPROVED', 'REJECTED', 'DUPLICATE', 'SPLIT'].includes(row.status)
   const canSelect = (row: ImportRow) => !['APPROVED', 'REJECTED', 'SPLIT'].includes(row.status)
@@ -471,11 +504,11 @@ export default function ImportDetailPage() {
                   />
                 </th>
                 <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.status')}</th>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.date')}</th>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.sender')}</th>
-                <th className="text-right py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.amount')}</th>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.variableSymbol')}</th>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.message')}</th>
+                <SH col="transactionDate" className="text-left">{t('paymentImport.date')}</SH>
+                <SH col="senderName" className="text-left">{t('paymentImport.sender')}</SH>
+                <SH col="amount" className="text-right">{t('paymentImport.amount')}</SH>
+                <SH col="variableSymbol" className="text-left">{t('paymentImport.variableSymbol')}</SH>
+                <SH col="message" className="text-left">{t('paymentImport.message')}</SH>
                 <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[160px]">{t('paymentImport.sponsor')}</th>
                 <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[170px]">{t('paymentImport.student')}</th>
                 <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[140px]">{t('paymentImport.paymentType')}</th>
@@ -538,8 +571,8 @@ export default function ImportDetailPage() {
                     </td>
 
                     {/* Message */}
-                    <td className="py-2 px-1.5 text-xs text-gray-500 max-w-[180px] truncate" title={row.message || ''}>
-                      {row.message || '-'}
+                    <td className="py-2 px-1.5 text-xs text-gray-500" title={row.message || ''}>
+                      <div className="line-clamp-2">{row.message || '-'}</div>
                     </td>
 
                     {/* Sponsor dropdown */}
