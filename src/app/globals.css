@@ -112,3 +112,42 @@ th {
   background-color: #fee2e2;
   color: #991b1b;
 }
+
+/* ===== Visit cards print mode ===== */
+body.print-visit-cards aside { display: none !important; }
+body.print-visit-cards main { margin-left: 0 !important; padding-top: 0 !important; }
+body.print-visit-cards main > div { padding: 0 !important; max-width: none !important; }
+
+@media print {
+  body.print-visit-cards { margin: 0; padding: 0; background: white; }
+  body.print-visit-cards .no-print { display: none !important; }
+  body.print-visit-cards .no-print-bg {
+    background: none !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+  }
+  body.print-visit-cards .print-page {
+    page-break-after: always;
+    page-break-inside: avoid;
+    padding: 8mm;
+    margin: 0;
+  }
+  body.print-visit-cards .print-page:last-child { page-break-after: auto; }
+  @page { size: A4; margin: 8mm; }
+  body.print-visit-cards table { font-size: 10px !important; }
+  body.print-visit-cards h2,
+  body.print-visit-cards h3 { font-size: 11px !important; }
+  body.print-visit-cards .section-title { font-size: 11px !important; }
+}
+
+@media screen {
+  body.print-visit-cards .print-page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 10mm;
+    margin: 0 auto 20px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+  }
+}

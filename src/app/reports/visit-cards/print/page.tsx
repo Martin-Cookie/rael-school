@@ -55,6 +55,12 @@ export default function VisitCardsPrintPage() {
     if (saved) setLocale(saved)
   }, [])
 
+  // Add body class for print styles (defined in globals.css)
+  useEffect(() => {
+    document.body.classList.add('print-visit-cards')
+    return () => document.body.classList.remove('print-visit-cards')
+  }, [])
+
   useEffect(() => {
     const idsJson = sessionStorage.getItem('visitCardIds')
     if (!idsJson) {
@@ -142,48 +148,7 @@ export default function VisitCardsPrintPage() {
 
   return (
     <>
-      {/* Print styles — hide parent layout sidebar & reset wrappers */}
-      <style jsx global>{`
-        /* Hide sidebar and mobile header from parent layout (both screen & print) */
-        aside { display: none !important; }
-        /* Reset parent layout <main> and its inner wrapper */
-        main {
-          margin-left: 0 !important;
-          padding-top: 0 !important;
-        }
-        main > div {
-          padding: 0 !important;
-          max-width: none !important;
-        }
-        @media print {
-          body { margin: 0; padding: 0; }
-          .no-print { display: none !important; }
-          .print-page {
-            page-break-after: always;
-            page-break-inside: avoid;
-            padding: 8mm;
-            margin: 0;
-          }
-          .print-page:last-child { page-break-after: auto; }
-          @page { size: A4; margin: 8mm; }
-          table { font-size: 10px !important; }
-          h2, h3 { font-size: 11px !important; }
-          .section-title { font-size: 11px !important; }
-        }
-        @media screen {
-          .print-page {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 10mm;
-            margin: 0 auto 20px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border: 1px solid #e5e7eb;
-          }
-        }
-      `}</style>
-
-      {/* Toolbar - hidden during print */}
+      {/* Toolbar - hidden during print (styles in globals.css via body.print-visit-cards) */}
       <div className="no-print fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-bold text-gray-900">{t('visitCards.title')}</h1>
