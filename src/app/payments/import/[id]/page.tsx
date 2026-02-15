@@ -462,7 +462,7 @@ export default function ImportDetailPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="py-2.5 px-2 w-10">
+                <th className="py-2.5 px-1 w-8">
                   <input
                     type="checkbox"
                     checked={filteredRows.filter(r => canSelect(r)).length > 0 && filteredRows.filter(r => canSelect(r)).every(r => selectedRows.has(r.id))}
@@ -470,16 +470,16 @@ export default function ImportDetailPage() {
                     className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                 </th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.status')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.date')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.sender')}</th>
-                <th className="text-right py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.amount')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.variableSymbol')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.message')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.sponsor')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.student')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase">{t('paymentImport.paymentType')}</th>
-                <th className="text-left py-2.5 px-3 text-xs font-medium text-gray-500 uppercase w-20">{t('app.actions')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.status')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.date')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.sender')}</th>
+                <th className="text-right py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.amount')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('paymentImport.variableSymbol')}</th>
+                <th className="text-left py-2.5 px-2 text-xs font-medium text-gray-500 uppercase min-w-[280px]">{t('paymentImport.message')}</th>
+                <th className="text-left py-2.5 px-2 text-xs font-medium text-gray-500 uppercase min-w-[200px]">{t('paymentImport.sponsor')}</th>
+                <th className="text-left py-2.5 px-2 text-xs font-medium text-gray-500 uppercase min-w-[220px]">{t('paymentImport.student')}</th>
+                <th className="text-left py-2.5 px-2 text-xs font-medium text-gray-500 uppercase min-w-[180px]">{t('paymentImport.paymentType')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase w-16">{t('app.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -492,7 +492,7 @@ export default function ImportDetailPage() {
                 return (
                   <tr key={row.id} className={`border-b border-gray-50 hover:bg-gray-50/50 group ${selectedRows.has(row.id) ? 'bg-primary-50/50' : ''}`}>
                     {/* Checkbox */}
-                    <td className="py-2.5 px-2">
+                    <td className="py-2.5 px-1">
                       {selectable && (
                         <input
                           type="checkbox"
@@ -504,7 +504,7 @@ export default function ImportDetailPage() {
                     </td>
 
                     {/* Status */}
-                    <td className="py-2.5 px-3">
+                    <td className="py-2.5 px-1.5 whitespace-nowrap">
                       <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${rowStyle.bg} ${rowStyle.text}`}>
                         {statusLabel(row.status)}
                       </span>
@@ -516,32 +516,32 @@ export default function ImportDetailPage() {
                     </td>
 
                     {/* Date */}
-                    <td className="py-2.5 px-3 text-sm text-gray-900 whitespace-nowrap">
+                    <td className="py-2.5 px-1.5 text-sm text-gray-900 whitespace-nowrap">
                       {formatDate(row.transactionDate, locale)}
                     </td>
 
                     {/* Sender */}
-                    <td className="py-2.5 px-3 text-sm text-gray-700 max-w-[150px] truncate" title={row.senderName || ''}>
+                    <td className="py-2.5 px-1.5 text-sm text-gray-700 whitespace-nowrap" title={row.senderName || ''}>
                       {row.senderName || '-'}
                     </td>
 
                     {/* Amount */}
-                    <td className="py-2.5 px-3 text-sm text-gray-900 font-medium text-right whitespace-nowrap">
+                    <td className="py-2.5 px-1.5 text-sm text-gray-900 font-medium text-right whitespace-nowrap">
                       {formatNumber(row.amount)} {row.currency}
                     </td>
 
                     {/* VS */}
-                    <td className="py-2.5 px-3 text-sm text-gray-500">
+                    <td className="py-2.5 px-1.5 text-sm text-gray-500 whitespace-nowrap">
                       {row.variableSymbol || '-'}
                     </td>
 
                     {/* Message */}
-                    <td className="py-2.5 px-3 text-sm text-gray-500 max-w-[180px] truncate" title={row.message || ''}>
+                    <td className="py-2.5 px-2 text-sm text-gray-500 min-w-[280px]">
                       {row.message || '-'}
                     </td>
 
                     {/* Sponsor dropdown */}
-                    <td className="py-1.5 px-2">
+                    <td className="py-1.5 px-2 min-w-[200px]">
                       {editable ? (
                         <select
                           value={row.sponsorId || ''}
@@ -554,14 +554,14 @@ export default function ImportDetailPage() {
                           ))}
                         </select>
                       ) : (
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-gray-700 whitespace-nowrap">
                           {row.sponsor ? `${row.sponsor.lastName} ${row.sponsor.firstName}` : '-'}
                         </span>
                       )}
                     </td>
 
                     {/* Student dropdown */}
-                    <td className="py-1.5 px-2">
+                    <td className="py-1.5 px-2 min-w-[220px]">
                       {editable ? (
                         <select
                           value={row.studentId || ''}
@@ -574,14 +574,14 @@ export default function ImportDetailPage() {
                           ))}
                         </select>
                       ) : (
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-gray-700 whitespace-nowrap">
                           {row.student ? `${row.student.lastName} ${row.student.firstName}` : '-'}
                         </span>
                       )}
                     </td>
 
                     {/* Payment type dropdown */}
-                    <td className="py-1.5 px-2">
+                    <td className="py-1.5 px-2 min-w-[180px]">
                       {editable ? (
                         <select
                           value={row.paymentTypeId || ''}
@@ -594,14 +594,14 @@ export default function ImportDetailPage() {
                           ))}
                         </select>
                       ) : (
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-gray-700 whitespace-nowrap">
                           {paymentTypes.find((pt: any) => pt.id === row.paymentTypeId)?.name || '-'}
                         </span>
                       )}
                     </td>
 
                     {/* Actions */}
-                    <td className="py-2.5 px-2">
+                    <td className="py-2.5 px-1.5">
                       <div className="flex items-center gap-1">
                         {editable && (
                           <button
