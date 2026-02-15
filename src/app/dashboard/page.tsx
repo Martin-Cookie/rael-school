@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Users, CreditCard, HandHeart, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, GraduationCap, Ticket } from 'lucide-react'
+import Pagination from '@/components/Pagination'
 import { formatNumber, formatDate, calculateAge } from '@/lib/format'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
@@ -33,6 +34,8 @@ export default function DashboardPage() {
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
   const [paymentSubTab, setPaymentSubTab] = useState<'sponsor' | 'voucher'>('sponsor')
+  const [currentPage, setCurrentPage] = useState(1)
+  const PAGE_SIZE = 10
 
   const t = createTranslator(msgs[locale])
 
@@ -60,6 +63,7 @@ export default function DashboardPage() {
   function handleSort(col: string) {
     if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
     else { setSortCol(col); setSortDir('asc') }
+    setCurrentPage(1)
   }
 
   function sortData<T>(data: T[], col: string): T[] {
@@ -92,6 +96,8 @@ export default function DashboardPage() {
 
   const voucherSummary = fmtCurrency(stats?.voucherTotalAmount || 0, 'KES')
 
+  const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
+
   const statCards = [
     { key: 'students' as DashTab, label: t('dashboard.totalStudents'), value: formatNumber(stats?.totalStudents || 0), icon: Users, color: 'bg-primary-50 text-primary-600', borderColor: 'border-primary-200' },
     { key: 'sponsors' as DashTab, label: t('dashboard.activeSponsors'), value: formatNumber(stats?.activeSponsors || 0), icon: HandHeart, color: 'bg-accent-50 text-accent-600', borderColor: 'border-accent-200' },
@@ -102,16 +108,16 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('dashboard.title')}</h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+      <h1 className="text-2xl font-bold text-gray-900 mb-3">{t('dashboard.title')}</h1>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
         {statCards.map(card => (
-          <button key={card.key} onClick={() => { setActiveTab(card.key); setSortCol(''); setSelectedClass(null) }} className={`bg-white rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 hover:border-gray-300'}`}>
+          <button key={card.key} onClick={() => { setActiveTab(card.key); setSortCol(''); setSelectedClass(null); setCurrentPage(1) }} className={`bg-white rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 hover:border-gray-300'}`}>
             <div className="flex items-start justify-between"><div><p className="text-sm text-gray-500 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900">{card.value}</p></div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
           </button>
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-4">
 
         {/* Students */}
         {activeTab === 'students' && (
@@ -125,7 +131,7 @@ export default function DashboardPage() {
             <SH col="_count.needs" className="text-right">{t('needs.title')}</SH>
             <SH col="_count.sponsorships" className="text-right">{t('sponsors.title')}</SH>
           </tr></thead><tbody>
-            {sortData(students, sortCol).map((s: any) => (
+            {sortData(students, sortCol).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((s: any) => (
               <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                 <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                 <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
@@ -137,6 +143,7 @@ export default function DashboardPage() {
               </tr>
             ))}
           </tbody></table></div>
+          <Pagination currentPage={currentPage} totalItems={students.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
           </div>
         )}
 
@@ -150,7 +157,7 @@ export default function DashboardPage() {
             <SH col="phone" className="text-left">{t('sponsors.phone')}</SH>
             <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
           </tr></thead><tbody>
-            {sortData(sponsors, sortCol).map((sp: any) => (
+            {sortData(sponsors, sortCol).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((sp: any) => (
               <tr key={sp.id} className="border-b border-gray-50 hover:bg-gray-50">
                 <td className="py-3 px-3 text-sm font-medium text-gray-900">{sp.lastName}</td>
                 <td className="py-3 px-3 text-sm text-gray-900">{sp.firstName}</td>
@@ -164,6 +171,7 @@ export default function DashboardPage() {
               </tr>
             ))}
           </tbody></table></div>
+          <Pagination currentPage={currentPage} totalItems={sponsors.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
           </div>
         )}
 
@@ -173,10 +181,10 @@ export default function DashboardPage() {
             <div className="flex items-center gap-4 mb-4">
               <h2 className="text-lg font-semibold text-gray-900">{t('payments.title')}</h2>
               <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-                <button onClick={() => { setPaymentSubTab('sponsor'); setSortCol('') }} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${paymentSubTab === 'sponsor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                <button onClick={() => { setPaymentSubTab('sponsor'); setSortCol(''); setCurrentPage(1) }} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${paymentSubTab === 'sponsor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
                   {t('sponsorPayments.title')} ({sponsorPayments.length})
                 </button>
-                <button onClick={() => { setPaymentSubTab('voucher'); setSortCol('') }} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${paymentSubTab === 'voucher' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                <button onClick={() => { setPaymentSubTab('voucher'); setSortCol(''); setCurrentPage(1) }} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${paymentSubTab === 'voucher' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
                   {t('vouchers.purchases')} ({voucherPurchases.length})
                 </button>
               </div>
@@ -202,7 +210,7 @@ export default function DashboardPage() {
                   <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
                   <SH col="notes" className="text-left">{t('payments.notes')}</SH>
                 </tr></thead><tbody>
-                  {sortData(sponsorPayments, sortCol).map((p: any) => (
+                  {sortData(sponsorPayments, sortCol).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((p: any) => (
                     <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50">
                       <td className="py-3 px-3 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
                       <td className="py-3 px-3 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{p.paymentType === 'tuition' ? t('sponsorPayments.tuition') : p.paymentType === 'medical' ? t('sponsorPayments.medical') : t('sponsorPayments.other')}</span></td>
@@ -214,6 +222,7 @@ export default function DashboardPage() {
                   ))}
                   {sponsorPayments.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
                 </tbody></table></div>
+                <Pagination currentPage={currentPage} totalItems={sponsorPayments.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
               </>
             )}
 
@@ -237,7 +246,7 @@ export default function DashboardPage() {
                   <SH col="donorName" className="text-left">{t('vouchers.donorName')}</SH>
                   <SH col="notes" className="text-left">{t('payments.notes')}</SH>
                 </tr></thead><tbody>
-                  {sortData(voucherPurchases, sortCol).map((v: any) => (
+                  {sortData(voucherPurchases, sortCol).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((v: any) => (
                     <tr key={v.id} className="border-b border-gray-50 hover:bg-gray-50">
                       <td className="py-3 px-3 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
                       <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, 'KES')}</td>
@@ -249,6 +258,7 @@ export default function DashboardPage() {
                   ))}
                   {voucherPurchases.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
                 </tbody></table></div>
+                <Pagination currentPage={currentPage} totalItems={voucherPurchases.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
               </>
             )}
           </div>
@@ -264,7 +274,7 @@ export default function DashboardPage() {
             <SH col="className" className="text-left">{t('student.className')}</SH>
             <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('needs.title')}</th>
           </tr></thead><tbody>
-            {sortData(studentsWithNeeds, sortCol).map((s: any) => (
+            {sortData(studentsWithNeeds, sortCol).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((s: any) => (
               <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                 <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                 <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
@@ -274,6 +284,7 @@ export default function DashboardPage() {
               </tr>
             ))}
           </tbody></table></div>
+          <Pagination currentPage={currentPage} totalItems={studentsWithNeeds.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
           </div>
         )}
 
@@ -286,7 +297,7 @@ export default function DashboardPage() {
                 {classNames.map(cn => {
                   const count = students.filter((s: any) => s.className === cn).length
                   return (
-                    <button key={cn} onClick={() => setSelectedClass(cn)} className="bg-gray-50 hover:bg-gray-100 rounded-xl p-4 border border-gray-200 text-left transition-colors">
+                    <button key={cn} onClick={() => { setSelectedClass(cn); setCurrentPage(1) }} className="bg-gray-50 hover:bg-gray-100 rounded-xl p-4 border border-gray-200 text-left transition-colors">
                       <p className="text-lg font-bold text-gray-900">{cn}</p>
                       <p className="text-sm text-gray-500">{count} {locale === 'cs' ? 'studentů' : locale === 'sw' ? 'wanafunzi' : 'students'}</p>
                     </button>
@@ -296,7 +307,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div>
-                <button onClick={() => setSelectedClass(null)} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
+                <button onClick={() => { setSelectedClass(null); setCurrentPage(1) }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
                 <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
                   <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
@@ -305,7 +316,7 @@ export default function DashboardPage() {
                   <SH col="gender" className="text-left">{t('student.gender')}</SH>
                   <SH col="_count.needs" className="text-right">{t('needs.title')}</SH>
                 </tr></thead><tbody>
-                  {sortData(students.filter((s: any) => s.className === selectedClass), sortCol).map((s: any) => (
+                  {sortData(students.filter((s: any) => s.className === selectedClass), sortCol).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((s: any) => (
                     <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                       <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                       <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
@@ -315,6 +326,7 @@ export default function DashboardPage() {
                     </tr>
                   ))}
                 </tbody></table></div>
+                <Pagination currentPage={currentPage} totalItems={students.filter((s: any) => s.className === selectedClass).length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
               </div>
             )}
           </div>
