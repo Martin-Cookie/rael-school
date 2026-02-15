@@ -213,7 +213,21 @@
     "needTypes": "Aina za Mahitaji",
     "newNeedTypeName": "Jina la aina mpya ya hitaji",
     "equipmentTypes": "Aina za Vifaa",
-    "newEquipmentTypeName": "Jina la aina mpya ya kifaa"
+    "newEquipmentTypeName": "Jina la aina mpya ya kifaa",
+    "wishTypes": "Aina za Matakwa",
+    "newWishTypeName": "Jina la aina mpya ya takwa"
+  },
+  "wishes": {
+    "title": "Matakwa",
+    "description": "Maelezo",
+    "fulfilled": "Imetimizwa",
+    "unfulfilled": "Haijatimizwa",
+    "fulfilledAt": "Tarehe ya kutimiza",
+    "addWish": "Ongeza takwa",
+    "selectType": "-- Chagua aina ya takwa --",
+    "customWish": "Mwingine (andika yako)",
+    "noWishes": "Hakuna matakwa",
+    "price": "Bei"
   },
   "statistics": {
     "title": "Takwimu na Ripoti",

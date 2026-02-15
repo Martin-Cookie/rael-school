@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -128,12 +128,14 @@ export default function AdminPage() {
   const [paymentTypes, setPaymentTypes] = useState<CodelistItem[]>([])
   const [needTypes, setNeedTypes] = useState<CodelistItem[]>([])
   const [equipmentTypes, setEquipmentTypes] = useState<CodelistItem[]>([])
+  const [wishTypes, setWishTypes] = useState<CodelistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [newClassName, setNewClassName] = useState('')
   const [newHealthTypeName, setNewHealthTypeName] = useState('')
   const [newPaymentTypeName, setNewPaymentTypeName] = useState('')
   const [newNeedTypeName, setNewNeedTypeName] = useState('')
   const [newEquipmentTypeName, setNewEquipmentTypeName] = useState('')
+  const [newWishTypeName, setNewWishTypeName] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
 
@@ -151,23 +153,26 @@ export default function AdminPage() {
 
   async function fetchAll() {
     try {
-      const [crRes, htRes, ptRes, ntRes, etRes] = await Promise.all([
+      const [crRes, htRes, ptRes, ntRes, etRes, wtRes] = await Promise.all([
         fetch('/api/admin/classrooms'),
         fetch('/api/admin/health-types'),
         fetch('/api/admin/payment-types'),
         fetch('/api/admin/need-types'),
         fetch('/api/admin/equipment-types'),
+        fetch('/api/admin/wish-types'),
       ])
       const crData = await crRes.json()
       const htData = await htRes.json()
       const ptData = await ptRes.json()
       const ntData = await ntRes.json()
       const etData = await etRes.json()
+      const wtData = await wtRes.json()
       setClassrooms(crData.classrooms || [])
       setHealthTypes(htData.healthTypes || [])
       setPaymentTypes(ptData.paymentTypes || [])
       setNeedTypes(ntData.needTypes || [])
       setEquipmentTypes(etData.equipmentTypes || [])
+      setWishTypes(wtData.wishTypes || [])
       setLoading(false)
     } catch { setLoading(false) }
   }
@@ -218,6 +223,7 @@ export default function AdminPage() {
   const paymentTypeH = makeHandlers('/api/admin/payment-types', paymentTypes)
   const needTypeH = makeHandlers('/api/admin/need-types', needTypes)
   const equipmentTypeH = makeHandlers('/api/admin/equipment-types', equipmentTypes)
+  const wishTypeH = makeHandlers('/api/admin/wish-types', wishTypes)
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
 
@@ -297,6 +303,19 @@ export default function AdminPage() {
           placeholder={t('admin.newEquipmentTypeName')}
           t={t}
           labelFn={(name) => { const m: Record<string,string> = { bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net'), bedding:t('equipment.bedding'), uniform:t('equipment.uniform'), shoes:t('equipment.shoes'), school_bag:t('equipment.school_bag'), pillow:t('equipment.pillow'), wheelchair:t('equipment.wheelchair'), other:t('equipment.other') }; return m[name] || name }}
+        />
+
+        <CodelistSection
+          title={t('admin.wishTypes')}
+          icon={Star}
+          items={wishTypes}
+          newName={newWishTypeName}
+          setNewName={setNewWishTypeName}
+          onAdd={() => wishTypeH.add(newWishTypeName, () => setNewWishTypeName(''))}
+          onDelete={wishTypeH.del}
+          onMove={wishTypeH.move}
+          placeholder={t('admin.newWishTypeName')}
+          t={t}
         />
       </div>
     </div>

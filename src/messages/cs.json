@@ -213,7 +213,21 @@
     "needTypes": "Číselník potřeb",
     "newNeedTypeName": "Název nové potřeby",
     "equipmentTypes": "Číselník vybavení",
-    "newEquipmentTypeName": "Název nového typu vybavení"
+    "newEquipmentTypeName": "Název nového typu vybavení",
+    "wishTypes": "Číselník přání",
+    "newWishTypeName": "Název nového přání"
+  },
+  "wishes": {
+    "title": "Přání",
+    "description": "Popis",
+    "fulfilled": "Splněno",
+    "unfulfilled": "Nesplněno",
+    "fulfilledAt": "Datum splnění",
+    "addWish": "Přidat přání",
+    "selectType": "-- Vyberte typ přání --",
+    "customWish": "Vlastní (napište vlastní)",
+    "noWishes": "Žádná přání",
+    "price": "Cena"
   },
   "statistics": {
     "title": "Statistiky a přehledy",

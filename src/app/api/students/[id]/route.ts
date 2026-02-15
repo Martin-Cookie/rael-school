@@ -27,6 +27,10 @@ export async function GET(
           orderBy: { startDate: 'desc' },
         },
         healthChecks: { orderBy: { checkDate: 'desc' } },
+        wishes: {
+          include: { wishType: true },
+          orderBy: { createdAt: 'desc' },
+        },
         payments: { orderBy: { paymentDate: 'desc' } },
         sponsorPayments: {
           include: { sponsor: { select: { id: true, firstName: true, lastName: true } } },

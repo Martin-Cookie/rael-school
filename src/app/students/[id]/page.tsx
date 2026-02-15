@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
   HandHeart, Stethoscope, Plus, Check, Trash2, Upload,
-  Pencil, Package, Heart, CreditCard, Loader2
+  Pencil, Package, Heart, CreditCard, Loader2, Star
 } from 'lucide-react'
 import { formatDate, formatDateForInput, formatNumber, calculateAge } from '@/lib/format'
 import { validateImageFile, compressImage } from '@/lib/imageUtils'
@@ -16,7 +16,7 @@ import { createTranslator, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
 const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
-type Tab = 'personal' | 'equipment' | 'needs' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments'
+type Tab = 'personal' | 'equipment' | 'needs' | 'wishes' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments'
 function fmtCurrency(amount: number, currency: string): string { return `${formatNumber(amount)} ${currency}` }
 
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
@@ -43,6 +43,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [allSponsors, setAllSponsors] = useState<any[]>([])
   useEffect(() => { fetch('/api/sponsors').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(() => {}) }, [])
 
+  const [wishTypes, setWishTypes] = useState<any[]>([])
+  const [newWish, setNewWish] = useState('')
+  const [selectedWishType, setSelectedWishType] = useState('')
+  const [showAddWish, setShowAddWish] = useState(false)
   const [newNeed, setNewNeed] = useState('')
   const [selectedNeedType, setSelectedNeedType] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
@@ -84,7 +88,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes(); fetchWishTypes() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
@@ -108,6 +112,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   async function fetchEquipmentTypes() {
     try { const res = await fetch('/api/admin/equipment-types'); const d = await res.json(); setEquipmentTypes(d.equipmentTypes || []) } catch {}
+  }
+
+  async function fetchWishTypes() {
+    try { const res = await fetch('/api/admin/wish-types'); const d = await res.json(); setWishTypes(d.wishTypes || []) } catch {}
   }
 
   async function fetchStudent() {
@@ -160,6 +168,27 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   async function deleteNeed(needId: string) {
     if (!confirm(t('app.confirmDelete'))) return
     try { await fetch(`/api/students/${id}/needs`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+  }
+  async function addWish() {
+    const isCustom = selectedWishType === '__custom__'
+    const description = isCustom ? newWish.trim() : selectedWishType
+    if (!description) return
+    const wishType = !isCustom ? wishTypes.find((wt: any) => wt.name === description) : null
+    try {
+      const res = await fetch(`/api/students/${id}/wishes`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description, wishTypeId: wishType?.id || null }) })
+      if (res.ok) { setNewWish(''); setSelectedWishType(''); setShowAddWish(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+    } catch { showMsg('error', t('app.error')) }
+  }
+  async function toggleWishFulfilled(wishId: string, current: boolean) {
+    try {
+      const wish = student.wishes.find((w: any) => w.id === wishId)
+      await fetch(`/api/students/${id}/wishes`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wishId, description: wish.description, isFulfilled: !current }) })
+      await fetchStudent()
+    } catch { showMsg('error', t('app.error')) }
+  }
+  async function deleteWish(wishId: string) {
+    if (!confirm(t('app.confirmDelete'))) return
+    try { await fetch(`/api/students/${id}/wishes`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wishId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addSingleEquipment() {
     if (!newEquipmentType) return
@@ -323,6 +352,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     { key: 'personal', label: t('student.tabs.personal'), icon: User },
     { key: 'equipment', label: t('equipment.title'), icon: Package },
     { key: 'needs', label: t('needs.title'), icon: Heart },
+    { key: 'wishes', label: t('wishes.title'), icon: Star },
     { key: 'vouchers', label: t('student.tabs.vouchers'), icon: Ticket },
     { key: 'photos', label: t('student.tabs.photos'), icon: Camera },
     { key: 'sponsors', label: t('student.tabs.sponsors'), icon: HandHeart },
@@ -609,6 +639,53 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               </div>
             ))}
             {(!student.needs || student.needs.length === 0) && <p className="text-gray-500 text-sm text-center py-8">{t('app.noData')}</p>}
+          </div>
+        </div>
+      )}
+
+      {/* ===== WISHES ===== */}
+      {activeTab === 'wishes' && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-yellow-50 rounded-lg"><Star className="w-4 h-4 text-yellow-500" /></div>
+              <h3 className="text-base font-semibold text-gray-900">{t('wishes.title')}</h3>
+            </div>
+            {canEditData && <button onClick={() => setShowAddWish(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('wishes.addWish')}</button>}
+          </div>
+          {showAddWish && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select value={selectedWishType} onChange={(e) => { setSelectedWishType(e.target.value); if (e.target.value !== '__custom__') setNewWish('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                  <option value="">{t('wishes.selectType')}</option>
+                  {wishTypes.map((wt: any) => <option key={wt.id} value={wt.name}>{wt.name}{wt.price ? ` (${formatNumber(wt.price)} CZK)` : ''}</option>)}
+                  <option value="__custom__">{t('wishes.customWish')}</option>
+                </select>
+                {selectedWishType === '__custom__' && (
+                  <input type="text" value={newWish} onChange={(e) => setNewWish(e.target.value)} placeholder={t('wishes.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addWish()} />
+                )}
+                <button onClick={addWish} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                <button onClick={() => { setShowAddWish(false); setNewWish(''); setSelectedWishType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
+              </div>
+            </div>
+          )}
+          <div className="space-y-2">
+            {student.wishes?.map((wish: any) => (
+              <div key={wish.id} className={`flex items-center justify-between p-3 rounded-lg ${wish.isFulfilled ? 'bg-primary-50' : 'bg-yellow-50'}`}>
+                <div className="flex items-center gap-3">
+                  {canEditData ? <button onClick={() => toggleWishFulfilled(wish.id, wish.isFulfilled)} className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${wish.isFulfilled ? 'bg-primary-500 border-primary-500' : 'border-gray-300 hover:border-primary-400'}`}>{wish.isFulfilled && <Check className="w-4 h-4 text-white" />}</button> : <div className={`w-6 h-6 rounded-full flex items-center justify-center ${wish.isFulfilled ? 'bg-primary-500' : 'bg-gray-300'}`}>{wish.isFulfilled && <Check className="w-4 h-4 text-white" />}</div>}
+                  <div>
+                    <span className={`text-sm ${wish.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{wish.description}</span>
+                    {wish.wishType?.price && <span className="ml-2 text-xs text-gray-500">({formatNumber(wish.wishType.price)} CZK)</span>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {wish.isFulfilled && <span className="text-xs text-gray-500">{formatDate(wish.fulfilledAt, locale)}</span>}
+                  {canEditData && <button onClick={() => deleteWish(wish.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>}
+                </div>
+              </div>
+            ))}
+            {(!student.wishes || student.wishes.length === 0) && <p className="text-gray-500 text-sm text-center py-8">{t('wishes.noWishes')}</p>}
           </div>
         </div>
       )}

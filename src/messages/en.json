@@ -213,7 +213,21 @@
     "needTypes": "Need Types",
     "newNeedTypeName": "New need type name",
     "equipmentTypes": "Equipment Types",
-    "newEquipmentTypeName": "New equipment type name"
+    "newEquipmentTypeName": "New equipment type name",
+    "wishTypes": "Wish Types",
+    "newWishTypeName": "New wish type name"
+  },
+  "wishes": {
+    "title": "Wishes",
+    "description": "Description",
+    "fulfilled": "Fulfilled",
+    "unfulfilled": "Unfulfilled",
+    "fulfilledAt": "Fulfilled date",
+    "addWish": "Add wish",
+    "selectType": "-- Select wish type --",
+    "customWish": "Custom (type your own)",
+    "noWishes": "No wishes",
+    "price": "Price"
   },
   "statistics": {
     "title": "Statistics & Reports",
