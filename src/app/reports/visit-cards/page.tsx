@@ -142,14 +142,21 @@ export default function VisitCardsPage() {
         // Skip header row
         if (nameParts.some(p => headerWords.includes(norm(p)))) continue
 
+        // Build all possible (firstName, lastName) splits from nameParts
+        // e.g. ["John","Michael","Doe"] → [("John","Michael Doe"), ("John Michael","Doe"), ("Michael Doe","John"), ("Doe","John Michael"), ...]
+        const splits: [string, string][] = []
+        const np = nameParts
+        for (let i = 1; i < np.length; i++) {
+          const a = np.slice(0, i).join(' ')
+          const b = np.slice(i).join(' ')
+          splits.push([a, b]) // a=first, b=last
+          splits.push([b, a]) // b=first, a=last
+        }
+
         const match = students.find(s => {
           const sLast = norm(s.lastName)
           const sFirst = norm(s.firstName)
-          const normParts = nameParts.map(norm)
-          // Try all orderings: any part matches lastName and any other matches firstName
-          return normParts.some((p, i) =>
-            p === sLast && normParts.some((q, j) => j !== i && q === sFirst)
-          )
+          return splits.some(([f, l]) => norm(f) === sFirst && norm(l) === sLast)
         })
 
         if (match) {
