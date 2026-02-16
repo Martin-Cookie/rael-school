@@ -412,8 +412,8 @@ export default function PaymentsPage() {
                     <td className="py-3 px-3 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
                     <td className="py-3 px-3 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{p.paymentType === 'tuition' ? t('sponsorPayments.tuition') : p.paymentType === 'medical' ? t('sponsorPayments.medical') : p.paymentType === 'other' ? t('sponsorPayments.other') : p.paymentType}</span></td>
                     <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
-                    <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
-                    <td className="py-3 px-3 text-sm text-gray-700">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
+                    <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}?from=/payments`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
+                    <td className="py-3 px-3 text-sm">{p.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=/payments`} className="text-primary-600 hover:underline">{p.sponsor.firstName} {p.sponsor.lastName}</Link> : '-'}</td>
                     <td className="py-3 px-3 text-sm text-gray-500">{p.notes || '-'}</td>
                     {canEdit && (
                       <td className="py-3 px-3 text-right">
@@ -539,8 +539,8 @@ export default function PaymentsPage() {
                     <td className="py-3 px-3 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
                     <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, v.currency || 'KES')}</td>
                     <td className="py-3 px-3 text-sm text-gray-900">{formatNumber(v.count)}</td>
-                    <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
-                    <td className="py-3 px-3 text-sm text-gray-700">{v.sponsor ? `${v.sponsor.firstName} ${v.sponsor.lastName}` : (v.donorName || '-')}</td>
+                    <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}?from=/payments`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
+                    <td className="py-3 px-3 text-sm">{v.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(v.sponsor.lastName)}&from=/payments`} className="text-primary-600 hover:underline">{v.sponsor.firstName} {v.sponsor.lastName}</Link> : (v.donorName || '-')}</td>
                     <td className="py-3 px-3 text-sm text-gray-500">{v.notes || '-'}</td>
                     {canEdit && (
                       <td className="py-3 px-3 text-right">

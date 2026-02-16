@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
-  Heart, Plus, Search, Pencil, X, Check, UserX, UserCheck,
+  ArrowLeft, Heart, Plus, Search, Pencil, X, Check, UserX, UserCheck,
   ChevronUp, ChevronDown, ArrowUpDown
 } from 'lucide-react'
 import Pagination from '@/components/Pagination'
@@ -40,9 +41,11 @@ interface Sponsor {
 type SortDir = 'asc' | 'desc'
 
 export default function SponsorsPage() {
+  const router = useRouter()
   const [sponsors, setSponsors] = useState<Sponsor[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [backUrl, setBackUrl] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [showAdd, setShowAdd] = useState(false)
   const PAGE_SIZE = 12
@@ -59,6 +62,14 @@ export default function SponsorsPage() {
   const [editForm, setEditForm] = useState({ firstName: '', lastName: '', email: '', phone: '' })
 
   const t = createTranslator(msgs[locale])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const fromParam = params.get('from')
+    if (fromParam) setBackUrl(fromParam)
+    const searchParam = params.get('search')
+    if (searchParam) setSearch(searchParam)
+  }, [])
 
   useEffect(() => {
     const saved = localStorage.getItem('rael-locale') as Locale
@@ -212,7 +223,14 @@ export default function SponsorsPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-500">({filtered.length})</span></h1>
+        <div className="flex items-center gap-3">
+          {backUrl && (
+            <button onClick={() => router.push(backUrl)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
+            </button>
+          )}
+          <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-500">({filtered.length})</span></h1>
+        </div>
         {canEdit && (
           <button
             onClick={() => setShowAdd(!showAdd)}
