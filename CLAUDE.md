@@ -91,13 +91,19 @@ Dvoustránkový A4 formulář pro každého studenta (výška stránky `calc(297
 | 1 | Header, Sponzoři, Základní info (třída, škola, DOB, pohlaví, osiřelost, zdraví), Rodina, Vybavení |
 | 2 | Potřeby, Přání, Obecné poznámky (flex-fill do konce stránky) |
 
-**Layout tabulek (colgroup + table-fixed):**
+**Layout sekcí na stránce 2:**
+
+| Sekce | Layout |
+|-------|--------|
+| Potřeby | CSS grid 3 sloupce — checkbox + název + cena (bez individuálních poznámek) |
+| Přání | CSS grid 3 sloupce — checkbox + název + cena (bez individuálních poznámek) |
+| Obecné poznámky | flex-fill do konce stránky |
+
+**Layout tabulky Vybavení (stránka 1, colgroup + table-fixed):**
 
 | Sekce | Sloupce (šířky) |
 |-------|----------------|
 | Vybavení | checkbox 4%, typ 22%, stav 11%, cena 8%, poznámky 55% |
-| Potřeby | checkbox 4%, popis 25%, cena 8%, poznámky 63% |
-| Přání | checkbox 4%, popis 25%, cena 8%, poznámky 63% |
 
 - Tisk přes iframe (izolovaný HTML snapshot nezávislý na React lifecycle)
 - Poznámkový rámeček na stránce 2 se automaticky roztáhne do konce stránky (flex: 1)

@@ -471,86 +471,48 @@ ${parentStyles}
                 </div>
               </div>
 
-              {/* Needs Section */}
+              {/* Needs Section — compact 3-column grid */}
               <div className="mb-3">
                 <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.needsSection')}
                   {student.needs.length > 0 && <span className="ml-2 font-normal text-red-600">({t('needs.unfulfilled')}: {student.needs.length})</span>}
                 </h3>
-                <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
-                  <colgroup>
-                    <col style={{ width: '4%' }} />
-                    <col style={{ width: '25%' }} />
-                    <col style={{ width: '8%' }} />
-                    <col style={{ width: '63%' }} />
-                  </colgroup>
-                  <thead>
-                    <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1.5 px-2"></th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('needs.description')}</th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.price')}</th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {needTypes.map(nt => {
-                      const hasNeed = student.needs.some(n => n.description === nt.name)
-                      return (
-                        <tr key={nt.id} className="border-b border-gray-300">
-                          <td className="py-1.5 px-2">
-                            <div className={`w-3.5 h-3.5 border rounded ${hasNeed ? 'bg-red-600 border-red-600' : 'border-gray-400'}`}>
-                              {hasNeed && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
-                            </div>
-                          </td>
-                          <td className={`py-1.5 px-2 ${hasNeed ? 'font-bold text-red-700' : ''}`}>{getLocaleName(nt, locale)}</td>
-                          <td className="py-1.5 px-2 text-gray-400">{nt.price ? `${formatNumber(nt.price)} CZK` : ''}</td>
-                          <td className="py-1.5 px-2">&nbsp;</td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0' }}>
+                  {needTypes.map(nt => {
+                    const hasNeed = student.needs.some(n => n.description === nt.name)
+                    return (
+                      <div key={nt.id} className="flex items-center gap-1.5 py-1 px-2 border-b border-gray-300" style={{ fontSize: '12px' }}>
+                        <div className={`w-3.5 h-3.5 border rounded flex-shrink-0 ${hasNeed ? 'bg-red-600 border-red-600' : 'border-gray-400'}`}>
+                          {hasNeed && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                        </div>
+                        <span className={hasNeed ? 'font-bold text-red-700' : ''}>{getLocaleName(nt, locale)}</span>
+                        {nt.price && <span className="text-gray-400 ml-auto flex-shrink-0">{formatNumber(nt.price)}</span>}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
 
-              {/* Wishes Section */}
+              {/* Wishes Section — compact 3-column grid */}
               <div className="mb-3">
                 <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.wishesSection')}
                   {student.wishes.length > 0 && <span className="ml-2 font-normal text-blue-600">({t('needs.unfulfilled')}: {student.wishes.length})</span>}
                 </h3>
-                <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
-                  <colgroup>
-                    <col style={{ width: '4%' }} />
-                    <col style={{ width: '25%' }} />
-                    <col style={{ width: '8%' }} />
-                    <col style={{ width: '63%' }} />
-                  </colgroup>
-                  <thead>
-                    <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1.5 px-2"></th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('needs.description')}</th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.price')}</th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {wishTypes.map(wt => {
-                      const hasWish = student.wishes.some(w => w.wishType?.name === wt.name)
-                      return (
-                        <tr key={wt.id} className="border-b border-gray-300">
-                          <td className="py-1.5 px-2">
-                            <div className={`w-3.5 h-3.5 border rounded ${hasWish ? 'bg-blue-600 border-blue-600' : 'border-gray-400'}`}>
-                              {hasWish && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
-                            </div>
-                          </td>
-                          <td className={`py-1.5 px-2 ${hasWish ? 'font-bold text-blue-700' : ''}`}>{getLocaleName(wt, locale)}</td>
-                          <td className="py-1.5 px-2 text-gray-400">{wt.price ? `${formatNumber(wt.price)} CZK` : ''}</td>
-                          <td className="py-1.5 px-2">&nbsp;</td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0' }}>
+                  {wishTypes.map(wt => {
+                    const hasWish = student.wishes.some(w => w.wishType?.name === wt.name)
+                    return (
+                      <div key={wt.id} className="flex items-center gap-1.5 py-1 px-2 border-b border-gray-300" style={{ fontSize: '12px' }}>
+                        <div className={`w-3.5 h-3.5 border rounded flex-shrink-0 ${hasWish ? 'bg-blue-600 border-blue-600' : 'border-gray-400'}`}>
+                          {hasWish && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                        </div>
+                        <span className={hasWish ? 'font-bold text-blue-700' : ''}>{getLocaleName(wt, locale)}</span>
+                        {wt.price && <span className="text-gray-400 ml-auto flex-shrink-0">{formatNumber(wt.price)}</span>}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
 
               {/* General notes area - fills remaining page space */}
