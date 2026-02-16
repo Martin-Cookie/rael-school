@@ -373,7 +373,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   const totalPurchased = student.vouchers?.reduce((s: number, v: any) => s + v.count, 0) || 0
   const totalUsed = student.voucherUsages?.reduce((s: number, v: any) => s + v.count, 0) || 0
-  const totalAmount = student.vouchers?.reduce((s: number, v: any) => s + v.amount, 0) || 0
+  const totalsByCurrency: Record<string, number> = {}
+  student.vouchers?.forEach((v: any) => { const c = v.currency || 'CZK'; totalsByCurrency[c] = (totalsByCurrency[c] || 0) + v.amount })
   const available = totalPurchased - totalUsed
   const filteredPhotos = photoFilter === 'all' ? (student.photos || []) : (student.photos || []).filter((p: any) => p.category === photoFilter)
 
@@ -703,7 +704,9 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
               <p className="text-xs text-blue-600 font-medium">{t('vouchers.totalAmount')}</p>
-              <p className="text-xl font-bold text-blue-900">{fmtCurrency(totalAmount, student.vouchers?.[0]?.currency || 'CZK')}</p>
+              {Object.keys(totalsByCurrency).length > 0 ? Object.entries(totalsByCurrency).map(([cur, amt]) => (
+                <p key={cur} className="text-xl font-bold text-blue-900">{fmtCurrency(amt, cur)}</p>
+              )) : <p className="text-xl font-bold text-blue-900">{fmtCurrency(0, 'CZK')}</p>}
             </div>
             <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
               <p className="text-xs text-primary-600 font-medium">{t('vouchers.totalPurchased')}</p>
