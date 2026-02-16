@@ -52,7 +52,7 @@ export default function Sidebar({ user }: SidebarProps) {
     { href: '/classes', icon: GraduationCap, label: t('nav.classes') },
     { href: '/sponsors', icon: Heart, label: t('nav.sponsors'), roles: ['ADMIN', 'MANAGER', 'VOLUNTEER'] },
     { href: '/payments', icon: CreditCard, label: t('nav.payments'), roles: ['ADMIN', 'MANAGER'] },
-    { href: '/reports', icon: BarChart3, label: t('nav.reports'), roles: ['ADMIN', 'MANAGER'] },
+    { href: '/reports', icon: BarChart3, label: t('nav.reports'), roles: ['ADMIN', 'MANAGER', 'VOLUNTEER'] },
     { href: '/admin', icon: Settings, label: t('nav.admin'), roles: ['ADMIN'] },
   ]
 
@@ -82,23 +82,23 @@ export default function Sidebar({ user }: SidebarProps) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 z-50 transform transition-transform duration-200 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed top-0 left-0 h-full w-40 bg-white border-r border-gray-200 z-50 transform transition-transform duration-200 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center">
-                <span className="text-lg font-bold text-white">R</span>
+          <div className="p-4 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-bold text-white">R</span>
               </div>
-              <div>
-                <h1 className="font-bold text-gray-900">{t('app.title')}</h1>
-                <p className="text-xs text-gray-500">{t('app.subtitle')}</p>
+              <div className="min-w-0">
+                <h1 className="font-bold text-gray-900 text-sm truncate">{t('app.title')}</h1>
+                <p className="text-[10px] text-gray-500 truncate">{t('app.subtitle')}</p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 px-2 py-3 space-y-0.5">
             {filteredNav.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
               return (
@@ -106,27 +106,27 @@ export default function Sidebar({ user }: SidebarProps) {
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
                     isActive
                       ? 'bg-primary-50 text-primary-700'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
-                  {item.label}
+                  <item.icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
+                  <span className="truncate">{item.label}</span>
                 </Link>
               )
             })}
           </nav>
 
           {/* Language switcher */}
-          <div className="px-4 py-3 border-t border-gray-100">
+          <div className="px-2 py-2 border-t border-gray-100">
             <div className="relative">
               <button
                 onClick={() => setShowLang(!showLang)}
-                className="flex items-center gap-2 w-full px-4 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
+                className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-gray-600 hover:bg-gray-50"
               >
-                <Globe className="w-4 h-4" />
+                <Globe className="w-3.5 h-3.5" />
                 {localeNames[locale]}
               </button>
               {showLang && (
@@ -146,27 +146,27 @@ export default function Sidebar({ user }: SidebarProps) {
           </div>
 
           {/* User info */}
-          <div className="p-4 border-t border-gray-100">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">
+          <div className="px-2 py-3 border-t border-gray-100">
+            <div className="flex items-center gap-2 mb-2 px-1">
+              <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-medium text-gray-600">
                   {user.firstName[0]}{user.lastName[0]}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-xs font-medium text-gray-900 truncate">
                   {user.firstName} {user.lastName}
                 </p>
-                <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${roleColors[user.role] || 'bg-gray-100 text-gray-600'}`}>
+                <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded-full font-medium ${roleColors[user.role] || 'bg-gray-100 text-gray-600'}`}>
                   {t(`roles.${user.role}`)}
                 </span>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 w-full px-4 py-2 rounded-lg text-sm text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+              className="flex items-center gap-2 w-full px-3 py-1.5 rounded-lg text-xs text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
               {t('nav.logout')}
             </button>
           </div>

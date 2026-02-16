@@ -10,21 +10,25 @@ datasource db {
 // ============ USERS & AUTH ============
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  firstName String
-  lastName  String
-  phone     String?
-  role      String   @default("VOLUNTEER") // ADMIN, MANAGER, SPONSOR, VOLUNTEER
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(cuid())
+  email           String   @unique
+  password        String
+  firstName       String
+  lastName        String
+  phone           String?
+  role            String   @default("VOLUNTEER") // ADMIN, MANAGER, SPONSOR, VOLUNTEER
+  isActive        Boolean  @default(true)
+  variableSymbol  String?  // VS přidělený sponzorovi (pro párování plateb)
+  bankAccount     String?  // číslo účtu sponzora (pro párování plateb)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   sponsorships     Sponsorship[]
   assignedStudents VolunteerAssignment[]
   sponsorPayments  SponsorPayment[]
   voucherPurchases VoucherPurchase[] @relation("VoucherSponsor")
+  paymentImports   PaymentImport[]   @relation("PaymentImports")
+  importRowSponsor PaymentImportRow[] @relation("ImportRowSponsor")
 }
 
 // ============ STUDENTS ============
@@ -63,6 +67,8 @@ model Student {
   payments        Payment[]
   volunteers      VolunteerAssignment[]
   sponsorPayments SponsorPayment[]
+  importRows      PaymentImportRow[]
+  wishes          Wish[]
 }
 
 // ============ EQUIPMENT ============
@@ -121,6 +127,8 @@ model VoucherPurchase {
   donorName    String?  // Name of the person who donated (legacy)
   sponsorId    String?
   notes        String?
+  source       String?  // "manual" | "bankImport"
+  importRowId  String?  // odkaz na PaymentImportRow.id
   createdAt    DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -194,6 +202,8 @@ model SponsorPayment {
   currency    String   @default("KES")
   paymentType String   // tuition, medical, other
   notes       String?
+  source      String?  // "manual" | "bankImport"
+  importRowId String?  // odkaz na PaymentImportRow.id
   createdAt   DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -249,6 +259,7 @@ model PaymentType {
 model NeedType {
   id        String   @id @default(cuid())
   name      String   @unique
+  price     Float?   // Orientační cena v CZK
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -259,7 +270,100 @@ model NeedType {
 model EquipmentType {
   id        String   @id @default(cuid())
   name      String   @unique
+  price     Float?   // Orientační cena v CZK
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+}
+
+// ============ WISH TYPES ============
+
+model WishType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  price     Float?   // Orientační cena v CZK
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  wishes    Wish[]
+}
+
+// ============ WISHES ============
+
+model Wish {
+  id          String    @id @default(cuid())
+  studentId   String
+  wishTypeId  String?
+  description String
+  isFulfilled Boolean   @default(false)
+  fulfilledAt DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  wishType WishType? @relation(fields: [wishTypeId], references: [id], onDelete: SetNull)
+}
+
+// ============ PAYMENT IMPORTS ============
+
+model PaymentImport {
+  id            String    @id @default(cuid())
+  fileName      String                // původní název souboru
+  fileType      String                // "csv", "pdf", "xlsx"
+  statementDate DateTime?             // datum výpisu (z hlavičky)
+  importedById  String                // kdo importoval (User.id)
+  totalRows     Int       @default(0)
+  matchedRows   Int       @default(0)
+  status        String    @default("PROCESSING") // PROCESSING, READY, COMPLETED, CANCELLED
+  createdAt     DateTime  @default(now())
+
+  importedBy User               @relation("PaymentImports", fields: [importedById], references: [id])
+  rows       PaymentImportRow[]
+}
+
+model PaymentImportRow {
+  id              String   @id @default(cuid())
+  importId        String
+
+  // --- Surová data z výpisu ---
+  transactionDate DateTime
+  amount          Float
+  currency        String   @default("CZK")
+  variableSymbol  String?
+  senderName      String?
+  senderAccount   String?
+  message         String?
+  rawData         String?              // celý originální řádek jako JSON
+
+  // --- Výsledky párování ---
+  status          String   @default("NEW") // NEW, MATCHED, PARTIAL, APPROVED, REJECTED, DUPLICATE, SPLIT
+  sponsorId       String?
+  studentId       String?
+  paymentTypeId   String?
+  matchConfidence String   @default("NONE") // NONE, LOW, MEDIUM, HIGH
+  matchNotes      String?              // popis jak byl match proveden
+
+  // --- Stravenky ---
+  voucherCount    Int?                 // manuálně zadaný počet stravenek
+
+  // --- Split platba ---
+  parentRowId     String?              // pokud child → odkaz na původní řádek
+
+  // --- Duplikát ---
+  duplicateOfId   String?              // odkaz na existující SponsorPayment.id
+
+  // --- Schválení ---
+  approvedById    String?
+  approvedAt      DateTime?
+  resultPaymentId String?              // vytvořený SponsorPayment.id / VoucherPurchase.id
+
+  createdAt       DateTime @default(now())
+
+  import       PaymentImport       @relation(fields: [importId], references: [id], onDelete: Cascade)
+  sponsor      User?               @relation("ImportRowSponsor", fields: [sponsorId], references: [id])
+  student      Student?            @relation(fields: [studentId], references: [id])
+  parentRow    PaymentImportRow?   @relation("SplitRows", fields: [parentRowId], references: [id])
+  splitRows    PaymentImportRow[]  @relation("SplitRows")
 }

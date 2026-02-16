@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { BarChart3, ChevronDown, ChevronUp, ArrowUpDown, UtensilsCrossed, Search, CreditCard, Users, Heart, Calendar, TrendingUp } from 'lucide-react'
+import { BarChart3, ChevronDown, ChevronUp, ArrowUpDown, UtensilsCrossed, Search, CreditCard, Users, Heart, Calendar, TrendingUp, ClipboardList } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -343,6 +343,23 @@ export default function ReportsPage() {
           </div>
         </div>
       )}
+
+      {/* Visit Cards link */}
+      <Link
+        href="/reports/visit-cards"
+        className="block bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4 p-5"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <ClipboardList className="w-6 h-6 text-teal-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-gray-900">{t('visitCards.title')}</h2>
+            <p className="text-sm text-gray-500">{t('statistics.visitCardsDesc')}</p>
+          </div>
+          <ChevronDown className="w-5 h-5 text-gray-400 -rotate-90" />
+        </div>
+      </Link>
 
       {/* Section: Monthly Overview */}
       <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4">

@@ -5,12 +5,12 @@ import Sidebar from '@/components/layout/Sidebar'
 export default async function ReportsLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser()
   if (!user) redirect('/login')
-  if (!['ADMIN', 'MANAGER'].includes(user.role)) redirect('/dashboard')
+  if (!['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)) redirect('/dashboard')
 
   return (
     <div className="min-h-screen bg-[#fafaf8]">
       <Sidebar user={user} />
-      <main className="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
+      <main className="lg:ml-40 pt-16 lg:pt-0 min-h-screen">
         <div className="p-6 lg:p-8 max-w-7xl mx-auto">{children}</div>
       </main>
     </div>

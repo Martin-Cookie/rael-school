@@ -73,6 +73,8 @@ async function main() {
   await prisma.classRoom.deleteMany()
   await prisma.healthCheckType.deleteMany()
   await prisma.paymentType.deleteMany()
+  await prisma.wish.deleteMany()
+  await prisma.wishType.deleteMany()
   await prisma.needType.deleteMany()
   await prisma.equipmentType.deleteMany()
   console.log('✅ Database cleared')
@@ -120,29 +122,33 @@ async function main() {
   }
   console.log('✅ PaymentTypes seeded (' + paymentTypeNames.length + ')')
 
-  const needTypeNames = [
-    'Postel',
-    'Matrace',
-    'Deka',
-    'Moskytiéra',
-    'Uniforma',
-    'Boty',
-    'Školní taška',
-    'Učebnice',
-    'Sešity a psací potřeby',
-    'Školné',
-    'Léky / lékařská péče',
-    'Brýle',
-    'Jídlo',
-    'Oblečení',
-    'Hygienické potřeby',
+  const needTypes = [
+    { name: 'Školní batoh', price: 300 },
+    { name: 'Školní boty', price: 550 },
+    { name: 'Školní uniforma', price: 300 },
+    { name: 'Školní svetr', price: 300 },
+    { name: 'Komplet balík věcí na spaní', price: 1200 },
+    { name: 'Jen moskytiéra', price: 200 },
+    { name: 'Jen deka', price: 200 },
+    { name: 'Jen matrace', price: 500 },
+    { name: 'Jen prostěradlo', price: 100 },
+    { name: 'Jen polštář', price: 200 },
+    { name: 'Školní atlas', price: 300 },
+    { name: 'Slovník anglický', price: 250 },
+    { name: 'Slovník svahilský', price: 250 },
+    { name: 'Kalkulačka', price: 250 },
+    { name: 'Matematický set', price: 50 },
+    { name: 'Sportovní úbor', price: 400 },
+    { name: 'Bible do školy', price: 300 },
+    { name: 'Několik párů ponožek', price: 200 },
+    { name: '10 velkých sešitů', price: 200 },
   ]
-  for (let i = 0; i < needTypeNames.length; i++) {
+  for (let i = 0; i < needTypes.length; i++) {
     await prisma.needType.create({
-      data: { name: needTypeNames[i], sortOrder: i },
+      data: { name: needTypes[i].name, price: needTypes[i].price, sortOrder: i },
     })
   }
-  console.log('✅ NeedTypes seeded (' + needTypeNames.length + ')')
+  console.log('✅ NeedTypes seeded (' + needTypes.length + ')')
 
   const equipmentTypeNames = [
     'bedding',
@@ -162,6 +168,26 @@ async function main() {
     })
   }
   console.log('✅ EquipmentTypes seeded (' + equipmentTypeNames.length + ')')
+
+  const wishTypes = [
+    { name: 'Narozeninový dort', price: 450 },
+    { name: 'Kopačky', price: 600 },
+    { name: 'Kolo', price: 4000 },
+    { name: 'Postel', price: 1000 },
+    { name: 'Sladkosti do 100 Kč', price: 100 },
+    { name: 'Sladkosti do 200 Kč', price: 200 },
+    { name: 'Sladkosti do 300 Kč', price: 300 },
+    { name: 'Sladkosti do 400 Kč', price: 400 },
+    { name: 'Sladkosti do 500 Kč', price: 500 },
+    { name: 'Oblečení za 500 Kč', price: 500 },
+    { name: 'Oblečení za 1 000 Kč', price: 1000 },
+  ]
+  for (let i = 0; i < wishTypes.length; i++) {
+    await prisma.wishType.create({
+      data: { name: wishTypes[i].name, price: wishTypes[i].price, sortOrder: i },
+    })
+  }
+  console.log('✅ WishTypes seeded (' + wishTypes.length + ')')
 
   // ============================================================
   // 3. UŽIVATELÉ — Admin, Manager, Dobrovolníci
@@ -416,6 +442,8 @@ async function main() {
   console.log('   Třídy:               ' + classRoomNames.length)
   console.log('   Typy prohlídek:      ' + healthCheckTypeNames.length)
   console.log('   Typy plateb:         ' + paymentTypeNames.length)
+  console.log('   Typy potřeb:        ' + needTypes.length)
+  console.log('   Typy přání:         ' + wishTypes.length)
   console.log('   Studenti:            ' + studentsData.length)
   console.log('   Sponzoři:            ' + sponsorCount)
   console.log('   Dobrovolníci:        ' + volunteersData.length)

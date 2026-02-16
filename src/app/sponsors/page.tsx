@@ -45,7 +45,7 @@ export default function SponsorsPage() {
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [showAdd, setShowAdd] = useState(false)
-  const PAGE_SIZE = 20
+  const PAGE_SIZE = 12
   const [editingId, setEditingId] = useState<string | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
@@ -211,12 +211,8 @@ export default function SponsorsPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Heart className="w-6 h-6 text-primary-600" />
-          <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')}</h1>
-          <span className="text-sm text-gray-500">({filtered.length})</span>
-        </div>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-500">({filtered.length})</span></h1>
         {canEdit && (
           <button
             onClick={() => setShowAdd(!showAdd)}
@@ -228,17 +224,15 @@ export default function SponsorsPage() {
       </div>
 
       {/* Search */}
-      <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('app.search')}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-          />
-        </div>
+      <div className="relative mb-4">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t('app.search')}
+          className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 bg-white"
+        />
       </div>
 
       {/* Add new sponsor form */}
@@ -337,14 +331,14 @@ export default function SponsorsPage() {
                           <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                           <td className="py-3 px-3 text-sm text-gray-600">{s.email}</td>
                           <td className="py-3 px-3 text-sm text-gray-600">{s.phone || '-'}</td>
-                          <td className="py-3 px-3 text-sm">
+                          <td className="py-2 px-3 text-sm">
                             {s.sponsorships.length > 0 ? (
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-nowrap gap-1 overflow-hidden max-h-6">
                                 {s.sponsorships.map((sp) => (
                                   <Link
                                     key={sp.id}
                                     href={`/students/${sp.student.id}?from=/sponsors`}
-                                    className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium ${
+                                    className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
                                       sp.isActive
                                         ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
                                         : 'bg-gray-100 text-gray-500 line-through'
@@ -367,7 +361,7 @@ export default function SponsorsPage() {
                             ) : <span className="text-gray-400">-</span>}
                           </td>
                           {(canEdit || canDeactivate) && (
-                            <td className="py-3 px-3">
+                            <td className="py-1 px-3">
                               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 {canEdit && (
                                   <button onClick={() => startEdit(s)} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-gray-100">

@@ -25,10 +25,10 @@ export default function SponsorsLayout({ children }: { children: React.ReactNode
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fafaf8]">
       <Sidebar user={user} />
-      <main className="lg:ml-64 pt-16 lg:pt-0">
-        <div className="p-6">
+      <main className="lg:ml-40 pt-16 lg:pt-0 min-h-screen">
+        <div className="p-6 lg:p-8 max-w-7xl mx-auto">
           {children}
         </div>
       </main>

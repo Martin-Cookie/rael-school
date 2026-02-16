@@ -38,7 +38,7 @@ export default function Pagination({ currentPage, totalItems, pageSize, onPageCh
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 pt-4 border-t border-gray-100">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-2 pt-2 border-t border-gray-100">
       <p className="text-sm text-gray-500">
         {labels.showing} {from}–{to} {labels.of} {totalItems}
       </p>

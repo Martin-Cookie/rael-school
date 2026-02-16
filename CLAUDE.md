@@ -58,6 +58,54 @@ Stránky s tímto vzorem:
 | Studenti | `students/page.tsx` | Číslo, Příjmení, Jméno, Třída, Pohlaví, Věk, Potřeby, Sponzoři |
 | Sponzoři | `sponsors/page.tsx` | Příjmení, Jméno, Email, Telefon, Studenti, Platby |
 | Třídy | `classes/page.tsx` | Název třídy, Počet studentů + detail třídy se studenty |
+| Platby – Sponzorské | `payments/page.tsx` | Datum, Typ, Částka, Student, Sponzor, Poznámky |
+| Platby – Stravenky | `payments/page.tsx` | Datum nákupu, Částka, Počet, Student, Sponzor, Poznámky |
+| Import detail | `payments/import/[id]/page.tsx` | Datum, Částka, Měna, Student, Sponzor, Typ, Stav |
+
+### Návštěvní karty (Visit Cards) — tiskový layout
+
+Soubor: `src/app/reports/visit-cards/print/page.tsx`
+
+Dvoustránkový A4 formulář pro každého studenta (výška stránky `calc(297mm - 16mm)`):
+
+| Stránka | Sekce |
+|---------|-------|
+| 1 | Header, Sponzoři, Základní info (třída, škola, DOB, pohlaví, osiřelost, zdraví), Rodina, Vybavení |
+| 2 | Potřeby, Přání, Obecné poznámky (flex-fill do konce stránky) |
+
+**Layout tabulek (colgroup + table-fixed):**
+
+| Sekce | Sloupce (šířky) |
+|-------|----------------|
+| Vybavení | checkbox 4%, typ 22%, stav 11%, cena 8%, poznámky 55% |
+| Potřeby | checkbox 4%, popis 25%, cena 8%, poznámky 63% |
+| Přání | checkbox 4%, popis 25%, cena 8%, poznámky 63% |
+
+- Tisk přes iframe (izolovaný HTML snapshot nezávislý na React lifecycle)
+- Poznámkový rámeček na stránce 2 se automaticky roztáhne do konce stránky (flex: 1)
+- Ceny z číselníků `needTypes`, `wishTypes`, `equipmentTypes` (API `/api/reports/visit-cards`)
+
+### Import bankovních výpisů — split a schvalování plateb
+
+Soubory:
+- Import detail UI: `src/app/payments/import/[id]/page.tsx`
+- Split endpoint: `src/app/api/payment-imports/[id]/rows/[rowId]/split/route.ts`
+- Approve endpoint: `src/app/api/payment-imports/[id]/approve/route.ts`
+
+**Split flow (rozdělení platby na části):**
+1. Uživatel klikne "Rozdělit" na řádku importu
+2. V modálním okně nastaví částky, studenty a typ platby pro každou část (u Stravenek se zobrazí pole pro počet stravenek, předvyplněno `amount / 80 KES`)
+3. Split endpoint vytvoří child řádky (`parentRowId` → rodičovský řádek, status `SPLIT`)
+4. **Auto-approve:** Pokud child řádek má vyplněný `studentId` + `paymentTypeId`, automaticky se schválí a vytvoří VoucherPurchase nebo SponsorPayment
+5. Child řádky bez kompletních údajů zůstanou jako PARTIAL/NEW → schválí se ručně přes Approve
+
+**VoucherPurchase z bank importu:**
+- Nastavuje `sponsorId` (relace) i `donorName` (textové pole) — detail studenta zobrazuje `v.donorName`, stránka plateb zobrazuje `v.sponsor` s fallbackem na `v.donorName`
+- Detekce stravenky: `paymentType.name` obsahuje "stravenk" nebo "voucher" (case-insensitive)
+- Počet stravenek (`count`): z UI modalu, nebo fallback `Math.floor(amount / 80)` — cena 1 stravenky = 80 KES
+
+**SponsorPayment z bank importu:**
+- Nastavuje `sponsorId` (relace) — detail studenta i stránka plateb zobrazují přes `p.sponsor`
 
 ## Uživatelské role
 
@@ -118,6 +166,37 @@ cp prisma/seed-demo.ts prisma/seed.ts && npm run db:seed
 | Manager | manager@rael.school | manager123 |
 | Sponzor | `<jmeno.prijmeni>@sponsor.rael.school` | sponsor123 |
 | Dobrovolník | volunteer@rael.school | volunteer123 |
+
+## Čistá instalace a obnovení lokálu z GitHubu
+
+Kompletní postup pro rozběhání aplikace na čistém lokále (nebo po ztrátě `.env` / databáze):
+
+```bash
+# 1. Stáhnout poslední změny
+git pull origin <aktuální-branch>
+
+# 2. Nainstalovat závislosti
+npm install
+
+# 3. Vytvořit .env (soubor je v .gitignore, nepřenáší se)
+echo 'DATABASE_URL="file:./dev.db"' > .env
+
+# 4. Vytvořit tabulky + naseedit data (148 studentů, 137 sponzorů, číselníky)
+npx prisma db push && npm run db:seed
+
+# 5. Spustit vývojový server
+npm run dev
+```
+
+**Jednořádková verze (vše najednou):**
+```bash
+npm install && echo 'DATABASE_URL="file:./dev.db"' > .env && npx prisma db push && npm run db:seed && npm run dev
+```
+
+**Pozn.:** Soubor `.env` stačí vytvořit jednou. Při běžných aktualizacích pak stačí:
+```bash
+git pull origin <aktuální-branch> && npm run dev
+```
 
 ### Statistiky reálných dat
 

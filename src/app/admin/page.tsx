@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star, Pencil } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -11,7 +11,11 @@ import { createTranslator, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
 
-type CodelistItem = { id: string; name: string; sortOrder: number; isActive: boolean }
+type CodelistItem = { id: string; name: string; sortOrder: number; isActive: boolean; price?: number | null }
+
+function formatNumber(n: number) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+}
 
 function CodelistSection({
   title,
@@ -25,6 +29,10 @@ function CodelistSection({
   placeholder,
   t,
   labelFn,
+  showPrice,
+  newPrice,
+  setNewPrice,
+  onPriceChange,
 }: {
   title: string
   icon: any
@@ -37,8 +45,14 @@ function CodelistSection({
   placeholder: string
   t: (key: string) => string
   labelFn?: (name: string) => string
+  showPrice?: boolean
+  newPrice?: string
+  setNewPrice?: (v: string) => void
+  onPriceChange?: (id: string, price: number | null) => void
 }) {
   const [open, setOpen] = useState(false)
+  const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
+  const [editPriceValue, setEditPriceValue] = useState('')
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden">
@@ -61,18 +75,30 @@ function CodelistSection({
       {open && (
         <div className="px-5 pb-5 border-t border-gray-100 pt-4">
           {/* Add new item */}
-          <div className="flex gap-2 mb-4">
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder={placeholder}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-              onKeyDown={(e) => e.key === 'Enter' && onAdd()}
-            />
+          <div className="mb-4 space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder={placeholder}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+              />
+              {showPrice && setNewPrice && (
+                <input
+                  type="number"
+                  value={newPrice || ''}
+                  onChange={(e) => setNewPrice(e.target.value)}
+                  placeholder={t('admin.priceCZK')}
+                  className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+                />
+              )}
+            </div>
             <button
               onClick={onAdd}
-              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
+              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
             >
               <Plus className="w-4 h-4" /> {t('app.add')}
             </button>
@@ -101,6 +127,37 @@ function CodelistSection({
                   </div>
                   <Icon className="w-5 h-5 text-primary-500" />
                   <span className="flex-1 text-sm font-medium text-gray-900">{labelFn ? labelFn(item.name) : item.name}</span>
+                  {showPrice && onPriceChange && (
+                    editingPriceId === item.id ? (
+                      <input
+                        type="number"
+                        value={editPriceValue}
+                        onChange={(e) => setEditPriceValue(e.target.value)}
+                        onBlur={() => {
+                          onPriceChange(item.id, editPriceValue ? parseFloat(editPriceValue) : null)
+                          setEditingPriceId(null)
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            onPriceChange(item.id, editPriceValue ? parseFloat(editPriceValue) : null)
+                            setEditingPriceId(null)
+                          }
+                          if (e.key === 'Escape') setEditingPriceId(null)
+                        }}
+                        className="w-24 px-2 py-1 rounded-lg border border-primary-400 text-sm text-right focus:ring-2 focus:ring-primary-500 outline-none"
+                        autoFocus
+                      />
+                    ) : (
+                      <button
+                        onClick={() => { setEditingPriceId(item.id); setEditPriceValue(item.price?.toString() || '') }}
+                        className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 px-2 py-1 rounded-lg hover:bg-primary-50 transition-colors"
+                        title={t('admin.editPrice')}
+                      >
+                        {item.price ? `${formatNumber(item.price)} CZK` : t('admin.noPrice')}
+                        <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-100" />
+                      </button>
+                    )
+                  )}
                   <button
                     onClick={() => onDelete(item.id)}
                     className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -128,12 +185,17 @@ export default function AdminPage() {
   const [paymentTypes, setPaymentTypes] = useState<CodelistItem[]>([])
   const [needTypes, setNeedTypes] = useState<CodelistItem[]>([])
   const [equipmentTypes, setEquipmentTypes] = useState<CodelistItem[]>([])
+  const [wishTypes, setWishTypes] = useState<CodelistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [newClassName, setNewClassName] = useState('')
   const [newHealthTypeName, setNewHealthTypeName] = useState('')
   const [newPaymentTypeName, setNewPaymentTypeName] = useState('')
   const [newNeedTypeName, setNewNeedTypeName] = useState('')
+  const [newNeedTypePrice, setNewNeedTypePrice] = useState('')
   const [newEquipmentTypeName, setNewEquipmentTypeName] = useState('')
+  const [newEquipmentTypePrice, setNewEquipmentTypePrice] = useState('')
+  const [newWishTypeName, setNewWishTypeName] = useState('')
+  const [newWishTypePrice, setNewWishTypePrice] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
 
@@ -151,23 +213,26 @@ export default function AdminPage() {
 
   async function fetchAll() {
     try {
-      const [crRes, htRes, ptRes, ntRes, etRes] = await Promise.all([
+      const [crRes, htRes, ptRes, ntRes, etRes, wtRes] = await Promise.all([
         fetch('/api/admin/classrooms'),
         fetch('/api/admin/health-types'),
         fetch('/api/admin/payment-types'),
         fetch('/api/admin/need-types'),
         fetch('/api/admin/equipment-types'),
+        fetch('/api/admin/wish-types'),
       ])
       const crData = await crRes.json()
       const htData = await htRes.json()
       const ptData = await ptRes.json()
       const ntData = await ntRes.json()
       const etData = await etRes.json()
+      const wtData = await wtRes.json()
       setClassrooms(crData.classrooms || [])
       setHealthTypes(htData.healthTypes || [])
       setPaymentTypes(ptData.paymentTypes || [])
       setNeedTypes(ntData.needTypes || [])
       setEquipmentTypes(etData.equipmentTypes || [])
+      setWishTypes(wtData.wishTypes || [])
       setLoading(false)
     } catch { setLoading(false) }
   }
@@ -179,12 +244,14 @@ export default function AdminPage() {
   // Generic CRUD factory
   function makeHandlers(endpoint: string, items: CodelistItem[]) {
     return {
-      add: async (name: string, resetFn: () => void) => {
+      add: async (name: string, resetFn: () => void, price?: string) => {
         if (!name.trim()) return
+        const body: any = { name: name.trim(), sortOrder: items.length }
+        if (price && parseFloat(price)) body.price = parseFloat(price)
         try {
           const res = await fetch(endpoint, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: name.trim(), sortOrder: items.length }),
+            body: JSON.stringify(body),
           })
           if (res.ok) { resetFn(); await fetchAll(); showMsg('success', t('app.savedSuccess')) }
           else { const d = await res.json(); showMsg('error', d.error || t('app.error')) }
@@ -210,6 +277,15 @@ export default function AdminPage() {
           await fetchAll()
         } catch { showMsg('error', t('app.error')) }
       },
+      updatePrice: async (id: string, price: number | null) => {
+        try {
+          await fetch(endpoint, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, price }),
+          })
+          await fetchAll(); showMsg('success', t('app.savedSuccess'))
+        } catch { showMsg('error', t('app.error')) }
+      },
     }
   }
 
@@ -218,6 +294,7 @@ export default function AdminPage() {
   const paymentTypeH = makeHandlers('/api/admin/payment-types', paymentTypes)
   const needTypeH = makeHandlers('/api/admin/need-types', needTypes)
   const equipmentTypeH = makeHandlers('/api/admin/equipment-types', equipmentTypes)
+  const wishTypeH = makeHandlers('/api/admin/wish-types', wishTypes)
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
 
@@ -278,11 +355,15 @@ export default function AdminPage() {
           items={needTypes}
           newName={newNeedTypeName}
           setNewName={setNewNeedTypeName}
-          onAdd={() => needTypeH.add(newNeedTypeName, () => setNewNeedTypeName(''))}
+          onAdd={() => needTypeH.add(newNeedTypeName, () => { setNewNeedTypeName(''); setNewNeedTypePrice('') }, newNeedTypePrice)}
           onDelete={needTypeH.del}
           onMove={needTypeH.move}
           placeholder={t('admin.newNeedTypeName')}
           t={t}
+          showPrice
+          newPrice={newNeedTypePrice}
+          setNewPrice={setNewNeedTypePrice}
+          onPriceChange={needTypeH.updatePrice}
         />
 
         <CodelistSection
@@ -291,12 +372,33 @@ export default function AdminPage() {
           items={equipmentTypes}
           newName={newEquipmentTypeName}
           setNewName={setNewEquipmentTypeName}
-          onAdd={() => equipmentTypeH.add(newEquipmentTypeName, () => setNewEquipmentTypeName(''))}
+          onAdd={() => equipmentTypeH.add(newEquipmentTypeName, () => { setNewEquipmentTypeName(''); setNewEquipmentTypePrice('') }, newEquipmentTypePrice)}
           onDelete={equipmentTypeH.del}
           onMove={equipmentTypeH.move}
           placeholder={t('admin.newEquipmentTypeName')}
           t={t}
+          showPrice
+          newPrice={newEquipmentTypePrice}
+          setNewPrice={setNewEquipmentTypePrice}
+          onPriceChange={equipmentTypeH.updatePrice}
           labelFn={(name) => { const m: Record<string,string> = { bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net'), bedding:t('equipment.bedding'), uniform:t('equipment.uniform'), shoes:t('equipment.shoes'), school_bag:t('equipment.school_bag'), pillow:t('equipment.pillow'), wheelchair:t('equipment.wheelchair'), other:t('equipment.other') }; return m[name] || name }}
+        />
+
+        <CodelistSection
+          title={t('admin.wishTypes')}
+          icon={Star}
+          items={wishTypes}
+          newName={newWishTypeName}
+          setNewName={setNewWishTypeName}
+          onAdd={() => wishTypeH.add(newWishTypeName, () => { setNewWishTypeName(''); setNewWishTypePrice('') }, newWishTypePrice)}
+          onDelete={wishTypeH.del}
+          onMove={wishTypeH.move}
+          placeholder={t('admin.newWishTypeName')}
+          t={t}
+          showPrice
+          newPrice={newWishTypePrice}
+          setNewPrice={setNewWishTypePrice}
+          onPriceChange={wishTypeH.updatePrice}
         />
       </div>
     </div>
