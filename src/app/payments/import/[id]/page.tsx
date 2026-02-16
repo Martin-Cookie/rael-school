@@ -8,7 +8,7 @@ import { formatDate, formatNumber } from '@/lib/format'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
+import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
 
@@ -658,7 +658,7 @@ export default function ImportDetailPage() {
                           >
                             <option value="">{t('paymentImport.selectPaymentType')}</option>
                             {paymentTypes.map((pt: any) => (
-                              <option key={pt.id} value={pt.id}>{pt.name}</option>
+                              <option key={pt.id} value={pt.id}>{getLocaleName(pt, locale)}</option>
                             ))}
                           </select>
                           {row.paymentTypeId && isVoucherType(row.paymentTypeId) && (
@@ -677,7 +677,7 @@ export default function ImportDetailPage() {
                         </>
                       ) : (
                         <span className="text-sm text-gray-700 whitespace-nowrap">
-                          {paymentTypes.find((pt: any) => pt.id === row.paymentTypeId)?.name || '-'}
+                          {(() => { const pt = paymentTypes.find((pt: any) => pt.id === row.paymentTypeId); return pt ? getLocaleName(pt, locale) : '-' })()}
                           {row.paymentTypeId && isVoucherType(row.paymentTypeId) && row.voucherCount && (
                             <span className="text-xs text-gray-400 ml-1">({row.voucherCount} ks)</span>
                           )}
@@ -796,7 +796,7 @@ export default function ImportDetailPage() {
                     >
                       <option value="">{t('paymentImport.selectPaymentType')}</option>
                       {paymentTypes.map((pt: any) => (
-                        <option key={pt.id} value={pt.id}>{pt.name}</option>
+                        <option key={pt.id} value={pt.id}>{getLocaleName(pt, locale)}</option>
                       ))}
                     </select>
                   </div>

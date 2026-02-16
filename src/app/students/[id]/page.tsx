@@ -12,7 +12,7 @@ import { validateImageFile, compressImage } from '@/lib/imageUtils'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
+import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
 const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
@@ -365,11 +365,13 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   const condBadge = (c: string) => { const m: Record<string,string> = { new:'badge-green', satisfactory:'badge-yellow', poor:'badge-red' }; const l: Record<string,string> = { new:t('equipment.new'), satisfactory:t('equipment.satisfactory'), poor:t('equipment.poor') }; return <span className={`badge ${m[c]||'badge-yellow'}`}>{l[c]||c}</span> }
   const eqLabel = (type: string) => {
+    const found = equipmentTypes.find((et: any) => et.name === type)
+    if (found) return getLocaleName(found, locale)
     const m: Record<string,string> = { bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net'), bedding:t('equipment.bedding'), uniform:t('equipment.uniform'), shoes:t('equipment.shoes'), school_bag:t('equipment.school_bag'), pillow:t('equipment.pillow'), wheelchair:t('equipment.wheelchair'), other:t('equipment.other'), received:t('equipment.received') }
     return m[type] || type
   }
-  const htLabel = (type: string) => { const found = healthTypes.find((ht: any) => ht.name === type); return found ? found.name : type }
-  const ptLabel = (type: string) => { const found = paymentTypes.find((pt: any) => pt.name === type); return found ? found.name : type }
+  const htLabel = (type: string) => { const found = healthTypes.find((ht: any) => ht.name === type); return found ? getLocaleName(found, locale) : type }
+  const ptLabel = (type: string) => { const found = paymentTypes.find((pt: any) => pt.name === type); return found ? getLocaleName(found, locale) : type }
 
   const totalPurchased = student.vouchers?.reduce((s: number, v: any) => s + v.count, 0) || 0
   const totalUsed = student.voucherUsages?.reduce((s: number, v: any) => s + v.count, 0) || 0
@@ -491,7 +493,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <Field label={t('student.lastName')} value={editData.lastName} editMode={editMode} onChange={(v) => setEditData({ ...editData, lastName: v })} />
               <Field label={t('student.dateOfBirth')} value={formatDateForInput(editData.dateOfBirth)} type="date" editMode={editMode} onChange={(v) => setEditData({ ...editData, dateOfBirth: v })} />
               <SelectField label={t('student.gender')} value={editData.gender || ''} editMode={editMode} options={[{ value: '', label: '-' }, { value: 'M', label: t('student.male') }, { value: 'F', label: t('student.female') }]} displayValue={student.gender === 'M' ? t('student.male') : student.gender === 'F' ? t('student.female') : '-'} onChange={(v) => setEditData({ ...editData, gender: v })} />
-              <SelectField label={t('student.className')} value={editData.className || ''} editMode={editMode} options={[{ value: '', label: '-' }, ...classrooms.map((c: any) => ({ value: c.name, label: c.name }))]} displayValue={student.className || '-'} onChange={(v) => setEditData({ ...editData, className: v })} />
+              <SelectField label={t('student.className')} value={editData.className || ''} editMode={editMode} options={[{ value: '', label: '-' }, ...classrooms.map((c: any) => ({ value: c.name, label: getLocaleName(c, locale) }))]} displayValue={(() => { const cr = classrooms.find((c: any) => c.name === student.className); return cr ? getLocaleName(cr, locale) : student.className || '-' })()} onChange={(v) => setEditData({ ...editData, className: v })} />
               <Field label={t('student.healthStatus')} value={editData.healthStatus} editMode={editMode} onChange={(v) => setEditData({ ...editData, healthStatus: v })} />
             </div>
           </div>
@@ -606,7 +608,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="flex flex-col sm:flex-row gap-2">
                 <select value={selectedNeedType} onChange={(e) => { setSelectedNeedType(e.target.value); if (e.target.value !== '__custom__') setNewNeed('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                   <option value="">{t('needs.selectType')}</option>
-                  {needTypes.map((nt: any) => <option key={nt.id} value={nt.name}>{nt.name}{nt.price ? ` (${formatNumber(nt.price)} CZK)` : ''}</option>)}
+                  {needTypes.map((nt: any) => <option key={nt.id} value={nt.name}>{getLocaleName(nt, locale)}{nt.price ? ` (${formatNumber(nt.price)} CZK)` : ''}</option>)}
                   <option value="__custom__">{t('needs.customNeed')}</option>
                 </select>
                 {selectedNeedType === '__custom__' && (
@@ -623,8 +625,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 <div className="flex items-center gap-3">
                   {canEditData ? <button onClick={() => toggleNeedFulfilled(need.id, need.isFulfilled)} className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${need.isFulfilled ? 'bg-primary-500 border-primary-500' : 'border-gray-300 hover:border-primary-400'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</button> : <div className={`w-6 h-6 rounded-full flex items-center justify-center ${need.isFulfilled ? 'bg-primary-500' : 'bg-gray-300'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</div>}
                   <div>
-                    <span className={`text-sm ${need.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{need.description}</span>
-                    {(() => { const nt = needTypes.find((t: any) => t.name === need.description); return nt?.price ? <span className="ml-2 text-xs text-gray-500">({formatNumber(nt.price)} CZK)</span> : null })()}
+                    {(() => { const nt = needTypes.find((t: any) => t.name === need.description); return <><span className={`text-sm ${need.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{nt ? getLocaleName(nt, locale) : need.description}</span>{nt?.price ? <span className="ml-2 text-xs text-gray-500">({formatNumber(nt.price)} CZK)</span> : null}</> })()}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -653,7 +654,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="flex flex-col sm:flex-row gap-2">
                 <select value={selectedWishType} onChange={(e) => { setSelectedWishType(e.target.value); if (e.target.value !== '__custom__') setNewWish('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                   <option value="">{t('wishes.selectType')}</option>
-                  {wishTypes.map((wt: any) => <option key={wt.id} value={wt.name}>{wt.name}{wt.price ? ` (${formatNumber(wt.price)} CZK)` : ''}</option>)}
+                  {wishTypes.map((wt: any) => <option key={wt.id} value={wt.name}>{getLocaleName(wt, locale)}{wt.price ? ` (${formatNumber(wt.price)} CZK)` : ''}</option>)}
                   <option value="__custom__">{t('wishes.customWish')}</option>
                 </select>
                 {selectedWishType === '__custom__' && (
@@ -670,7 +671,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 <div className="flex items-center gap-3">
                   {canEditData ? <button onClick={() => toggleWishFulfilled(wish.id, wish.isFulfilled)} className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${wish.isFulfilled ? 'bg-primary-500 border-primary-500' : 'border-gray-300 hover:border-primary-400'}`}>{wish.isFulfilled && <Check className="w-4 h-4 text-white" />}</button> : <div className={`w-6 h-6 rounded-full flex items-center justify-center ${wish.isFulfilled ? 'bg-primary-500' : 'bg-gray-300'}`}>{wish.isFulfilled && <Check className="w-4 h-4 text-white" />}</div>}
                   <div>
-                    <span className={`text-sm ${wish.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{wish.description}</span>
+                    <span className={`text-sm ${wish.isFulfilled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{wish.wishType ? getLocaleName(wish.wishType, locale) : wish.description}</span>
                     {wish.wishType?.price && <span className="ml-2 text-xs text-gray-500">({formatNumber(wish.wishType.price)} CZK)</span>}
                   </div>
                 </div>
@@ -963,7 +964,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
                 <input type="date" value={newPayment.paymentDate} onChange={(e) => setNewPayment({ ...newPayment, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                 <select value={newPayment.paymentType} onChange={(e) => setNewPayment({ ...newPayment, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
-                  <option value="">{t('sponsorPayments.selectType')}</option>{paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{pt.name}</option>)}
+                  <option value="">{t('sponsorPayments.selectType')}</option>{paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{getLocaleName(pt, locale)}</option>)}
                 </select>
                 <div className="flex gap-2">
                   <input type="number" value={newPayment.amount} onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm" />
@@ -1016,7 +1017,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
                 <input type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <select value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{ht.name}</option>)}</select>
+                <select value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{getLocaleName(ht, locale)}</option>)}</select>
                 <input type="text" value={newHealth.notes} onChange={(e) => setNewHealth({ ...newHealth, notes: e.target.value })} placeholder={t('health.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
               </div>
               <div className="flex gap-2"><button onClick={addHealthCheck} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddHealth(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>

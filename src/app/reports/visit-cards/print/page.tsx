@@ -6,7 +6,7 @@ import { formatNumber, formatDate, calculateAge } from '@/lib/format'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
+import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
 
@@ -440,7 +440,7 @@ ${parentStyles}
                               {existing && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                             </div>
                           </td>
-                          <td className={`py-1.5 px-2 ${existing ? 'font-bold' : ''}`}>{eqType.name}</td>
+                          <td className={`py-1.5 px-2 ${existing ? 'font-bold' : ''}`}>{getLocaleName(eqType, locale)}</td>
                           <td className="py-1.5 px-2">{existing ? formatCondition(existing.condition) : ''}</td>
                           <td className="py-1.5 px-2 text-gray-400">{eqType.price ? `${formatNumber(eqType.price)} CZK` : ''}</td>
                           <td className="py-1.5 px-2">{existing?.notes || ''}</td>
@@ -502,7 +502,7 @@ ${parentStyles}
                               {hasNeed && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                             </div>
                           </td>
-                          <td className={`py-1.5 px-2 ${hasNeed ? 'font-bold text-red-700' : ''}`}>{nt.name}</td>
+                          <td className={`py-1.5 px-2 ${hasNeed ? 'font-bold text-red-700' : ''}`}>{getLocaleName(nt, locale)}</td>
                           <td className="py-1.5 px-2 text-gray-400">{nt.price ? `${formatNumber(nt.price)} CZK` : ''}</td>
                           <td className="py-1.5 px-2">&nbsp;</td>
                         </tr>
@@ -543,7 +543,7 @@ ${parentStyles}
                               {hasWish && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                             </div>
                           </td>
-                          <td className={`py-1.5 px-2 ${hasWish ? 'font-bold text-blue-700' : ''}`}>{wt.name}</td>
+                          <td className={`py-1.5 px-2 ${hasWish ? 'font-bold text-blue-700' : ''}`}>{getLocaleName(wt, locale)}</td>
                           <td className="py-1.5 px-2 text-gray-400">{wt.price ? `${formatNumber(wt.price)} CZK` : ''}</td>
                           <td className="py-1.5 px-2">&nbsp;</td>
                         </tr>

@@ -8,7 +8,7 @@ import Pagination from '@/components/Pagination'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
+import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
 const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
@@ -336,7 +336,7 @@ export default function PaymentsPage() {
                   <select value={newSP.paymentType} onChange={(e) => setNewSP({ ...newSP, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
                     <option value="">{t('sponsorPayments.selectType')} *</option>
                     {paymentTypes.length > 0
-                      ? paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{pt.name}</option>)
+                      ? paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{getLocaleName(pt, locale)}</option>)
                       : <>
                           <option value="tuition">{t('sponsorPayments.tuition')}</option>
                           <option value="medical">{t('sponsorPayments.medical')}</option>
@@ -370,7 +370,7 @@ export default function PaymentsPage() {
                     <td className="py-2 px-3">
                       <select value={editData.paymentType || ''} onChange={(e) => setEditData({ ...editData, paymentType: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
                         {paymentTypes.length > 0
-                          ? paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{pt.name}</option>)
+                          ? paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{getLocaleName(pt, locale)}</option>)
                           : <>
                               <option value="tuition">{t('sponsorPayments.tuition')}</option>
                               <option value="medical">{t('sponsorPayments.medical')}</option>
@@ -410,7 +410,7 @@ export default function PaymentsPage() {
                 ) : (
                   <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50 group">
                     <td className="py-3 px-3 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
-                    <td className="py-3 px-3 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{p.paymentType === 'tuition' ? t('sponsorPayments.tuition') : p.paymentType === 'medical' ? t('sponsorPayments.medical') : p.paymentType === 'other' ? t('sponsorPayments.other') : p.paymentType}</span></td>
+                    <td className="py-3 px-3 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{(() => { const pt = paymentTypes.find((t: any) => t.name === p.paymentType); return pt ? getLocaleName(pt, locale) : p.paymentType })()}</span></td>
                     <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
                     <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}?from=/payments`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
                     <td className="py-3 px-3 text-sm">{p.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=/payments`} className="text-primary-600 hover:underline">{p.sponsor.firstName} {p.sponsor.lastName}</Link> : '-'}</td>

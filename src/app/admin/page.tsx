@@ -5,13 +5,13 @@ import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethosc
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
+import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
 
 
 
 const msgs: Record<string, any> = { cs, en, sw }
 
-type CodelistItem = { id: string; name: string; sortOrder: number; isActive: boolean; price?: number | null }
+type CodelistItem = { id: string; name: string; nameEn?: string | null; nameSw?: string | null; sortOrder: number; isActive: boolean; price?: number | null }
 
 function formatNumber(n: number) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
@@ -28,7 +28,7 @@ function CodelistSection({
   onMove,
   placeholder,
   t,
-  labelFn,
+  locale,
   showPrice,
   newPrice,
   setNewPrice,
@@ -44,7 +44,7 @@ function CodelistSection({
   onMove: (id: string, dir: 'up' | 'down') => void
   placeholder: string
   t: (key: string) => string
-  labelFn?: (name: string) => string
+  locale: Locale
   showPrice?: boolean
   newPrice?: string
   setNewPrice?: (v: string) => void
@@ -126,7 +126,7 @@ function CodelistSection({
                     </button>
                   </div>
                   <Icon className="w-5 h-5 text-primary-500" />
-                  <span className="flex-1 text-sm font-medium text-gray-900">{labelFn ? labelFn(item.name) : item.name}</span>
+                  <span className="flex-1 text-sm font-medium text-gray-900">{getLocaleName(item, locale)}</span>
                   {showPrice && onPriceChange && (
                     editingPriceId === item.id ? (
                       <input
@@ -321,6 +321,7 @@ export default function AdminPage() {
           onMove={classroomH.move}
           placeholder={t('admin.newClassName')}
           t={t}
+          locale={locale}
         />
 
         <CodelistSection
@@ -334,6 +335,7 @@ export default function AdminPage() {
           onMove={healthTypeH.move}
           placeholder={t('admin.newHealthTypeName')}
           t={t}
+          locale={locale}
         />
 
         <CodelistSection
@@ -347,6 +349,7 @@ export default function AdminPage() {
           onMove={paymentTypeH.move}
           placeholder={t('admin.newPaymentTypeName')}
           t={t}
+          locale={locale}
         />
 
         <CodelistSection
@@ -360,6 +363,7 @@ export default function AdminPage() {
           onMove={needTypeH.move}
           placeholder={t('admin.newNeedTypeName')}
           t={t}
+          locale={locale}
           showPrice
           newPrice={newNeedTypePrice}
           setNewPrice={setNewNeedTypePrice}
@@ -377,11 +381,11 @@ export default function AdminPage() {
           onMove={equipmentTypeH.move}
           placeholder={t('admin.newEquipmentTypeName')}
           t={t}
+          locale={locale}
           showPrice
           newPrice={newEquipmentTypePrice}
           setNewPrice={setNewEquipmentTypePrice}
           onPriceChange={equipmentTypeH.updatePrice}
-          labelFn={(name) => { const m: Record<string,string> = { bed:t('equipment.bed'), mattress:t('equipment.mattress'), blanket:t('equipment.blanket'), mosquito_net:t('equipment.mosquito_net'), bedding:t('equipment.bedding'), uniform:t('equipment.uniform'), shoes:t('equipment.shoes'), school_bag:t('equipment.school_bag'), pillow:t('equipment.pillow'), wheelchair:t('equipment.wheelchair'), other:t('equipment.other') }; return m[name] || name }}
         />
 
         <CodelistSection
@@ -395,6 +399,7 @@ export default function AdminPage() {
           onMove={wishTypeH.move}
           placeholder={t('admin.newWishTypeName')}
           t={t}
+          locale={locale}
           showPrice
           newPrice={newWishTypePrice}
           setNewPrice={setNewWishTypePrice}
