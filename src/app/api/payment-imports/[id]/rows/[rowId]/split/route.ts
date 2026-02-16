@@ -62,6 +62,16 @@ export async function POST(
     // Look up user in DB for approvedById
     const dbUser = await prisma.user.findUnique({ where: { email: user.email } })
 
+    // Look up sponsor name for donorName on VoucherPurchase
+    let sponsorName: string | null = null
+    if (row.sponsorId) {
+      const sponsor = await prisma.user.findUnique({
+        where: { id: row.sponsorId },
+        select: { firstName: true, lastName: true },
+      })
+      if (sponsor) sponsorName = `${sponsor.firstName} ${sponsor.lastName}`
+    }
+
     let approvedCount = 0
 
     await prisma.$transaction(async (tx) => {
@@ -125,6 +135,7 @@ export async function POST(
                 amount: part.amount,
                 count: 1,
                 sponsorId: row.sponsorId,
+                donorName: sponsorName,
                 source: 'bankImport',
                 importRowId: childRow.id,
               },

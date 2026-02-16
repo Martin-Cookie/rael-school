@@ -52,6 +52,13 @@ export async function POST(
       .filter(pt => pt.name.toLowerCase().includes('stravenk') || pt.name.toLowerCase().includes('voucher'))
       .map(pt => pt.id)
 
+    // Pre-load sponsor names for donorName on VoucherPurchase
+    const sponsorIds = [...new Set(rows.map(r => r.sponsorId).filter(Boolean))] as string[]
+    const sponsorUsers = sponsorIds.length > 0
+      ? await prisma.user.findMany({ where: { id: { in: sponsorIds } }, select: { id: true, firstName: true, lastName: true } })
+      : []
+    const sponsorNameMap = new Map(sponsorUsers.map(s => [s.id, `${s.firstName} ${s.lastName}`]))
+
     let approvedCount = 0
 
     await prisma.$transaction(async (tx) => {
@@ -69,6 +76,7 @@ export async function POST(
               amount: row.amount,
               count: 1, // Default count, can be adjusted
               sponsorId: row.sponsorId,
+              donorName: row.sponsorId ? sponsorNameMap.get(row.sponsorId) || null : null,
               source: 'bankImport',
               importRowId: row.id,
             },
