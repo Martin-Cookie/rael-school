@@ -60,6 +60,7 @@ interface SplitPart {
   amount: string
   studentId: string
   paymentTypeId: string
+  count: string
 }
 
 const ROW_STATUS_STYLES: Record<string, { bg: string; text: string }> = {
@@ -265,22 +266,43 @@ export default function ImportDetailPage() {
     setSplitRow(row)
     const half = Math.round(row.amount / 2 * 100) / 100
     setSplitParts([
-      { amount: half.toString(), studentId: row.studentId || '', paymentTypeId: row.paymentTypeId || '' },
-      { amount: (row.amount - half).toString(), studentId: row.studentId || '', paymentTypeId: row.paymentTypeId || '' },
+      { amount: half.toString(), studentId: row.studentId || '', paymentTypeId: row.paymentTypeId || '', count: '' },
+      { amount: (row.amount - half).toString(), studentId: row.studentId || '', paymentTypeId: row.paymentTypeId || '', count: '' },
     ])
+  }
+
+  const VOUCHER_PRICE = 80 // KES per voucher
+
+  function isVoucherType(paymentTypeId: string): boolean {
+    const pt = paymentTypes.find((p: any) => p.id === paymentTypeId)
+    if (!pt) return false
+    const name = pt.name.toLowerCase()
+    return name.includes('stravenk') || name.includes('voucher')
+  }
+
+  function calcVoucherCount(amount: string): string {
+    const num = parseFloat(amount)
+    if (!num || num <= 0) return ''
+    return Math.floor(num / VOUCHER_PRICE).toString()
   }
 
   function updateSplitPart(index: number, field: keyof SplitPart, value: string) {
     setSplitParts(prev => {
       const next = [...prev]
       next[index] = { ...next[index], [field]: value }
+      // Auto-calculate count when switching to voucher type or changing amount
+      if (field === 'paymentTypeId' && isVoucherType(value)) {
+        next[index].count = calcVoucherCount(next[index].amount)
+      } else if (field === 'amount' && isVoucherType(next[index].paymentTypeId)) {
+        next[index].count = calcVoucherCount(value)
+      }
       return next
     })
   }
 
   function addSplitPart() {
     if (splitParts.length >= 5) return
-    setSplitParts(prev => [...prev, { amount: '0', studentId: splitRow?.studentId || '', paymentTypeId: splitRow?.paymentTypeId || '' }])
+    setSplitParts(prev => [...prev, { amount: '0', studentId: splitRow?.studentId || '', paymentTypeId: splitRow?.paymentTypeId || '', count: '' }])
   }
 
   function removeSplitPart(index: number) {
@@ -296,6 +318,7 @@ export default function ImportDetailPage() {
         amount: parseFloat(p.amount) || 0,
         studentId: p.studentId || undefined,
         paymentTypeId: p.paymentTypeId || undefined,
+        count: p.count ? parseInt(p.count) : undefined,
       }))
 
       const res = await fetch(`/api/payment-imports/${id}/rows/${splitRow.id}/split`, {
@@ -749,6 +772,19 @@ export default function ImportDetailPage() {
                         <option key={pt.id} value={pt.id}>{pt.name}</option>
                       ))}
                     </select>
+                    {isVoucherType(part.paymentTypeId) && (
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          value={part.count}
+                          onChange={(e) => updateSplitPart(i, 'count', e.target.value)}
+                          placeholder={t('vouchers.count')}
+                          className="w-20 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                          min="1"
+                        />
+                        <span className="text-xs text-gray-400">ks</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

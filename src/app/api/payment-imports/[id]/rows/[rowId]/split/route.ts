@@ -6,6 +6,7 @@ interface SplitPart {
   amount: number
   studentId?: string
   paymentTypeId?: string
+  count?: number
 }
 
 // POST /api/payment-imports/[id]/rows/[rowId]/split — split a row into parts
@@ -128,12 +129,13 @@ export async function POST(
           let resultPaymentId: string
 
           if (isVoucher) {
+            const voucherCount = part.count && part.count > 0 ? part.count : Math.floor(part.amount / 80)
             const vp = await tx.voucherPurchase.create({
               data: {
                 studentId: part.studentId,
                 purchaseDate: row.transactionDate,
                 amount: part.amount,
-                count: 1,
+                count: voucherCount || 1,
                 sponsorId: row.sponsorId,
                 donorName: sponsorName,
                 source: 'bankImport',

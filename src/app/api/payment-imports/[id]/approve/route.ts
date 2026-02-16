@@ -69,12 +69,13 @@ export async function POST(
 
         if (isVoucher) {
           // Create VoucherPurchase
+          const voucherCount = Math.floor(row.amount / 80)
           const vp = await tx.voucherPurchase.create({
             data: {
               studentId: row.studentId!,
               purchaseDate: row.transactionDate,
               amount: row.amount,
-              count: 1, // Default count, can be adjusted
+              count: voucherCount || 1,
               sponsorId: row.sponsorId,
               donorName: row.sponsorId ? sponsorNameMap.get(row.sponsorId) || null : null,
               source: 'bankImport',
