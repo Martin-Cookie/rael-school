@@ -83,108 +83,121 @@ async function main() {
   // 2. ČÍSELNÍKY (ClassRooms, HealthCheckTypes, PaymentTypes)
   // ============================================================
 
-  const classRoomNames = [
-    'PP1',
-    'PP2',
-    'Grade 1',
-    'Grade 2',
-    'Grade 3',
-    'Grade 4',
-    'Grade 5',
-    'Grade 6',
-    'Grade 7',
-    'Grade 8',
-    'Grade 9',
-    'Grade 10',
-    'Grade 11',
-    'Grade 12',
+  // --- Třídy (ponecháno, přidány překlady) ---
+  const classRooms = [
+    { name: 'PP1', nameEn: 'PP1', nameSw: 'PP1' },
+    { name: 'PP2', nameEn: 'PP2', nameSw: 'PP2' },
+    { name: 'Grade 1', nameEn: 'Grade 1', nameSw: 'Daraja la 1' },
+    { name: 'Grade 2', nameEn: 'Grade 2', nameSw: 'Daraja la 2' },
+    { name: 'Grade 3', nameEn: 'Grade 3', nameSw: 'Daraja la 3' },
+    { name: 'Grade 4', nameEn: 'Grade 4', nameSw: 'Daraja la 4' },
+    { name: 'Grade 5', nameEn: 'Grade 5', nameSw: 'Daraja la 5' },
+    { name: 'Grade 6', nameEn: 'Grade 6', nameSw: 'Daraja la 6' },
+    { name: 'Grade 7', nameEn: 'Grade 7', nameSw: 'Daraja la 7' },
+    { name: 'Grade 8', nameEn: 'Grade 8', nameSw: 'Daraja la 8' },
+    { name: 'Grade 9', nameEn: 'Grade 9', nameSw: 'Daraja la 9' },
+    { name: 'Grade 10', nameEn: 'Grade 10', nameSw: 'Daraja la 10' },
+    { name: 'Grade 11', nameEn: 'Grade 11', nameSw: 'Daraja la 11' },
+    { name: 'Grade 12', nameEn: 'Grade 12', nameSw: 'Daraja la 12' },
   ]
-  for (let i = 0; i < classRoomNames.length; i++) {
+  for (let i = 0; i < classRooms.length; i++) {
     await prisma.classRoom.create({
-      data: { name: classRoomNames[i], sortOrder: i },
+      data: { name: classRooms[i].name, nameEn: classRooms[i].nameEn, nameSw: classRooms[i].nameSw, sortOrder: i },
     })
   }
-  console.log('✅ ClassRooms seeded (' + classRoomNames.length + ')')
+  console.log('✅ ClassRooms seeded (' + classRooms.length + ')')
 
-  const healthCheckTypeNames = ['Zdravotní', 'Zubař', 'Urgent']
-  for (let i = 0; i < healthCheckTypeNames.length; i++) {
+  // --- Zdravotní prohlídky (ponecháno, přidány překlady) ---
+  const healthCheckTypes = [
+    { name: 'Zdravotní', nameEn: 'General health', nameSw: 'Afya ya jumla' },
+    { name: 'Zubař', nameEn: 'Dentist', nameSw: 'Daktari wa meno' },
+    { name: 'Urgent', nameEn: 'Urgent', nameSw: 'Dharura' },
+  ]
+  for (let i = 0; i < healthCheckTypes.length; i++) {
     await prisma.healthCheckType.create({
-      data: { name: healthCheckTypeNames[i], sortOrder: i },
+      data: { name: healthCheckTypes[i].name, nameEn: healthCheckTypes[i].nameEn, nameSw: healthCheckTypes[i].nameSw, sortOrder: i },
     })
   }
-  console.log('✅ HealthCheckTypes seeded (' + healthCheckTypeNames.length + ')')
+  console.log('✅ HealthCheckTypes seeded (' + healthCheckTypes.length + ')')
 
-  const paymentTypeNames = ['Stravenky', 'Platba za kávu', 'Školné', 'Ordinace', 'Taneční klub', 'Semináře']
-  for (let i = 0; i < paymentTypeNames.length; i++) {
+  // --- Typy plateb (ponecháno, přidány překlady) ---
+  const paymentTypes = [
+    { name: 'Stravenky', nameEn: 'Meal vouchers', nameSw: 'Vocha za chakula' },
+    { name: 'Platba za kávu', nameEn: 'Coffee payment', nameSw: 'Malipo ya kahawa' },
+    { name: 'Školné', nameEn: 'Tuition', nameSw: 'Karo' },
+    { name: 'Ordinace', nameEn: 'Clinic', nameSw: 'Kliniki' },
+    { name: 'Taneční klub', nameEn: 'Dance club', nameSw: 'Klabu ya dansi' },
+    { name: 'Semináře', nameEn: 'Seminars', nameSw: 'Semina' },
+  ]
+  for (let i = 0; i < paymentTypes.length; i++) {
     await prisma.paymentType.create({
-      data: { name: paymentTypeNames[i], sortOrder: i },
+      data: { name: paymentTypes[i].name, nameEn: paymentTypes[i].nameEn, nameSw: paymentTypes[i].nameSw, sortOrder: i },
     })
   }
-  console.log('✅ PaymentTypes seeded (' + paymentTypeNames.length + ')')
+  console.log('✅ PaymentTypes seeded (' + paymentTypes.length + ')')
 
+  // --- Potřeby (nová data s překlady) ---
   const needTypes = [
-    { name: 'Školní batoh', price: 300 },
-    { name: 'Školní boty', price: 550 },
-    { name: 'Školní uniforma', price: 300 },
-    { name: 'Školní svetr', price: 300 },
-    { name: 'Komplet balík věcí na spaní', price: 1200 },
-    { name: 'Jen moskytiéra', price: 200 },
-    { name: 'Jen deka', price: 200 },
-    { name: 'Jen matrace', price: 500 },
-    { name: 'Jen prostěradlo', price: 100 },
-    { name: 'Jen polštář', price: 200 },
-    { name: 'Školní atlas', price: 300 },
-    { name: 'Slovník anglický', price: 250 },
-    { name: 'Slovník svahilský', price: 250 },
-    { name: 'Kalkulačka', price: 250 },
-    { name: 'Matematický set', price: 50 },
-    { name: 'Sportovní úbor', price: 400 },
-    { name: 'Bible do školy', price: 300 },
-    { name: 'Několik párů ponožek', price: 200 },
-    { name: '10 velkých sešitů', price: 200 },
+    { name: 'Školní batoh', nameEn: 'School backpack', nameSw: 'Begi la shule', price: 300 },
+    { name: 'Školní boty', nameEn: 'School shoes', nameSw: 'Viatu vya shule', price: 550 },
+    { name: 'Školní uniforma', nameEn: 'School uniform', nameSw: 'Sare ya shule', price: 300 },
+    { name: 'Školní svetr', nameEn: 'School sweater', nameSw: 'Sweta ya shule', price: 300 },
+    { name: 'Komplet balík věcí na spaní', nameEn: 'Complete sleeping kit', nameSw: 'Pakiti kamili ya kulala', price: 1200 },
+    { name: 'Jen moskytiéra', nameEn: 'Mosquito net only', nameSw: 'Chandarua tu', price: 200 },
+    { name: 'Jen deka', nameEn: 'Blanket only', nameSw: 'Blanketi tu', price: 200 },
+    { name: 'Jen matrace', nameEn: 'Mattress only', nameSw: 'Godoro tu', price: 500 },
+    { name: 'Jen prostěradlo', nameEn: 'Bed sheet only', nameSw: 'Shuka tu', price: 100 },
+    { name: 'Jen polštář', nameEn: 'Pillow only', nameSw: 'Mto tu', price: 200 },
+    { name: 'Školní atlas', nameEn: 'School atlas', nameSw: 'Atlasi ya shule', price: 300 },
+    { name: 'Slovník anglický', nameEn: 'English dictionary', nameSw: 'Kamusi ya Kiingereza', price: 250 },
+    { name: 'Slovník svahilský', nameEn: 'Swahili dictionary', nameSw: 'Kamusi ya Kiswahili', price: 250 },
+    { name: 'Kalkulačka', nameEn: 'Calculator', nameSw: 'Kikokotoo', price: 250 },
+    { name: 'Matematický set', nameEn: 'Math set', nameSw: 'Seti ya hesabu', price: 50 },
+    { name: 'Sportovní úbor', nameEn: 'Sports outfit', nameSw: 'Mavazi ya michezo', price: 400 },
+    { name: 'Bible do školy', nameEn: 'School Bible', nameSw: 'Biblia ya shule', price: 300 },
+    { name: 'Několik párů ponožek', nameEn: 'Several pairs of socks', nameSw: 'Jozi kadhaa za soksi', price: 200 },
+    { name: '10 velkých sešitů', nameEn: '10 large notebooks', nameSw: 'Madaftari 10 makubwa', price: 200 },
   ]
   for (let i = 0; i < needTypes.length; i++) {
     await prisma.needType.create({
-      data: { name: needTypes[i].name, price: needTypes[i].price, sortOrder: i },
+      data: { name: needTypes[i].name, nameEn: needTypes[i].nameEn, nameSw: needTypes[i].nameSw, price: needTypes[i].price, sortOrder: i },
     })
   }
   console.log('✅ NeedTypes seeded (' + needTypes.length + ')')
 
-  const equipmentTypeNames = [
-    'bedding',
-    'mattress',
-    'blanket',
-    'mosquito_net',
-    'pillow',
-    'uniform',
-    'shoes',
-    'school_bag',
-    'wheelchair',
-    'other',
+  // --- Vybavení (NOVÁ data — nahrazeno 6 položkami s cenami a překlady) ---
+  const equipmentTypes = [
+    { name: 'Moskytiéra', nameEn: 'Mosquito net', nameSw: 'Chandarua', price: 200 },
+    { name: 'Postel', nameEn: 'Bed', nameSw: 'Kitanda', price: 0 },
+    { name: 'Deka', nameEn: 'Blanket', nameSw: 'Blanketi', price: 200 },
+    { name: 'Matrace', nameEn: 'Mattress', nameSw: 'Godoro', price: 500 },
+    { name: 'Prostěradlo', nameEn: 'Bed sheet', nameSw: 'Shuka', price: 100 },
+    { name: 'Polštář', nameEn: 'Pillow', nameSw: 'Mto', price: 200 },
   ]
-  for (let i = 0; i < equipmentTypeNames.length; i++) {
+  for (let i = 0; i < equipmentTypes.length; i++) {
     await prisma.equipmentType.create({
-      data: { name: equipmentTypeNames[i], sortOrder: i },
+      data: { name: equipmentTypes[i].name, nameEn: equipmentTypes[i].nameEn, nameSw: equipmentTypes[i].nameSw, price: equipmentTypes[i].price, sortOrder: i },
     })
   }
-  console.log('✅ EquipmentTypes seeded (' + equipmentTypeNames.length + ')')
+  console.log('✅ EquipmentTypes seeded (' + equipmentTypes.length + ')')
 
+  // --- Přání (nová data s překlady) ---
   const wishTypes = [
-    { name: 'Narozeninový dort', price: 450 },
-    { name: 'Kopačky', price: 600 },
-    { name: 'Kolo', price: 4000 },
-    { name: 'Postel', price: 1000 },
-    { name: 'Sladkosti do 100 Kč', price: 100 },
-    { name: 'Sladkosti do 200 Kč', price: 200 },
-    { name: 'Sladkosti do 300 Kč', price: 300 },
-    { name: 'Sladkosti do 400 Kč', price: 400 },
-    { name: 'Sladkosti do 500 Kč', price: 500 },
-    { name: 'Oblečení za 500 Kč', price: 500 },
-    { name: 'Oblečení za 1 000 Kč', price: 1000 },
+    { name: 'Narozeninový dort', nameEn: 'Birthday cake', nameSw: 'Keki ya kuzaliwa', price: 450 },
+    { name: 'Kopačky', nameEn: 'Football boots', nameSw: 'Viatu vya mpira', price: 600 },
+    { name: 'Kolo', nameEn: 'Bicycle', nameSw: 'Baiskeli', price: 4000 },
+    { name: 'Postel', nameEn: 'Bed', nameSw: 'Kitanda', price: 1000 },
+    { name: 'Sladkosti do 100 Kč', nameEn: 'Sweets up to 100 CZK', nameSw: 'Pipi hadi 100 CZK', price: 100 },
+    { name: 'Sladkosti do 200 Kč', nameEn: 'Sweets up to 200 CZK', nameSw: 'Pipi hadi 200 CZK', price: 200 },
+    { name: 'Sladkosti do 300 Kč', nameEn: 'Sweets up to 300 CZK', nameSw: 'Pipi hadi 300 CZK', price: 300 },
+    { name: 'Sladkosti do 400 Kč', nameEn: 'Sweets up to 400 CZK', nameSw: 'Pipi hadi 400 CZK', price: 400 },
+    { name: 'Sladkosti do 500 Kč', nameEn: 'Sweets up to 500 CZK', nameSw: 'Pipi hadi 500 CZK', price: 500 },
+    { name: 'Oblečení za 500 Kč', nameEn: 'Clothes for 500 CZK', nameSw: 'Nguo za 500 CZK', price: 500 },
+    { name: 'Oblečení za 1 000 Kč', nameEn: 'Clothes for 1 000 CZK', nameSw: 'Nguo za 1 000 CZK', price: 1000 },
   ]
   for (let i = 0; i < wishTypes.length; i++) {
     await prisma.wishType.create({
-      data: { name: wishTypes[i].name, price: wishTypes[i].price, sortOrder: i },
+      data: { name: wishTypes[i].name, nameEn: wishTypes[i].nameEn, nameSw: wishTypes[i].nameSw, price: wishTypes[i].price, sortOrder: i },
     })
   }
   console.log('✅ WishTypes seeded (' + wishTypes.length + ')')
@@ -359,19 +372,15 @@ async function main() {
     if (!studentId) continue
 
     for (const item of s.itemsReceived) {
-      // Rozpoznat typ vybavení
+      // Rozpoznat typ vybavení (nové české názvy)
       const itemLower = item.toLowerCase()
-      let type = 'other'
-      if (itemLower.includes('bedding') || itemLower.includes('bed')) type = 'bedding'
-      else if (itemLower.includes('mattress') || itemLower.includes('matr')) type = 'mattress'
-      else if (itemLower.includes('blanket') || itemLower.includes('deka')) type = 'blanket'
-      else if (itemLower.includes('net') || itemLower.includes('mosquito')) type = 'mosquito_net'
-      else if (itemLower.includes('uniform')) type = 'uniform'
-      else if (itemLower.includes('shoes') || itemLower.includes('boots')) type = 'shoes'
-      else if (itemLower.includes('bag')) type = 'school_bag'
-      else if (itemLower.includes('wheelchair')) type = 'wheelchair'
-      else if (itemLower.includes('pillow')) type = 'pillow'
-      else type = 'other'
+      let type = 'Postel'
+      if (itemLower.includes('net') || itemLower.includes('mosquito')) type = 'Moskytiéra'
+      else if (itemLower.includes('mattress') || itemLower.includes('matr')) type = 'Matrace'
+      else if (itemLower.includes('blanket') || itemLower.includes('deka')) type = 'Deka'
+      else if (itemLower.includes('sheet') || itemLower.includes('prostěr')) type = 'Prostěradlo'
+      else if (itemLower.includes('pillow')) type = 'Polštář'
+      else if (itemLower.includes('bedding') || itemLower.includes('bed')) type = 'Postel'
 
       // Zkusit extrahovat datum z položky (formát "item (DD/MM/YYYY)")
       const dateMatch = item.match(/\((\d{1,2}\/\d{1,2}\/\d{4})\)/) || item.match(/(\d{1,2}\/\d{1,2}\/\d{4})/)
@@ -439,9 +448,9 @@ async function main() {
   console.log('🎉 Database seeded successfully with REAL data!')
   console.log('')
   console.log('📊 Souhrn:')
-  console.log('   Třídy:               ' + classRoomNames.length)
-  console.log('   Typy prohlídek:      ' + healthCheckTypeNames.length)
-  console.log('   Typy plateb:         ' + paymentTypeNames.length)
+  console.log('   Třídy:               ' + classRooms.length)
+  console.log('   Typy prohlídek:      ' + healthCheckTypes.length)
+  console.log('   Typy plateb:         ' + paymentTypes.length)
   console.log('   Typy potřeb:        ' + needTypes.length)
   console.log('   Typy přání:         ' + wishTypes.length)
   console.log('   Studenti:            ' + studentsData.length)
