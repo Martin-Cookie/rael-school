@@ -407,13 +407,13 @@ ${parentStyles}
                 </table>
               </div>
 
-              {/* Equipment Section — compact to fit page */}
+              {/* Equipment Section */}
               <div>
                 <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.equipmentSection')}
                   {student.equipment.length > 0 && <span className="ml-2 font-normal text-gray-500">({t('visitCards.currentEquipment')}: {student.equipment.length})</span>}
                 </h3>
-                <table className="w-full border-collapse" style={{ tableLayout: 'fixed', fontSize: '11px' }}>
+                <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
                   <colgroup>
                     <col style={{ width: '4%' }} />
                     <col style={{ width: '22%' }} />
@@ -423,11 +423,11 @@ ${parentStyles}
                   </colgroup>
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-0.5 px-1.5"></th>
-                      <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('equipment.type')}</th>
-                      <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('equipment.condition')}</th>
-                      <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('visitCards.price')}</th>
-                      <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('visitCards.notesField')}</th>
+                      <th className="text-left py-1.5 px-2"></th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('equipment.type')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('equipment.condition')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.price')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -435,15 +435,15 @@ ${parentStyles}
                       const existing = student.equipment.find(e => e.type === eqType.name)
                       return (
                         <tr key={eqType.id} className="border-b border-gray-300">
-                          <td className="py-0.5 px-1.5">
-                            <div className={`w-3 h-3 border rounded ${existing ? 'bg-gray-800 border-gray-800' : 'border-gray-400'}`}>
-                              {existing && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                          <td className="py-1.5 px-2">
+                            <div className={`w-3.5 h-3.5 border rounded ${existing ? 'bg-gray-800 border-gray-800' : 'border-gray-400'}`}>
+                              {existing && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                             </div>
                           </td>
-                          <td className={`py-0.5 px-1.5 ${existing ? 'font-bold' : ''}`}>{getLocaleName(eqType, locale)}</td>
-                          <td className="py-0.5 px-1.5">{existing ? formatCondition(existing.condition) : ''}</td>
-                          <td className="py-0.5 px-1.5 text-gray-400">{eqType.price ? `${formatNumber(eqType.price)}` : ''}</td>
-                          <td className="py-0.5 px-1.5">{existing?.notes || ''}</td>
+                          <td className={`py-1.5 px-2 ${existing ? 'font-bold' : ''}`}>{getLocaleName(eqType, locale)}</td>
+                          <td className="py-1.5 px-2">{existing ? formatCondition(existing.condition) : ''}</td>
+                          <td className="py-1.5 px-2 text-gray-400">{eqType.price ? `${formatNumber(eqType.price)} CZK` : ''}</td>
+                          <td className="py-1.5 px-2">{existing?.notes || ''}</td>
                         </tr>
                       )
                     })}
