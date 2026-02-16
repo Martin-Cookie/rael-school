@@ -280,7 +280,7 @@ export default function ImportDetailPage() {
     ])
   }
 
-  const VOUCHER_PRICE = 80 // KES per voucher
+  const VOUCHER_PRICE = 80 // CZK per voucher
 
   function isVoucherType(paymentTypeId: string): boolean {
     const pt = paymentTypes.find((p: any) => p.id === paymentTypeId)
@@ -810,7 +810,7 @@ export default function ImportDetailPage() {
                         className="w-24 px-2 py-1.5 rounded border border-gray-300 text-sm"
                         min="1"
                       />
-                      <span className="text-xs text-gray-400">ks (1 = 80 KES)</span>
+                      <span className="text-xs text-gray-400">ks (1 = 80 CZK)</span>
                     </div>
                   )}
                 </div>

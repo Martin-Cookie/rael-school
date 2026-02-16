@@ -740,12 +740,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     <div className="flex gap-2">
                       <input type="number" value={newVoucher.amount} onChange={(e) => {
                         const amt = e.target.value
-                        const autoCount = (amt && newVoucher.currency === 'KES') ? String(Math.floor(parseFloat(amt) / 80)) : ''
+                        const autoCount = (amt && newVoucher.currency === 'CZK') ? String(Math.floor(parseFloat(amt) / 80)) : ''
                         setNewVoucher({ ...newVoucher, amount: amt, count: autoCount })
                       }} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                       <select value={newVoucher.currency} onChange={(e) => {
                         const cur = e.target.value
-                        const autoCount = (newVoucher.amount && cur === 'KES') ? String(Math.floor(parseFloat(newVoucher.amount) / 80)) : ''
+                        const autoCount = (newVoucher.amount && cur === 'CZK') ? String(Math.floor(parseFloat(newVoucher.amount) / 80)) : ''
                         setNewVoucher({ ...newVoucher, currency: cur, count: autoCount })
                       }} className="w-20 px-2 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                         {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
