@@ -58,6 +58,8 @@ async function main() {
   // ============================================================
 
   console.log('🗑️  Clearing existing data...')
+  await prisma.paymentImportRow.deleteMany()
+  await prisma.paymentImport.deleteMany()
   await prisma.volunteerAssignment.deleteMany()
   await prisma.sponsorPayment.deleteMany()
   await prisma.sponsorship.deleteMany()
