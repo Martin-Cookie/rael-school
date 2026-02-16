@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { GraduationCap, ChevronUp, ChevronDown, ArrowUpDown, Search } from 'lucide-react'
 import { formatNumber } from '@/lib/format'
 import cs from '@/messages/cs.json'
@@ -21,6 +22,8 @@ export default function ClassesPage() {
   const [search, setSearch] = useState('')
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [fromPage, setFromPage] = useState<string | null>(null)
+  const router = useRouter()
 
   const t = createTranslator(msgs[locale])
 
@@ -35,7 +38,9 @@ export default function ClassesPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const classParam = params.get('class')
+    const fromParam = params.get('from')
     if (classParam) setSelectedClass(classParam)
+    if (fromParam) setFromPage(fromParam)
   }, [])
 
   useEffect(() => {
@@ -127,7 +132,11 @@ export default function ClassesPage() {
           )
         ) : (
           <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <button onClick={() => { setSelectedClass(null); setSearch(''); setSortCol('') }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
+            {fromPage ? (
+              <button onClick={() => router.push(fromPage)} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('app.back')}</button>
+            ) : (
+              <button onClick={() => { setSelectedClass(null); setSearch(''); setSortCol('') }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
+            )}
             <h3 className="text-lg font-semibold text-gray-900 mb-3">{selectedClass} ({filteredStudentsInClass.length})</h3>
             <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
               <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>

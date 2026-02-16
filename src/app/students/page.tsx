@@ -110,7 +110,7 @@ export default function StudentsPage() {
                         <Link href={`/students/${s.id}?from=/students`} className="text-primary-600 hover:underline">{s.lastName}</Link>
                       </td>
                       <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
-                      <td className="py-3 px-3 text-sm text-gray-900">{s.className || '-'}</td>
+                      <td className="py-3 px-3 text-sm">{s.className ? <Link href={`/classes?class=${encodeURIComponent(s.className)}&from=/students`} className="text-primary-600 hover:underline">{s.className}</Link> : '-'}</td>
                       <td className="py-3 px-3 text-sm text-gray-900">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
                       <td className="py-3 px-3 text-sm text-gray-900">{s.dateOfBirth ? calculateAge(s.dateOfBirth) : '-'}</td>
                       <td className="py-3 px-3 text-sm text-right">{s._count?.needs > 0 ? <span className="badge badge-red">{s._count.needs}</span> : <span className="text-gray-400">0</span>}</td>
