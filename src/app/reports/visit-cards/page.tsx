@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { Upload, Printer, CheckSquare, Square, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
+import { Upload, Printer, CheckSquare, Square, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, Search, X } from 'lucide-react'
 import Pagination from '@/components/Pagination'
 import { formatNumber } from '@/lib/format'
 import cs from '@/messages/cs.json'
@@ -23,9 +23,11 @@ export default function VisitCardsPage() {
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [currentPage, setCurrentPage] = useState(1)
+  const [search, setSearch] = useState('')
   const [csvNotFound, setCsvNotFound] = useState<string[]>([])
   const [csvMatchCount, setCsvMatchCount] = useState<number | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
   const PAGE_SIZE = 12
 
   const t = createTranslator(msgs[locale])
@@ -70,7 +72,13 @@ export default function VisitCardsPage() {
   }
 
   const classNames = [...new Set(students.map((s: any) => s.className).filter(Boolean))].sort() as string[]
-  const filtered = classFilter ? students.filter(s => s.className === classFilter) : students
+  const classFiltered = classFilter ? students.filter(s => s.className === classFilter) : students
+  const filtered = search.trim()
+    ? classFiltered.filter(s => {
+        const q = search.trim().toLowerCase()
+        return (s.lastName?.toLowerCase().includes(q) || s.firstName?.toLowerCase().includes(q) || String(s.studentNo || '').includes(q))
+      })
+    : classFiltered
   const sorted = sortData(filtered, sortCol)
   const paged = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
@@ -86,7 +94,11 @@ export default function VisitCardsPage() {
   }
 
   function selectAll() {
-    setSelected(new Set(filtered.map(s => s.id)))
+    setSelected(prev => {
+      const next = new Set(prev)
+      filtered.forEach(s => next.add(s.id))
+      return next
+    })
   }
 
   function deselectAll() {
@@ -174,6 +186,24 @@ export default function VisitCardsPage() {
             <option key={cn} value={cn}>{cn}</option>
           ))}
         </select>
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            ref={searchRef}
+            type="text"
+            value={search}
+            onChange={e => { setSearch(e.target.value); setCurrentPage(1) }}
+            placeholder={t('app.search')}
+            className="pl-8 pr-8 py-2 border border-gray-200 rounded-lg text-sm bg-white w-48 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400"
+          />
+          {search && (
+            <button onClick={() => { setSearch(''); setCurrentPage(1); searchRef.current?.focus() }} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
 
         {/* Select all / deselect */}
         <button onClick={selectAll} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
