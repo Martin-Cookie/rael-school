@@ -27,7 +27,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { sponsorId, studentId, paymentTypeId } = body
+    const { sponsorId, studentId, paymentTypeId, voucherCount } = body
 
     // Determine new status based on what's filled
     let newStatus = row.status
@@ -51,6 +51,7 @@ export async function PUT(
         ...(sponsorId !== undefined && { sponsorId: sponsorId || null }),
         ...(studentId !== undefined && { studentId: studentId || null }),
         ...(paymentTypeId !== undefined && { paymentTypeId: paymentTypeId || null }),
+        ...(voucherCount !== undefined && { voucherCount: voucherCount ? parseInt(voucherCount) : null }),
         status: newStatus,
         matchConfidence: 'HIGH', // Manual edit = high confidence
         matchNotes: row.matchNotes

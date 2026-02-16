@@ -68,8 +68,8 @@ export async function POST(
         let resultPaymentId: string
 
         if (isVoucher) {
-          // Create VoucherPurchase
-          const voucherCount = Math.floor(row.amount / 80)
+          // Create VoucherPurchase — use manually set count, fallback to calculation
+          const voucherCount = row.voucherCount || Math.floor(row.amount / 80)
           const vp = await tx.voucherPurchase.create({
             data: {
               studentId: row.studentId!,

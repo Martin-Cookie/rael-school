@@ -113,6 +113,7 @@ export async function POST(
             sponsorId: row.sponsorId,
             studentId: part.studentId || null,
             paymentTypeId: part.paymentTypeId || null,
+            voucherCount: part.count && part.count > 0 ? part.count : null,
             matchConfidence: 'HIGH',
             matchNotes: 'Vytvořeno rozdělením platby',
             parentRowId: params.rowId,

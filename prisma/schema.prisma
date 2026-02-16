@@ -345,6 +345,9 @@ model PaymentImportRow {
   matchConfidence String   @default("NONE") // NONE, LOW, MEDIUM, HIGH
   matchNotes      String?              // popis jak byl match proveden
 
+  // --- Stravenky ---
+  voucherCount    Int?                 // manuálně zadaný počet stravenek
+
   // --- Split platba ---
   parentRowId     String?              // pokud child → odkaz na původní řádek
 

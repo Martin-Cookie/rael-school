@@ -25,6 +25,7 @@ interface ImportRow {
   sponsorId: string | null
   studentId: string | null
   paymentTypeId: string | null
+  voucherCount: number | null
   matchConfidence: string
   matchNotes: string | null
   duplicateOfId: string | null
@@ -167,12 +168,20 @@ export default function ImportDetailPage() {
     setTimeout(() => setMessage(null), 4000)
   }
 
-  async function updateRow(rowId: string, field: string, value: string) {
+  async function updateRow(rowId: string, field: string, value: string, extraFields?: Record<string, any>) {
     try {
+      const data: Record<string, any> = { [field]: value || null, ...extraFields }
+      // Auto-calculate voucherCount when switching to voucher type
+      if (field === 'paymentTypeId' && value && isVoucherType(value)) {
+        const row = importData?.rows.find(r => r.id === rowId)
+        if (row) {
+          data.voucherCount = calcVoucherCount(row.amount.toString())
+        }
+      }
       const res = await fetch(`/api/payment-imports/${id}/rows/${rowId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [field]: value || null }),
+        body: JSON.stringify(data),
       })
       if (res.ok) {
         await fetchImportDetail()
@@ -641,19 +650,37 @@ export default function ImportDetailPage() {
                     {/* Payment type dropdown */}
                     <td className="py-1.5 px-1.5 min-w-[140px]">
                       {editable ? (
-                        <select
-                          value={row.paymentTypeId || ''}
-                          onChange={(e) => updateRow(row.id, 'paymentTypeId', e.target.value)}
-                          className="w-full px-2 py-1 rounded border border-gray-200 text-sm bg-white hover:border-gray-300 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
-                        >
-                          <option value="">{t('paymentImport.selectPaymentType')}</option>
-                          {paymentTypes.map((pt: any) => (
-                            <option key={pt.id} value={pt.id}>{pt.name}</option>
-                          ))}
-                        </select>
+                        <>
+                          <select
+                            value={row.paymentTypeId || ''}
+                            onChange={(e) => updateRow(row.id, 'paymentTypeId', e.target.value)}
+                            className="w-full px-2 py-1 rounded border border-gray-200 text-sm bg-white hover:border-gray-300 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
+                          >
+                            <option value="">{t('paymentImport.selectPaymentType')}</option>
+                            {paymentTypes.map((pt: any) => (
+                              <option key={pt.id} value={pt.id}>{pt.name}</option>
+                            ))}
+                          </select>
+                          {row.paymentTypeId && isVoucherType(row.paymentTypeId) && (
+                            <div className="flex items-center gap-1 mt-1">
+                              <label className="text-xs text-gray-500">{t('vouchers.count')}:</label>
+                              <input
+                                type="number"
+                                value={row.voucherCount ?? ''}
+                                onChange={(e) => updateRow(row.id, 'voucherCount', e.target.value)}
+                                className="w-16 px-1.5 py-0.5 rounded border border-gray-200 text-sm bg-white hover:border-gray-300 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
+                                min="1"
+                              />
+                              <span className="text-xs text-gray-400">ks</span>
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <span className="text-sm text-gray-700 whitespace-nowrap">
                           {paymentTypes.find((pt: any) => pt.id === row.paymentTypeId)?.name || '-'}
+                          {row.paymentTypeId && isVoucherType(row.paymentTypeId) && row.voucherCount && (
+                            <span className="text-xs text-gray-400 ml-1">({row.voucherCount} ks)</span>
+                          )}
                         </span>
                       )}
                     </td>
