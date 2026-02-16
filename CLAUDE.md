@@ -62,6 +62,24 @@ Stránky s tímto vzorem:
 | Platby – Stravenky | `payments/page.tsx` | Datum nákupu, Částka, Počet, Student, Sponzor, Poznámky |
 | Import detail | `payments/import/[id]/page.tsx` | Datum, Částka, Měna, Student, Sponzor, Typ, Stav |
 
+### Detail studenta — záložky
+
+Soubor: `src/app/students/[id]/page.tsx`
+
+9 záložek v tomto pořadí:
+
+| # | Záložka | Klíč | Barva | Ikona |
+|---|---------|------|-------|-------|
+| 1 | Osobní údaje | `personal` | gray | User |
+| 2 | Sponzoři | `sponsors` | accent | HandHeart |
+| 3 | Vybavení | `equipment` | amber | Package |
+| 4 | Potřeby | `needs` | rose | Heart |
+| 5 | Přání | `wishes` | violet | Star |
+| 6 | Stravenky | `vouchers` | blue | Ticket |
+| 7 | Platby od sponzorů | `sponsorPayments` | indigo | CreditCard |
+| 8 | Zdraví | `health` | teal | Stethoscope |
+| 9 | Fotografie | `photos` | slate | Camera |
+
 ### Návštěvní karty (Visit Cards) — tiskový layout
 
 Soubor: `src/app/reports/visit-cards/print/page.tsx`
