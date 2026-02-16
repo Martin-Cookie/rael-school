@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (type === 'voucher') {
-      const { studentId, purchaseDate, amount, count, donorName, sponsorId, notes } = body
+      const { studentId, purchaseDate, amount, currency, count, donorName, sponsorId, notes } = body
       if (!studentId || !purchaseDate || !amount || !count) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
       }
@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
           studentId,
           purchaseDate: new Date(purchaseDate),
           amount: parseFloat(amount),
+          currency: currency || 'KES',
           count: parseInt(count),
           donorName: donorName || null,
           sponsorId: sponsorId || null,
@@ -91,13 +92,14 @@ export async function PUT(request: NextRequest) {
     }
 
     if (type === 'voucher') {
-      const { studentId, purchaseDate, amount, count, donorName, sponsorId, notes } = body
+      const { studentId, purchaseDate, amount, currency, count, donorName, sponsorId, notes } = body
       const voucher = await prisma.voucherPurchase.update({
         where: { id },
         data: {
           studentId: studentId || undefined,
           purchaseDate: purchaseDate ? new Date(purchaseDate) : undefined,
           amount: amount ? parseFloat(amount) : undefined,
+          currency: currency || undefined,
           count: count ? parseInt(count) : undefined,
           donorName: donorName ?? undefined,
           sponsorId: sponsorId !== undefined ? (sponsorId || null) : undefined,

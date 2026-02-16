@@ -39,7 +39,7 @@ export default function PaymentsPage() {
   const [showAddSponsor, setShowAddSponsor] = useState(false)
   const [newSP, setNewSP] = useState({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'CZK', paymentType: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
-  const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', count: '', sponsorId: '', notes: '' })
+  const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', currency: 'KES', count: '', sponsorId: '', notes: '' })
 
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -186,7 +186,7 @@ export default function PaymentsPage() {
         body: JSON.stringify({ type: 'voucher', ...newVP }),
       })
       if (res.ok) {
-        setNewVP({ studentId: '', purchaseDate: '', amount: '', count: '', sponsorId: '', notes: '' })
+        setNewVP({ studentId: '', purchaseDate: '', amount: '', currency: 'KES', count: '', sponsorId: '', notes: '' })
         setShowAddVoucher(false)
         await fetchData()
         showMsg('success', t('app.savedSuccess'))
@@ -248,6 +248,7 @@ export default function PaymentsPage() {
         studentId: item.studentId || item.student?.id || '',
         purchaseDate: formatDateForInput(item.purchaseDate),
         amount: item.amount.toString(),
+        currency: item.currency || 'KES',
         count: item.count.toString(),
         sponsorId: item.sponsorId || item.sponsor?.id || '',
         notes: item.notes || '',
@@ -435,10 +436,17 @@ export default function PaymentsPage() {
         {activeTab === 'voucher' && (
           <div>
             <div className="flex flex-wrap gap-3 mb-6">
-              <div className="bg-blue-50 rounded-xl px-5 py-3">
-                <p className="text-xs text-blue-600 font-medium">{t('vouchers.totalAmount')}</p>
-                <p className="text-xl font-bold text-blue-900">{fmtCurrency(stats?.voucherTotalAmount || 0, 'KES')}</p>
-              </div>
+              {(() => {
+                const vpByCur: Record<string, number> = {}
+                voucherPurchases.forEach((v: any) => { const c = v.currency || 'KES'; vpByCur[c] = (vpByCur[c] || 0) + v.amount })
+                return Object.keys(vpByCur).sort().map(cur => (
+                  <div key={cur} className="bg-blue-50 rounded-xl px-5 py-3">
+                    <p className="text-xs text-blue-600 font-medium">{cur}</p>
+                    <p className="text-xl font-bold text-blue-900">{formatNumber(vpByCur[cur])}</p>
+                  </div>
+                ))
+              })()}
+              {voucherPurchases.length === 0 && <div className="bg-blue-50 rounded-xl px-5 py-3"><p className="text-xs text-blue-600 font-medium">{t('vouchers.totalAmount')}</p><p className="text-xl font-bold text-blue-900">0</p></div>}
               <div className="bg-primary-50 rounded-xl px-5 py-3">
                 <p className="text-xs text-primary-600 font-medium">{t('vouchers.totalPurchased')}</p>
                 <p className="text-xl font-bold text-primary-900">{formatNumber(voucherPurchases.reduce((s: number, v: any) => s + v.count, 0))}</p>
@@ -463,7 +471,12 @@ export default function PaymentsPage() {
                     {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName} ({s.studentNo})</option>)}
                   </select>
                   <input type="date" value={newVP.purchaseDate} onChange={(e) => setNewVP({ ...newVP, purchaseDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                  <input type="number" value={newVP.amount} onChange={(e) => setNewVP({ ...newVP, amount: e.target.value })} placeholder={t('vouchers.amount') + ' (KES) *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <div className="flex gap-2">
+                    <input type="number" value={newVP.amount} onChange={(e) => setNewVP({ ...newVP, amount: e.target.value })} placeholder={t('vouchers.amount') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm flex-1" />
+                    <select value={newVP.currency} onChange={(e) => setNewVP({ ...newVP, currency: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm w-24">
+                      {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
                   <input type="number" value={newVP.count} onChange={(e) => setNewVP({ ...newVP, count: e.target.value })} placeholder={t('vouchers.count') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                   <select value={newVP.sponsorId} onChange={(e) => setNewVP({ ...newVP, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
                     <option value="">{t('sponsors.title')}</option>
@@ -492,7 +505,14 @@ export default function PaymentsPage() {
                 editingId === v.id ? (
                   <tr key={v.id} className="border-b border-gray-50 bg-primary-50">
                     <td className="py-2 px-3"><input type="date" value={editData.purchaseDate || ''} onChange={(e) => setEditData({ ...editData, purchaseDate: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
-                    <td className="py-2 px-3"><input type="number" value={editData.amount || ''} onChange={(e) => setEditData({ ...editData, amount: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-24" /></td>
+                    <td className="py-2 px-3">
+                      <div className="flex gap-1">
+                        <input type="number" value={editData.amount || ''} onChange={(e) => setEditData({ ...editData, amount: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-20" />
+                        <select value={editData.currency || 'KES'} onChange={(e) => setEditData({ ...editData, currency: e.target.value })} className="px-1 py-1 rounded border border-gray-300 text-sm w-16">
+                          {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                    </td>
                     <td className="py-2 px-3"><input type="number" value={editData.count || ''} onChange={(e) => setEditData({ ...editData, count: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-16" /></td>
                     <td className="py-2 px-3">
                       <select value={editData.studentId || ''} onChange={(e) => setEditData({ ...editData, studentId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
@@ -517,7 +537,7 @@ export default function PaymentsPage() {
                 ) : (
                   <tr key={v.id} className="border-b border-gray-50 hover:bg-gray-50 group">
                     <td className="py-3 px-3 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
-                    <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, 'KES')}</td>
+                    <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, v.currency || 'KES')}</td>
                     <td className="py-3 px-3 text-sm text-gray-900">{formatNumber(v.count)}</td>
                     <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
                     <td className="py-3 px-3 text-sm text-gray-700">{v.sponsor ? `${v.sponsor.firstName} ${v.sponsor.lastName}` : (v.donorName || '-')}</td>
