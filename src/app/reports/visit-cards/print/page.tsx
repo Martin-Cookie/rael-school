@@ -67,13 +67,24 @@ export default function VisitCardsPrintPage() {
       return
     }
 
+    // Build PDF filename based on locale and student count
+    const titleByLocale: Record<string, string> = {
+      en: 'RAEL school system field visit card',
+      cs: 'RAEL school system terenni navsteva',
+      sw: 'RAEL Kadi ya ziara ya shambani',
+    }
+    let pdfTitle = titleByLocale[locale] || titleByLocale.en
+    if (students.length === 1) {
+      pdfTitle += ` ${students[0].lastName} ${students[0].firstName}`
+    }
+
     // Copy all stylesheets from the parent document (Tailwind + globals.css)
     const parentStyles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
       .map(el => el.outerHTML)
       .join('\n')
 
     iframeDoc.open()
-    iframeDoc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title> </title>
+    iframeDoc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${pdfTitle}</title>
 ${parentStyles}
 <style>
   @page { size: A4; margin: 0; }
@@ -130,7 +141,7 @@ ${parentStyles}
       // Fallback: print after 3s even if styles haven't loaded
       setTimeout(doPrint, 3000)
     }
-  }, [])
+  }, [locale, students])
 
   useEffect(() => {
     const saved = localStorage.getItem('rael-locale') as Locale
