@@ -350,14 +350,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   const tabs: { key: Tab; label: string; icon: any; color: string; activeColor: string }[] = [
     { key: 'personal', label: t('student.tabs.personal'), icon: User, color: 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100', activeColor: 'bg-gray-700 text-white border-gray-700' },
-    { key: 'equipment', label: t('equipment.title'), icon: Package, color: 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100', activeColor: 'bg-amber-600 text-white border-amber-600' },
-    { key: 'needs', label: t('needs.title'), icon: Heart, color: 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100', activeColor: 'bg-red-600 text-white border-red-600' },
-    { key: 'wishes', label: t('wishes.title'), icon: Star, color: 'bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100', activeColor: 'bg-yellow-500 text-white border-yellow-500' },
-    { key: 'vouchers', label: t('student.tabs.vouchers'), icon: Ticket, color: 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100', activeColor: 'bg-blue-600 text-white border-blue-600' },
-    { key: 'photos', label: t('student.tabs.photos'), icon: Camera, color: 'bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100', activeColor: 'bg-purple-600 text-white border-purple-600' },
     { key: 'sponsors', label: t('student.tabs.sponsors'), icon: HandHeart, color: 'bg-accent-50 border-accent-200 text-accent-600 hover:bg-accent-100', activeColor: 'bg-accent-600 text-white border-accent-600' },
+    { key: 'equipment', label: t('equipment.title'), icon: Package, color: 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100', activeColor: 'bg-amber-600 text-white border-amber-600' },
+    { key: 'needs', label: t('needs.title'), icon: Heart, color: 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100', activeColor: 'bg-rose-600 text-white border-rose-600' },
+    { key: 'wishes', label: t('wishes.title'), icon: Star, color: 'bg-violet-50 border-violet-200 text-violet-600 hover:bg-violet-100', activeColor: 'bg-violet-600 text-white border-violet-600' },
+    { key: 'vouchers', label: t('student.tabs.vouchers'), icon: Ticket, color: 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100', activeColor: 'bg-blue-600 text-white border-blue-600' },
     { key: 'sponsorPayments', label: t('sponsorPayments.title'), icon: CreditCard, color: 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100', activeColor: 'bg-indigo-600 text-white border-indigo-600' },
-    { key: 'health', label: t('student.tabs.health'), icon: Stethoscope, color: 'bg-green-50 border-green-200 text-green-600 hover:bg-green-100', activeColor: 'bg-green-600 text-white border-green-600' },
+    { key: 'health', label: t('student.tabs.health'), icon: Stethoscope, color: 'bg-teal-50 border-teal-200 text-teal-600 hover:bg-teal-100', activeColor: 'bg-teal-600 text-white border-teal-600' },
+    { key: 'photos', label: t('student.tabs.photos'), icon: Camera, color: 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100', activeColor: 'bg-slate-600 text-white border-slate-600' },
   ]
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
