@@ -39,7 +39,7 @@ export default function PaymentsPage() {
   const [showAddSponsor, setShowAddSponsor] = useState(false)
   const [newSP, setNewSP] = useState({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'CZK', paymentType: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
-  const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', currency: 'KES', count: '', sponsorId: '', notes: '' })
+  const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', currency: 'CZK', count: '', sponsorId: '', notes: '' })
 
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -186,7 +186,7 @@ export default function PaymentsPage() {
         body: JSON.stringify({ type: 'voucher', ...newVP }),
       })
       if (res.ok) {
-        setNewVP({ studentId: '', purchaseDate: '', amount: '', currency: 'KES', count: '', sponsorId: '', notes: '' })
+        setNewVP({ studentId: '', purchaseDate: '', amount: '', currency: 'CZK', count: '', sponsorId: '', notes: '' })
         setShowAddVoucher(false)
         await fetchData()
         showMsg('success', t('app.savedSuccess'))
