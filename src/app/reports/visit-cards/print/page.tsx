@@ -87,7 +87,7 @@ ${parentStyles}
     margin: 0;
   }
   .print-page:last-child { page-break-after: auto; }
-  .print-page { display: flex; flex-direction: column; min-height: calc(297mm - 16mm); box-sizing: border-box; }
+  .print-page { display: flex; flex-direction: column; height: calc(297mm - 16mm); box-sizing: border-box; overflow: hidden; }
   table { font-size: 12px !important; }
   td, th { padding-top: 3px !important; padding-bottom: 3px !important; }
   h2, h3, .section-title { font-size: 13px !important; }
@@ -413,13 +413,20 @@ ${parentStyles}
                   {t('visitCards.equipmentSection')}
                   {student.equipment.length > 0 && <span className="ml-2 font-normal text-gray-500">({t('visitCards.currentEquipment')}: {student.equipment.length})</span>}
                 </h3>
-                <table className="w-full text-sm border-collapse">
+                <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
+                  <colgroup>
+                    <col style={{ width: '4%' }} />
+                    <col style={{ width: '28%' }} />
+                    <col style={{ width: '13%' }} />
+                    <col style={{ width: '10%' }} />
+                    <col style={{ width: '45%' }} />
+                  </colgroup>
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1.5 px-2 w-8"></th>
+                      <th className="text-left py-1.5 px-2"></th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('equipment.type')}</th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600 w-14">{t('visitCards.price')}</th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600 w-14">{t('equipment.condition')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('equipment.condition')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.price')}</th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
                     </tr>
                   </thead>
@@ -434,9 +441,9 @@ ${parentStyles}
                             </div>
                           </td>
                           <td className={`py-1.5 px-2 ${existing ? 'font-bold' : ''}`}>{eqType.name}</td>
+                          <td className="py-1.5 px-2">{existing ? formatCondition(existing.condition) : ''}</td>
                           <td className="py-1.5 px-2 text-gray-400">{eqType.price ? `${formatNumber(eqType.price)} CZK` : ''}</td>
-                          <td className="py-1.5 px-2">{existing ? formatCondition(existing.condition) : <span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span>}</td>
-                          <td className="py-1.5 px-2">{existing?.notes || <span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span>}</td>
+                          <td className="py-1.5 px-2">{existing?.notes || ''}</td>
                         </tr>
                       )
                     })}
@@ -470,12 +477,18 @@ ${parentStyles}
                   {t('visitCards.needsSection')}
                   {student.needs.length > 0 && <span className="ml-2 font-normal text-red-600">({t('needs.unfulfilled')}: {student.needs.length})</span>}
                 </h3>
-                <table className="w-full text-sm border-collapse">
+                <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
+                  <colgroup>
+                    <col style={{ width: '4%' }} />
+                    <col style={{ width: '41%' }} />
+                    <col style={{ width: '10%' }} />
+                    <col style={{ width: '45%' }} />
+                  </colgroup>
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1.5 px-2 w-8"></th>
+                      <th className="text-left py-1.5 px-2"></th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('needs.description')}</th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600 w-14">{t('visitCards.price')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.price')}</th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
                     </tr>
                   </thead>
@@ -491,7 +504,7 @@ ${parentStyles}
                           </td>
                           <td className={`py-1.5 px-2 ${hasNeed ? 'font-bold text-red-700' : ''}`}>{nt.name}</td>
                           <td className="py-1.5 px-2 text-gray-400">{nt.price ? `${formatNumber(nt.price)} CZK` : ''}</td>
-                          <td className="py-1.5 px-2"><span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span></td>
+                          <td className="py-1.5 px-2">&nbsp;</td>
                         </tr>
                       )
                     })}
@@ -505,12 +518,18 @@ ${parentStyles}
                   {t('visitCards.wishesSection')}
                   {student.wishes.length > 0 && <span className="ml-2 font-normal text-blue-600">({t('needs.unfulfilled')}: {student.wishes.length})</span>}
                 </h3>
-                <table className="w-full text-sm border-collapse">
+                <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
+                  <colgroup>
+                    <col style={{ width: '4%' }} />
+                    <col style={{ width: '41%' }} />
+                    <col style={{ width: '10%' }} />
+                    <col style={{ width: '45%' }} />
+                  </colgroup>
                   <thead>
                     <tr className="border-b-2 border-gray-400">
-                      <th className="text-left py-1.5 px-2 w-8"></th>
+                      <th className="text-left py-1.5 px-2"></th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('needs.description')}</th>
-                      <th className="text-left py-1.5 px-2 font-bold text-gray-600 w-14">{t('visitCards.price')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.price')}</th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
                     </tr>
                   </thead>
@@ -526,7 +545,7 @@ ${parentStyles}
                           </td>
                           <td className={`py-1.5 px-2 ${hasWish ? 'font-bold text-blue-700' : ''}`}>{wt.name}</td>
                           <td className="py-1.5 px-2 text-gray-400">{wt.price ? `${formatNumber(wt.price)} CZK` : ''}</td>
-                          <td className="py-1.5 px-2"><span className="border-b border-dotted border-gray-400 inline-block w-full">&nbsp;</span></td>
+                          <td className="py-1.5 px-2">&nbsp;</td>
                         </tr>
                       )
                     })}
