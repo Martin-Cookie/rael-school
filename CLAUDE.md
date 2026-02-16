@@ -62,6 +62,29 @@ Stránky s tímto vzorem:
 | Platby – Stravenky | `payments/page.tsx` | Datum nákupu, Částka, Počet, Student, Sponzor, Poznámky |
 | Import detail | `payments/import/[id]/page.tsx` | Datum, Částka, Měna, Student, Sponzor, Typ, Stav |
 
+### Návštěvní karty (Visit Cards) — tiskový layout
+
+Soubor: `src/app/reports/visit-cards/print/page.tsx`
+
+Dvoustránkový A4 formulář pro každého studenta (výška stránky `calc(297mm - 16mm)`):
+
+| Stránka | Sekce |
+|---------|-------|
+| 1 | Header, Sponzoři, Základní info (třída, škola, DOB, pohlaví, osiřelost, zdraví), Rodina, Vybavení |
+| 2 | Potřeby, Přání, Obecné poznámky (flex-fill do konce stránky) |
+
+**Layout tabulek (colgroup + table-fixed):**
+
+| Sekce | Sloupce (šířky) |
+|-------|----------------|
+| Vybavení | checkbox 4%, typ 22%, stav 11%, cena 8%, poznámky 55% |
+| Potřeby | checkbox 4%, popis 25%, cena 8%, poznámky 63% |
+| Přání | checkbox 4%, popis 25%, cena 8%, poznámky 63% |
+
+- Tisk přes iframe (izolovaný HTML snapshot nezávislý na React lifecycle)
+- Poznámkový rámeček na stránce 2 se automaticky roztáhne do konce stránky (flex: 1)
+- Ceny z číselníků `needTypes`, `wishTypes`, `equipmentTypes` (API `/api/reports/visit-cards`)
+
 ## Uživatelské role
 
 | Role | Práva |
