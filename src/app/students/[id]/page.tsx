@@ -348,16 +348,16 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     setEditEquipment(editEquipment.filter((_: any, i: number) => i !== idx))
   }
 
-  const tabs: { key: Tab; label: string; icon: any; count?: number }[] = [
-    { key: 'personal', label: t('student.tabs.personal'), icon: User },
-    { key: 'equipment', label: t('equipment.title'), icon: Package },
-    { key: 'needs', label: t('needs.title'), icon: Heart },
-    { key: 'wishes', label: t('wishes.title'), icon: Star },
-    { key: 'vouchers', label: t('student.tabs.vouchers'), icon: Ticket },
-    { key: 'photos', label: t('student.tabs.photos'), icon: Camera },
-    { key: 'sponsors', label: t('student.tabs.sponsors'), icon: HandHeart },
-    { key: 'sponsorPayments', label: t('sponsorPayments.title'), icon: CreditCard },
-    { key: 'health', label: t('student.tabs.health'), icon: Stethoscope },
+  const tabs: { key: Tab; label: string; icon: any; color: string; activeColor: string }[] = [
+    { key: 'personal', label: t('student.tabs.personal'), icon: User, color: 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100', activeColor: 'bg-gray-700 text-white border-gray-700' },
+    { key: 'equipment', label: t('equipment.title'), icon: Package, color: 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100', activeColor: 'bg-amber-600 text-white border-amber-600' },
+    { key: 'needs', label: t('needs.title'), icon: Heart, color: 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100', activeColor: 'bg-red-600 text-white border-red-600' },
+    { key: 'wishes', label: t('wishes.title'), icon: Star, color: 'bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100', activeColor: 'bg-yellow-500 text-white border-yellow-500' },
+    { key: 'vouchers', label: t('student.tabs.vouchers'), icon: Ticket, color: 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100', activeColor: 'bg-blue-600 text-white border-blue-600' },
+    { key: 'photos', label: t('student.tabs.photos'), icon: Camera, color: 'bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100', activeColor: 'bg-purple-600 text-white border-purple-600' },
+    { key: 'sponsors', label: t('student.tabs.sponsors'), icon: HandHeart, color: 'bg-accent-50 border-accent-200 text-accent-600 hover:bg-accent-100', activeColor: 'bg-accent-600 text-white border-accent-600' },
+    { key: 'sponsorPayments', label: t('sponsorPayments.title'), icon: CreditCard, color: 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100', activeColor: 'bg-indigo-600 text-white border-indigo-600' },
+    { key: 'health', label: t('student.tabs.health'), icon: Stethoscope, color: 'bg-green-50 border-green-200 text-green-600 hover:bg-green-100', activeColor: 'bg-green-600 text-white border-green-600' },
   ]
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
@@ -460,13 +460,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           sponsorPayments: student.sponsorPayments?.length || 0,
         }
         return (
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1">
+          <div className="flex flex-wrap gap-1.5 mb-6">
             {tabs.map((tab) => {
               const count = tabCounts[tab.key]
+              const isActive = activeTab === tab.key
               return (
-                <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.key ? 'bg-primary-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'}`}>
-                  <tab.icon className="w-4 h-4" /> {tab.label}
-                  {count !== undefined && <span className={`ml-1 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{count}</span>}
+                <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border ${isActive ? tab.activeColor + ' shadow-sm' : tab.color}`}>
+                  <tab.icon className="w-3.5 h-3.5" /> {tab.label}
+                  {count !== undefined && <span className={`ml-0.5 text-[10px] px-1 py-0 rounded-full ${isActive ? 'bg-white/25' : 'bg-black/5'}`}>{count}</span>}
                 </button>
               )
             })}
