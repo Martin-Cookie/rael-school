@@ -88,9 +88,9 @@ ${parentStyles}
   }
   .print-page:last-child { page-break-after: auto; }
   .print-page { display: flex; flex-direction: column; height: calc(297mm - 16mm); box-sizing: border-box; overflow: hidden; }
-  table { font-size: 11px !important; }
-  td, th { padding-top: 1px !important; padding-bottom: 1px !important; }
-  h2, h3, .section-title { font-size: 12px !important; }
+  table { font-size: 12px !important; }
+  td, th { padding-top: 3px !important; padding-bottom: 3px !important; }
+  h2, h3, .section-title { font-size: 13px !important; }
   .notes-fill { flex: 1; display: flex; flex-direction: column; }
   .notes-fill .notes-box { flex: 1; }
 </style>
@@ -265,7 +265,7 @@ ${parentStyles}
             {/* ===== PAGE 1: Header + Sponsors + Basic Info + Family + Equipment ===== */}
             <div className="print-page" style={{ height: 'calc(297mm - 16mm)', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
               {/* Header */}
-              <div className="flex items-start justify-between border-b-2 border-gray-800 pb-1 mb-1.5">
+              <div className="flex items-start justify-between border-b-2 border-gray-800 pb-2 mb-3">
                 <div>
                   <h2 className="text-base font-bold text-gray-900">
                     {student.lastName} {student.firstName}
@@ -282,30 +282,30 @@ ${parentStyles}
               </div>
 
               {/* Sponsors */}
-              <div className="mb-1.5">
-                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-0.5 bg-gray-100 px-1.5 py-0.5 rounded">
+              <div className="mb-3">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.sponsorSection')}
                   {student.sponsorships.length > 0 && <span className="ml-2 font-normal text-gray-500">({student.sponsorships.length})</span>}
                 </h3>
                 {student.sponsorships.length === 0 ? (
-                  <p className="text-xs text-gray-400 px-1.5 italic">{t('visitCards.sponsorNone')}</p>
+                  <p className="text-xs text-gray-400 px-2 italic">{t('visitCards.sponsorNone')}</p>
                 ) : (
                   <table className="w-full text-sm border-collapse">
                     <thead>
                       <tr className="border-b-2 border-gray-400">
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('student.lastName')}</th>
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('student.firstName')}</th>
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('sponsors.email')}</th>
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('sponsors.phone')}</th>
+                        <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('student.lastName')}</th>
+                        <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('student.firstName')}</th>
+                        <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('sponsors.email')}</th>
+                        <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('sponsors.phone')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {student.sponsorships.map((sp, i) => (
                         <tr key={i} className="border-b border-gray-300">
-                          <td className="py-0.5 px-1.5 font-bold">{sp.sponsor.lastName}</td>
-                          <td className="py-0.5 px-1.5">{sp.sponsor.firstName}</td>
-                          <td className="py-0.5 px-1.5">{sp.sponsor.email || '-'}</td>
-                          <td className="py-0.5 px-1.5">{sp.sponsor.phone || '-'}</td>
+                          <td className="py-1.5 px-2 font-bold">{sp.sponsor.lastName}</td>
+                          <td className="py-1.5 px-2">{sp.sponsor.firstName}</td>
+                          <td className="py-1.5 px-2">{sp.sponsor.email || '-'}</td>
+                          <td className="py-1.5 px-2">{sp.sponsor.phone || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -313,109 +313,107 @@ ${parentStyles}
                 )}
               </div>
 
-              {/* Basic Info + Family side by side */}
-              <div className="mb-1.5" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 12px' }}>
-                {/* Basic Info */}
-                <div>
-                  <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-0.5 bg-gray-100 px-1.5 py-0.5 rounded">
-                    {t('visitCards.basicInfo')}
-                  </h3>
-                  <table className="w-full text-sm border-collapse">
-                    <thead>
-                      <tr className="border-b-2 border-gray-400">
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600"></th>
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('visitCards.currentValue')}</th>
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('visitCards.newValue')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('student.className')}</td>
-                        <td className="py-0.5 px-1.5">{student.className || '-'}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('visitCards.school')}</td>
-                        <td className="py-0.5 px-1.5">{student.school || '-'}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('visitCards.dateOfBirth')}</td>
-                        <td className="py-0.5 px-1.5">
-                          {formatDate(student.dateOfBirth, locale)}
-                          {student.dateOfBirth && (() => { const age = calculateAge(student.dateOfBirth); return age !== null ? ` (${age})` : '' })()}
-                        </td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('student.gender')}</td>
-                        <td className="py-0.5 px-1.5">{formatGender(student.gender)}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('visitCards.orphanStatus')}</td>
-                        <td className="py-0.5 px-1.5">{formatOrphanStatus(student.orphanStatus)}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('student.healthStatus')}</td>
-                        <td className="py-0.5 px-1.5">{student.healthStatus || '-'}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                {/* Family Info */}
-                <div>
-                  <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-0.5 bg-gray-100 px-1.5 py-0.5 rounded">
-                    {t('visitCards.familyInfo')}
-                  </h3>
-                  <table className="w-full text-sm border-collapse">
-                    <thead>
-                      <tr className="border-b-2 border-gray-400">
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600"></th>
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('visitCards.currentValue')}</th>
-                        <th className="text-left py-0.5 px-1.5 font-bold text-gray-600">{t('visitCards.newValue')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('student.family.motherName')}</td>
-                        <td className="py-0.5 px-1.5">{student.motherName || '-'}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('visitCards.motherAlive')}</td>
-                        <td className="py-0.5 px-1.5">{formatBool(student.motherAlive)}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('student.family.fatherName')}</td>
-                        <td className="py-0.5 px-1.5">{student.fatherName || '-'}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('visitCards.fatherAlive')}</td>
-                        <td className="py-0.5 px-1.5">{formatBool(student.fatherAlive)}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                      <tr className="border-b border-gray-300">
-                        <td className="py-0.5 px-1.5 font-bold">{t('student.family.siblings')}</td>
-                        <td className="py-0.5 px-1.5">{student.siblings || '-'}</td>
-                        <td className="py-0.5 px-1.5 border-b border-dotted border-gray-400"></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+              {/* Basic Info */}
+              <div className="mb-3">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                  {t('visitCards.basicInfo')}
+                </h3>
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b-2 border-gray-400">
+                      <th className="text-left py-1.5 px-2 w-1/4 font-bold text-gray-600"></th>
+                      <th className="text-left py-1.5 px-2 w-1/3 font-bold text-gray-600">{t('visitCards.currentValue')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.newValue')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('student.className')}</td>
+                      <td className="py-1.5 px-2">{student.className || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.school')}</td>
+                      <td className="py-1.5 px-2">{student.school || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.dateOfBirth')}</td>
+                      <td className="py-1.5 px-2">
+                        {formatDate(student.dateOfBirth, locale)}
+                        {student.dateOfBirth && (() => { const age = calculateAge(student.dateOfBirth); return age !== null ? ` (${age} ${t('student.age').toLowerCase()})` : '' })()}
+                      </td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('student.gender')}</td>
+                      <td className="py-1.5 px-2">{formatGender(student.gender)}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.orphanStatus')}</td>
+                      <td className="py-1.5 px-2">{formatOrphanStatus(student.orphanStatus)}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('student.healthStatus')}</td>
+                      <td className="py-1.5 px-2">{student.healthStatus || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
-              {/* Equipment Section */}
+              {/* Family Info */}
+              <div className="mb-3">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
+                  {t('visitCards.familyInfo')}
+                </h3>
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b-2 border-gray-400">
+                      <th className="text-left py-1.5 px-2 w-1/4 font-bold text-gray-600"></th>
+                      <th className="text-left py-1.5 px-2 w-1/3 font-bold text-gray-600">{t('visitCards.currentValue')}</th>
+                      <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.newValue')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('student.family.motherName')}</td>
+                      <td className="py-1.5 px-2">{student.motherName || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.motherAlive')}</td>
+                      <td className="py-1.5 px-2">{formatBool(student.motherAlive)}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('student.family.fatherName')}</td>
+                      <td className="py-1.5 px-2">{student.fatherName || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('visitCards.fatherAlive')}</td>
+                      <td className="py-1.5 px-2">{formatBool(student.fatherAlive)}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-1.5 px-2 font-bold">{t('student.family.siblings')}</td>
+                      <td className="py-1.5 px-2">{student.siblings || '-'}</td>
+                      <td className="py-1.5 px-2 border-b border-dotted border-gray-400"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Equipment Section — compact to fit page */}
               <div>
-                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-0.5 bg-gray-100 px-1.5 py-0.5 rounded">
+                <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.equipmentSection')}
                   {student.equipment.length > 0 && <span className="ml-2 font-normal text-gray-500">({t('visitCards.currentEquipment')}: {student.equipment.length})</span>}
                 </h3>
-                <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
+                <table className="w-full border-collapse" style={{ tableLayout: 'fixed', fontSize: '11px' }}>
                   <colgroup>
                     <col style={{ width: '4%' }} />
                     <col style={{ width: '22%' }} />
