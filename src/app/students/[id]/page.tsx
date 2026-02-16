@@ -348,7 +348,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     setEditEquipment(editEquipment.filter((_: any, i: number) => i !== idx))
   }
 
-  const tabs: { key: Tab; label: string; icon: any }[] = [
+  const tabs: { key: Tab; label: string; icon: any; count?: number }[] = [
     { key: 'personal', label: t('student.tabs.personal'), icon: User },
     { key: 'equipment', label: t('equipment.title'), icon: Package },
     { key: 'needs', label: t('needs.title'), icon: Heart },
@@ -443,49 +443,36 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           </div>
         </div>
 
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-gray-100">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent-50">
-            <HandHeart className="w-5 h-5 text-accent-600 flex-shrink-0" />
-            <div>
-              <p className="text-xs text-accent-600 font-medium">{t('student.tabs.sponsors')}</p>
-              <p className="text-lg font-bold text-accent-900">{student.sponsorships?.filter((s: any) => s.isActive).length || 0}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50">
-            <Heart className="w-5 h-5 text-red-500 flex-shrink-0" />
-            <div>
-              <p className="text-xs text-red-600 font-medium">{t('needs.title')}</p>
-              <p className="text-lg font-bold text-red-900">{student.needs?.filter((n: any) => !n.isFulfilled).length || 0}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-50">
-            <Ticket className="w-5 h-5 text-blue-500 flex-shrink-0" />
-            <div>
-              <p className="text-xs text-blue-600 font-medium">{t('vouchers.available')}</p>
-              <p className="text-lg font-bold text-blue-900">{formatNumber(available)}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-green-50">
-            <Stethoscope className="w-5 h-5 text-green-500 flex-shrink-0" />
-            <div>
-              <p className="text-xs text-green-600 font-medium">{t('student.tabs.health')}</p>
-              <p className="text-lg font-bold text-green-900">{student.healthChecks?.length || 0}</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {editMode && <div className="mb-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800 font-medium">✏️ {t('app.editMode')}</div>}
 
       {/* ===== TABS - pill style ===== */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1">
-        {tabs.map((tab) => (
-          <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.key ? 'bg-primary-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'}`}>
-            <tab.icon className="w-4 h-4" /> {tab.label}
-          </button>
-        ))}
-      </div>
+      {(() => {
+        const tabCounts: Partial<Record<Tab, number>> = {
+          sponsors: student.sponsorships?.filter((s: any) => s.isActive).length || 0,
+          needs: student.needs?.filter((n: any) => !n.isFulfilled).length || 0,
+          vouchers: available,
+          health: student.healthChecks?.length || 0,
+          equipment: student.equipment?.length || 0,
+          wishes: student.wishes?.filter((w: any) => !w.isFulfilled).length || 0,
+          photos: student.photos?.length || 0,
+          sponsorPayments: student.sponsorPayments?.length || 0,
+        }
+        return (
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1">
+            {tabs.map((tab) => {
+              const count = tabCounts[tab.key]
+              return (
+                <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.key ? 'bg-primary-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'}`}>
+                  <tab.icon className="w-4 h-4" /> {tab.label}
+                  {count !== undefined && <span className={`ml-1 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{count}</span>}
+                </button>
+              )
+            })}
+          </div>
+        )
+      })()}
 
       {/* ===== TAB CONTENT ===== */}
 
