@@ -263,7 +263,7 @@ ${parentStyles}
         {students.map((student, idx) => (
           <div key={student.id}>
             {/* ===== PAGE 1: Header + Sponsors + Basic Info + Family + Equipment ===== */}
-            <div className="print-page">
+            <div className="print-page" style={{ height: 'calc(297mm - 16mm)', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
               {/* Header */}
               <div className="flex items-start justify-between border-b-2 border-gray-800 pb-2 mb-3">
                 <div>
@@ -416,10 +416,10 @@ ${parentStyles}
                 <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
                   <colgroup>
                     <col style={{ width: '4%' }} />
-                    <col style={{ width: '28%' }} />
-                    <col style={{ width: '13%' }} />
-                    <col style={{ width: '10%' }} />
-                    <col style={{ width: '45%' }} />
+                    <col style={{ width: '22%' }} />
+                    <col style={{ width: '11%' }} />
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '55%' }} />
                   </colgroup>
                   <thead>
                     <tr className="border-b-2 border-gray-400">
@@ -453,7 +453,7 @@ ${parentStyles}
             </div>
 
             {/* ===== PAGE 2: Needs + Wishes + General Notes ===== */}
-            <div className="print-page">
+            <div className="print-page" style={{ height: 'calc(297mm - 16mm)', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
               {/* Header (repeated) */}
               <div className="flex items-start justify-between border-b-2 border-gray-800 pb-2 mb-3">
                 <div>
@@ -480,9 +480,9 @@ ${parentStyles}
                 <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
                   <colgroup>
                     <col style={{ width: '4%' }} />
-                    <col style={{ width: '41%' }} />
-                    <col style={{ width: '10%' }} />
-                    <col style={{ width: '45%' }} />
+                    <col style={{ width: '25%' }} />
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '63%' }} />
                   </colgroup>
                   <thead>
                     <tr className="border-b-2 border-gray-400">
@@ -521,9 +521,9 @@ ${parentStyles}
                 <table className="w-full text-sm border-collapse" style={{ tableLayout: 'fixed' }}>
                   <colgroup>
                     <col style={{ width: '4%' }} />
-                    <col style={{ width: '41%' }} />
-                    <col style={{ width: '10%' }} />
-                    <col style={{ width: '45%' }} />
+                    <col style={{ width: '25%' }} />
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '63%' }} />
                   </colgroup>
                   <thead>
                     <tr className="border-b-2 border-gray-400">
@@ -554,14 +554,14 @@ ${parentStyles}
               </div>
 
               {/* General notes area - fills remaining page space */}
-              <div className="notes-fill">
+              <div className="notes-fill" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <h3 className="section-title text-sm font-bold text-gray-700 uppercase tracking-wide mb-1 bg-gray-100 px-2 py-1 rounded">
                   {t('visitCards.generalNotes')}
                 </h3>
                 {student.notes && (
                   <p className="text-sm text-gray-600 px-2 mb-1">{student.notes}</p>
                 )}
-                <div className="notes-box border border-gray-400 rounded p-2 min-h-[60px]">
+                <div className="notes-box border border-gray-400 rounded p-2" style={{ flex: 1, minHeight: '60px' }}>
                   &nbsp;
                 </div>
               </div>
