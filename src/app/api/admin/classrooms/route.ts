@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     if (existing && !existing.isActive) {
       const reactivated = await prisma.classRoom.update({
         where: { id: existing.id },
-        data: { isActive: true, sortOrder: data.sortOrder || 0 },
+        data: { isActive: true, sortOrder: data.sortOrder || 0, nameEn: data.nameEn || null, nameSw: data.nameSw || null },
       })
       return NextResponse.json({ classroom: reactivated }, { status: 201 })
     }
@@ -49,6 +49,8 @@ export async function POST(request: NextRequest) {
     const classroom = await prisma.classRoom.create({
       data: {
         name: data.name.trim(),
+        nameEn: data.nameEn || null,
+        nameSw: data.nameSw || null,
         sortOrder: data.sortOrder || 0,
       },
     })

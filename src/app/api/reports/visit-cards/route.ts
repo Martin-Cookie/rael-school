@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
         },
         wishes: {
           where: { isFulfilled: false },
-          select: { id: true, description: true, notes: true, wishType: { select: { id: true, name: true } } },
+          select: { id: true, description: true, notes: true, wishType: { select: { id: true, name: true, nameEn: true, nameSw: true } } },
           orderBy: { createdAt: 'desc' },
         },
         sponsorships: {
@@ -58,19 +58,19 @@ export async function GET(req: NextRequest) {
     const needTypes = await prisma.needType.findMany({
       where: { isActive: true },
       orderBy: { sortOrder: 'asc' },
-      select: { id: true, name: true, price: true },
+      select: { id: true, name: true, nameEn: true, nameSw: true, price: true },
     })
 
     const wishTypes = await prisma.wishType.findMany({
       where: { isActive: true },
       orderBy: { sortOrder: 'asc' },
-      select: { id: true, name: true, price: true },
+      select: { id: true, name: true, nameEn: true, nameSw: true, price: true },
     })
 
     const equipmentTypes = await prisma.equipmentType.findMany({
       where: { isActive: true },
       orderBy: { sortOrder: 'asc' },
-      select: { id: true, name: true, price: true },
+      select: { id: true, name: true, nameEn: true, nameSw: true, price: true },
     })
 
     return NextResponse.json({ students, needTypes, wishTypes, equipmentTypes })

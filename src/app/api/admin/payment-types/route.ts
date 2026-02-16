@@ -21,19 +21,19 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const { name, sortOrder } = await request.json()
+    const { name, nameEn, nameSw, sortOrder } = await request.json()
     if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     const existing = await prisma.paymentType.findUnique({ where: { name: name.trim() } })
     if (existing) {
       if (!existing.isActive) {
         const reactivated = await prisma.paymentType.update({
-          where: { id: existing.id }, data: { isActive: true, sortOrder: sortOrder ?? 0 },
+          where: { id: existing.id }, data: { isActive: true, sortOrder: sortOrder ?? 0, nameEn: nameEn || null, nameSw: nameSw || null },
         })
         return NextResponse.json({ paymentType: reactivated }, { status: 201 })
       }
       return NextResponse.json({ error: 'Already exists' }, { status: 409 })
     }
-    const paymentType = await prisma.paymentType.create({ data: { name: name.trim(), sortOrder: sortOrder ?? 0 } })
+    const paymentType = await prisma.paymentType.create({ data: { name: name.trim(), nameEn: nameEn || null, nameSw: nameSw || null, sortOrder: sortOrder ?? 0 } })
     return NextResponse.json({ paymentType }, { status: 201 })
   } catch (error) {
     console.error('Error creating payment type:', error)
