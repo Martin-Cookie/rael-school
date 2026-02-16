@@ -76,7 +76,7 @@ export default function VisitCardsPrintPage() {
     iframeDoc.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
 ${parentStyles}
 <style>
-  @page { size: A4; margin: 8mm; }
+  @page { size: A4; margin: 0; }
   body { margin: 0; padding: 0; background: white; color: #000 !important; }
   * { color: #000 !important; }
   .no-print { display: none !important; }
@@ -87,7 +87,7 @@ ${parentStyles}
     margin: 0;
   }
   .print-page:last-child { page-break-after: auto; }
-  .print-page { display: flex; flex-direction: column; height: calc(297mm - 16mm); box-sizing: border-box; overflow: hidden; }
+  .print-page { display: flex; flex-direction: column; height: 297mm; box-sizing: border-box; overflow: hidden; }
   table { font-size: 12px !important; }
   td, th { padding-top: 3px !important; padding-bottom: 3px !important; }
   h2, h3, .section-title { font-size: 13px !important; }
@@ -263,7 +263,7 @@ ${parentStyles}
         {students.map((student, idx) => (
           <div key={student.id}>
             {/* ===== PAGE 1: Header + Sponsors + Basic Info + Family + Equipment ===== */}
-            <div className="print-page" style={{ height: 'calc(297mm - 16mm)', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            <div className="print-page" style={{ height: '297mm', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
               {/* Header */}
               <div className="flex items-start justify-between border-b-2 border-gray-800 pb-2 mb-3">
                 <div>
@@ -450,7 +450,7 @@ ${parentStyles}
             </div>
 
             {/* ===== PAGE 2: Needs + Wishes + General Notes ===== */}
-            <div className="print-page" style={{ height: 'calc(297mm - 16mm)', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            <div className="print-page" style={{ height: '297mm', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
               {/* Header (repeated) */}
               <div className="flex items-start justify-between border-b-2 border-gray-800 pb-2 mb-3">
                 <div>
