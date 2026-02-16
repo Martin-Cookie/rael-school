@@ -94,7 +94,7 @@ Soubory:
 
 **Split flow (rozdělení platby na části):**
 1. Uživatel klikne "Rozdělit" na řádku importu
-2. V modálním okně nastaví částky, studenty a typ platby pro každou část
+2. V modálním okně nastaví částky, studenty a typ platby pro každou část (u Stravenek se zobrazí pole pro počet stravenek, předvyplněno `amount / 80 KES`)
 3. Split endpoint vytvoří child řádky (`parentRowId` → rodičovský řádek, status `SPLIT`)
 4. **Auto-approve:** Pokud child řádek má vyplněný `studentId` + `paymentTypeId`, automaticky se schválí a vytvoří VoucherPurchase nebo SponsorPayment
 5. Child řádky bez kompletních údajů zůstanou jako PARTIAL/NEW → schválí se ručně přes Approve
@@ -102,6 +102,7 @@ Soubory:
 **VoucherPurchase z bank importu:**
 - Nastavuje `sponsorId` (relace) i `donorName` (textové pole) — detail studenta zobrazuje `v.donorName`, stránka plateb zobrazuje `v.sponsor` s fallbackem na `v.donorName`
 - Detekce stravenky: `paymentType.name` obsahuje "stravenk" nebo "voucher" (case-insensitive)
+- Počet stravenek (`count`): z UI modalu, nebo fallback `Math.floor(amount / 80)` — cena 1 stravenky = 80 KES
 
 **SponsorPayment z bank importu:**
 - Nastavuje `sponsorId` (relace) — detail studenta i stránka plateb zobrazují přes `p.sponsor`
