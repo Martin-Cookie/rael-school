@@ -62,10 +62,26 @@ Stránky s tímto vzorem:
 | Přehled | `dashboard/page.tsx` | Studenti, Sponzoři, Platby, Potřeby, Třídy |
 | Studenti | `students/page.tsx` | Číslo, Příjmení, Jméno, Třída, Pohlaví, Věk, Potřeby, Sponzoři |
 | Sponzoři | `sponsors/page.tsx` | Příjmení, Jméno, Email, Telefon, Studenti, Platby |
-| Třídy | `classes/page.tsx` | Název třídy, Počet studentů + detail třídy se studenty |
+| Třídy | `classes/page.tsx` | Karty tříd (přirozené řazení PP1→Grade 12) + detail třídy se studenty |
 | Platby – Sponzorské | `payments/page.tsx` | Datum, Typ, Částka, Student, Sponzor, Poznámky |
 | Platby – Stravenky | `payments/page.tsx` | Datum nákupu, Částka, Počet, Student, Sponzor, Poznámky |
 | Import detail | `payments/import/[id]/page.tsx` | Datum, Částka, Měna, Student, Sponzor, Typ, Stav |
+
+### Dashboard — přehled tříd a cross-tab navigace
+
+**Přehled tříd (záložka Třídy):**
+- Místo tabulky zobrazeny jako **karty/bubliny** v gridu (2→3→4 sloupce dle šířky)
+- Přirozené řazení: PP1, PP2, Grade 1, Grade 2, …, Grade 12
+- Klik na kartu → detail třídy se seznamem studentů
+
+**Cross-tab navigace (klikatelné názvy tříd):**
+- V záložkách **Studenti** a **Potřeby** je název třídy klikatelný
+- Klik přepne na záložku Třídy s detailem dané třídy
+- Tlačítko zpět vrací na **zdrojovou záložku** (ne na přehled tříd) — implementováno přes `useRef<DashTab>` (`prevTabRef`)
+- Pokud uživatel přišel přímo z přehledu tříd, zpět vrací na grid tříd
+
+**Karta Celkem studentů:**
+- Pod hlavním číslem zobrazuje počet chlapců / dívek
 
 ### Detail studenta — záložky
 
