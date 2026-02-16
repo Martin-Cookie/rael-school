@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
+  const [prevTab, setPrevTab] = useState<DashTab | null>(null)
   const [paymentSubTab, setPaymentSubTab] = useState<'sponsor' | 'voucher'>('sponsor')
   const [currentPage, setCurrentPage] = useState(1)
   const PAGE_SIZE = 10
@@ -114,7 +115,7 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-bold text-gray-900 mb-3">{t('dashboard.title')}</h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
         {statCards.map(card => (
-          <button key={card.key} onClick={() => { setActiveTab(card.key); setSortCol(''); setSelectedClass(null); setCurrentPage(1) }} className={`bg-white rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 hover:border-gray-300'}`}>
+          <button key={card.key} onClick={() => { setActiveTab(card.key); setPrevTab(null); setSortCol(''); setSelectedClass(null); setCurrentPage(1) }} className={`bg-white rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 hover:border-gray-300'}`}>
             <div className="flex items-start justify-between"><div><p className="text-sm text-gray-500 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900">{card.value}</p>{'subtitle' in card && card.subtitle && <p className="text-xs text-gray-400 mt-0.5">{card.subtitle}</p>}</div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
           </button>
         ))}
@@ -139,7 +140,7 @@ export default function DashboardPage() {
                 <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                 <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                 <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
-                <td className="py-3 px-3 text-sm">{s.className ? <button onClick={() => { setActiveTab('classes'); setSelectedClass(s.className); setSortCol(''); setCurrentPage(1) }} className="text-primary-600 hover:underline">{s.className}</button> : '-'}</td>
+                <td className="py-3 px-3 text-sm">{s.className ? <button onClick={() => { setPrevTab(activeTab); setActiveTab('classes'); setSelectedClass(s.className); setSortCol(''); setCurrentPage(1) }} className="text-primary-600 hover:underline">{s.className}</button> : '-'}</td>
                 <td className="py-3 px-3 text-sm text-gray-900">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
                 <td className="py-3 px-3 text-sm text-right">{s._count.needs > 0 ? <span className="badge badge-red">{s._count.needs}</span> : <span className="text-gray-400">0</span>}</td>
                 <td className="py-3 px-3 text-sm text-right">{s._count.sponsorships > 0 ? <span className="badge badge-green">{s._count.sponsorships}</span> : <span className="text-gray-400">0</span>}</td>
@@ -282,7 +283,7 @@ export default function DashboardPage() {
                 <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                 <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                 <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
-                <td className="py-3 px-3 text-sm text-gray-900">{s.className || '-'}</td>
+                <td className="py-3 px-3 text-sm">{s.className ? <button onClick={() => { setPrevTab(activeTab); setActiveTab('classes'); setSelectedClass(s.className); setSortCol(''); setCurrentPage(1) }} className="text-primary-600 hover:underline">{s.className}</button> : '-'}</td>
                 <td className="py-3 px-3 text-sm"><div className="space-y-1">{s.needs.map((n: any) => <div key={n.id} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span><span className="text-gray-700">{n.description}</span></div>)}</div></td>
               </tr>
             ))}
@@ -310,7 +311,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div>
-                <button onClick={() => { setSelectedClass(null); setCurrentPage(1) }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {t('dashboard.classOverview')}</button>
+                <button onClick={() => { if (prevTab) { setActiveTab(prevTab); setPrevTab(null); setSelectedClass(null); setSortCol(''); setCurrentPage(1) } else { setSelectedClass(null); setCurrentPage(1) } }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {prevTab ? t('app.back') : t('dashboard.classOverview')}</button>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
                 <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
                   <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
