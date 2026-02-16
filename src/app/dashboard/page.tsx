@@ -98,8 +98,11 @@ export default function DashboardPage() {
 
   const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
 
+  const maleCount = students.filter((s: any) => s.gender === 'M').length
+  const femaleCount = students.filter((s: any) => s.gender === 'F').length
+
   const statCards = [
-    { key: 'students' as DashTab, label: t('dashboard.totalStudents'), value: formatNumber(stats?.totalStudents || 0), icon: Users, color: 'bg-primary-50 text-primary-600', borderColor: 'border-primary-200' },
+    { key: 'students' as DashTab, label: t('dashboard.totalStudents'), value: formatNumber(stats?.totalStudents || 0), subtitle: `${formatNumber(maleCount)} ${t('student.male')} / ${formatNumber(femaleCount)} ${t('student.female')}`, icon: Users, color: 'bg-primary-50 text-primary-600', borderColor: 'border-primary-200' },
     { key: 'sponsors' as DashTab, label: t('dashboard.activeSponsors'), value: formatNumber(stats?.activeSponsors || 0), icon: HandHeart, color: 'bg-accent-50 text-accent-600', borderColor: 'border-accent-200' },
     { key: 'payments' as DashTab, label: t('sponsorPayments.title'), value: paymentSummary, icon: CreditCard, color: 'bg-blue-50 text-blue-600', borderColor: 'border-blue-200' },
     { key: 'needs' as DashTab, label: t('dashboard.studentsNeedingAttention'), value: formatNumber(stats?.unfulfilledNeeds || 0), icon: AlertCircle, color: 'bg-red-50 text-red-600', borderColor: 'border-red-200' },
@@ -112,7 +115,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
         {statCards.map(card => (
           <button key={card.key} onClick={() => { setActiveTab(card.key); setSortCol(''); setSelectedClass(null); setCurrentPage(1) }} className={`bg-white rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 hover:border-gray-300'}`}>
-            <div className="flex items-start justify-between"><div><p className="text-sm text-gray-500 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900">{card.value}</p></div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
+            <div className="flex items-start justify-between"><div><p className="text-sm text-gray-500 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900">{card.value}</p>{'subtitle' in card && card.subtitle && <p className="text-xs text-gray-400 mt-0.5">{card.subtitle}</p>}</div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
           </button>
         ))}
       </div>
