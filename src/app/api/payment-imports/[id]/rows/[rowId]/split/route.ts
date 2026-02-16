@@ -53,6 +53,17 @@ export async function POST(
       return NextResponse.json({ error: 'All parts must have positive amount' }, { status: 400 })
     }
 
+    // Load payment types for auto-approve (voucher detection)
+    const allPaymentTypes = await prisma.paymentType.findMany()
+    const voucherTypeIds = allPaymentTypes
+      .filter(pt => pt.name.toLowerCase().includes('stravenk') || pt.name.toLowerCase().includes('voucher'))
+      .map(pt => pt.id)
+
+    // Look up user in DB for approvedById
+    const dbUser = await prisma.user.findUnique({ where: { email: user.email } })
+
+    let approvedCount = 0
+
     await prisma.$transaction(async (tx) => {
       // Mark original row as SPLIT
       await tx.paymentImportRow.update({
@@ -60,17 +71,23 @@ export async function POST(
         data: { status: 'SPLIT' },
       })
 
-      // Create child rows
+      // Create child rows + auto-approve if fully matched
       for (const part of parts) {
         const hasSponsor = !!row.sponsorId
         const hasStudent = !!part.studentId
         const hasType = !!part.paymentTypeId
+        const canAutoApprove = hasStudent && hasType
 
         let status = 'NEW'
-        if (hasSponsor && hasStudent && hasType) status = 'MATCHED'
-        else if (hasSponsor || hasStudent || hasType) status = 'PARTIAL'
+        if (canAutoApprove) {
+          status = 'APPROVED'
+        } else if (hasSponsor && hasStudent && hasType) {
+          status = 'MATCHED'
+        } else if (hasSponsor || hasStudent || hasType) {
+          status = 'PARTIAL'
+        }
 
-        await tx.paymentImportRow.create({
+        const childRow = await tx.paymentImportRow.create({
           data: {
             importId: params.id,
             transactionDate: row.transactionDate,
@@ -88,8 +105,55 @@ export async function POST(
             matchConfidence: 'HIGH',
             matchNotes: 'Vytvořeno rozdělením platby',
             parentRowId: params.rowId,
+            ...(canAutoApprove && dbUser && {
+              approvedById: dbUser.id,
+              approvedAt: new Date(),
+            }),
           },
         })
+
+        // Auto-approve: create actual payment record
+        if (canAutoApprove && part.studentId && part.paymentTypeId) {
+          const isVoucher = voucherTypeIds.includes(part.paymentTypeId)
+          let resultPaymentId: string
+
+          if (isVoucher) {
+            const vp = await tx.voucherPurchase.create({
+              data: {
+                studentId: part.studentId,
+                purchaseDate: row.transactionDate,
+                amount: part.amount,
+                count: 1,
+                sponsorId: row.sponsorId,
+                source: 'bankImport',
+                importRowId: childRow.id,
+              },
+            })
+            resultPaymentId = vp.id
+          } else {
+            const paymentType = allPaymentTypes.find(pt => pt.id === part.paymentTypeId)
+            const sp = await tx.sponsorPayment.create({
+              data: {
+                studentId: part.studentId,
+                sponsorId: row.sponsorId,
+                paymentDate: row.transactionDate,
+                amount: part.amount,
+                currency: row.currency,
+                paymentType: paymentType?.name || 'other',
+                source: 'bankImport',
+                importRowId: childRow.id,
+              },
+            })
+            resultPaymentId = sp.id
+          }
+
+          await tx.paymentImportRow.update({
+            where: { id: childRow.id },
+            data: { resultPaymentId },
+          })
+
+          approvedCount++
+        }
       }
 
       // Update total rows count
@@ -99,9 +163,25 @@ export async function POST(
           totalRows: { increment: parts.length },
         },
       })
+
+      // Check if all rows are resolved after auto-approve
+      if (approvedCount > 0) {
+        const remainingRows = await tx.paymentImportRow.count({
+          where: {
+            importId: params.id,
+            status: { in: ['NEW', 'MATCHED', 'PARTIAL'] },
+          },
+        })
+        if (remainingRows === 0) {
+          await tx.paymentImport.update({
+            where: { id: params.id },
+            data: { status: 'COMPLETED' },
+          })
+        }
+      }
     })
 
-    return NextResponse.json({ success: true, parts: parts.length })
+    return NextResponse.json({ success: true, parts: parts.length, approved: approvedCount })
   } catch (error) {
     console.error('POST /api/payment-imports/[id]/rows/[rowId]/split error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
