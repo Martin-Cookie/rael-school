@@ -16,6 +16,11 @@
 
 - Po každém commitu a push na GitHub aktualizuj dokumentaci projektu.
 
+## Lokální prostředí uživatele
+
+- **Hlavní branch na lokále uživatele je `main`** (ne `master`)
+- Při merge do hlavního branche vždy používat `main`
+
 ## Obecná pravidla
 
 - **VŽDY si před úpravou přečti aktuální verzi souboru z disku** — nikdy nepracuj z paměti nebo z předchozí konverzace
