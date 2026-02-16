@@ -50,7 +50,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [newNeed, setNewNeed] = useState('')
   const [selectedNeedType, setSelectedNeedType] = useState('')
   const [showAddNeed, setShowAddNeed] = useState(false)
-  const [newVoucher, setNewVoucher] = useState({ type: 'purchase', date: '', amount: '', count: '', donorName: '', notes: '' })
+  const [newVoucher, setNewVoucher] = useState({ type: 'purchase', date: '', amount: '', currency: 'CZK', count: '', donorName: '', sponsorId: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
   const [newHealth, setNewHealth] = useState({ checkDate: '', checkType: '', notes: '' })
   const [showAddHealth, setShowAddHealth] = useState(false)
@@ -206,7 +206,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     try {
       const payload = { ...newVoucher, donorName: newVoucher.donorName || defaultDonor }
       const res = await fetch(`/api/students/${id}/vouchers`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      if (res.ok) { setNewVoucher({ type: 'purchase', date: '', amount: '', count: '', donorName: '', notes: '' }); setShowAddVoucher(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
+      if (res.ok) { setNewVoucher({ type: 'purchase', date: '', amount: '', currency: 'CZK', count: '', donorName: '', sponsorId: '', notes: '' }); setShowAddVoucher(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteVoucher(voucherId: string, type: 'purchase' | 'usage') {
@@ -703,7 +703,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
               <p className="text-xs text-blue-600 font-medium">{t('vouchers.totalAmount')}</p>
-              <p className="text-xl font-bold text-blue-900">{fmtCurrency(totalAmount, currency)}</p>
+              <p className="text-xl font-bold text-blue-900">{fmtCurrency(totalAmount, student.vouchers?.[0]?.currency || 'CZK')}</p>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
               <p className="text-xs text-primary-600 font-medium">{t('vouchers.totalPurchased')}</p>
@@ -725,29 +725,41 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-50 rounded-lg"><Ticket className="w-4 h-4 text-blue-600" /></div>
                 <h3 className="text-base font-semibold text-gray-900">{t('vouchers.title')}</h3>
-                <select value={currency} onChange={(e) => changeCurrency(e.target.value)} className="px-2 py-1 rounded-lg border border-gray-300 text-xs font-medium focus:ring-2 focus:ring-primary-500 outline-none">{CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
               </div>
-              {canEditData && <button onClick={() => { setNewVoucher({ ...newVoucher, donorName: defaultDonor }); setShowAddVoucher(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
+              {canEditData && <button onClick={() => { setNewVoucher({ ...newVoucher, donorName: defaultDonor, sponsorId: '' }); setShowAddVoucher(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
             </div>
             {showAddVoucher && (
               <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                   <select value={newVoucher.type} onChange={(e) => setNewVoucher({ ...newVoucher, type: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none"><option value="purchase">{t('vouchers.addPurchase')}</option><option value="usage">{t('vouchers.addUsage')}</option></select>
                   <input type="date" value={newVoucher.date} onChange={(e) => setNewVoucher({ ...newVoucher, date: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
-                  {newVoucher.type === 'purchase' && <input type="number" value={newVoucher.amount} onChange={(e) => setNewVoucher({ ...newVoucher, amount: e.target.value })} placeholder={`${t('vouchers.amount')} (${currency})`} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />}
+                  {newVoucher.type === 'purchase' && (
+                    <div className="flex gap-2">
+                      <input type="number" value={newVoucher.amount} onChange={(e) => {
+                        const amt = e.target.value
+                        const autoCount = amt ? String(Math.floor(parseFloat(amt) / 80)) : ''
+                        setNewVoucher({ ...newVoucher, amount: amt, count: autoCount })
+                      }} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                      <select value={newVoucher.currency} onChange={(e) => setNewVoucher({ ...newVoucher, currency: e.target.value })} className="w-20 px-2 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                        {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                  )}
                   <input type="number" value={newVoucher.count} onChange={(e) => setNewVoucher({ ...newVoucher, count: e.target.value })} placeholder={t('vouchers.count')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                   {newVoucher.type === 'purchase' && (
                     <div className="sm:col-span-2">
                       <label className="block text-xs text-gray-500 mb-1">{t('vouchers.donorName')}</label>
-                      <div className="flex gap-2">
-                        <input type="text" value={newVoucher.donorName} onChange={(e) => setNewVoucher({ ...newVoucher, donorName: e.target.value })} placeholder={t('vouchers.donorName')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
-                        {sponsorNames.length > 0 && (
-                          <select onChange={(e) => setNewVoucher({ ...newVoucher, donorName: e.target.value })} value="" className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
-                            <option value="">{t('vouchers.selectSponsor')}</option>
-                            {sponsorNames.map((n: string, i: number) => <option key={i} value={n}>{n}</option>)}
-                          </select>
-                        )}
-                      </div>
+                      <select value={newVoucher.sponsorId} onChange={(e) => {
+                        const sp = allSponsors.find((s: any) => s.id === e.target.value)
+                        if (sp) {
+                          setNewVoucher({ ...newVoucher, sponsorId: sp.id, donorName: `${sp.firstName} ${sp.lastName}` })
+                        } else {
+                          setNewVoucher({ ...newVoucher, sponsorId: '', donorName: '' })
+                        }
+                      }} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                        <option value="">{t('vouchers.selectSponsor')}</option>
+                        {allSponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}{s.email ? ` (${s.email})` : ''}</option>)}
+                      </select>
                     </div>
                   )}
                 </div>
@@ -771,7 +783,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 {student.vouchers?.map((v: any) => (
                   <tr key={v.id} className="border-b border-gray-50">
                     <td className="py-3 px-2 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
-                    <td className="py-3 px-2 text-sm text-gray-900">{fmtCurrency(v.amount, currency)}</td>
+                    <td className="py-3 px-2 text-sm text-gray-900">{fmtCurrency(v.amount, v.currency || 'CZK')}</td>
                     <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
                     <td className="py-3 px-2 text-sm text-gray-700">{v.donorName || '-'}</td>
                     <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>

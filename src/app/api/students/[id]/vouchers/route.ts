@@ -21,9 +21,12 @@ export async function POST(
           studentId,
           purchaseDate: new Date(data.date),
           amount: parseFloat(data.amount),
+          currency: data.currency || 'CZK',
           count: parseInt(data.count),
           donorName: data.donorName || null,
+          sponsorId: data.sponsorId || null,
           notes: data.notes || null,
+          source: 'manual',
         },
       })
       return NextResponse.json({ purchase }, { status: 201 })

@@ -123,7 +123,7 @@ model VoucherPurchase {
   studentId    String
   purchaseDate DateTime
   amount       Float
-  currency     String   @default("KES")
+  currency     String   @default("CZK")
   count        Int
   donorName    String?  // Name of the person who donated (legacy)
   sponsorId    String?
