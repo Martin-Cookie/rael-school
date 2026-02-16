@@ -772,20 +772,20 @@ export default function ImportDetailPage() {
                         <option key={pt.id} value={pt.id}>{pt.name}</option>
                       ))}
                     </select>
-                    {isVoucherType(part.paymentTypeId) && (
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          value={part.count}
-                          onChange={(e) => updateSplitPart(i, 'count', e.target.value)}
-                          placeholder={t('vouchers.count')}
-                          className="w-20 px-2 py-1.5 rounded border border-gray-300 text-sm"
-                          min="1"
-                        />
-                        <span className="text-xs text-gray-400">ks</span>
-                      </div>
-                    )}
                   </div>
+                  {isVoucherType(part.paymentTypeId) && (
+                    <div className="flex items-center gap-2 ml-8">
+                      <label className="text-xs text-gray-500">{t('vouchers.count')}:</label>
+                      <input
+                        type="number"
+                        value={part.count}
+                        onChange={(e) => updateSplitPart(i, 'count', e.target.value)}
+                        className="w-24 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                        min="1"
+                      />
+                      <span className="text-xs text-gray-400">ks (1 = 80 KES)</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
