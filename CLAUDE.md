@@ -85,6 +85,27 @@ Dvoustránkový A4 formulář pro každého studenta (výška stránky `calc(297
 - Poznámkový rámeček na stránce 2 se automaticky roztáhne do konce stránky (flex: 1)
 - Ceny z číselníků `needTypes`, `wishTypes`, `equipmentTypes` (API `/api/reports/visit-cards`)
 
+### Import bankovních výpisů — split a schvalování plateb
+
+Soubory:
+- Import detail UI: `src/app/payments/import/[id]/page.tsx`
+- Split endpoint: `src/app/api/payment-imports/[id]/rows/[rowId]/split/route.ts`
+- Approve endpoint: `src/app/api/payment-imports/[id]/approve/route.ts`
+
+**Split flow (rozdělení platby na části):**
+1. Uživatel klikne "Rozdělit" na řádku importu
+2. V modálním okně nastaví částky, studenty a typ platby pro každou část
+3. Split endpoint vytvoří child řádky (`parentRowId` → rodičovský řádek, status `SPLIT`)
+4. **Auto-approve:** Pokud child řádek má vyplněný `studentId` + `paymentTypeId`, automaticky se schválí a vytvoří VoucherPurchase nebo SponsorPayment
+5. Child řádky bez kompletních údajů zůstanou jako PARTIAL/NEW → schválí se ručně přes Approve
+
+**VoucherPurchase z bank importu:**
+- Nastavuje `sponsorId` (relace) i `donorName` (textové pole) — detail studenta zobrazuje `v.donorName`, stránka plateb zobrazuje `v.sponsor` s fallbackem na `v.donorName`
+- Detekce stravenky: `paymentType.name` obsahuje "stravenk" nebo "voucher" (case-insensitive)
+
+**SponsorPayment z bank importu:**
+- Nastavuje `sponsorId` (relace) — detail studenta i stránka plateb zobrazují přes `p.sponsor`
+
 ## Uživatelské role
 
 | Role | Práva |
