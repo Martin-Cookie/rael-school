@@ -68,7 +68,7 @@ export default function ClassesPage() {
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
 
-  const classNames = [...new Set(students.map((s: any) => s.className).filter(Boolean))].sort() as string[]
+  const classNames = [...new Set(students.map((s: any) => s.className).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })) as string[]
 
   const q = search.toLowerCase()
   const filteredClassNames = search
