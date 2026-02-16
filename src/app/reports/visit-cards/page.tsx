@@ -121,28 +121,42 @@ export default function VisitCardsPage() {
       const newSelected = new Set(selected)
       let matchCount = 0
 
-      for (const line of lines) {
-        // Parse CSV line — handle both "lastName,firstName" and "lastName;firstName"
-        const parts = line.split(/[,;]/).map(p => p.trim().replace(/^"|"$/g, ''))
-        if (parts.length < 2) continue
+      const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      const headerWords = ['prijmeni', 'prijmení', 'jmeno', 'jméno', 'lastname', 'last name', 'firstname', 'first name', 'name', 'student']
 
-        const csvLast = parts[0].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        const csvFirst = parts[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      for (const line of lines) {
+        // Parse CSV line — handle "lastName,firstName" / "lastName;firstName" / "firstName lastName" in one cell
+        const csvParts = line.split(/[,;]/).map(p => p.trim().replace(/^"|"$/g, ''))
+
+        let nameParts: string[]
+        if (csvParts.length >= 2 && csvParts[1].trim()) {
+          // Two+ columns: lastName, firstName
+          nameParts = [csvParts[0].trim(), csvParts[1].trim()]
+        } else {
+          // Single column: split by space(s)
+          const words = csvParts[0].trim().split(/\s+/)
+          if (words.length < 2) continue
+          nameParts = words
+        }
 
         // Skip header row
-        if (csvLast === 'prijmeni' || csvLast === 'příjmení' || csvLast === 'lastname' || csvLast === 'last name') continue
+        if (nameParts.some(p => headerWords.includes(norm(p)))) continue
 
         const match = students.find(s => {
-          const sLast = s.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          const sFirst = s.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          return sLast === csvLast && sFirst === csvFirst
+          const sLast = norm(s.lastName)
+          const sFirst = norm(s.firstName)
+          const normParts = nameParts.map(norm)
+          // Try all orderings: any part matches lastName and any other matches firstName
+          return normParts.some((p, i) =>
+            p === sLast && normParts.some((q, j) => j !== i && q === sFirst)
+          )
         })
 
         if (match) {
           newSelected.add(match.id)
           matchCount++
         } else {
-          notFound.push(`${parts[0]} ${parts[1]}`)
+          notFound.push(nameParts.join(' '))
         }
       }
 
