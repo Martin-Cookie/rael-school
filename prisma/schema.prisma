@@ -230,6 +230,8 @@ model VolunteerAssignment {
 model ClassRoom {
   id        String   @id @default(cuid())
   name      String   @unique
+  nameEn    String?
+  nameSw    String?
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -240,6 +242,8 @@ model ClassRoom {
 model HealthCheckType {
   id        String   @id @default(cuid())
   name      String   @unique
+  nameEn    String?
+  nameSw    String?
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -250,6 +254,8 @@ model HealthCheckType {
 model PaymentType {
   id        String   @id @default(cuid())
   name      String   @unique
+  nameEn    String?
+  nameSw    String?
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -260,6 +266,8 @@ model PaymentType {
 model NeedType {
   id        String   @id @default(cuid())
   name      String   @unique
+  nameEn    String?
+  nameSw    String?
   price     Float?   // Orientační cena v CZK
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
@@ -271,6 +279,8 @@ model NeedType {
 model EquipmentType {
   id        String   @id @default(cuid())
   name      String   @unique
+  nameEn    String?
+  nameSw    String?
   price     Float?   // Orientační cena v CZK
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
@@ -282,6 +292,8 @@ model EquipmentType {
 model WishType {
   id        String   @id @default(cuid())
   name      String   @unique
+  nameEn    String?
+  nameSw    String?
   price     Float?   // Orientační cena v CZK
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
