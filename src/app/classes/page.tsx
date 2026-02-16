@@ -33,6 +33,12 @@ export default function ClassesPage() {
   }, [])
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const classParam = params.get('class')
+    if (classParam) setSelectedClass(classParam)
+  }, [])
+
+  useEffect(() => {
     fetch('/api/dashboard').then(r => r.json()).then(data => {
       setStudents(data.students || [])
       setLoading(false)
@@ -137,7 +143,7 @@ export default function ClassesPage() {
               {sortData(filteredStudentsInClass, sortCol).map((s: any) => (
                 <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                   <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
-                  <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/classes`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
+                  <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=${encodeURIComponent('/classes?class=' + (selectedClass || ''))}`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                   <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                   <td className="py-3 px-3 text-sm text-gray-900">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
                   <td className="py-3 px-3 text-sm text-right">{s._count.needs > 0 ? <span className="badge badge-red">{s._count.needs}</span> : <span className="text-gray-400">0</span>}</td>
