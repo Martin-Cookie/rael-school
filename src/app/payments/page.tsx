@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
 import { formatNumber, formatDate, formatDateForInput } from '@/lib/format'
@@ -53,6 +53,20 @@ export default function PaymentsPage() {
   }, [])
 
   useEffect(() => {
+    const el = stickyRef.current
+    if (!el) return
+    function update() {
+      const offset = window.innerWidth >= 1024 ? 0 : 64
+      setTheadTop(offset + el!.offsetHeight)
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    window.addEventListener('resize', update)
+    return () => { ro.disconnect(); window.removeEventListener('resize', update) }
+  }, [])
+
+  useEffect(() => {
     fetchData()
     fetch('/api/auth/me').then(r => r.json()).then(d => setUserRole(d.user?.role || '')).catch(() => {})
     fetch('/api/admin/payment-types').then(r => r.json()).then(d => setPaymentTypes(d.paymentTypes || [])).catch(() => {})
@@ -81,6 +95,8 @@ export default function PaymentsPage() {
   // Sorting
   const [sortCol, setSortCol] = useState('')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const [theadTop, setTheadTop] = useState(0)
 
   function handleSort(col: string) {
     if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
@@ -268,7 +284,7 @@ export default function PaymentsPage() {
       )}
 
       {/* Sticky header + tabs */}
-      <div className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+      <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{t('payments.title')}</h1>
           {canEdit && (
@@ -350,7 +366,7 @@ export default function PaymentsPage() {
             )}
 
             {/* Table */}
-            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
+            <table className="w-full"><thead><tr className="border-b border-gray-200 bg-white sticky z-20" style={{ top: theadTop }}>
               <SH col="paymentDate" className="text-left">{t('payments.paymentDate')}</SH>
               <SH col="paymentType" className="text-left">{t('sponsorPayments.paymentType')}</SH>
               <SH col="amount" className="text-left">{t('payments.amount')}</SH>
@@ -423,7 +439,7 @@ export default function PaymentsPage() {
                 )
               ))}
               {sponsorPayments.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
-            </tbody></table></div>
+            </tbody></table>
           </div>
         )}
 
@@ -487,7 +503,7 @@ export default function PaymentsPage() {
             )}
 
             {/* Table */}
-            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
+            <table className="w-full"><thead><tr className="border-b border-gray-200 bg-white sticky z-20" style={{ top: theadTop }}>
               <SH col="purchaseDate" className="text-left">{t('vouchers.purchaseDate')}</SH>
               <SH col="amount" className="text-left">{t('vouchers.amount')}</SH>
               <SH col="count" className="text-left">{t('vouchers.count')}</SH>
@@ -549,7 +565,7 @@ export default function PaymentsPage() {
                 )
               ))}
               {voucherPurchases.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
-            </tbody></table></div>
+            </tbody></table>
           </div>
         )}
       </div>

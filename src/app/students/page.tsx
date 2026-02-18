@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Search, Plus, User, Heart, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
 import { calculateAge } from '@/lib/format'
@@ -21,6 +21,8 @@ export default function StudentsPage() {
   const [locale, setLocale] = useState<Locale>('cs')
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const [theadTop, setTheadTop] = useState(0)
 
   const t = createTranslator(msgs[locale])
 
@@ -30,6 +32,20 @@ export default function StudentsPage() {
     const handler = (e: Event) => setLocale((e as CustomEvent).detail)
     window.addEventListener('locale-change', handler)
     return () => window.removeEventListener('locale-change', handler)
+  }, [])
+
+  useEffect(() => {
+    const el = stickyRef.current
+    if (!el) return
+    function update() {
+      const offset = window.innerWidth >= 1024 ? 0 : 64
+      setTheadTop(offset + el!.offsetHeight)
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    window.addEventListener('resize', update)
+    return () => { ro.disconnect(); window.removeEventListener('resize', update) }
   }, [])
 
   useEffect(() => {
@@ -66,7 +82,7 @@ export default function StudentsPage() {
 
   return (
     <div>
-      <div className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+      <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{t('student.list')} <span className="text-sm font-normal text-gray-500">({students.length})</span></h1>
           <Link href="/students/new" className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
@@ -84,11 +100,10 @@ export default function StudentsPage() {
         <div className="text-center py-12 text-gray-500"><User className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p>{t('app.noData')}</p></div>
       ) : (
         <div>
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-200">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
+                  <tr className="border-b border-gray-100 bg-gray-50 sticky z-20" style={{ top: theadTop }}>
                     <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
                     <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
                     <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
@@ -116,7 +131,6 @@ export default function StudentsPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
           </div>
         </div>
       )}

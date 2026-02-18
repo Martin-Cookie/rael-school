@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
@@ -53,6 +53,8 @@ export default function SponsorsPage() {
   const [user, setUser] = useState<any>(null)
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const [theadTop, setTheadTop] = useState(0)
 
   // Form state for new sponsor
   const [newForm, setNewForm] = useState({ firstName: '', lastName: '', email: '', phone: '' })
@@ -75,6 +77,20 @@ export default function SponsorsPage() {
     const handler = (e: Event) => setLocale((e as CustomEvent).detail)
     window.addEventListener('locale-change', handler)
     return () => window.removeEventListener('locale-change', handler)
+  }, [])
+
+  useEffect(() => {
+    const el = stickyRef.current
+    if (!el) return
+    function update() {
+      const offset = window.innerWidth >= 1024 ? 0 : 64
+      setTheadTop(offset + el!.offsetHeight)
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    window.addEventListener('resize', update)
+    return () => { ro.disconnect(); window.removeEventListener('resize', update) }
   }, [])
 
   useEffect(() => {
@@ -215,7 +231,7 @@ export default function SponsorsPage() {
       )}
 
       {/* Sticky header + search */}
-      <div className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+      <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             {backUrl && (
@@ -296,11 +312,10 @@ export default function SponsorsPage() {
       {/* Sponsor table */}
       {filtered.length > 0 ? (
         <div>
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-200">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
+                  <tr className="border-b border-gray-100 bg-gray-50 sticky z-20" style={{ top: theadTop }}>
                     <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
                     <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
                     <SH col="email" className="text-left">{t('sponsors.email')}</SH>
@@ -395,7 +410,6 @@ export default function SponsorsPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
           </div>
         </div>
       ) : (

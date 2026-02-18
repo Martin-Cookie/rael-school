@@ -33,6 +33,8 @@ export default function DashboardPage() {
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const [theadTop, setTheadTop] = useState(0)
   const prevTabRef = useRef<DashTab | null>(null)
   const [paymentSubTab, setPaymentSubTab] = useState<'sponsor' | 'voucher'>('sponsor')
 
@@ -44,6 +46,20 @@ export default function DashboardPage() {
     const handler = (e: Event) => setLocale((e as CustomEvent).detail)
     window.addEventListener('locale-change', handler)
     return () => window.removeEventListener('locale-change', handler)
+  }, [])
+
+  useEffect(() => {
+    const el = stickyRef.current
+    if (!el) return
+    function update() {
+      const offset = window.innerWidth >= 1024 ? 0 : 64
+      setTheadTop(offset + el!.offsetHeight)
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    window.addEventListener('resize', update)
+    return () => { ro.disconnect(); window.removeEventListener('resize', update) }
   }, [])
 
   useEffect(() => {
@@ -107,7 +123,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+      <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <h1 className="text-2xl font-bold text-gray-900 mb-3">{t('dashboard.title')}</h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {statCards.map(card => (
@@ -123,7 +139,7 @@ export default function DashboardPage() {
         {/* Students */}
         {activeTab === 'students' && (
           <div><h2 className="text-lg font-semibold text-gray-900 mb-4">{t('student.list')} ({students.length})</h2>
-          <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
+          <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
             <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
@@ -143,14 +159,14 @@ export default function DashboardPage() {
                 <td className="py-3 px-3 text-sm text-right">{s._count.sponsorships > 0 ? <span className="badge badge-green">{s._count.sponsorships}</span> : <span className="text-gray-400">0</span>}</td>
               </tr>
             ))}
-          </tbody></table></div>
+          </tbody></table>
           </div>
         )}
 
         {/* Sponsors */}
         {activeTab === 'sponsors' && (
           <div><h2 className="text-lg font-semibold text-gray-900 mb-4">{t('sponsors.title')} ({sponsors.length})</h2>
-          <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
+          <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
             <SH col="email" className="text-left">{t('sponsors.email')}</SH>
@@ -170,7 +186,7 @@ export default function DashboardPage() {
                 </td>
               </tr>
             ))}
-          </tbody></table></div>
+          </tbody></table>
           </div>
         )}
 
@@ -201,7 +217,7 @@ export default function DashboardPage() {
                   ))}
                   {Object.keys(spByCur).length === 0 && <p className="text-gray-400 text-sm">{t('app.noData')}</p>}
                 </div>
-                <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
+                <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
                   <SH col="paymentDate" className="text-left">{t('payments.paymentDate')}</SH>
                   <SH col="paymentType" className="text-left">{t('sponsorPayments.paymentType')}</SH>
                   <SH col="amount" className="text-left">{t('payments.amount')}</SH>
@@ -220,7 +236,7 @@ export default function DashboardPage() {
                     </tr>
                   ))}
                   {sponsorPayments.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
-                </tbody></table></div>
+                </tbody></table>
               </>
             )}
 
@@ -236,7 +252,7 @@ export default function DashboardPage() {
                     <p className="text-lg font-bold text-primary-900">{formatNumber(voucherPurchases.reduce((s: number, v: any) => s + v.count, 0))}</p>
                   </div>
                 </div>
-                <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
+                <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
                   <SH col="purchaseDate" className="text-left">{t('vouchers.purchaseDate')}</SH>
                   <SH col="amount" className="text-left">{t('vouchers.amount')}</SH>
                   <SH col="count" className="text-left">{t('vouchers.count')}</SH>
@@ -255,7 +271,7 @@ export default function DashboardPage() {
                     </tr>
                   ))}
                   {voucherPurchases.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
-                </tbody></table></div>
+                </tbody></table>
               </>
             )}
           </div>
@@ -264,7 +280,7 @@ export default function DashboardPage() {
         {/* Needs */}
         {activeTab === 'needs' && (
           <div><h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.studentsNeedingAttention')} ({studentsWithNeeds.length})</h2>
-          <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
+          <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
             <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
@@ -280,7 +296,7 @@ export default function DashboardPage() {
                 <td className="py-3 px-3 text-sm"><div className="space-y-1">{s.needs.map((n: any) => <div key={n.id} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span><span className="text-gray-700">{n.description}</span></div>)}</div></td>
               </tr>
             ))}
-          </tbody></table></div>
+          </tbody></table>
           </div>
         )}
 
@@ -305,7 +321,7 @@ export default function DashboardPage() {
               <div>
                 <button onClick={() => { if (prevTabRef.current) { const tab = prevTabRef.current; prevTabRef.current = null; setSelectedClass(null); setSortCol(''); setActiveTab(tab) } else { setSelectedClass(null) } }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {prevTabRef.current ? t('app.back') : t('dashboard.classOverview')}</button>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
-                <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100">
+                <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
                   <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
                   <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
                   <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
@@ -321,7 +337,7 @@ export default function DashboardPage() {
                       <td className="py-3 px-3 text-sm text-right">{s._count.needs > 0 ? <span className="badge badge-red">{s._count.needs}</span> : <span className="text-gray-400">0</span>}</td>
                     </tr>
                   ))}
-                </tbody></table></div>
+                </tbody></table>
               </div>
             )}
           </div>
