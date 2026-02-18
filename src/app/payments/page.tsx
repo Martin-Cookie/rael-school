@@ -39,6 +39,7 @@ export default function PaymentsPage() {
   const [newSP, setNewSP] = useState({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'CZK', paymentType: '', notes: '' })
   const [showAddVoucher, setShowAddVoucher] = useState(false)
   const [newVP, setNewVP] = useState({ studentId: '', purchaseDate: '', amount: '', currency: 'CZK', count: '', sponsorId: '', notes: '' })
+  const [voucherRates, setVoucherRates] = useState<{ currency: string; rate: number }[]>([])
 
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -72,6 +73,7 @@ export default function PaymentsPage() {
     fetchData()
     fetch('/api/auth/me').then(r => r.json()).then(d => setUserRole(d.user?.role || '')).catch(() => {})
     fetch('/api/admin/payment-types').then(r => r.json()).then(d => setPaymentTypes(d.paymentTypes || [])).catch(() => {})
+    fetch('/api/voucher-rates').then(r => r.json()).then(d => setVoucherRates(d.voucherRates || [])).catch(() => {})
   }, [])
 
   async function fetchData() {
@@ -93,6 +95,18 @@ export default function PaymentsPage() {
   }
 
   const canEdit = userRole && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(userRole)
+
+  function getVoucherRate(currency: string): number | null {
+    const vr = voucherRates.find(r => r.currency === currency)
+    return vr ? vr.rate : null
+  }
+
+  function autoVoucherCount(amount: string, currency: string): string {
+    const rate = getVoucherRate(currency)
+    if (!rate || !amount) return ''
+    const num = parseFloat(amount)
+    return num > 0 ? String(Math.floor(num / rate)) : ''
+  }
 
   // Sorting
   const [sortCol, setSortCol] = useState('')
@@ -537,12 +551,12 @@ export default function PaymentsPage() {
                   </select>
                   <input type="date" value={newVP.purchaseDate} onChange={(e) => setNewVP({ ...newVP, purchaseDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                   <div className="flex gap-2">
-                    <input type="number" value={newVP.amount} onChange={(e) => setNewVP({ ...newVP, amount: e.target.value })} placeholder={t('vouchers.amount') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm flex-1" />
-                    <select value={newVP.currency} onChange={(e) => setNewVP({ ...newVP, currency: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm w-24">
+                    <input type="number" value={newVP.amount} onChange={(e) => { const amt = e.target.value; setNewVP(prev => ({ ...prev, amount: amt, count: autoVoucherCount(amt, prev.currency) })) }} placeholder={t('vouchers.amount') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm flex-1" />
+                    <select value={newVP.currency} onChange={(e) => { const cur = e.target.value; setNewVP(prev => ({ ...prev, currency: cur, count: autoVoucherCount(prev.amount, cur) })) }} className="px-3 py-2 rounded-lg border border-gray-300 text-sm w-24">
                       {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
-                  <input type="number" value={newVP.count} onChange={(e) => setNewVP({ ...newVP, count: e.target.value })} placeholder={t('vouchers.count') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <input type="number" value={newVP.count} onChange={(e) => setNewVP({ ...newVP, count: e.target.value })} placeholder={(() => { const rate = getVoucherRate(newVP.currency); return rate ? `${t('vouchers.count')} (1 = ${formatNumber(rate)} ${newVP.currency})` : t('vouchers.count') + ' *' })()} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                   <select value={newVP.sponsorId} onChange={(e) => setNewVP({ ...newVP, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
                     <option value="">{t('sponsors.title')}</option>
                     {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
