@@ -65,6 +65,7 @@ function CodelistSection({
   onUpdateTranslations: (id: string, nameEn: string | null, nameSw: string | null) => void
 }) {
   const [open, setOpen] = useState(false)
+  const [showNewTrans, setShowNewTrans] = useState(false)
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
   const [editPriceValue, setEditPriceValue] = useState('')
   const [editingTransId, setEditingTransId] = useState<string | null>(null)
@@ -113,9 +114,18 @@ function CodelistSection({
                 />
               )}
               <button
-                onClick={onTranslate}
-                disabled={!newName.trim() || translating}
-                className="px-3 py-2.5 rounded-xl border border-gray-300 hover:bg-blue-50 hover:border-blue-300 text-gray-500 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+                onClick={() => {
+                  if (showNewTrans) {
+                    setShowNewTrans(false)
+                    setNewNameEn('')
+                    setNewNameSw('')
+                  } else {
+                    setShowNewTrans(true)
+                    if (newName.trim()) onTranslate()
+                  }
+                }}
+                disabled={translating}
+                className={`px-3 py-2.5 rounded-xl border flex-shrink-0 transition-colors flex items-center gap-1.5 ${showNewTrans ? 'border-blue-400 bg-blue-50 text-blue-600' : 'border-gray-300 hover:bg-blue-50 hover:border-blue-300 text-gray-500 hover:text-blue-600'} disabled:opacity-30 disabled:cursor-not-allowed`}
                 title={t('admin.translate')}
               >
                 {translating ? (
@@ -126,7 +136,7 @@ function CodelistSection({
               </button>
             </div>
             {/* Translation fields */}
-            {(newNameEn || newNameSw || translating) && (
+            {showNewTrans && (
               <div className="flex gap-2">
                 <div className="flex-1 relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-blue-500 uppercase">EN</span>
@@ -151,7 +161,7 @@ function CodelistSection({
               </div>
             )}
             <button
-              onClick={onAdd}
+              onClick={() => { onAdd(); setShowNewTrans(false) }}
               className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
             >
               <Plus className="w-4 h-4" /> {t('app.add')}
