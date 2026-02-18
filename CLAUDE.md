@@ -67,6 +67,31 @@ Stránky s tímto vzorem:
 | Platby – Stravenky | `payments/page.tsx` | Datum nákupu, Částka, Počet, Student, Sponzor, Poznámky |
 | Import detail | `payments/import/[id]/page.tsx` | Datum, Částka, Měna, Student, Sponzor, Typ, Stav |
 
+### Sticky layout seznamů
+
+Všechny hlavní seznamy (Studenti, Sponzoři, Platby, Přehled) používají dvouvrstvý sticky layout:
+
+**1. Sticky hlavička (z-30)** — title + search/tlačítka, vždy nahoře:
+```
+sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8
+```
+- `top-16` = pod mobilním headerem (64px), `lg:top-0` = na desktopu nahoře
+- Negativní margin + padding = pozadí do krajů (kompenzuje padding rodiče)
+
+**2. Sticky thead (z-20)** — řádek s třídícími hlavičkami, pod sticky hlavičkou:
+```tsx
+<tr className="... bg-white sticky z-20" style={{ top: theadTop }}>
+```
+- `theadTop` = dynamicky měřená výška sticky hlavičky + mobilní offset
+- Měřeno přes `useRef` + `ResizeObserver` + `window resize` listener
+- Dependency `[loading]` — na stránkách s early `if (loading) return` se ref naplní až po načtení
+
+**Důležité:**
+- Tabulky NESMÍ být obaleny v `overflow-hidden` ani `overflow-x-auto` — tyto CSS vlastnosti vytvářejí nový scroll kontext a ruší `position: sticky`
+- Pozadí thead musí být neprůhledné (`bg-white` nebo `bg-gray-50`, ne `bg-gray-50/50`)
+
+**Bez stránkování** — všechny záznamy se zobrazují najednou (data se načítají celá z API)
+
 ### Dashboard — přehled tříd a cross-tab navigace
 
 **Přehled tříd (záložka Třídy):**
