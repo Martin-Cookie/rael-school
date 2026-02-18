@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
 import { formatNumber, formatDate, formatDateForInput } from '@/lib/format'
-import Pagination from '@/components/Pagination'
+
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -24,9 +24,6 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true)
   const [locale, setLocale] = useState<Locale>('cs')
   const [activeTab, setActiveTab] = useState<'sponsor' | 'voucher'>('sponsor')
-  const [spPage, setSpPage] = useState(1)
-  const [vpPage, setVpPage] = useState(1)
-  const PAGE_SIZE = 15
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   // Students & sponsors for dropdowns
@@ -88,7 +85,6 @@ export default function PaymentsPage() {
   function handleSort(col: string) {
     if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
     else { setSortCol(col); setSortDir('asc') }
-    if (activeTab === 'sponsor') setSpPage(1); else setVpPage(1)
   }
 
   function sortData<T>(data: T[], col: string): T[] {
@@ -262,9 +258,6 @@ export default function PaymentsPage() {
 
   const sortedSP = sortData(sponsorPayments, activeTab === 'sponsor' ? sortCol : '')
   const sortedVP = sortData(voucherPurchases, activeTab === 'voucher' ? sortCol : '')
-  const paginatedSP = sortedSP.slice((spPage - 1) * PAGE_SIZE, spPage * PAGE_SIZE)
-  const paginatedVP = sortedVP.slice((vpPage - 1) * PAGE_SIZE, vpPage * PAGE_SIZE)
-  const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
 
   return (
     <div>
@@ -274,23 +267,26 @@ export default function PaymentsPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('payments.title')}</h1>
-        {canEdit && (
-          <Link href="/payments/import" className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">
-            <Upload className="w-4 h-4" /> {t('payments.importPayments')}
-          </Link>
-        )}
-      </div>
+      {/* Sticky header + tabs */}
+      <div className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-gray-900">{t('payments.title')}</h1>
+          {canEdit && (
+            <Link href="/payments/import" className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">
+              <Upload className="w-4 h-4" /> {t('payments.importPayments')}
+            </Link>
+          )}
+        </div>
 
-      {/* Tab switcher */}
-      <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit">
-        <button onClick={() => { setActiveTab('sponsor'); setSortCol(''); setSortDir('asc') }} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'sponsor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-          <CreditCard className="w-4 h-4" /> {t('sponsorPayments.title')} ({sponsorPayments.length})
-        </button>
-        <button onClick={() => { setActiveTab('voucher'); setSortCol(''); setSortDir('asc') }} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'voucher' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-          <Ticket className="w-4 h-4" /> {t('vouchers.purchases')} ({voucherPurchases.length})
-        </button>
+        {/* Tab switcher */}
+        <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
+          <button onClick={() => { setActiveTab('sponsor'); setSortCol(''); setSortDir('asc') }} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'sponsor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+            <CreditCard className="w-4 h-4" /> {t('sponsorPayments.title')} ({sponsorPayments.length})
+          </button>
+          <button onClick={() => { setActiveTab('voucher'); setSortCol(''); setSortDir('asc') }} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'voucher' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+            <Ticket className="w-4 h-4" /> {t('vouchers.purchases')} ({voucherPurchases.length})
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -363,7 +359,7 @@ export default function PaymentsPage() {
               <SH col="notes" className="text-left">{t('payments.notes')}</SH>
               {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
-              {paginatedSP.map((p: any) => (
+              {sortedSP.map((p: any) => (
                 editingId === p.id ? (
                   <tr key={p.id} className="border-b border-gray-50 bg-primary-50">
                     <td className="py-2 px-3"><input type="date" value={editData.paymentDate || ''} onChange={(e) => setEditData({ ...editData, paymentDate: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
@@ -428,7 +424,6 @@ export default function PaymentsPage() {
               ))}
               {sponsorPayments.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
             </tbody></table></div>
-            <Pagination currentPage={spPage} totalItems={sponsorPayments.length} pageSize={PAGE_SIZE} onPageChange={setSpPage} labels={paginationLabels} />
           </div>
         )}
 
@@ -501,7 +496,7 @@ export default function PaymentsPage() {
               <SH col="notes" className="text-left">{t('payments.notes')}</SH>
               {canEdit && <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('app.actions')}</th>}
             </tr></thead><tbody>
-              {paginatedVP.map((v: any) => (
+              {sortedVP.map((v: any) => (
                 editingId === v.id ? (
                   <tr key={v.id} className="border-b border-gray-50 bg-primary-50">
                     <td className="py-2 px-3"><input type="date" value={editData.purchaseDate || ''} onChange={(e) => setEditData({ ...editData, purchaseDate: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
@@ -555,7 +550,6 @@ export default function PaymentsPage() {
               ))}
               {voucherPurchases.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
             </tbody></table></div>
-            <Pagination currentPage={vpPage} totalItems={voucherPurchases.length} pageSize={PAGE_SIZE} onPageChange={setVpPage} labels={paginationLabels} />
           </div>
         )}
       </div>

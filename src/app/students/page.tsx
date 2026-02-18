@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Search, Plus, User, Heart, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
 import { calculateAge } from '@/lib/format'
-import Pagination from '@/components/Pagination'
+
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -18,11 +18,9 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
   const [locale, setLocale] = useState<Locale>('cs')
   const [sortCol, setSortCol] = useState<string>('')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const PAGE_SIZE = 12
 
   const t = createTranslator(msgs[locale])
 
@@ -35,7 +33,6 @@ export default function StudentsPage() {
   }, [])
 
   useEffect(() => {
-    setCurrentPage(1)
     const timer = setTimeout(() => {
       fetch(`/api/students?search=${encodeURIComponent(search)}`)
         .then(r => r.json()).then(data => { setStudents(data.students || []); setLoading(false) })
@@ -66,20 +63,20 @@ export default function StudentsPage() {
   }
 
   const sorted = sortData(students, sortCol)
-  const paginatedStudents = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-  const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">{t('student.list')} <span className="text-sm font-normal text-gray-500">({students.length})</span></h1>
-        <Link href="/students/new" className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
-          <Plus className="w-4 h-4" /> {t('student.new')}
-        </Link>
-      </div>
-      <div className="relative mb-4">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('app.search')} className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 bg-white" />
+      <div className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+          <h1 className="text-2xl font-bold text-gray-900">{t('student.list')} <span className="text-sm font-normal text-gray-500">({students.length})</span></h1>
+          <Link href="/students/new" className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
+            <Plus className="w-4 h-4" /> {t('student.new')}
+          </Link>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('app.search')} className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 bg-white" />
+        </div>
       </div>
       {loading ? (
         <div className="flex items-center justify-center h-40"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
@@ -103,7 +100,7 @@ export default function StudentsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedStudents.map((s: any) => (
+                  {sorted.map((s: any) => (
                     <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                       <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                       <td className="py-3 px-3 text-sm font-medium">
@@ -121,7 +118,6 @@ export default function StudentsPage() {
               </table>
             </div>
           </div>
-          <Pagination currentPage={currentPage} totalItems={students.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
         </div>
       )}
     </div>

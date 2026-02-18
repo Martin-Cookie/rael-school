@@ -7,7 +7,7 @@ import {
   ArrowLeft, Heart, Plus, Search, Pencil, X, Check, UserX, UserCheck,
   ChevronUp, ChevronDown, ArrowUpDown
 } from 'lucide-react'
-import Pagination from '@/components/Pagination'
+
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -46,9 +46,7 @@ export default function SponsorsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [backUrl, setBackUrl] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
   const [showAdd, setShowAdd] = useState(false)
-  const PAGE_SIZE = 12
   const [editingId, setEditingId] = useState<string | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
@@ -197,12 +195,7 @@ export default function SponsorsPage() {
       || (s.phone && s.phone.toLowerCase().includes(q))
   })
 
-  // Reset page when search changes
-  useEffect(() => { setCurrentPage(1) }, [search])
-
   const sorted = sortData(filtered, sortCol)
-  const paginatedSponsors = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-  const paginationLabels = { showing: t('pagination.showing'), of: t('pagination.of'), prev: t('pagination.prev'), next: t('pagination.next') }
 
   const canEdit = user && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)
   const canDeactivate = user && ['ADMIN', 'MANAGER'].includes(user.role)
@@ -221,36 +214,38 @@ export default function SponsorsPage() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          {backUrl && (
-            <button onClick={() => router.push(backUrl)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
+      {/* Sticky header + search */}
+      <div className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            {backUrl && (
+              <button onClick={() => router.push(backUrl)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
+              </button>
+            )}
+            <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-500">({filtered.length})</span></h1>
+          </div>
+          {canEdit && (
+            <button
+              onClick={() => setShowAdd(!showAdd)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
+            >
+              <Plus className="w-4 h-4" /> {t('sponsorPage.addSponsor')}
             </button>
           )}
-          <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-500">({filtered.length})</span></h1>
         </div>
-        {canEdit && (
-          <button
-            onClick={() => setShowAdd(!showAdd)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
-          >
-            <Plus className="w-4 h-4" /> {t('sponsorPage.addSponsor')}
-          </button>
-        )}
-      </div>
 
-      {/* Search */}
-      <div className="relative mb-4">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={t('app.search')}
-          className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 bg-white"
-        />
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('app.search')}
+            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 bg-white"
+          />
+        </div>
       </div>
 
       {/* Add new sponsor form */}
@@ -316,7 +311,7 @@ export default function SponsorsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedSponsors.map((s) => (
+                  {sorted.map((s) => (
                     <tr key={s.id} className={`border-b border-gray-50 hover:bg-gray-50 group ${!s.isActive ? 'bg-red-50/50' : ''}`}>
                       {editingId === s.id ? (
                         <>
@@ -402,7 +397,6 @@ export default function SponsorsPage() {
               </table>
             </div>
           </div>
-          <Pagination currentPage={currentPage} totalItems={filtered.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} labels={paginationLabels} />
         </div>
       ) : (
         <div className="text-center py-12">
