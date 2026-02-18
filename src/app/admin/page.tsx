@@ -100,7 +100,7 @@ function CodelistSection({
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder={placeholder}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                 onKeyDown={(e) => e.key === 'Enter' && onAdd()}
               />
               {showPrice && setNewPrice && (
@@ -109,7 +109,7 @@ function CodelistSection({
                   value={newPrice || ''}
                   onChange={(e) => setNewPrice(e.target.value)}
                   placeholder={t('admin.priceCZK')}
-                  className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  className="w-24 flex-shrink-0 px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                   onKeyDown={(e) => e.key === 'Enter' && onAdd()}
                 />
               )}
@@ -137,8 +137,8 @@ function CodelistSection({
             </div>
             {/* Translation fields */}
             {showNewTrans && (
-              <div className="flex gap-2">
-                <div className="flex-1 relative">
+              <div className="space-y-2">
+                <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-blue-500 uppercase">EN</span>
                   <input
                     type="text"
@@ -148,7 +148,7 @@ function CodelistSection({
                     className="w-full pl-10 pr-3 py-2 rounded-xl border border-blue-200 bg-blue-50/50 focus:ring-2 focus:ring-blue-400 outline-none text-sm"
                   />
                 </div>
-                <div className="flex-1 relative">
+                <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-amber-600 uppercase">SW</span>
                   <input
                     type="text"
@@ -247,8 +247,8 @@ function CodelistSection({
                   </div>
                   {/* Inline translation edit */}
                   {editingTransId === item.id && (
-                    <div className="px-4 pb-3 flex gap-2">
-                      <div className="flex-1 relative">
+                    <div className="px-4 pb-3 space-y-2">
+                      <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-blue-500 uppercase">EN</span>
                         <input
                           type="text"
@@ -266,7 +266,7 @@ function CodelistSection({
                           autoFocus
                         />
                       </div>
-                      <div className="flex-1 relative">
+                      <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-amber-600 uppercase">SW</span>
                         <input
                           type="text"
@@ -288,7 +288,7 @@ function CodelistSection({
                           onUpdateTranslations(item.id, editNameEn || null, editNameSw || null)
                           setEditingTransId(null)
                         }}
-                        className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-xs font-medium hover:bg-primary-700"
+                        className="w-full px-3 py-1.5 bg-primary-600 text-white rounded-lg text-xs font-medium hover:bg-primary-700"
                       >
                         {t('app.save')}
                       </button>
