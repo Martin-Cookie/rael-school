@@ -245,17 +245,17 @@ function CodelistSection({
                             }
                             if (e.key === 'Escape') setEditingPriceId(null)
                           }}
-                          className="w-24 px-2 py-1 rounded-lg border border-primary-400 text-sm text-right focus:ring-2 focus:ring-primary-500 outline-none"
+                          className="w-24 px-2 py-1 rounded-lg border border-primary-400 dark:border-primary-500 dark:bg-gray-700 dark:text-gray-100 text-sm text-right focus:ring-2 focus:ring-primary-500 outline-none"
                           autoFocus
                         />
                       ) : (
                         <button
                           onClick={() => { setEditingPriceId(item.id); setEditPriceValue(item.price?.toString() || '') }}
-                          className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 px-2 py-1 rounded-lg hover:bg-primary-50 transition-colors"
+                          className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 px-2 py-1 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors"
                           title={t('admin.editPrice')}
                         >
                           {item.price ? `${formatNumber(item.price)} CZK` : t('admin.noPrice')}
-                          <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-100" />
+                          <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-60 dark:group-hover:opacity-80" />
                         </button>
                       )
                     )}
