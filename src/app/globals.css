@@ -33,6 +33,11 @@
   color: var(--foreground);
 }
 
+/* SVG icons inherit color from parent (where Tailwind class is applied) */
+svg, svg * {
+  color: inherit;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
@@ -212,6 +217,16 @@ th {
 .dark .text-blue-700 { color: #93c5fd !important; }
 .dark .bg-accent-100 { background-color: #4d3b00 !important; }
 .dark .text-accent-700 { color: #ffd64d !important; }
+.dark .bg-pink-100 { background-color: #500724 !important; }
+.dark .text-pink-600 { color: #f472b6 !important; }
+.dark .bg-green-100 { background-color: #052e16 !important; }
+.dark .text-green-600 { color: #4ade80 !important; }
+.dark .bg-orange-100 { background-color: #431407 !important; }
+.dark .text-orange-600 { color: #fb923c !important; }
+.dark .bg-teal-100 { background-color: #042f2e !important; }
+.dark .text-teal-600 { color: #2dd4bf !important; }
+.dark .bg-purple-100 { background-color: #3b0764 !important; }
+.dark .text-purple-600 { color: #c084fc !important; }
 
 /* Card colors */
 .dark .bg-primary-600 { background-color: #236e23 !important; }
