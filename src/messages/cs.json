@@ -221,6 +221,7 @@
     "newWishTypeName": "Název nového přání",
     "priceCZK": "Cena (CZK)",
     "editPrice": "Upravit cenu",
+    "editName": "Upravit název",
     "noPrice": "bez ceny",
     "backup": "Zálohování a export dat",
     "backupDesc": "Stáhněte zálohu databáze nebo exportujte data",

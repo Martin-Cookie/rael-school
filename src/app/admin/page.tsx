@@ -40,6 +40,7 @@ function CodelistSection({
   translating,
   onTranslate,
   onUpdateTranslations,
+  onNameChange,
 }: {
   title: string
   icon: any
@@ -63,6 +64,7 @@ function CodelistSection({
   translating: boolean
   onTranslate: () => void
   onUpdateTranslations: (id: string, nameEn: string | null, nameSw: string | null) => void
+  onNameChange: (id: string, name: string) => void
 }) {
   const [open, setOpen] = useState(false)
   const [showNewTrans, setShowNewTrans] = useState(false)
@@ -71,6 +73,8 @@ function CodelistSection({
   const [editingTransId, setEditingTransId] = useState<string | null>(null)
   const [editNameEn, setEditNameEn] = useState('')
   const [editNameSw, setEditNameSw] = useState('')
+  const [editingNameId, setEditingNameId] = useState<string | null>(null)
+  const [editNameValue, setEditNameValue] = useState('')
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden">
@@ -191,7 +195,39 @@ function CodelistSection({
                       </button>
                     </div>
                     <Icon className="w-5 h-5 text-primary-500" />
-                    <span className="flex-1 text-sm font-medium text-gray-900">{getLocaleName(item, locale)}</span>
+                    {editingNameId === item.id ? (
+                      <input
+                        type="text"
+                        value={editNameValue}
+                        onChange={(e) => setEditNameValue(e.target.value)}
+                        onBlur={() => {
+                          if (editNameValue.trim() && editNameValue.trim() !== item.name) {
+                            onNameChange(item.id, editNameValue.trim())
+                          }
+                          setEditingNameId(null)
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            if (editNameValue.trim() && editNameValue.trim() !== item.name) {
+                              onNameChange(item.id, editNameValue.trim())
+                            }
+                            setEditingNameId(null)
+                          }
+                          if (e.key === 'Escape') setEditingNameId(null)
+                        }}
+                        className="flex-1 min-w-0 px-2 py-1 rounded-lg border border-primary-400 text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none"
+                        autoFocus
+                      />
+                    ) : (
+                      <button
+                        onClick={() => { setEditingNameId(item.id); setEditNameValue(item.name) }}
+                        className="flex-1 text-left text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors cursor-pointer rounded px-1 -mx-1 hover:bg-primary-50"
+                        title={t('admin.editName')}
+                      >
+                        {getLocaleName(item, locale)}
+                        <Pencil className="w-3 h-3 inline-block ml-1.5 opacity-0 group-hover:opacity-50" />
+                      </button>
+                    )}
                     {showPrice && onPriceChange && (
                       editingPriceId === item.id ? (
                         <input
@@ -634,6 +670,17 @@ export default function AdminPage() {
           await fetchAll(); showMsg('success', t('app.savedSuccess'))
         } catch { showMsg('error', t('app.error')) }
       },
+      updateName: async (id: string, name: string) => {
+        if (!name.trim()) return
+        try {
+          const res = await fetch(endpoint, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, name: name.trim() }),
+          })
+          if (res.ok) { await fetchAll(); showMsg('success', t('app.savedSuccess')) }
+          else { const d = await res.json(); showMsg('error', d.error || t('app.error')) }
+        } catch { showMsg('error', t('app.error')) }
+      },
     }
   }
 
@@ -683,6 +730,7 @@ export default function AdminPage() {
           translating={translating === 'classrooms'}
           onTranslate={() => translateName(newClassName, 'classrooms')}
           onUpdateTranslations={classroomH.updateTranslations}
+          onNameChange={classroomH.updateName}
         />
 
         <CodelistSection
@@ -710,6 +758,7 @@ export default function AdminPage() {
           translating={translating === 'healthTypes'}
           onTranslate={() => translateName(newHealthTypeName, 'healthTypes')}
           onUpdateTranslations={healthTypeH.updateTranslations}
+          onNameChange={healthTypeH.updateName}
         />
 
         <CodelistSection
@@ -737,6 +786,7 @@ export default function AdminPage() {
           translating={translating === 'paymentTypes'}
           onTranslate={() => translateName(newPaymentTypeName, 'paymentTypes')}
           onUpdateTranslations={paymentTypeH.updateTranslations}
+          onNameChange={paymentTypeH.updateName}
         />
 
         <CodelistSection
@@ -768,6 +818,7 @@ export default function AdminPage() {
           translating={translating === 'needTypes'}
           onTranslate={() => translateName(newNeedTypeName, 'needTypes')}
           onUpdateTranslations={needTypeH.updateTranslations}
+          onNameChange={needTypeH.updateName}
         />
 
         <CodelistSection
@@ -799,6 +850,7 @@ export default function AdminPage() {
           translating={translating === 'equipmentTypes'}
           onTranslate={() => translateName(newEquipmentTypeName, 'equipmentTypes')}
           onUpdateTranslations={equipmentTypeH.updateTranslations}
+          onNameChange={equipmentTypeH.updateName}
         />
 
         <CodelistSection
@@ -830,6 +882,7 @@ export default function AdminPage() {
           translating={translating === 'wishTypes'}
           onTranslate={() => translateName(newWishTypeName, 'wishTypes')}
           onUpdateTranslations={wishTypeH.updateTranslations}
+          onNameChange={wishTypeH.updateName}
         />
       </div>
 

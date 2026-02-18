@@ -52,6 +52,7 @@ export async function PUT(request: NextRequest) {
       }
     } else if (body.id) {
       const data: Record<string, any> = {}
+      if (body.name !== undefined && body.name.trim()) data.name = body.name.trim()
       if (body.nameEn !== undefined) data.nameEn = body.nameEn || null
       if (body.nameSw !== undefined) data.nameSw = body.nameSw || null
       if (Object.keys(data).length > 0) {

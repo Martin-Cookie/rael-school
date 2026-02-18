@@ -221,6 +221,7 @@
     "newWishTypeName": "New wish type name",
     "priceCZK": "Price (CZK)",
     "editPrice": "Edit price",
+    "editName": "Edit name",
     "noPrice": "no price",
     "backup": "Backup & Data Export",
     "backupDesc": "Download database backup or export data",
