@@ -130,6 +130,40 @@ Dvoustránkový A4 formulář pro každého studenta (výška stránky `calc(297
 - Poznámkový rámeček na stránce 2 se automaticky roztáhne do konce stránky (flex: 1)
 - Ceny z číselníků `needTypes`, `wishTypes`, `equipmentTypes` (API `/api/reports/visit-cards`)
 
+### Administrace číselníků — auto-překlad
+
+Soubory:
+- UI: `src/app/admin/page.tsx` (komponenta `CodelistSection`)
+- Translate endpoint: `src/app/api/admin/translate/route.ts`
+
+**Přidání nové položky s překladem:**
+1. Admin zadá český název
+2. Klikne Globe tlačítko → otevře EN/SW pole + spustí auto-překlad (MyMemory API)
+3. Opětovný klik na Globe → skryje překladová pole a vymaže hodnoty
+4. Po kliknutí "Přidat" se pole automaticky skryjí
+
+**Layout vstupního formuláře:**
+```
+[ Český název              ] [ Cena ] [ 🌐 ]
+[ EN: auto-překlad                         ]
+[ SW: auto-překlad                         ]
+[              + Přidat                     ]
+```
+
+- Překladová pole jsou **vertikálně pod sebou** (ne vedle sebe)
+- Globe tlačítko je **toggle** s vizuálním zvýrazněním aktivního stavu (modrý rámeček)
+- Pole Cena a Globe mají `flex-shrink-0` — nepřetékají přes okraj karty
+
+**Editace překladu u existujících položek:**
+- Ikona Globe na řádku položky (viditelná při hoveru)
+- Klik otevře inline EN/SW inputy pod položkou (vertikálně)
+- Uložení přes PUT endpoint (Enter nebo tlačítko Uložit)
+
+**Translate endpoint:**
+- `POST /api/admin/translate` — přijme `{ text }`, vrátí `{ en, sw }`
+- Dvě paralelní volání MyMemory API (`cs|en`, `cs|sw`) přes `Promise.allSettled`
+- Timeout 5s, vyžaduje autentizaci
+
 ### Import bankovních výpisů — split a schvalování plateb
 
 Soubory:
