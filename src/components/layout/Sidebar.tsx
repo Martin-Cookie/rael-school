@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Users, Heart, CreditCard, BarChart3,
-  LogOut, Menu, X, Globe, Settings, GraduationCap
+  LogOut, Menu, X, Globe, Settings, GraduationCap, Moon, Sun
 } from 'lucide-react'
 
 import cs from '@/messages/cs.json'
@@ -25,13 +25,22 @@ export default function Sidebar({ user }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [locale, setLocale] = useState<Locale>('cs')
   const [showLang, setShowLang] = useState(false)
+  const [isDark, setIsDark] = useState(false)
 
   const t = createTranslator(msgs[locale])
 
   useEffect(() => {
     const saved = localStorage.getItem('rael-locale') as Locale
     if (saved && ['cs', 'en', 'sw'].includes(saved)) setLocale(saved)
+    setIsDark(document.documentElement.classList.contains('dark'))
   }, [])
+
+  function toggleDark() {
+    const next = !isDark
+    setIsDark(next)
+    document.documentElement.classList.toggle('dark', next)
+    localStorage.setItem('rael-theme', next ? 'dark' : 'light')
+  }
 
   function changeLocale(l: Locale) {
     setLocale(l)
@@ -143,6 +152,17 @@ export default function Sidebar({ user }: SidebarProps) {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Dark mode toggle */}
+          <div className="px-2 py-1">
+            <button
+              onClick={toggleDark}
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-gray-600 hover:bg-gray-50"
+            >
+              {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+              {isDark ? t('app.lightMode') : t('app.darkMode')}
+            </button>
           </div>
 
           {/* User info */}

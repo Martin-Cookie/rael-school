@@ -22,7 +22,9 @@
     "deleteSuccess": "Imefutwa",
     "error": "Hitilafu imetokea",
     "editMode": "Hali ya kuhariri",
-    "viewMode": "Hali ya kuangalia"
+    "viewMode": "Hali ya kuangalia",
+    "darkMode": "Hali ya giza",
+    "lightMode": "Hali ya mwanga"
   },
   "nav": {
     "dashboard": "Dashibodi",

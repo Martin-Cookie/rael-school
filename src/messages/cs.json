@@ -22,7 +22,9 @@
     "deleteSuccess": "Úspěšně smazáno",
     "error": "Došlo k chybě",
     "editMode": "Režim úprav",
-    "viewMode": "Režim zobrazení"
+    "viewMode": "Režim zobrazení",
+    "darkMode": "Tmavý režim",
+    "lightMode": "Světlý režim"
   },
   "nav": {
     "dashboard": "Přehled",

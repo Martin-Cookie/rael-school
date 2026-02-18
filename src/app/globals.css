@@ -5,10 +5,32 @@
 :root {
   --foreground: #1a1a1a;
   --background: #fafaf8;
+  --card: #ffffff;
+  --card-secondary: #f9fafb;
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #c1c1c1;
+}
+
+.dark {
+  --foreground: #f1f5f9;
+  --background: #0f172a;
+  --card: #1e293b;
+  --card-secondary: #1e293b;
+  --border: #334155;
+  --border-light: #1e293b;
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --scrollbar-track: #1e293b;
+  --scrollbar-thumb: #475569;
+  color-scheme: dark;
 }
 
 * {
-  color: #1a1a1a;
+  color: var(--foreground);
 }
 
 body {
@@ -17,24 +39,29 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Ensure all text is dark and readable */
+/* Ensure all text uses theme color */
 h1, h2, h3, h4, h5, h6, p, span, label, td, th, li, a, input, select, textarea {
-  color: #1a1a1a;
+  color: var(--foreground);
 }
 
 /* Override for white text contexts */
 .text-white, .text-white * {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 /* Input styling */
 input, select, textarea {
-  color: #1a1a1a !important;
-  background-color: #ffffff;
+  color: var(--foreground) !important;
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
 }
 
 input::placeholder {
   color: #9ca3af;
+}
+
+.dark input::placeholder {
+  color: #64748b;
 }
 
 /* Table styling */
@@ -53,11 +80,11 @@ th {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 
@@ -78,6 +105,11 @@ th {
   font-weight: 600;
 }
 
+.dark .tab-active {
+  border-bottom-color: #4db34d;
+  color: #4db34d;
+}
+
 /* Card hover */
 .card-hover {
   transition: all 0.2s ease;
@@ -86,6 +118,10 @@ th {
 .card-hover:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .card-hover:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Status badges */
@@ -113,12 +149,110 @@ th {
   color: #991b1b;
 }
 
+.dark .badge-green {
+  background-color: #133813;
+  color: #80c780;
+}
+
+.dark .badge-yellow {
+  background-color: #4d3b00;
+  color: #ffd64d;
+}
+
+.dark .badge-red {
+  background-color: #450a0a;
+  color: #fca5a5;
+}
+
+/* ===== DARK MODE — Tailwind utility overrides ===== */
+
+/* Backgrounds */
+.dark .bg-white { background-color: var(--card) !important; }
+.dark .bg-\[\#fafaf8\] { background-color: var(--background) !important; }
+.dark .bg-gray-50 { background-color: #1e293b !important; }
+.dark .bg-gray-100 { background-color: #334155 !important; }
+.dark .bg-gray-200 { background-color: #475569 !important; }
+
+/* Borders */
+.dark .border-gray-100 { border-color: #1e293b !important; }
+.dark .border-gray-200 { border-color: #334155 !important; }
+.dark .border-gray-300 { border-color: #475569 !important; }
+.dark .border-gray-50 { border-color: #1e293b !important; }
+
+/* Text */
+.dark .text-gray-900 { color: #f1f5f9 !important; }
+.dark .text-gray-800 { color: #e2e8f0 !important; }
+.dark .text-gray-700 { color: #cbd5e1 !important; }
+.dark .text-gray-600 { color: #94a3b8 !important; }
+.dark .text-gray-500 { color: #94a3b8 !important; }
+.dark .text-gray-400 { color: #64748b !important; }
+.dark .text-gray-300 { color: #64748b !important; }
+
+/* Hovers */
+.dark .hover\:bg-gray-50:hover { background-color: #334155 !important; }
+.dark .hover\:bg-gray-100:hover { background-color: #475569 !important; }
+.dark .hover\:text-gray-700:hover { color: #e2e8f0 !important; }
+.dark .hover\:text-gray-900:hover { color: #f1f5f9 !important; }
+
+/* Primary overrides for dark — brighter variants */
+.dark .bg-primary-50 { background-color: #0d260d !important; }
+.dark .bg-primary-100 { background-color: #133813 !important; }
+.dark .text-primary-700 { color: #80c780 !important; }
+.dark .text-primary-600 { color: #4db34d !important; }
+.dark .hover\:text-primary-600:hover { color: #80c780 !important; }
+
+/* Accent / info colors for dark */
+.dark .bg-blue-50 { background-color: #172554 !important; }
+.dark .text-blue-600 { color: #60a5fa !important; }
+.dark .text-blue-900 { color: #93c5fd !important; }
+.dark .bg-red-50 { background-color: #450a0a !important; }
+.dark .bg-red-100 { background-color: #450a0a !important; }
+.dark .text-red-700 { color: #fca5a5 !important; }
+.dark .bg-blue-100 { background-color: #172554 !important; }
+.dark .text-blue-700 { color: #93c5fd !important; }
+.dark .bg-accent-100 { background-color: #4d3b00 !important; }
+.dark .text-accent-700 { color: #ffd64d !important; }
+
+/* Card colors */
+.dark .bg-primary-600 { background-color: #236e23 !important; }
+.dark .bg-primary-600:hover, .dark .hover\:bg-primary-700:hover { background-color: #1a531a !important; }
+.dark .bg-blue-600 { background-color: #2563eb !important; }
+.dark .bg-blue-600:hover, .dark .hover\:bg-blue-700:hover { background-color: #1d4ed8 !important; }
+.dark .bg-red-600 { background-color: #dc2626 !important; }
+.dark .bg-primary-50 .text-primary-600, .dark .bg-primary-50 .text-primary-900 { color: #80c780 !important; }
+.dark .bg-blue-50 .text-blue-600, .dark .bg-blue-50 .text-blue-900 { color: #93c5fd !important; }
+
+/* Shadow for dark */
+.dark .shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important; }
+.dark .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5) !important; }
+
+/* Hover on table rows */
+.dark .hover\:bg-gray-50:hover { background-color: #334155 !important; }
+
+/* Focus rings */
+.dark .focus\:ring-primary-500:focus { --tw-ring-color: #4db34d !important; }
+.dark .focus\:border-primary-500:focus { border-color: #4db34d !important; }
+
+/* Sticky header background */
+.dark .bg-\[\#fafaf8\] { background-color: #0f172a !important; }
+
+/* Edit row highlight */
+.dark .bg-primary-50 { background-color: #0d260d !important; }
+
+/* Hover on action buttons */
+.dark .hover\:text-red-500:hover { color: #f87171 !important; }
+.dark .hover\:text-red-600:hover { color: #ef4444 !important; }
+.dark .hover\:bg-red-50:hover { background-color: #450a0a !important; }
+.dark .hover\:text-primary-800:hover { color: #80c780 !important; }
+
 /* ===== Visit cards print mode ===== */
 body.print-visit-cards aside { display: none !important; }
 body.print-visit-cards main { margin-left: 0 !important; padding-top: 0 !important; }
 body.print-visit-cards main > div { padding: 0 !important; max-width: none !important; }
 
 @media print {
+  /* Reset dark mode for print */
+  .dark { --foreground: #1a1a1a; --background: #ffffff; --card: #ffffff; }
   body.print-visit-cards { margin: 0; padding: 0; background: white; }
   body.print-visit-cards .no-print { display: none !important; }
   body.print-visit-cards .no-print-bg {

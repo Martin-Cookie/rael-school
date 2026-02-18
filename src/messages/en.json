@@ -22,7 +22,9 @@
     "deleteSuccess": "Successfully deleted",
     "error": "An error occurred",
     "editMode": "Edit mode",
-    "viewMode": "View mode"
+    "viewMode": "View mode",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode"
   },
   "nav": {
     "dashboard": "Dashboard",
