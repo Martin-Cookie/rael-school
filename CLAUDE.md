@@ -45,6 +45,8 @@
 - Čísla formátovat s oddělovačem tisíců (mezerou): `1 000` ne `1000`
 - Měna za číslem: `1 500 KES`
 - Stravenky jsou vždy v KES
+- Sazba stravenek (cena za 1 stravenku) je konfigurovatelná per měna v administraci (`VoucherRate` model), výchozí 80 CZK
+- Konstanty `CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']` — předdefinované měny používané v dropdownech
 - Každý nový text v UI musí mít klíč ve **všech třech** jazycích (cs, en, sw)
 
 ## UI vzory
@@ -174,13 +176,20 @@ Soubory:
 [ Cena ]                  ← jen u číselníků s cenou
 [ EN: auto-překlad                         ]
 [ SW: auto-překlad                         ]
-[              + Přidat                     ]
+[        + Přidat         |   Zrušit       ]
 ```
 
 - Název + Globe jsou na jednom řádku, Cena na samostatném řádku pod nimi
 - Překladová pole jsou **vertikálně pod sebou** (ne vedle sebe)
 - Globe tlačítko je **toggle** s vizuálním zvýrazněním aktivního stavu (modrý rámeček)
 - Globe tlačítko má `flex-shrink-0` — nepřetéká přes okraj karty
+- Tlačítko **Zrušit** se zobrazí jakmile uživatel začne vyplňovat — resetuje název, cenu i překlady
+
+**Editace názvů existujících položek:**
+- Klik na název položky → inline textový input (click-to-edit)
+- Enter nebo blur uloží změnu přes PUT endpoint (`body.name`)
+- Escape zruší editaci
+- Tužka (Pencil) se zobrazí při hoveru nad položkou
 
 **Editace překladu u existujících položek:**
 - Ikona Globe na řádku položky (viditelná při hoveru)
@@ -192,6 +201,30 @@ Soubory:
 - Dvě paralelní volání MyMemory API (`cs|en`, `cs|sw`) přes `Promise.allSettled`
 - Timeout 5s, vyžaduje autentizaci
 
+### Sazby stravenek (VoucherRate)
+
+Soubory:
+- UI: `src/app/admin/page.tsx` (komponenta `VoucherRateSection`)
+- Admin CRUD API: `src/app/api/admin/voucher-rates/route.ts`
+- Veřejné čtení: `src/app/api/voucher-rates/route.ts`
+- Prisma model: `VoucherRate` (currency unique, rate, isActive)
+
+**Konfigurace:**
+- Sazba = cena 1 stravenky v dané měně (např. CZK = 80, EUR = 3, USD = 3.5, KES = 80)
+- Měny vybírané z dropdownu předdefinovaných měn (`CURRENCIES`), ne volný text
+- Když jsou všechny měny nastaveny, formulář se skryje a zobrazí se info text
+
+**Použití sazeb:**
+| Místo | Soubor | Popis |
+|-------|--------|-------|
+| Detail studenta – záložka Stravenky | `students/[id]/page.tsx` | Auto-přepočet počtu stravenek z částky a měny |
+| Platby – přidání nákupu stravenek | `payments/page.tsx` | Auto-přepočet + placeholder s aktuální sazbou |
+| Import – split modal | `payments/import/[id]/page.tsx` | Předvyplnění počtu stravenek |
+| Import – approve endpoint | `api/payment-imports/[id]/approve/route.ts` | Výpočet počtu stravenek na serveru |
+| Import – split endpoint | `api/payment-imports/[id]/rows/[rowId]/split/route.ts` | Výpočet počtu stravenek na serveru |
+
+**Fallback:** Pokud pro danou měnu neexistuje sazba, serverové endpointy použijí fallback `80`.
+
 ### Import bankovních výpisů — split a schvalování plateb
 
 Soubory:
@@ -201,7 +234,7 @@ Soubory:
 
 **Split flow (rozdělení platby na části):**
 1. Uživatel klikne "Rozdělit" na řádku importu
-2. V modálním okně nastaví částky, studenty a typ platby pro každou část (u Stravenek se zobrazí pole pro počet stravenek, předvyplněno `amount / 80 KES`)
+2. V modálním okně nastaví částky, studenty a typ platby pro každou část (u Stravenek se zobrazí pole pro počet stravenek, předvyplněno z `VoucherRate` číselníku)
 3. Split endpoint vytvoří child řádky (`parentRowId` → rodičovský řádek, status `SPLIT`)
 4. **Auto-approve:** Pokud child řádek má vyplněný `studentId` + `paymentTypeId`, automaticky se schválí a vytvoří VoucherPurchase nebo SponsorPayment
 5. Child řádky bez kompletních údajů zůstanou jako PARTIAL/NEW → schválí se ručně přes Approve
@@ -209,7 +242,7 @@ Soubory:
 **VoucherPurchase z bank importu:**
 - Nastavuje `sponsorId` (relace) i `donorName` (textové pole) — detail studenta zobrazuje `v.donorName`, stránka plateb zobrazuje `v.sponsor` s fallbackem na `v.donorName`
 - Detekce stravenky: `paymentType.name` obsahuje "stravenk" nebo "voucher" (case-insensitive)
-- Počet stravenek (`count`): z UI modalu, nebo fallback `Math.floor(amount / 80)` — cena 1 stravenky = 80 KES
+- Počet stravenek (`count`): z UI modalu, nebo fallback `Math.floor(amount / rate)` — sazba z `VoucherRate` číselníku (fallback 80)
 
 **SponsorPayment z bank importu:**
 - Nastavuje `sponsorId` (relace) — detail studenta i stránka plateb zobrazují přes `p.sponsor`
@@ -259,6 +292,8 @@ Soubor: `src/app/payments/page.tsx`
 - **Filtr Sponzor** — dropdown s unikátními sponzory z aktuálních dat
 - **Filtr Typ** — dropdown s typy plateb (jen u sponzorských plateb)
 - Filtry se kombinují (AND logika)
+- Tlačítko **Zrušit** ve formulářích (sponzorské platby i stravenky) resetuje všechna pole do výchozích hodnot
+- Auto-přepočet počtu stravenek: při zadání částky nebo změně měny se count přepočítá podle sazby z `VoucherRate` číselníku
 
 ## Uživatelské role
 
