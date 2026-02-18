@@ -96,6 +96,7 @@ export default function ImportDetailPage() {
   const [sponsors, setSponsors] = useState<any[]>([])
   const [students, setStudents] = useState<any[]>([])
   const [paymentTypes, setPaymentTypes] = useState<any[]>([])
+  const [voucherRates, setVoucherRates] = useState<any[]>([])
 
   // Tooltip
   const [tooltipRow, setTooltipRow] = useState<string | null>(null)
@@ -145,9 +146,10 @@ export default function ImportDetailPage() {
 
   async function fetchReferenceData() {
     try {
-      const [dashRes, ptRes] = await Promise.all([
+      const [dashRes, ptRes, vrRes] = await Promise.all([
         fetch('/api/dashboard'),
         fetch('/api/admin/payment-types'),
+        fetch('/api/voucher-rates'),
       ])
       if (dashRes.ok) {
         const d = await dashRes.json()
@@ -157,6 +159,10 @@ export default function ImportDetailPage() {
       if (ptRes.ok) {
         const d = await ptRes.json()
         setPaymentTypes(d.paymentTypes || [])
+      }
+      if (vrRes.ok) {
+        const d = await vrRes.json()
+        setVoucherRates(d.voucherRates || [])
       }
     } catch {
       // ignore
@@ -175,7 +181,7 @@ export default function ImportDetailPage() {
       if (field === 'paymentTypeId' && value && isVoucherType(value)) {
         const row = importData?.rows.find(r => r.id === rowId)
         if (row) {
-          data.voucherCount = calcVoucherCount(row.amount.toString())
+          data.voucherCount = calcVoucherCount(row.amount.toString(), row.currency || 'CZK')
         }
       }
       const res = await fetch(`/api/payment-imports/${id}/rows/${rowId}`, {
@@ -280,7 +286,10 @@ export default function ImportDetailPage() {
     ])
   }
 
-  const VOUCHER_PRICE = 80 // CZK per voucher
+  function getVoucherRate(cur: string): number | null {
+    const rate = voucherRates.find((r: any) => r.currency === cur)
+    return rate ? rate.rate : null
+  }
 
   function isVoucherType(paymentTypeId: string): boolean {
     const pt = paymentTypes.find((p: any) => p.id === paymentTypeId)
@@ -289,10 +298,12 @@ export default function ImportDetailPage() {
     return name.includes('stravenk') || name.includes('voucher')
   }
 
-  function calcVoucherCount(amount: string): string {
+  function calcVoucherCount(amount: string, currency: string): string {
     const num = parseFloat(amount)
     if (!num || num <= 0) return ''
-    return Math.floor(num / VOUCHER_PRICE).toString()
+    const rate = getVoucherRate(currency)
+    if (!rate) return ''
+    return Math.floor(num / rate).toString()
   }
 
   function updateSplitPart(index: number, field: keyof SplitPart, value: string) {
@@ -300,10 +311,11 @@ export default function ImportDetailPage() {
       const next = [...prev]
       next[index] = { ...next[index], [field]: value }
       // Auto-calculate count when switching to voucher type or changing amount
+      const cur = splitRow?.currency || 'CZK'
       if (field === 'paymentTypeId' && isVoucherType(value)) {
-        next[index].count = calcVoucherCount(next[index].amount)
+        next[index].count = calcVoucherCount(next[index].amount, cur)
       } else if (field === 'amount' && isVoucherType(next[index].paymentTypeId)) {
-        next[index].count = calcVoucherCount(value)
+        next[index].count = calcVoucherCount(value, cur)
       }
       return next
     })
@@ -810,7 +822,7 @@ export default function ImportDetailPage() {
                         className="w-24 px-2 py-1.5 rounded border border-gray-300 text-sm"
                         min="1"
                       />
-                      <span className="text-xs text-gray-400">ks (1 = 80 CZK)</span>
+                      <span className="text-xs text-gray-400">ks{(() => { const r = getVoucherRate(splitRow?.currency || 'CZK'); return r ? ` (1 = ${r} ${splitRow?.currency || 'CZK'})` : '' })()}</span>
                     </div>
                   )}
                 </div>

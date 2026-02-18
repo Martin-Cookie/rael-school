@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star, Pencil, Database, Download, Upload, FileJson, FileSpreadsheet, AlertTriangle, Globe } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star, Pencil, Database, Download, Upload, FileJson, FileSpreadsheet, AlertTriangle, Globe, Ticket } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -12,6 +12,7 @@ import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
 const msgs: Record<string, any> = { cs, en, sw }
 
 type CodelistItem = { id: string; name: string; nameEn?: string | null; nameSw?: string | null; sortOrder: number; isActive: boolean; price?: number | null }
+type VoucherRateItem = { id: string; currency: string; rate: number; isActive: boolean }
 
 function formatNumber(n: number) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
@@ -345,6 +346,139 @@ function CodelistSection({
   )
 }
 
+function VoucherRateSection({
+  items,
+  newCurrency,
+  setNewCurrency,
+  newRate,
+  setNewRate,
+  onAdd,
+  onDelete,
+  onUpdate,
+  t,
+}: {
+  items: VoucherRateItem[]
+  newCurrency: string
+  setNewCurrency: (v: string) => void
+  newRate: string
+  setNewRate: (v: string) => void
+  onAdd: () => void
+  onDelete: (id: string) => void
+  onUpdate: (id: string, rate: number) => void
+  t: (key: string) => string
+}) {
+  const [open, setOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState('')
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 card-hover overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full p-5 flex items-center gap-4 text-left"
+      >
+        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+          <Ticket className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight">{t('admin.voucherRates')}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('admin.voucherRatesDesc')}</p>
+        </div>
+        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="px-5 pb-5 border-t border-gray-100 dark:border-gray-700 pt-4">
+          {/* Add new rate */}
+          <div className="mb-4 flex gap-2">
+            <input
+              type="text"
+              value={newCurrency}
+              onChange={(e) => setNewCurrency(e.target.value.toUpperCase())}
+              placeholder={t('admin.newCurrency')}
+              className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm uppercase"
+              maxLength={5}
+              onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+            />
+            <input
+              type="number"
+              value={newRate}
+              onChange={(e) => setNewRate(e.target.value)}
+              placeholder={t('admin.ratePerVoucher')}
+              className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+            />
+            <button
+              onClick={onAdd}
+              className="px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Rate list */}
+          {items.length > 0 ? (
+            <div className="space-y-2">
+              {items.map((item) => (
+                <div key={item.id} className="bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-600 group">
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <Ticket className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100 w-14">{item.currency}</span>
+                    {editingId === item.id ? (
+                      <input
+                        type="number"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={() => {
+                          if (editValue && parseFloat(editValue) > 0 && parseFloat(editValue) !== item.rate) {
+                            onUpdate(item.id, parseFloat(editValue))
+                          }
+                          setEditingId(null)
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            if (editValue && parseFloat(editValue) > 0 && parseFloat(editValue) !== item.rate) {
+                              onUpdate(item.id, parseFloat(editValue))
+                            }
+                            setEditingId(null)
+                          }
+                          if (e.key === 'Escape') setEditingId(null)
+                        }}
+                        className="w-24 px-2 py-1 rounded-lg border border-primary-400 dark:border-primary-500 dark:bg-gray-700 dark:text-gray-100 text-sm text-right focus:ring-2 focus:ring-primary-500 outline-none"
+                        autoFocus
+                      />
+                    ) : (
+                      <button
+                        onClick={() => { setEditingId(item.id); setEditValue(item.rate.toString()) }}
+                        className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-2 py-1 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors"
+                      >
+                        {formatNumber(item.rate)} {item.currency} {t('admin.perVoucher')}
+                        <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-60 dark:group-hover:opacity-80" />
+                      </button>
+                    )}
+                    <div className="flex-1" />
+                    <button
+                      onClick={() => onDelete(item.id)}
+                      className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <Ticket className="w-10 h-10 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('app.noData')}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function BackupSection({ t, showMsg }: { t: (key: string) => string; showMsg: (type: 'success' | 'error', text: string) => void }) {
   const [open, setOpen] = useState(false)
   const [downloading, setDownloading] = useState<string | null>(null)
@@ -540,6 +674,9 @@ export default function AdminPage() {
   const [needTypes, setNeedTypes] = useState<CodelistItem[]>([])
   const [equipmentTypes, setEquipmentTypes] = useState<CodelistItem[]>([])
   const [wishTypes, setWishTypes] = useState<CodelistItem[]>([])
+  const [voucherRates, setVoucherRates] = useState<VoucherRateItem[]>([])
+  const [newVRCurrency, setNewVRCurrency] = useState('')
+  const [newVRRate, setNewVRRate] = useState('')
   const [loading, setLoading] = useState(true)
   const [newClassName, setNewClassName] = useState('')
   const [newHealthTypeName, setNewHealthTypeName] = useState('')
@@ -569,13 +706,14 @@ export default function AdminPage() {
 
   async function fetchAll() {
     try {
-      const [crRes, htRes, ptRes, ntRes, etRes, wtRes] = await Promise.all([
+      const [crRes, htRes, ptRes, ntRes, etRes, wtRes, vrRes] = await Promise.all([
         fetch('/api/admin/classrooms'),
         fetch('/api/admin/health-types'),
         fetch('/api/admin/payment-types'),
         fetch('/api/admin/need-types'),
         fetch('/api/admin/equipment-types'),
         fetch('/api/admin/wish-types'),
+        fetch('/api/admin/voucher-rates'),
       ])
       const crData = await crRes.json()
       const htData = await htRes.json()
@@ -583,12 +721,14 @@ export default function AdminPage() {
       const ntData = await ntRes.json()
       const etData = await etRes.json()
       const wtData = await wtRes.json()
+      const vrData = await vrRes.json()
       setClassrooms(crData.classrooms || [])
       setHealthTypes(htData.healthTypes || [])
       setPaymentTypes(ptData.paymentTypes || [])
       setNeedTypes(ntData.needTypes || [])
       setEquipmentTypes(etData.equipmentTypes || [])
       setWishTypes(wtData.wishTypes || [])
+      setVoucherRates(vrData.voucherRates || [])
       setLoading(false)
     } catch { setLoading(false) }
   }
@@ -883,6 +1023,45 @@ export default function AdminPage() {
           onTranslate={() => translateName(newWishTypeName, 'wishTypes')}
           onUpdateTranslations={wishTypeH.updateTranslations}
           onNameChange={wishTypeH.updateName}
+        />
+      </div>
+
+      {/* Voucher Rates */}
+      <div className="mt-6">
+        <VoucherRateSection
+          items={voucherRates}
+          newCurrency={newVRCurrency}
+          setNewCurrency={setNewVRCurrency}
+          newRate={newVRRate}
+          setNewRate={setNewVRRate}
+          onAdd={async () => {
+            if (!newVRCurrency.trim() || !newVRRate || parseFloat(newVRRate) <= 0) return
+            try {
+              const res = await fetch('/api/admin/voucher-rates', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ currency: newVRCurrency.trim(), rate: parseFloat(newVRRate) }),
+              })
+              if (res.ok) { setNewVRCurrency(''); setNewVRRate(''); await fetchAll(); showMsg('success', t('app.savedSuccess')) }
+              else { const d = await res.json(); showMsg('error', d.error || t('app.error')) }
+            } catch { showMsg('error', t('app.error')) }
+          }}
+          onDelete={async (id) => {
+            if (!confirm(t('app.confirmDelete'))) return
+            try {
+              await fetch('/api/admin/voucher-rates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+              await fetchAll(); showMsg('success', t('app.deleteSuccess'))
+            } catch { showMsg('error', t('app.error')) }
+          }}
+          onUpdate={async (id, rate) => {
+            try {
+              await fetch('/api/admin/voucher-rates', {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, rate }),
+              })
+              await fetchAll(); showMsg('success', t('app.savedSuccess'))
+            } catch { showMsg('error', t('app.error')) }
+          }}
+          t={t}
         />
       </div>
 

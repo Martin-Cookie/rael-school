@@ -73,6 +73,10 @@ export async function POST(
       if (sponsor) sponsorName = `${sponsor.firstName} ${sponsor.lastName}`
     }
 
+    // Load voucher rates for fallback calculation
+    const voucherRates = await prisma.voucherRate.findMany({ where: { isActive: true } })
+    const rateMap = new Map(voucherRates.map(vr => [vr.currency, vr.rate]))
+
     let approvedCount = 0
 
     await prisma.$transaction(async (tx) => {
@@ -130,7 +134,8 @@ export async function POST(
           let resultPaymentId: string
 
           if (isVoucher) {
-            const voucherCount = part.count && part.count > 0 ? part.count : Math.floor(part.amount / 80)
+            const rate = rateMap.get(row.currency) || 80
+            const voucherCount = part.count && part.count > 0 ? part.count : Math.floor(part.amount / rate)
             const vp = await tx.voucherPurchase.create({
               data: {
                 studentId: part.studentId,

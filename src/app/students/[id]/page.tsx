@@ -44,6 +44,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   useEffect(() => { fetch('/api/sponsors').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(() => {}) }, [])
 
   const [wishTypes, setWishTypes] = useState<any[]>([])
+  const [voucherRates, setVoucherRates] = useState<any[]>([])
   const [newWish, setNewWish] = useState('')
   const [selectedWishType, setSelectedWishType] = useState('')
   const [showAddWish, setShowAddWish] = useState(false)
@@ -88,7 +89,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes(); fetchWishTypes() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes(); fetchWishTypes(); fetchVoucherRates() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
@@ -116,6 +117,15 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   async function fetchWishTypes() {
     try { const res = await fetch('/api/admin/wish-types'); const d = await res.json(); setWishTypes(d.wishTypes || []) } catch {}
+  }
+
+  async function fetchVoucherRates() {
+    try { const res = await fetch('/api/voucher-rates'); const d = await res.json(); setVoucherRates(d.voucherRates || []) } catch {}
+  }
+
+  function getVoucherRate(cur: string): number | null {
+    const rate = voucherRates.find((r: any) => r.currency === cur)
+    return rate ? rate.rate : null
   }
 
   async function fetchStudent() {
@@ -729,12 +739,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     <div className="flex gap-2">
                       <input type="number" value={newVoucher.amount} onChange={(e) => {
                         const amt = e.target.value
-                        const autoCount = (amt && newVoucher.currency === 'CZK') ? String(Math.floor(parseFloat(amt) / 80)) : ''
+                        const rate = getVoucherRate(newVoucher.currency)
+                        const autoCount = (amt && rate) ? String(Math.floor(parseFloat(amt) / rate)) : ''
                         setNewVoucher({ ...newVoucher, amount: amt, count: autoCount })
                       }} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                       <select value={newVoucher.currency} onChange={(e) => {
                         const cur = e.target.value
-                        const autoCount = (newVoucher.amount && cur === 'CZK') ? String(Math.floor(parseFloat(newVoucher.amount) / 80)) : ''
+                        const rate = getVoucherRate(cur)
+                        const autoCount = (newVoucher.amount && rate) ? String(Math.floor(parseFloat(newVoucher.amount) / rate)) : ''
                         setNewVoucher({ ...newVoucher, currency: cur, count: autoCount })
                       }} className="w-20 px-2 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                         {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}

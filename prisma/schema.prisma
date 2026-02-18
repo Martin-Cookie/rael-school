@@ -319,6 +319,16 @@ model Wish {
   wishType WishType? @relation(fields: [wishTypeId], references: [id], onDelete: SetNull)
 }
 
+// ============ VOUCHER RATES ============
+
+model VoucherRate {
+  id        String   @id @default(cuid())
+  currency  String   @unique
+  rate      Float    // cena 1 stravenky v dané měně
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 // ============ PAYMENT IMPORTS ============
 
 model PaymentImport {
