@@ -35,6 +35,7 @@
 - **Autentizace:** JWT (httpOnly cookies) + bcrypt
 - **Ikony:** lucide-react
 - **Lokalizace:** Vlastní i18n (cs/en/sw)
+- **Dark mode:** Tailwind `dark:` třídy + CSS proměnné, přepínání v sidebaru (Moon/Sun ikona)
 
 ## Kritické technické konvence
 
@@ -212,6 +213,52 @@ Soubory:
 
 **SponsorPayment z bank importu:**
 - Nastavuje `sponsorId` (relace) — detail studenta i stránka plateb zobrazují přes `p.sponsor`
+
+### Dark mode
+
+Aplikace podporuje plný dark mode přepínatelný tlačítkem v sidebaru (Moon/Sun ikona).
+
+**Implementace:**
+- Třída `dark` na `<html>` elementu — Tailwind `darkMode: 'class'` v `tailwind.config.js`
+- CSS proměnné v `globals.css` pro barvy pozadí, textu, borderů (`:root` / `.dark`)
+- Stav uložen v `localStorage` (`theme`) + systémová preference jako fallback
+- Sidebar: `src/components/layout/Sidebar.tsx` — toggle `dark` třídy na `document.documentElement`
+
+**Konvence pro dark mode v komponentách:**
+- Karty/kontejnery: `bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700`
+- Hlavní text: `text-gray-900 dark:text-gray-100`
+- Sekundární text: `text-gray-700 dark:text-gray-300` nebo `text-gray-500 dark:text-gray-400`
+- Ikony v barevných kruzích: `bg-*-50 dark:bg-*-900/30`, `text-*-600 dark:text-*-400`
+- Inputy: `border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100`
+- Sticky hlavičky: `bg-[#fafaf8] dark:bg-gray-900` (stránky), `bg-white dark:bg-gray-800` (thead)
+- Tabulkové řádky: `border-gray-50 dark:border-gray-700`
+
+### CSV export
+
+Soubory:
+- Helper: `src/lib/csv.ts` (funkce `downloadCSV`)
+- UI tlačítka: na stránkách Studenti, Sponzoři, Platby
+
+**Stránky s exportem:**
+| Stránka | Soubor | Export |
+|---------|--------|--------|
+| Studenti | `students/page.tsx` | CSV se všemi studenty (číslo, jméno, třída, pohlaví, věk, potřeby, sponzoři) |
+| Sponzoři | `sponsors/page.tsx` | CSV se sponzory (jméno, email, telefon, počet studentů, celkem plateb) |
+| Platby | `payments/page.tsx` | CSV s platbami aktivního tabu (sponzorské nebo stravenky) |
+
+**Funkce `downloadCSV(headers, rows, filename)`:**
+- BOM prefix pro správné kódování v Excelu (UTF-8)
+- Escapování uvozovek a čárek v hodnotách
+
+### Filtrování a vyhledávání na stránce Platby
+
+Soubor: `src/app/payments/page.tsx`
+
+- Dvě záložky: Sponzorské platby / Stravenky
+- **Vyhledávání** (textové pole) — filtruje podle jména studenta, sponzora, poznámek
+- **Filtr Sponzor** — dropdown s unikátními sponzory z aktuálních dat
+- **Filtr Typ** — dropdown s typy plateb (jen u sponzorských plateb)
+- Filtry se kombinují (AND logika)
 
 ## Uživatelské role
 
