@@ -215,17 +215,17 @@ function CodelistSection({
                           }
                           if (e.key === 'Escape') setEditingNameId(null)
                         }}
-                        className="flex-1 min-w-0 px-2 py-1 rounded-lg border border-primary-400 text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none"
+                        className="flex-1 min-w-0 px-2 py-1 rounded-lg border border-primary-400 dark:border-primary-500 dark:bg-gray-700 dark:text-gray-100 text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none"
                         autoFocus
                       />
                     ) : (
                       <button
                         onClick={() => { setEditingNameId(item.id); setEditNameValue(item.name) }}
-                        className="flex-1 text-left text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors cursor-pointer rounded px-1 -mx-1 hover:bg-primary-50"
+                        className="flex-1 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer rounded px-1 -mx-1 hover:bg-primary-50 dark:hover:bg-primary-900/30"
                         title={t('admin.editName')}
                       >
                         {getLocaleName(item, locale)}
-                        <Pencil className="w-3 h-3 inline-block ml-1.5 opacity-0 group-hover:opacity-50" />
+                        <Pencil className="w-3 h-3 inline-block ml-1.5 opacity-0 group-hover:opacity-40 dark:group-hover:opacity-60" />
                       </button>
                     )}
                     {showPrice && onPriceChange && (
