@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
+import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload, ChevronUp, ChevronDown, ArrowUpDown, Search } from 'lucide-react'
 import { formatNumber, formatDate, formatDateForInput } from '@/lib/format'
 
 import cs from '@/messages/cs.json'
@@ -24,6 +24,7 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true)
   const [locale, setLocale] = useState<Locale>('cs')
   const [activeTab, setActiveTab] = useState<'sponsor' | 'voucher'>('sponsor')
+  const [search, setSearch] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   // Students & sponsors for dropdowns
@@ -272,8 +273,21 @@ export default function PaymentsPage() {
 
   const spByCur = stats?.sponsorPaymentsByCurrency || {}
 
-  const sortedSP = sortData(sponsorPayments, activeTab === 'sponsor' ? sortCol : '')
-  const sortedVP = sortData(voucherPurchases, activeTab === 'voucher' ? sortCol : '')
+  const q = search.toLowerCase()
+  const filteredSP = q ? sponsorPayments.filter((p: any) => {
+    const studentName = p.student ? `${p.student.firstName} ${p.student.lastName}` : ''
+    const sponsorName = p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : ''
+    const pt = paymentTypes.find((t: any) => t.name === p.paymentType)
+    const ptName = pt ? getLocaleName(pt, locale) : (p.paymentType || '')
+    return studentName.toLowerCase().includes(q) || sponsorName.toLowerCase().includes(q) || ptName.toLowerCase().includes(q) || (p.notes || '').toLowerCase().includes(q) || String(p.amount).includes(q) || (p.currency || '').toLowerCase().includes(q)
+  }) : sponsorPayments
+  const filteredVP = q ? voucherPurchases.filter((v: any) => {
+    const studentName = v.student ? `${v.student.firstName} ${v.student.lastName}` : ''
+    const sponsorName = v.sponsor ? `${v.sponsor.firstName} ${v.sponsor.lastName}` : (v.donorName || '')
+    return studentName.toLowerCase().includes(q) || sponsorName.toLowerCase().includes(q) || (v.notes || '').toLowerCase().includes(q) || String(v.amount).includes(q) || String(v.count).includes(q) || (v.currency || '').toLowerCase().includes(q)
+  }) : voucherPurchases
+  const sortedSP = sortData(filteredSP, activeTab === 'sponsor' ? sortCol : '')
+  const sortedVP = sortData(filteredVP, activeTab === 'voucher' ? sortCol : '')
 
   return (
     <div>
@@ -297,11 +311,16 @@ export default function PaymentsPage() {
         {/* Tab switcher */}
         <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
           <button onClick={() => { setActiveTab('sponsor'); setSortCol(''); setSortDir('asc') }} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'sponsor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-            <CreditCard className="w-4 h-4" /> {t('sponsorPayments.title')} ({sponsorPayments.length})
+            <CreditCard className="w-4 h-4" /> {t('sponsorPayments.title')} ({filteredSP.length}{q && filteredSP.length !== sponsorPayments.length ? `/${sponsorPayments.length}` : ''})
           </button>
           <button onClick={() => { setActiveTab('voucher'); setSortCol(''); setSortDir('asc') }} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'voucher' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-            <Ticket className="w-4 h-4" /> {t('vouchers.purchases')} ({voucherPurchases.length})
+            <Ticket className="w-4 h-4" /> {t('vouchers.purchases')} ({filteredVP.length}{q && filteredVP.length !== voucherPurchases.length ? `/${voucherPurchases.length}` : ''})
           </button>
+        </div>
+        {/* Search */}
+        <div className="relative mt-3">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('app.search')} className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 bg-white" />
         </div>
       </div>
 
@@ -438,7 +457,7 @@ export default function PaymentsPage() {
                   </tr>
                 )
               ))}
-              {sponsorPayments.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+              {sortedSP.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
             </tbody></table>
           </div>
         )}
@@ -564,7 +583,7 @@ export default function PaymentsPage() {
                   </tr>
                 )
               ))}
-              {voucherPurchases.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+              {sortedVP.length === 0 && <tr><td colSpan={canEdit ? 7 : 6} className="py-8 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
             </tbody></table>
           </div>
         )}
