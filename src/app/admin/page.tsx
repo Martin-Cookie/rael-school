@@ -166,12 +166,22 @@ function CodelistSection({
                 </div>
               </div>
             )}
-            <button
-              onClick={() => { onAdd(); setShowNewTrans(false) }}
-              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
-            >
-              <Plus className="w-4 h-4" /> {t('app.add')}
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { onAdd(); setShowNewTrans(false) }}
+                className="flex-1 flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
+              >
+                <Plus className="w-4 h-4" /> {t('app.add')}
+              </button>
+              {(newName || (showPrice && newPrice) || showNewTrans) && (
+                <button
+                  onClick={() => { setNewName(''); if (setNewPrice) setNewPrice(''); setNewNameEn(''); setNewNameSw(''); setShowNewTrans(false) }}
+                  className="px-4 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm"
+                >
+                  {t('app.cancel')}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Item list */}
