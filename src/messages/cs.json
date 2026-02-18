@@ -24,7 +24,8 @@
     "editMode": "Režim úprav",
     "viewMode": "Režim zobrazení",
     "darkMode": "Tmavý režim",
-    "lightMode": "Světlý režim"
+    "lightMode": "Světlý režim",
+    "exportCSV": "Export CSV"
   },
   "nav": {
     "dashboard": "Přehled",

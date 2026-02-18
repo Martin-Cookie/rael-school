@@ -24,7 +24,8 @@
     "editMode": "Edit mode",
     "viewMode": "View mode",
     "darkMode": "Dark mode",
-    "lightMode": "Light mode"
+    "lightMode": "Light mode",
+    "exportCSV": "Export CSV"
   },
   "nav": {
     "dashboard": "Dashboard",

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload, ChevronUp, ChevronDown, ArrowUpDown, Search } from 'lucide-react'
+import { CreditCard, Ticket, Plus, Pencil, Trash2, Check, X, Upload, ChevronUp, ChevronDown, ArrowUpDown, Search, Download } from 'lucide-react'
 import { formatNumber, formatDate, formatDateForInput } from '@/lib/format'
+import { downloadCSV } from '@/lib/csv'
 
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
@@ -289,6 +290,35 @@ export default function PaymentsPage() {
   const sortedSP = sortData(filteredSP, activeTab === 'sponsor' ? sortCol : '')
   const sortedVP = sortData(filteredVP, activeTab === 'voucher' ? sortCol : '')
 
+  function exportPayments() {
+    if (activeTab === 'sponsor') {
+      const headers = [t('payments.paymentDate'), t('sponsorPayments.paymentType'), t('payments.amount'), t('nav.students'), t('sponsors.title'), t('payments.notes')]
+      const rows = sortedSP.map((p: any) => {
+        const pt = paymentTypes.find((t: any) => t.name === p.paymentType)
+        return [
+          formatDate(p.paymentDate, locale),
+          pt ? getLocaleName(pt, locale) : p.paymentType,
+          `${formatNumber(p.amount)} ${p.currency}`,
+          p.student ? `${p.student.firstName} ${p.student.lastName}` : '',
+          p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '',
+          p.notes || '',
+        ]
+      })
+      downloadCSV('sponsor-payments.csv', headers, rows)
+    } else {
+      const headers = [t('vouchers.purchaseDate'), t('vouchers.amount'), t('vouchers.count'), t('nav.students'), t('sponsors.title'), t('payments.notes')]
+      const rows = sortedVP.map((v: any) => [
+        formatDate(v.purchaseDate, locale),
+        `${formatNumber(v.amount)} ${v.currency || 'KES'}`,
+        v.count,
+        v.student ? `${v.student.firstName} ${v.student.lastName}` : '',
+        v.sponsor ? `${v.sponsor.firstName} ${v.sponsor.lastName}` : (v.donorName || ''),
+        v.notes || '',
+      ])
+      downloadCSV('voucher-purchases.csv', headers, rows)
+    }
+  }
+
   return (
     <div>
       {message && (
@@ -301,11 +331,16 @@ export default function PaymentsPage() {
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{t('payments.title')}</h1>
-          {canEdit && (
-            <Link href="/payments/import" className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">
-              <Upload className="w-4 h-4" /> {t('payments.importPayments')}
-            </Link>
-          )}
+          <div className="flex items-center gap-2">
+            <button onClick={exportPayments} className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+              <Download className="w-4 h-4" /> {t('app.exportCSV')}
+            </button>
+            {canEdit && (
+              <Link href="/payments/import" className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">
+                <Upload className="w-4 h-4" /> {t('payments.importPayments')}
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Tab switcher */}

@@ -24,7 +24,8 @@
     "editMode": "Hali ya kuhariri",
     "viewMode": "Hali ya kuangalia",
     "darkMode": "Hali ya giza",
-    "lightMode": "Hali ya mwanga"
+    "lightMode": "Hali ya mwanga",
+    "exportCSV": "Hamisha CSV"
   },
   "nav": {
     "dashboard": "Dashibodi",

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { Search, Plus, User, Heart, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
+import { Search, Plus, User, Heart, ChevronUp, ChevronDown, ArrowUpDown, Download } from 'lucide-react'
 import { calculateAge } from '@/lib/format'
+import { downloadCSV } from '@/lib/csv'
 
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
@@ -80,14 +81,34 @@ export default function StudentsPage() {
 
   const sorted = sortData(students, sortCol)
 
+  function exportStudents() {
+    const headers = [t('student.studentNo'), t('student.lastName'), t('student.firstName'), t('student.className'), t('student.gender'), t('student.age'), t('needs.title'), t('sponsors.title')]
+    const rows = sorted.map((s: any) => [
+      s.studentNo,
+      s.lastName,
+      s.firstName,
+      s.className || '',
+      s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '',
+      s.dateOfBirth ? calculateAge(s.dateOfBirth) : '',
+      s._count?.needs || 0,
+      s._count?.sponsorships || 0,
+    ])
+    downloadCSV('students.csv', headers, rows)
+  }
+
   return (
     <div>
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{t('student.list')} <span className="text-sm font-normal text-gray-500">({students.length})</span></h1>
-          <Link href="/students/new" className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
-            <Plus className="w-4 h-4" /> {t('student.new')}
-          </Link>
+          <div className="flex items-center gap-2">
+            <button onClick={exportStudents} className="inline-flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+              <Download className="w-4 h-4" /> {t('app.exportCSV')}
+            </button>
+            <Link href="/students/new" className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
+              <Plus className="w-4 h-4" /> {t('student.new')}
+            </Link>
+          </div>
         </div>
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

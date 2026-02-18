@@ -5,13 +5,14 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Heart, Plus, Search, Pencil, X, Check, UserX, UserCheck,
-  ChevronUp, ChevronDown, ArrowUpDown
+  ChevronUp, ChevronDown, ArrowUpDown, Download
 } from 'lucide-react'
 
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
 import { createTranslator, type Locale } from '@/lib/i18n'
+import { downloadCSV } from '@/lib/csv'
 
 const msgs: Record<string, any> = { cs, en, sw }
 
@@ -216,6 +217,19 @@ export default function SponsorsPage() {
   const canEdit = user && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)
   const canDeactivate = user && ['ADMIN', 'MANAGER'].includes(user.role)
 
+  function exportSponsors() {
+    const headers = [t('student.lastName'), t('student.firstName'), t('sponsors.email'), t('sponsors.phone'), t('nav.students'), t('payments.title')]
+    const rows = sorted.map((s: Sponsor) => [
+      s.lastName,
+      s.firstName,
+      s.email,
+      s.phone || '',
+      s.sponsorships.map(sp => `${sp.student.lastName} ${sp.student.firstName}`).join('; '),
+      Object.entries(s.paymentsByCurrency).map(([cur, amt]) => `${amt} ${cur}`).join(', '),
+    ])
+    downloadCSV('sponsors.csv', headers, rows)
+  }
+
   if (loading) return (
     <div className="flex items-center justify-center h-64">
       <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
@@ -241,14 +255,19 @@ export default function SponsorsPage() {
             )}
             <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-500">({filtered.length})</span></h1>
           </div>
-          {canEdit && (
-            <button
-              onClick={() => setShowAdd(!showAdd)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
-            >
-              <Plus className="w-4 h-4" /> {t('sponsorPage.addSponsor')}
+          <div className="flex items-center gap-2">
+            <button onClick={exportSponsors} className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+              <Download className="w-4 h-4" /> {t('app.exportCSV')}
             </button>
-          )}
+            {canEdit && (
+              <button
+                onClick={() => setShowAdd(!showAdd)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
+              >
+                <Plus className="w-4 h-4" /> {t('sponsorPage.addSponsor')}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Search */}
