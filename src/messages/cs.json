@@ -228,6 +228,7 @@
     "exportStudentsCsv": "Export studentů (CSV)",
     "exportSponsorsCsv": "Export sponzorů (CSV)",
     "exportPaymentsCsv": "Export plateb (CSV)",
+    "exportCodelistsCsv": "Export číselníků (CSV)",
     "csvDesc": "Pro otevření v Excelu nebo Google Sheets",
     "restoreBackup": "Obnovit zálohu",
     "restoreDesc": "Nahrajte dříve stažený soubor .db pro obnovení dat",

@@ -250,6 +250,7 @@ function BackupSection({ t, showMsg }: { t: (key: string) => string; showMsg: (t
     { key: 'csv-students', label: t('admin.exportStudentsCsv'), desc: t('admin.csvDesc'), icon: FileSpreadsheet, endpoint: '/api/admin/backup/csv?type=students' },
     { key: 'csv-sponsors', label: t('admin.exportSponsorsCsv'), desc: t('admin.csvDesc'), icon: FileSpreadsheet, endpoint: '/api/admin/backup/csv?type=sponsors' },
     { key: 'csv-payments', label: t('admin.exportPaymentsCsv'), desc: t('admin.csvDesc'), icon: FileSpreadsheet, endpoint: '/api/admin/backup/csv?type=payments' },
+    { key: 'csv-codelists', label: t('admin.exportCodelistsCsv'), desc: t('admin.csvDesc'), icon: FileSpreadsheet, endpoint: '/api/admin/backup/csv?type=codelists' },
   ]
 
   return (

@@ -228,6 +228,7 @@
     "exportStudentsCsv": "Export Students (CSV)",
     "exportSponsorsCsv": "Export Sponsors (CSV)",
     "exportPaymentsCsv": "Export Payments (CSV)",
+    "exportCodelistsCsv": "Export Codelists (CSV)",
     "csvDesc": "For opening in Excel or Google Sheets",
     "restoreBackup": "Restore Backup",
     "restoreDesc": "Upload a previously downloaded .db file to restore data",

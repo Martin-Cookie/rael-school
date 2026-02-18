@@ -27,12 +27,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
 
-    if (!type || !['students', 'sponsors', 'payments'].includes(type)) {
-      return NextResponse.json({ error: 'Invalid type. Use: students, sponsors, payments' }, { status: 400 })
+    if (!type || !['students', 'sponsors', 'payments', 'codelists'].includes(type)) {
+      return NextResponse.json({ error: 'Invalid type. Use: students, sponsors, payments, codelists' }, { status: 400 })
     }
 
-    let csvContent: string
-    let fileName: string
+    let csvContent: string = ''
+    let fileName: string = ''
     const dateStr = new Date().toISOString().slice(0, 10)
 
     if (type === 'students') {
@@ -99,8 +99,7 @@ export async function GET(request: NextRequest) {
       csvContent = toCsv(headers, rows)
       fileName = `rael-sponsors-${dateStr}.csv`
 
-    } else {
-      // payments
+    } else if (type === 'payments') {
       const [sponsorPayments, voucherPurchases] = await Promise.all([
         prisma.sponsorPayment.findMany({
           include: {
@@ -148,6 +147,41 @@ export async function GET(request: NextRequest) {
 
       csvContent = toCsv(headers, [...spRows, ...vpRows])
       fileName = `rael-payments-${dateStr}.csv`
+
+    } else if (type === 'codelists') {
+      const [classrooms, healthCheckTypes, paymentTypes, needTypes, equipmentTypes, wishTypes] = await Promise.all([
+        prisma.classRoom.findMany({ orderBy: { sortOrder: 'asc' } }),
+        prisma.healthCheckType.findMany({ orderBy: { sortOrder: 'asc' } }),
+        prisma.paymentType.findMany({ orderBy: { sortOrder: 'asc' } }),
+        prisma.needType.findMany({ orderBy: { sortOrder: 'asc' } }),
+        prisma.equipmentType.findMany({ orderBy: { sortOrder: 'asc' } }),
+        prisma.wishType.findMany({ orderBy: { sortOrder: 'asc' } }),
+      ])
+
+      const headers = ['Typ číselníku', 'Název (CZ)', 'Název (EN)', 'Název (SW)', 'Cena (CZK)', 'Pořadí', 'Aktivní']
+
+      const mapItems = (category: string, items: any[]) =>
+        items.map(item => [
+          category,
+          item.name,
+          item.nameEn || '',
+          item.nameSw || '',
+          item.price ?? '',
+          item.sortOrder,
+          item.isActive ? 'Ano' : 'Ne',
+        ])
+
+      const rows = [
+        ...mapItems('Třídy', classrooms),
+        ...mapItems('Zdravotní prohlídky', healthCheckTypes),
+        ...mapItems('Typy plateb', paymentTypes),
+        ...mapItems('Potřeby', needTypes),
+        ...mapItems('Vybavení', equipmentTypes),
+        ...mapItems('Přání', wishTypes),
+      ]
+
+      csvContent = toCsv(headers, rows)
+      fileName = `rael-codelists-${dateStr}.csv`
     }
 
     // BOM for Excel UTF-8 compatibility

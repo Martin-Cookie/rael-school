@@ -228,6 +228,7 @@
     "exportStudentsCsv": "Safirisha Wanafunzi (CSV)",
     "exportSponsorsCsv": "Safirisha Wadhamini (CSV)",
     "exportPaymentsCsv": "Safirisha Malipo (CSV)",
+    "exportCodelistsCsv": "Safirisha Orodha za Nambari (CSV)",
     "csvDesc": "Kwa kufungua katika Excel au Google Sheets",
     "restoreBackup": "Rejesha Hifadhi",
     "restoreDesc": "Pakia faili ya .db iliyopakuliwa hapo awali kurejesha data",
