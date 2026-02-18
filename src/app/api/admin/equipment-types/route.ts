@@ -51,7 +51,11 @@ export async function PUT(request: NextRequest) {
         await prisma.equipmentType.update({ where: { id: item.id }, data: { sortOrder: item.sortOrder } })
       }
     } else if (body.id) {
-      await prisma.equipmentType.update({ where: { id: body.id }, data: { price: body.price ?? null } })
+      const data: Record<string, any> = {}
+      if (body.price !== undefined) data.price = body.price ?? null
+      if (body.nameEn !== undefined) data.nameEn = body.nameEn || null
+      if (body.nameSw !== undefined) data.nameSw = body.nameSw || null
+      await prisma.equipmentType.update({ where: { id: body.id }, data })
     } else {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }

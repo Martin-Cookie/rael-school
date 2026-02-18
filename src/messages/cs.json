@@ -238,7 +238,12 @@
     "restoreError": "Chyba při obnovení zálohy",
     "selectDbFile": "Vybrat soubor .db",
     "downloading": "Stahování...",
-    "restoring": "Obnovování..."
+    "restoring": "Obnovování...",
+    "translate": "Přeložit",
+    "translating": "Překládám...",
+    "nameEn": "Anglicky",
+    "nameSw": "Svahilsky",
+    "editTranslations": "Upravit překlady"
   },
   "wishes": {
     "title": "Přání",

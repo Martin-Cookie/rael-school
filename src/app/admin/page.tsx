@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star, Pencil, Database, Download, Upload, FileJson, FileSpreadsheet, AlertTriangle } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star, Pencil, Database, Download, Upload, FileJson, FileSpreadsheet, AlertTriangle, Languages } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -33,6 +33,13 @@ function CodelistSection({
   newPrice,
   setNewPrice,
   onPriceChange,
+  newNameEn,
+  setNewNameEn,
+  newNameSw,
+  setNewNameSw,
+  translating,
+  onTranslate,
+  onUpdateTranslations,
 }: {
   title: string
   icon: any
@@ -49,10 +56,20 @@ function CodelistSection({
   newPrice?: string
   setNewPrice?: (v: string) => void
   onPriceChange?: (id: string, price: number | null) => void
+  newNameEn: string
+  setNewNameEn: (v: string) => void
+  newNameSw: string
+  setNewNameSw: (v: string) => void
+  translating: boolean
+  onTranslate: () => void
+  onUpdateTranslations: (id: string, nameEn: string | null, nameSw: string | null) => void
 }) {
   const [open, setOpen] = useState(false)
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
   const [editPriceValue, setEditPriceValue] = useState('')
+  const [editingTransId, setEditingTransId] = useState<string | null>(null)
+  const [editNameEn, setEditNameEn] = useState('')
+  const [editNameSw, setEditNameSw] = useState('')
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden">
@@ -95,7 +112,44 @@ function CodelistSection({
                   onKeyDown={(e) => e.key === 'Enter' && onAdd()}
                 />
               )}
+              <button
+                onClick={onTranslate}
+                disabled={!newName.trim() || translating}
+                className="px-3 py-2.5 rounded-xl border border-gray-300 hover:bg-blue-50 hover:border-blue-300 text-gray-500 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+                title={t('admin.translate')}
+              >
+                {translating ? (
+                  <div className="w-4 h-4 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                ) : (
+                  <Languages className="w-4 h-4" />
+                )}
+              </button>
             </div>
+            {/* Translation fields */}
+            {(newNameEn || newNameSw || translating) && (
+              <div className="flex gap-2">
+                <div className="flex-1 relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-blue-500 uppercase">EN</span>
+                  <input
+                    type="text"
+                    value={newNameEn}
+                    onChange={(e) => setNewNameEn(e.target.value)}
+                    placeholder={t('admin.nameEn')}
+                    className="w-full pl-10 pr-3 py-2 rounded-xl border border-blue-200 bg-blue-50/50 focus:ring-2 focus:ring-blue-400 outline-none text-sm"
+                  />
+                </div>
+                <div className="flex-1 relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-amber-600 uppercase">SW</span>
+                  <input
+                    type="text"
+                    value={newNameSw}
+                    onChange={(e) => setNewNameSw(e.target.value)}
+                    placeholder={t('admin.nameSw')}
+                    className="w-full pl-10 pr-3 py-2 rounded-xl border border-amber-200 bg-amber-50/50 focus:ring-2 focus:ring-amber-400 outline-none text-sm"
+                  />
+                </div>
+              </div>
+            )}
             <button
               onClick={onAdd}
               className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"
@@ -108,62 +162,128 @@ function CodelistSection({
           {items.length > 0 ? (
             <div className="space-y-2">
               {items.map((item, idx) => (
-                <div key={item.id} className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 group">
-                  <div className="flex flex-col gap-0.5">
-                    <button
-                      onClick={() => onMove(item.id, 'up')}
-                      disabled={idx === 0}
-                      className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => onMove(item.id, 'down')}
-                      disabled={idx === items.length - 1}
-                      className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <Icon className="w-5 h-5 text-primary-500" />
-                  <span className="flex-1 text-sm font-medium text-gray-900">{getLocaleName(item, locale)}</span>
-                  {showPrice && onPriceChange && (
-                    editingPriceId === item.id ? (
-                      <input
-                        type="number"
-                        value={editPriceValue}
-                        onChange={(e) => setEditPriceValue(e.target.value)}
-                        onBlur={() => {
-                          onPriceChange(item.id, editPriceValue ? parseFloat(editPriceValue) : null)
-                          setEditingPriceId(null)
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                <div key={item.id} className="bg-gray-50 rounded-xl border border-gray-100 group">
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="flex flex-col gap-0.5">
+                      <button
+                        onClick={() => onMove(item.id, 'up')}
+                        disabled={idx === 0}
+                        className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => onMove(item.id, 'down')}
+                        disabled={idx === items.length - 1}
+                        className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <Icon className="w-5 h-5 text-primary-500" />
+                    <span className="flex-1 text-sm font-medium text-gray-900">{getLocaleName(item, locale)}</span>
+                    {showPrice && onPriceChange && (
+                      editingPriceId === item.id ? (
+                        <input
+                          type="number"
+                          value={editPriceValue}
+                          onChange={(e) => setEditPriceValue(e.target.value)}
+                          onBlur={() => {
                             onPriceChange(item.id, editPriceValue ? parseFloat(editPriceValue) : null)
                             setEditingPriceId(null)
-                          }
-                          if (e.key === 'Escape') setEditingPriceId(null)
-                        }}
-                        className="w-24 px-2 py-1 rounded-lg border border-primary-400 text-sm text-right focus:ring-2 focus:ring-primary-500 outline-none"
-                        autoFocus
-                      />
-                    ) : (
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              onPriceChange(item.id, editPriceValue ? parseFloat(editPriceValue) : null)
+                              setEditingPriceId(null)
+                            }
+                            if (e.key === 'Escape') setEditingPriceId(null)
+                          }}
+                          className="w-24 px-2 py-1 rounded-lg border border-primary-400 text-sm text-right focus:ring-2 focus:ring-primary-500 outline-none"
+                          autoFocus
+                        />
+                      ) : (
+                        <button
+                          onClick={() => { setEditingPriceId(item.id); setEditPriceValue(item.price?.toString() || '') }}
+                          className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 px-2 py-1 rounded-lg hover:bg-primary-50 transition-colors"
+                          title={t('admin.editPrice')}
+                        >
+                          {item.price ? `${formatNumber(item.price)} CZK` : t('admin.noPrice')}
+                          <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-100" />
+                        </button>
+                      )
+                    )}
+                    <button
+                      onClick={() => {
+                        if (editingTransId === item.id) {
+                          setEditingTransId(null)
+                        } else {
+                          setEditingTransId(item.id)
+                          setEditNameEn(item.nameEn || '')
+                          setEditNameSw(item.nameSw || '')
+                        }
+                      }}
+                      className="p-1.5 text-gray-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title={t('admin.editTranslations')}
+                    >
+                      <Languages className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => onDelete(item.id)}
+                      className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {/* Inline translation edit */}
+                  {editingTransId === item.id && (
+                    <div className="px-4 pb-3 flex gap-2">
+                      <div className="flex-1 relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-blue-500 uppercase">EN</span>
+                        <input
+                          type="text"
+                          value={editNameEn}
+                          onChange={(e) => setEditNameEn(e.target.value)}
+                          placeholder={t('admin.nameEn')}
+                          className="w-full pl-10 pr-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50/50 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              onUpdateTranslations(item.id, editNameEn || null, editNameSw || null)
+                              setEditingTransId(null)
+                            }
+                            if (e.key === 'Escape') setEditingTransId(null)
+                          }}
+                          autoFocus
+                        />
+                      </div>
+                      <div className="flex-1 relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-amber-600 uppercase">SW</span>
+                        <input
+                          type="text"
+                          value={editNameSw}
+                          onChange={(e) => setEditNameSw(e.target.value)}
+                          placeholder={t('admin.nameSw')}
+                          className="w-full pl-10 pr-3 py-1.5 rounded-lg border border-amber-200 bg-amber-50/50 text-sm focus:ring-2 focus:ring-amber-400 outline-none"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              onUpdateTranslations(item.id, editNameEn || null, editNameSw || null)
+                              setEditingTransId(null)
+                            }
+                            if (e.key === 'Escape') setEditingTransId(null)
+                          }}
+                        />
+                      </div>
                       <button
-                        onClick={() => { setEditingPriceId(item.id); setEditPriceValue(item.price?.toString() || '') }}
-                        className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 px-2 py-1 rounded-lg hover:bg-primary-50 transition-colors"
-                        title={t('admin.editPrice')}
+                        onClick={() => {
+                          onUpdateTranslations(item.id, editNameEn || null, editNameSw || null)
+                          setEditingTransId(null)
+                        }}
+                        className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-xs font-medium hover:bg-primary-700"
                       >
-                        {item.price ? `${formatNumber(item.price)} CZK` : t('admin.noPrice')}
-                        <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-100" />
+                        {t('app.save')}
                       </button>
-                    )
+                    </div>
                   )}
-                  <button
-                    onClick={() => onDelete(item.id)}
-                    className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
                 </div>
               ))}
             </div>
@@ -386,6 +506,8 @@ export default function AdminPage() {
   const [newWishTypePrice, setNewWishTypePrice] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [locale, setLocale] = useState<Locale>('cs')
+  const [translations, setTranslations] = useState<Record<string, { en: string; sw: string }>>({})
+  const [translating, setTranslating] = useState<string | null>(null)
 
   const t = createTranslator(msgs[locale])
 
@@ -429,13 +551,32 @@ export default function AdminPage() {
     setMessage({ type, text }); setTimeout(() => setMessage(null), 3000)
   }
 
+  async function translateName(text: string, key: string) {
+    if (!text.trim()) return
+    setTranslating(key)
+    try {
+      const res = await fetch('/api/admin/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text.trim() }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setTranslations(prev => ({ ...prev, [key]: { en: data.en || '', sw: data.sw || '' } }))
+      }
+    } catch { /* silent fail */ }
+    finally { setTranslating(null) }
+  }
+
   // Generic CRUD factory
   function makeHandlers(endpoint: string, items: CodelistItem[]) {
     return {
-      add: async (name: string, resetFn: () => void, price?: string) => {
+      add: async (name: string, resetFn: () => void, price?: string, nameEn?: string, nameSw?: string) => {
         if (!name.trim()) return
         const body: any = { name: name.trim(), sortOrder: items.length }
         if (price && parseFloat(price)) body.price = parseFloat(price)
+        if (nameEn?.trim()) body.nameEn = nameEn.trim()
+        if (nameSw?.trim()) body.nameSw = nameSw.trim()
         try {
           const res = await fetch(endpoint, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -474,6 +615,15 @@ export default function AdminPage() {
           await fetchAll(); showMsg('success', t('app.savedSuccess'))
         } catch { showMsg('error', t('app.error')) }
       },
+      updateTranslations: async (id: string, nameEn: string | null, nameSw: string | null) => {
+        try {
+          await fetch(endpoint, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, nameEn, nameSw }),
+          })
+          await fetchAll(); showMsg('success', t('app.savedSuccess'))
+        } catch { showMsg('error', t('app.error')) }
+      },
     }
   }
 
@@ -504,12 +654,25 @@ export default function AdminPage() {
           items={classrooms}
           newName={newClassName}
           setNewName={setNewClassName}
-          onAdd={() => classroomH.add(newClassName, () => setNewClassName(''))}
+          onAdd={() => {
+            const tr = translations['classrooms'] || { en: '', sw: '' }
+            classroomH.add(newClassName, () => {
+              setNewClassName('')
+              setTranslations(prev => { const next = { ...prev }; delete next['classrooms']; return next })
+            }, undefined, tr.en, tr.sw)
+          }}
           onDelete={classroomH.del}
           onMove={classroomH.move}
           placeholder={t('admin.newClassName')}
           t={t}
           locale={locale}
+          newNameEn={translations['classrooms']?.en || ''}
+          setNewNameEn={(v) => setTranslations(prev => ({ ...prev, classrooms: { en: v, sw: prev['classrooms']?.sw || '' } }))}
+          newNameSw={translations['classrooms']?.sw || ''}
+          setNewNameSw={(v) => setTranslations(prev => ({ ...prev, classrooms: { en: prev['classrooms']?.en || '', sw: v } }))}
+          translating={translating === 'classrooms'}
+          onTranslate={() => translateName(newClassName, 'classrooms')}
+          onUpdateTranslations={classroomH.updateTranslations}
         />
 
         <CodelistSection
@@ -518,12 +681,25 @@ export default function AdminPage() {
           items={healthTypes}
           newName={newHealthTypeName}
           setNewName={setNewHealthTypeName}
-          onAdd={() => healthTypeH.add(newHealthTypeName, () => setNewHealthTypeName(''))}
+          onAdd={() => {
+            const tr = translations['healthTypes'] || { en: '', sw: '' }
+            healthTypeH.add(newHealthTypeName, () => {
+              setNewHealthTypeName('')
+              setTranslations(prev => { const next = { ...prev }; delete next['healthTypes']; return next })
+            }, undefined, tr.en, tr.sw)
+          }}
           onDelete={healthTypeH.del}
           onMove={healthTypeH.move}
           placeholder={t('admin.newHealthTypeName')}
           t={t}
           locale={locale}
+          newNameEn={translations['healthTypes']?.en || ''}
+          setNewNameEn={(v) => setTranslations(prev => ({ ...prev, healthTypes: { en: v, sw: prev['healthTypes']?.sw || '' } }))}
+          newNameSw={translations['healthTypes']?.sw || ''}
+          setNewNameSw={(v) => setTranslations(prev => ({ ...prev, healthTypes: { en: prev['healthTypes']?.en || '', sw: v } }))}
+          translating={translating === 'healthTypes'}
+          onTranslate={() => translateName(newHealthTypeName, 'healthTypes')}
+          onUpdateTranslations={healthTypeH.updateTranslations}
         />
 
         <CodelistSection
@@ -532,12 +708,25 @@ export default function AdminPage() {
           items={paymentTypes}
           newName={newPaymentTypeName}
           setNewName={setNewPaymentTypeName}
-          onAdd={() => paymentTypeH.add(newPaymentTypeName, () => setNewPaymentTypeName(''))}
+          onAdd={() => {
+            const tr = translations['paymentTypes'] || { en: '', sw: '' }
+            paymentTypeH.add(newPaymentTypeName, () => {
+              setNewPaymentTypeName('')
+              setTranslations(prev => { const next = { ...prev }; delete next['paymentTypes']; return next })
+            }, undefined, tr.en, tr.sw)
+          }}
           onDelete={paymentTypeH.del}
           onMove={paymentTypeH.move}
           placeholder={t('admin.newPaymentTypeName')}
           t={t}
           locale={locale}
+          newNameEn={translations['paymentTypes']?.en || ''}
+          setNewNameEn={(v) => setTranslations(prev => ({ ...prev, paymentTypes: { en: v, sw: prev['paymentTypes']?.sw || '' } }))}
+          newNameSw={translations['paymentTypes']?.sw || ''}
+          setNewNameSw={(v) => setTranslations(prev => ({ ...prev, paymentTypes: { en: prev['paymentTypes']?.en || '', sw: v } }))}
+          translating={translating === 'paymentTypes'}
+          onTranslate={() => translateName(newPaymentTypeName, 'paymentTypes')}
+          onUpdateTranslations={paymentTypeH.updateTranslations}
         />
 
         <CodelistSection
@@ -546,7 +735,13 @@ export default function AdminPage() {
           items={needTypes}
           newName={newNeedTypeName}
           setNewName={setNewNeedTypeName}
-          onAdd={() => needTypeH.add(newNeedTypeName, () => { setNewNeedTypeName(''); setNewNeedTypePrice('') }, newNeedTypePrice)}
+          onAdd={() => {
+            const tr = translations['needTypes'] || { en: '', sw: '' }
+            needTypeH.add(newNeedTypeName, () => {
+              setNewNeedTypeName(''); setNewNeedTypePrice('')
+              setTranslations(prev => { const next = { ...prev }; delete next['needTypes']; return next })
+            }, newNeedTypePrice, tr.en, tr.sw)
+          }}
           onDelete={needTypeH.del}
           onMove={needTypeH.move}
           placeholder={t('admin.newNeedTypeName')}
@@ -556,6 +751,13 @@ export default function AdminPage() {
           newPrice={newNeedTypePrice}
           setNewPrice={setNewNeedTypePrice}
           onPriceChange={needTypeH.updatePrice}
+          newNameEn={translations['needTypes']?.en || ''}
+          setNewNameEn={(v) => setTranslations(prev => ({ ...prev, needTypes: { en: v, sw: prev['needTypes']?.sw || '' } }))}
+          newNameSw={translations['needTypes']?.sw || ''}
+          setNewNameSw={(v) => setTranslations(prev => ({ ...prev, needTypes: { en: prev['needTypes']?.en || '', sw: v } }))}
+          translating={translating === 'needTypes'}
+          onTranslate={() => translateName(newNeedTypeName, 'needTypes')}
+          onUpdateTranslations={needTypeH.updateTranslations}
         />
 
         <CodelistSection
@@ -564,7 +766,13 @@ export default function AdminPage() {
           items={equipmentTypes}
           newName={newEquipmentTypeName}
           setNewName={setNewEquipmentTypeName}
-          onAdd={() => equipmentTypeH.add(newEquipmentTypeName, () => { setNewEquipmentTypeName(''); setNewEquipmentTypePrice('') }, newEquipmentTypePrice)}
+          onAdd={() => {
+            const tr = translations['equipmentTypes'] || { en: '', sw: '' }
+            equipmentTypeH.add(newEquipmentTypeName, () => {
+              setNewEquipmentTypeName(''); setNewEquipmentTypePrice('')
+              setTranslations(prev => { const next = { ...prev }; delete next['equipmentTypes']; return next })
+            }, newEquipmentTypePrice, tr.en, tr.sw)
+          }}
           onDelete={equipmentTypeH.del}
           onMove={equipmentTypeH.move}
           placeholder={t('admin.newEquipmentTypeName')}
@@ -574,6 +782,13 @@ export default function AdminPage() {
           newPrice={newEquipmentTypePrice}
           setNewPrice={setNewEquipmentTypePrice}
           onPriceChange={equipmentTypeH.updatePrice}
+          newNameEn={translations['equipmentTypes']?.en || ''}
+          setNewNameEn={(v) => setTranslations(prev => ({ ...prev, equipmentTypes: { en: v, sw: prev['equipmentTypes']?.sw || '' } }))}
+          newNameSw={translations['equipmentTypes']?.sw || ''}
+          setNewNameSw={(v) => setTranslations(prev => ({ ...prev, equipmentTypes: { en: prev['equipmentTypes']?.en || '', sw: v } }))}
+          translating={translating === 'equipmentTypes'}
+          onTranslate={() => translateName(newEquipmentTypeName, 'equipmentTypes')}
+          onUpdateTranslations={equipmentTypeH.updateTranslations}
         />
 
         <CodelistSection
@@ -582,7 +797,13 @@ export default function AdminPage() {
           items={wishTypes}
           newName={newWishTypeName}
           setNewName={setNewWishTypeName}
-          onAdd={() => wishTypeH.add(newWishTypeName, () => { setNewWishTypeName(''); setNewWishTypePrice('') }, newWishTypePrice)}
+          onAdd={() => {
+            const tr = translations['wishTypes'] || { en: '', sw: '' }
+            wishTypeH.add(newWishTypeName, () => {
+              setNewWishTypeName(''); setNewWishTypePrice('')
+              setTranslations(prev => { const next = { ...prev }; delete next['wishTypes']; return next })
+            }, newWishTypePrice, tr.en, tr.sw)
+          }}
           onDelete={wishTypeH.del}
           onMove={wishTypeH.move}
           placeholder={t('admin.newWishTypeName')}
@@ -592,6 +813,13 @@ export default function AdminPage() {
           newPrice={newWishTypePrice}
           setNewPrice={setNewWishTypePrice}
           onPriceChange={wishTypeH.updatePrice}
+          newNameEn={translations['wishTypes']?.en || ''}
+          setNewNameEn={(v) => setTranslations(prev => ({ ...prev, wishTypes: { en: v, sw: prev['wishTypes']?.sw || '' } }))}
+          newNameSw={translations['wishTypes']?.sw || ''}
+          setNewNameSw={(v) => setTranslations(prev => ({ ...prev, wishTypes: { en: prev['wishTypes']?.en || '', sw: v } }))}
+          translating={translating === 'wishTypes'}
+          onTranslate={() => translateName(newWishTypeName, 'wishTypes')}
+          onUpdateTranslations={wishTypeH.updateTranslations}
         />
       </div>
 

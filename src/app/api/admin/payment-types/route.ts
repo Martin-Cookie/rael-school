@@ -45,10 +45,20 @@ export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const { orders } = await request.json()
-    if (!orders || !Array.isArray(orders)) return NextResponse.json({ error: 'Orders array required' }, { status: 400 })
-    for (const item of orders) {
-      await prisma.paymentType.update({ where: { id: item.id }, data: { sortOrder: item.sortOrder } })
+    const body = await request.json()
+    if (body.orders && Array.isArray(body.orders)) {
+      for (const item of body.orders) {
+        await prisma.paymentType.update({ where: { id: item.id }, data: { sortOrder: item.sortOrder } })
+      }
+    } else if (body.id) {
+      const data: Record<string, any> = {}
+      if (body.nameEn !== undefined) data.nameEn = body.nameEn || null
+      if (body.nameSw !== undefined) data.nameSw = body.nameSw || null
+      if (Object.keys(data).length > 0) {
+        await prisma.paymentType.update({ where: { id: body.id }, data })
+      }
+    } else {
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
     return NextResponse.json({ success: true })
   } catch (error) {

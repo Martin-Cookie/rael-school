@@ -69,19 +69,26 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const data = await request.json()
+    const body = await request.json()
 
-    if (data.orders) {
-      for (const order of data.orders) {
+    if (body.orders) {
+      for (const order of body.orders) {
         await prisma.classRoom.update({
           where: { id: order.id },
           data: { sortOrder: order.sortOrder },
         })
       }
-      return NextResponse.json({ success: true })
+    } else if (body.id) {
+      const data: Record<string, any> = {}
+      if (body.nameEn !== undefined) data.nameEn = body.nameEn || null
+      if (body.nameSw !== undefined) data.nameSw = body.nameSw || null
+      if (Object.keys(data).length > 0) {
+        await prisma.classRoom.update({ where: { id: body.id }, data })
+      }
+    } else {
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
-
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error updating classrooms:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

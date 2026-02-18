@@ -238,7 +238,12 @@
     "restoreError": "Error restoring backup",
     "selectDbFile": "Select .db file",
     "downloading": "Downloading...",
-    "restoring": "Restoring..."
+    "restoring": "Restoring...",
+    "translate": "Translate",
+    "translating": "Translating...",
+    "nameEn": "English",
+    "nameSw": "Swahili",
+    "editTranslations": "Edit translations"
   },
   "wishes": {
     "title": "Wishes",

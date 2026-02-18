@@ -238,7 +238,12 @@
     "restoreError": "Hitilafu ya kurejesha hifadhi",
     "selectDbFile": "Chagua faili ya .db",
     "downloading": "Inapakua...",
-    "restoring": "Inarejesha..."
+    "restoring": "Inarejesha...",
+    "translate": "Tafsiri",
+    "translating": "Inatafsiri...",
+    "nameEn": "Kiingereza",
+    "nameSw": "Kiswahili",
+    "editTranslations": "Hariri tafsiri"
   },
   "wishes": {
     "title": "Matakwa",
