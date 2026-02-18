@@ -428,7 +428,7 @@ export default function PaymentsPage() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={addSponsorPayment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
-                  <button onClick={() => setShowAddSponsor(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button>
+                  <button onClick={() => { setShowAddSponsor(false); setNewSP({ studentId: '', sponsorId: '', paymentDate: '', amount: '', currency: 'CZK', paymentType: '', notes: '' }) }} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button>
                 </div>
               </div>
             )}
@@ -565,7 +565,7 @@ export default function PaymentsPage() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={addVoucherPurchase} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
-                  <button onClick={() => setShowAddVoucher(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button>
+                  <button onClick={() => { setShowAddVoucher(false); setNewVP({ studentId: '', purchaseDate: '', amount: '', currency: 'CZK', count: '', sponsorId: '', notes: '' }) }} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button>
                 </div>
               </div>
             )}
