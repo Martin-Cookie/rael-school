@@ -144,15 +144,17 @@ Soubory:
 
 **Layout vstupního formuláře:**
 ```
-[ Český název              ] [ Cena ] [ 🌐 ]
+[ Český název (celá šířka)          ] [ 🌐 ]
+[ Cena ]                  ← jen u číselníků s cenou
 [ EN: auto-překlad                         ]
 [ SW: auto-překlad                         ]
 [              + Přidat                     ]
 ```
 
+- Název + Globe jsou na jednom řádku, Cena na samostatném řádku pod nimi
 - Překladová pole jsou **vertikálně pod sebou** (ne vedle sebe)
 - Globe tlačítko je **toggle** s vizuálním zvýrazněním aktivního stavu (modrý rámeček)
-- Pole Cena a Globe mají `flex-shrink-0` — nepřetékají přes okraj karty
+- Globe tlačítko má `flex-shrink-0` — nepřetéká přes okraj karty
 
 **Editace překladu u existujících položek:**
 - Ikona Globe na řádku položky (viditelná při hoveru)

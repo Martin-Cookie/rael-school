@@ -83,7 +83,7 @@ function CodelistSection({
           <Icon className="w-6 h-6 text-primary-600" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 truncate">{title}</h3>
+          <h3 className="font-semibold text-gray-900 text-sm leading-tight" title={title}>{title}</h3>
           <p className="text-sm text-gray-500">{items.length} {items.length === 1 ? 'položka' : items.length >= 2 && items.length <= 4 ? 'položky' : 'položek'}</p>
         </div>
         <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -103,16 +103,6 @@ function CodelistSection({
                 className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                 onKeyDown={(e) => e.key === 'Enter' && onAdd()}
               />
-              {showPrice && setNewPrice && (
-                <input
-                  type="number"
-                  value={newPrice || ''}
-                  onChange={(e) => setNewPrice(e.target.value)}
-                  placeholder={t('admin.priceCZK')}
-                  className="w-24 flex-shrink-0 px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                  onKeyDown={(e) => e.key === 'Enter' && onAdd()}
-                />
-              )}
               <button
                 onClick={() => {
                   if (showNewTrans) {
@@ -135,6 +125,16 @@ function CodelistSection({
                 )}
               </button>
             </div>
+            {showPrice && setNewPrice && (
+              <input
+                type="number"
+                value={newPrice || ''}
+                onChange={(e) => setNewPrice(e.target.value)}
+                placeholder={t('admin.priceCZK')}
+                className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+              />
+            )}
             {/* Translation fields */}
             {showNewTrans && (
               <div className="space-y-2">
@@ -393,7 +393,7 @@ function BackupSection({ t, showMsg }: { t: (key: string) => string; showMsg: (t
           <Database className="w-6 h-6 text-emerald-600" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 truncate">{t('admin.backup')}</h3>
+          <h3 className="font-semibold text-gray-900 text-sm leading-tight" title={t('admin.backup')}>{t('admin.backup')}</h3>
           <p className="text-sm text-gray-500">{t('admin.backupDesc')}</p>
         </div>
         <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
