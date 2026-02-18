@@ -349,15 +349,15 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }
 
   const tabs: { key: Tab; label: string; icon: any; color: string; activeColor: string }[] = [
-    { key: 'personal', label: t('student.tabs.personal'), icon: User, color: 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100', activeColor: 'bg-gray-700 text-white border-gray-700' },
-    { key: 'sponsors', label: t('student.tabs.sponsors'), icon: HandHeart, color: 'bg-accent-50 border-accent-200 text-accent-600 hover:bg-accent-100', activeColor: 'bg-accent-600 text-white border-accent-600' },
-    { key: 'equipment', label: t('equipment.title'), icon: Package, color: 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100', activeColor: 'bg-amber-600 text-white border-amber-600' },
-    { key: 'needs', label: t('needs.title'), icon: Heart, color: 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100', activeColor: 'bg-rose-600 text-white border-rose-600' },
-    { key: 'wishes', label: t('wishes.title'), icon: Star, color: 'bg-violet-50 border-violet-200 text-violet-600 hover:bg-violet-100', activeColor: 'bg-violet-600 text-white border-violet-600' },
-    { key: 'vouchers', label: t('student.tabs.vouchers'), icon: Ticket, color: 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100', activeColor: 'bg-blue-600 text-white border-blue-600' },
-    { key: 'sponsorPayments', label: t('sponsorPayments.title'), icon: CreditCard, color: 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100', activeColor: 'bg-indigo-600 text-white border-indigo-600' },
-    { key: 'health', label: t('student.tabs.health'), icon: Stethoscope, color: 'bg-teal-50 border-teal-200 text-teal-600 hover:bg-teal-100', activeColor: 'bg-teal-600 text-white border-teal-600' },
-    { key: 'photos', label: t('student.tabs.photos'), icon: Camera, color: 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100', activeColor: 'bg-slate-600 text-white border-slate-600' },
+    { key: 'personal', label: t('student.tabs.personal'), icon: User, color: 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700', activeColor: 'bg-gray-700 text-white border-gray-700 dark:bg-gray-600 dark:border-gray-500' },
+    { key: 'sponsors', label: t('student.tabs.sponsors'), icon: HandHeart, color: 'bg-accent-50 border-accent-200 text-accent-600 hover:bg-accent-100 dark:bg-accent-900/30 dark:border-accent-700 dark:text-accent-400 dark:hover:bg-accent-900/50', activeColor: 'bg-accent-600 text-white border-accent-600' },
+    { key: 'equipment', label: t('equipment.title'), icon: Package, color: 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/50', activeColor: 'bg-amber-600 text-white border-amber-600' },
+    { key: 'needs', label: t('needs.title'), icon: Heart, color: 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100 dark:bg-rose-900/30 dark:border-rose-700 dark:text-rose-400 dark:hover:bg-rose-900/50', activeColor: 'bg-rose-600 text-white border-rose-600' },
+    { key: 'wishes', label: t('wishes.title'), icon: Star, color: 'bg-violet-50 border-violet-200 text-violet-600 hover:bg-violet-100 dark:bg-violet-900/30 dark:border-violet-700 dark:text-violet-400 dark:hover:bg-violet-900/50', activeColor: 'bg-violet-600 text-white border-violet-600' },
+    { key: 'vouchers', label: t('student.tabs.vouchers'), icon: Ticket, color: 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/50', activeColor: 'bg-blue-600 text-white border-blue-600' },
+    { key: 'sponsorPayments', label: t('sponsorPayments.title'), icon: CreditCard, color: 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:border-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-900/50', activeColor: 'bg-indigo-600 text-white border-indigo-600' },
+    { key: 'health', label: t('student.tabs.health'), icon: Stethoscope, color: 'bg-teal-50 border-teal-200 text-teal-600 hover:bg-teal-100 dark:bg-teal-900/30 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/50', activeColor: 'bg-teal-600 text-white border-teal-600' },
+    { key: 'photos', label: t('student.tabs.photos'), icon: Camera, color: 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700', activeColor: 'bg-slate-600 text-white border-slate-600' },
   ]
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
@@ -398,17 +398,17 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       {message && <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>{message.text}</div>}
 
       {/* ===== HERO HEADER ===== */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 shadow-sm">
         <div className="flex items-start gap-5">
-          <button onClick={() => router.push(backUrl)} className="p-2 rounded-lg hover:bg-gray-100 mt-1 flex-shrink-0">
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <button onClick={() => router.push(backUrl)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 mt-1 flex-shrink-0">
+            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
           <div className="relative group flex-shrink-0">
             {student.profilePhoto ? (
               <img src={student.profilePhoto} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-gray-100 shadow-sm" />
             ) : (
-              <div className="w-20 h-20 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl flex items-center justify-center border-2 border-primary-100">
-                <User className="w-10 h-10 text-primary-400" />
+              <div className="w-20 h-20 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/40 dark:to-primary-800/40 rounded-2xl flex items-center justify-center border-2 border-primary-100 dark:border-primary-700">
+                <User className="w-10 h-10 text-primary-400 dark:text-primary-300" />
               </div>
             )}
             {canEditData && (
@@ -421,12 +421,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{student.firstName} {student.lastName}</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{student.firstName} {student.lastName}</h1>
                 <div className="flex flex-wrap items-center gap-2 mt-2">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-700">{student.studentNo}</span>
-                  {student.className && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-primary-50 text-xs font-medium text-primary-700">{student.className}</span>}
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 text-xs font-medium text-blue-700">{calculateAge(student.dateOfBirth)} {locale === 'cs' ? 'let' : locale === 'sw' ? 'miaka' : 'years'}</span>
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 text-xs font-medium text-purple-700">{student.gender === 'M' ? t('student.male') : student.gender === 'F' ? t('student.female') : '-'}</span>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300">{student.studentNo}</span>
+                  {student.className && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/30 text-xs font-medium text-primary-700 dark:text-primary-400">{student.className}</span>}
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-xs font-medium text-blue-700 dark:text-blue-400">{calculateAge(student.dateOfBirth)} {locale === 'cs' ? 'let' : locale === 'sw' ? 'miaka' : 'years'}</span>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-xs font-medium text-purple-700 dark:text-purple-400">{student.gender === 'M' ? t('student.male') : student.gender === 'F' ? t('student.female') : '-'}</span>
                 </div>
               </div>
               {canEditData && (activeTab === 'personal' || activeTab === 'equipment') && (
@@ -483,10 +483,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       {activeTab === 'personal' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Personal info card */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-5">
-              <div className="p-2 bg-primary-50 rounded-lg"><User className="w-4 h-4 text-primary-600" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('student.tabs.personal')}</h3>
+              <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg"><User className="w-4 h-4 text-primary-600 dark:text-primary-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('student.tabs.personal')}</h3>
             </div>
             <div className="space-y-4">
               <Field label={t('student.firstName')} value={editData.firstName} editMode={editMode} onChange={(v) => setEditData({ ...editData, firstName: v })} />
@@ -499,10 +499,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           </div>
 
           {/* Family card */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-5">
-              <div className="p-2 bg-accent-50 rounded-lg"><Heart className="w-4 h-4 text-accent-600" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('student.family.title')}</h3>
+              <div className="p-2 bg-accent-50 dark:bg-accent-900/30 rounded-lg"><Heart className="w-4 h-4 text-accent-600 dark:text-accent-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('student.family.title')}</h3>
             </div>
             <div className="space-y-4">
               <Field label={t('student.family.motherName')} value={editData.motherName} editMode={editMode} onChange={(v) => setEditData({ ...editData, motherName: v })} />
@@ -514,23 +514,23 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           </div>
 
           {/* Notes card - full width */}
-          <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-5">
-              <div className="p-2 bg-blue-50 rounded-lg"><Edit3 className="w-4 h-4 text-blue-600" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('student.notes')}</h3>
+              <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg"><Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('student.notes')}</h3>
             </div>
-            {editMode ? <textarea value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={4} className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none resize-none" /> : <p className="text-gray-700 whitespace-pre-wrap">{student.notes || '-'}</p>}
+            {editMode ? <textarea value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={4} className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none resize-none" /> : <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{student.notes || '-'}</p>}
           </div>
         </div>
       )}
 
       {/* ===== EQUIPMENT ===== */}
       {activeTab === 'equipment' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-primary-50 rounded-lg"><Package className="w-4 h-4 text-primary-600" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('equipment.title')}</h3>
+              <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg"><Package className="w-4 h-4 text-primary-600 dark:text-primary-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('equipment.title')}</h3>
             </div>
             {canEditData && !editMode && <button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>}
           </div>
@@ -595,11 +595,11 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
       {/* ===== NEEDS ===== */}
       {activeTab === 'needs' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-red-50 rounded-lg"><Heart className="w-4 h-4 text-red-500" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('needs.title')}</h3>
+              <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg"><Heart className="w-4 h-4 text-red-500 dark:text-red-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('needs.title')}</h3>
             </div>
             {canEditData && <button onClick={() => setShowAddNeed(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('needs.addNeed')}</button>}
           </div>
@@ -621,7 +621,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           )}
           <div className="space-y-2">
             {student.needs?.map((need: any) => (
-              <div key={need.id} className={`flex items-center justify-between p-3 rounded-lg ${need.isFulfilled ? 'bg-primary-50' : 'bg-red-50'}`}>
+              <div key={need.id} className={`flex items-center justify-between p-3 rounded-lg ${need.isFulfilled ? 'bg-primary-50 dark:bg-primary-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
                 <div className="flex items-center gap-3">
                   {canEditData ? <button onClick={() => toggleNeedFulfilled(need.id, need.isFulfilled)} className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${need.isFulfilled ? 'bg-primary-500 border-primary-500' : 'border-gray-300 hover:border-primary-400'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</button> : <div className={`w-6 h-6 rounded-full flex items-center justify-center ${need.isFulfilled ? 'bg-primary-500' : 'bg-gray-300'}`}>{need.isFulfilled && <Check className="w-4 h-4 text-white" />}</div>}
                   <div>
@@ -641,11 +641,11 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
       {/* ===== WISHES ===== */}
       {activeTab === 'wishes' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-yellow-50 rounded-lg"><Star className="w-4 h-4 text-yellow-500" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('wishes.title')}</h3>
+              <div className="p-2 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg"><Star className="w-4 h-4 text-yellow-500 dark:text-yellow-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('wishes.title')}</h3>
             </div>
             {canEditData && <button onClick={() => setShowAddWish(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('wishes.addWish')}</button>}
           </div>
@@ -667,7 +667,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           )}
           <div className="space-y-2">
             {student.wishes?.map((wish: any) => (
-              <div key={wish.id} className={`flex items-center justify-between p-3 rounded-lg ${wish.isFulfilled ? 'bg-primary-50' : 'bg-yellow-50'}`}>
+              <div key={wish.id} className={`flex items-center justify-between p-3 rounded-lg ${wish.isFulfilled ? 'bg-primary-50 dark:bg-primary-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20'}`}>
                 <div className="flex items-center gap-3">
                   {canEditData ? <button onClick={() => toggleWishFulfilled(wish.id, wish.isFulfilled)} className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${wish.isFulfilled ? 'bg-primary-500 border-primary-500' : 'border-gray-300 hover:border-primary-400'}`}>{wish.isFulfilled && <Check className="w-4 h-4 text-white" />}</button> : <div className={`w-6 h-6 rounded-full flex items-center justify-center ${wish.isFulfilled ? 'bg-primary-500' : 'bg-gray-300'}`}>{wish.isFulfilled && <Check className="w-4 h-4 text-white" />}</div>}
                   <div>
@@ -691,32 +691,32 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
         <div className="space-y-6">
           {/* Stats row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-              <p className="text-xs text-blue-600 font-medium">{t('vouchers.totalAmount')}</p>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+              <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">{t('vouchers.totalAmount')}</p>
               {Object.keys(totalsByCurrency).length > 0 ? Object.entries(totalsByCurrency).map(([cur, amt]) => (
-                <p key={cur} className="text-xl font-bold text-blue-900">{fmtCurrency(amt, cur)}</p>
-              )) : <p className="text-xl font-bold text-blue-900">{fmtCurrency(0, 'CZK')}</p>}
+                <p key={cur} className="text-xl font-bold text-blue-900 dark:text-blue-300">{fmtCurrency(amt, cur)}</p>
+              )) : <p className="text-xl font-bold text-blue-900 dark:text-blue-300">{fmtCurrency(0, 'CZK')}</p>}
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-              <p className="text-xs text-primary-600 font-medium">{t('vouchers.totalPurchased')}</p>
-              <p className="text-xl font-bold text-primary-900">{formatNumber(totalPurchased)}</p>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+              <p className="text-xs text-primary-600 dark:text-primary-400 font-medium">{t('vouchers.totalPurchased')}</p>
+              <p className="text-xl font-bold text-primary-900 dark:text-primary-300">{formatNumber(totalPurchased)}</p>
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-              <p className="text-xs text-accent-600 font-medium">{t('vouchers.totalUsed')}</p>
-              <p className="text-xl font-bold text-accent-900">{formatNumber(totalUsed)}</p>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+              <p className="text-xs text-accent-600 dark:text-accent-400 font-medium">{t('vouchers.totalUsed')}</p>
+              <p className="text-xl font-bold text-accent-900 dark:text-accent-300">{formatNumber(totalUsed)}</p>
             </div>
-            <div className={`bg-white rounded-xl border p-4 shadow-sm ${available > 0 ? 'border-primary-200' : 'border-red-200'}`}>
+            <div className={`bg-white dark:bg-gray-800 rounded-xl border p-4 shadow-sm ${available > 0 ? 'border-primary-200 dark:border-primary-700' : 'border-red-200 dark:border-red-700'}`}>
               <p className={`text-xs font-medium ${available > 0 ? 'text-primary-600' : 'text-red-600'}`}>{t('vouchers.available')}</p>
               <p className={`text-xl font-bold ${available > 0 ? 'text-primary-900' : 'text-red-900'}`}>{formatNumber(available)}</p>
             </div>
           </div>
 
           {/* Voucher tables card */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 rounded-lg"><Ticket className="w-4 h-4 text-blue-600" /></div>
-                <h3 className="text-base font-semibold text-gray-900">{t('vouchers.title')}</h3>
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg"><Ticket className="w-4 h-4 text-blue-600 dark:text-blue-400" /></div>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('vouchers.title')}</h3>
               </div>
               {canEditData && <button onClick={() => { setNewVoucher({ ...newVoucher, donorName: defaultDonor, sponsorId: '' }); setShowAddVoucher(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
             </div>
@@ -818,11 +818,11 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
       {/* ===== PHOTOS ===== */}
       {activeTab === 'photos' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-purple-50 rounded-lg"><Camera className="w-4 h-4 text-purple-600" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('photos.title')}</h3>
+              <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg"><Camera className="w-4 h-4 text-purple-600 dark:text-purple-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('photos.title')}</h3>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex gap-1 bg-gray-100 rounded-lg p-1">{[{ key:'all',label:t('photos.filterAll') },{ key:'visit',label:t('photos.visit') },{ key:'handover',label:t('photos.handover') },{ key:'voucher',label:t('photos.voucher') }].map(f => <button key={f.key} onClick={() => setPhotoFilter(f.key)} className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${photoFilter === f.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{f.label}</button>)}</div>
@@ -842,25 +842,25 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           )}
           {filteredPhotos.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{filteredPhotos.map((photo: any) => (
-              <div key={photo.id} className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
-                {photo.filePath ? <img src={photo.filePath} alt={photo.description || ''} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-200 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400" /></div>}
+              <div key={photo.id} className="bg-gray-50 dark:bg-gray-700 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
+                {photo.filePath ? <img src={photo.filePath} alt={photo.description || ''} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-200 dark:bg-gray-600 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400 dark:text-gray-500" /></div>}
                 <div className="p-3">
-                  <div className="flex items-start justify-between"><p className="text-sm font-medium text-gray-900">{photo.description || '-'}</p>{canEditData && <button onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}</div>
+                  <div className="flex items-start justify-between"><p className="text-sm font-medium text-gray-900 dark:text-gray-100">{photo.description || '-'}</p>{canEditData && <button onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}</div>
                   <div className="flex items-center justify-between mt-2"><span className="text-xs text-gray-500">{formatDate(photo.takenAt, locale)}</span><span className={`badge ${photo.category === 'visit' ? 'badge-green' : photo.category === 'handover' ? 'badge-yellow' : 'badge-red'}`}>{photo.category === 'visit' ? t('photos.visit') : photo.category === 'handover' ? t('photos.handover') : t('photos.voucher')}</span></div>
                 </div>
               </div>
             ))}</div>
-          ) : <div className="text-center py-12"><Camera className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('photos.noPhotos')}</p></div>}
+          ) : <div className="text-center py-12"><Camera className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" /><p className="text-gray-500 dark:text-gray-400">{t('photos.noPhotos')}</p></div>}
         </div>
       )}
 
       {/* ===== SPONSORS ===== */}
       {activeTab === 'sponsors' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-accent-50 rounded-lg"><HandHeart className="w-4 h-4 text-accent-600" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('sponsors.title')}</h3>
+              <div className="p-2 bg-accent-50 dark:bg-accent-900/30 rounded-lg"><HandHeart className="w-4 h-4 text-accent-600 dark:text-accent-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('sponsors.title')}</h3>
             </div>
             {canEditData && <button onClick={() => setShowAddSponsor(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('sponsors.addSponsor')}</button>}
           </div>
@@ -916,7 +916,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           )}
           {student.sponsorships?.length > 0 ? (
             <div className="space-y-4">{student.sponsorships.map((sp: any) => (
-              <div key={sp.id} className="bg-accent-50 rounded-xl p-5 border border-accent-200">
+              <div key={sp.id} className="bg-accent-50 dark:bg-accent-900/20 rounded-xl p-5 border border-accent-200 dark:border-accent-800">
                 {editingSponsor === sp.id ? (
                   <div className="space-y-3">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -930,9 +930,9 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   </div>
                 ) : (
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-accent-200 rounded-full flex items-center justify-center flex-shrink-0"><HandHeart className="w-5 h-5 text-accent-700" /></div>
+                    <div className="w-10 h-10 bg-accent-200 dark:bg-accent-800 rounded-full flex items-center justify-center flex-shrink-0"><HandHeart className="w-5 h-5 text-accent-700 dark:text-accent-300" /></div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{sp.sponsor.firstName} {sp.sponsor.lastName}</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100">{sp.sponsor.firstName} {sp.sponsor.lastName}</h4>
                       <p className="text-sm text-gray-600">{sp.sponsor.email}</p>
                       {sp.sponsor.phone && <p className="text-sm text-gray-600">{sp.sponsor.phone}</p>}
                       <p className="text-xs text-gray-500 mt-2">{t('sponsors.startDate')}: {formatDate(sp.startDate, locale)}</p>
@@ -945,17 +945,17 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 )}
               </div>
             ))}</div>
-          ) : <div className="text-center py-12"><HandHeart className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('sponsors.noSponsors')}</p></div>}
+          ) : <div className="text-center py-12"><HandHeart className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" /><p className="text-gray-500 dark:text-gray-400">{t('sponsors.noSponsors')}</p></div>}
         </div>
       )}
 
       {/* ===== SPONSOR PAYMENTS ===== */}
       {activeTab === 'sponsorPayments' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-green-50 rounded-lg"><CreditCard className="w-4 h-4 text-green-600" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('sponsorPayments.title')}</h3>
+              <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg"><CreditCard className="w-4 h-4 text-green-600 dark:text-green-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('sponsorPayments.title')}</h3>
             </div>
             {canEditData && <button onClick={() => { setNewPayment({ ...newPayment, sponsorId: student.sponsorships?.[0]?.sponsor?.id || '' }); setShowAddPayment(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
           </div>
@@ -980,36 +980,36 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             </div>
           )}
           {student.sponsorPayments?.length > 0 ? (
-            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
-              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('payments.paymentDate')}</th>
-              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('sponsorPayments.paymentType')}</th>
-              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('vouchers.amount')}</th>
-              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
-              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
+            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200 dark:border-gray-600">
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('payments.paymentDate')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('sponsorPayments.paymentType')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('vouchers.amount')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('sponsors.title')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('student.notes')}</th>
               {canEditData && <th className="w-10"></th>}
             </tr></thead><tbody>
               {student.sponsorPayments.map((p: any) => (
-                <tr key={p.id} className="border-b border-gray-50">
-                  <td className="py-3 px-2 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
+                <tr key={p.id} className="border-b border-gray-50 dark:border-gray-700">
+                  <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatDate(p.paymentDate, locale)}</td>
                   <td className="py-3 px-2 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{ptLabel(p.paymentType)}</span></td>
-                  <td className="py-3 px-2 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
-                  <td className="py-3 px-2 text-sm text-gray-700">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
-                  <td className="py-3 px-2 text-sm text-gray-500">{p.notes || '-'}</td>
+                  <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
+                  <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
+                  <td className="py-3 px-2 text-sm text-gray-500 dark:text-gray-400">{p.notes || '-'}</td>
                   {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteSponsorPayment(p.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                 </tr>
               ))}
             </tbody></table></div>
-          ) : <div className="text-center py-12"><CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('app.noData')}</p></div>}
+          ) : <div className="text-center py-12"><CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" /><p className="text-gray-500 dark:text-gray-400">{t('app.noData')}</p></div>}
         </div>
       )}
 
       {/* ===== HEALTH ===== */}
       {activeTab === 'health' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-green-50 rounded-lg"><Stethoscope className="w-4 h-4 text-green-600" /></div>
-              <h3 className="text-base font-semibold text-gray-900">{t('health.title')}</h3>
+              <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg"><Stethoscope className="w-4 h-4 text-green-600 dark:text-green-400" /></div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('health.title')}</h3>
             </div>
             {canEditData && <button onClick={() => setShowAddHealth(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('health.addCheck')}</button>}
           </div>
@@ -1024,22 +1024,22 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             </div>
           )}
           {student.healthChecks?.length > 0 ? (
-            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200">
-              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('health.checkDate')}</th>
-              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-24">{t('health.checkType')}</th>
-              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('health.notes')}</th>
+            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200 dark:border-gray-600">
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-28">{t('health.checkDate')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-24">{t('health.checkType')}</th>
+              <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('health.notes')}</th>
               {canEditData && <th className="w-10"></th>}
             </tr></thead><tbody>
               {student.healthChecks.map((hc: any) => (
-                <tr key={hc.id} className="border-b border-gray-50">
-                  <td className="py-3 px-2 text-sm text-gray-900">{formatDate(hc.checkDate, locale)}</td>
+                <tr key={hc.id} className="border-b border-gray-50 dark:border-gray-700">
+                  <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatDate(hc.checkDate, locale)}</td>
                   <td className="py-3 px-2 text-sm"><span className={`badge ${hc.checkType === 'urgent' ? 'badge-red' : hc.checkType === 'dentist' ? 'badge-yellow' : 'badge-green'}`}>{htLabel(hc.checkType)}</span></td>
-                  <td className="py-3 px-2 text-sm text-gray-700">{hc.notes || '-'}</td>
+                  <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{hc.notes || '-'}</td>
                   {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteHealthCheck(hc.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                 </tr>
               ))}
             </tbody></table></div>
-          ) : <div className="text-center py-12"><Stethoscope className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="text-gray-500">{t('health.noChecks')}</p></div>}
+          ) : <div className="text-center py-12"><Stethoscope className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" /><p className="text-gray-500 dark:text-gray-400">{t('health.noChecks')}</p></div>}
         </div>
       )}
     </div>
@@ -1047,8 +1047,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 }
 
 function Field({ label, value, type = 'text', editMode, onChange }: { label: string; value: any; type?: string; editMode: boolean; onChange: (v: string) => void }) {
-  return (<div><label className="block text-sm font-medium text-gray-500 mb-1">{label}</label>{editMode ? <input type={type} value={value || ''} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none" /> : <p className="text-gray-900 py-2">{type === 'date' ? formatDate(value) : value || '-'}</p>}</div>)
+  return (<div><label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>{editMode ? <input type={type} value={value || ''} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" /> : <p className="text-gray-900 dark:text-gray-100 py-2">{type === 'date' ? formatDate(value) : value || '-'}</p>}</div>)
 }
 function SelectField({ label, value, editMode, options, displayValue, onChange }: { label: string; value: string; editMode: boolean; options: { value: string; label: string }[]; displayValue: string; onChange: (v: string) => void }) {
-  return (<div><label className="block text-sm font-medium text-gray-500 mb-1">{label}</label>{editMode ? <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none">{options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select> : <p className="text-gray-900 py-2">{displayValue}</p>}</div>)
+  return (<div><label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>{editMode ? <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none">{options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select> : <p className="text-gray-900 dark:text-gray-100 py-2">{displayValue}</p>}</div>)
 }
