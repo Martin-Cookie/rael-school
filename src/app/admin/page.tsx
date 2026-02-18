@@ -10,6 +10,7 @@ import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
 
 
 const msgs: Record<string, any> = { cs, en, sw }
+const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
 
 type CodelistItem = { id: string; name: string; nameEn?: string | null; nameSw?: string | null; sortOrder: number; isActive: boolean; price?: number | null }
 type VoucherRateItem = { id: string; currency: string; rate: number; isActive: boolean }
@@ -390,31 +391,38 @@ function VoucherRateSection({
       {open && (
         <div className="px-5 pb-5 border-t border-gray-100 dark:border-gray-700 pt-4">
           {/* Add new rate */}
-          <div className="mb-4 flex gap-2">
-            <input
-              type="text"
-              value={newCurrency}
-              onChange={(e) => setNewCurrency(e.target.value.toUpperCase())}
-              placeholder={t('admin.newCurrency')}
-              className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm uppercase"
-              maxLength={5}
-              onKeyDown={(e) => e.key === 'Enter' && onAdd()}
-            />
-            <input
-              type="number"
-              value={newRate}
-              onChange={(e) => setNewRate(e.target.value)}
-              placeholder={t('admin.ratePerVoucher')}
-              className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-              onKeyDown={(e) => e.key === 'Enter' && onAdd()}
-            />
-            <button
-              onClick={onAdd}
-              className="px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 flex items-center gap-1.5"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
+          {(() => {
+            const usedCurrencies = new Set(items.map(i => i.currency))
+            const available = CURRENCIES.filter(c => !usedCurrencies.has(c))
+            return available.length > 0 ? (
+              <div className="mb-4 flex gap-2">
+                <select
+                  value={newCurrency}
+                  onChange={(e) => setNewCurrency(e.target.value)}
+                  className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                >
+                  <option value="">{t('admin.newCurrency')}</option>
+                  {available.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <input
+                  type="number"
+                  value={newRate}
+                  onChange={(e) => setNewRate(e.target.value)}
+                  placeholder={t('admin.ratePerVoucher')}
+                  className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+                />
+                <button
+                  onClick={onAdd}
+                  className="px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 flex items-center gap-1.5"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <p className="mb-4 text-sm text-gray-400 dark:text-gray-500 italic">{t('admin.allCurrenciesAdded')}</p>
+            )
+          })()}
 
           {/* Rate list */}
           {items.length > 0 ? (
