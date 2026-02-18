@@ -91,7 +91,7 @@ export default function SponsorsPage() {
     ro.observe(el)
     window.addEventListener('resize', update)
     return () => { ro.disconnect(); window.removeEventListener('resize', update) }
-  }, [])
+  }, [loading])
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => setUser(d.user)).catch(() => {})

@@ -64,7 +64,7 @@ export default function PaymentsPage() {
     ro.observe(el)
     window.addEventListener('resize', update)
     return () => { ro.disconnect(); window.removeEventListener('resize', update) }
-  }, [])
+  }, [loading])
 
   useEffect(() => {
     fetchData()

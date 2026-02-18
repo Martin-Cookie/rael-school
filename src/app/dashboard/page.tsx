@@ -60,7 +60,7 @@ export default function DashboardPage() {
     ro.observe(el)
     window.addEventListener('resize', update)
     return () => { ro.disconnect(); window.removeEventListener('resize', update) }
-  }, [])
+  }, [loading])
 
   useEffect(() => {
     fetch('/api/dashboard').then(r => r.json()).then(data => {
