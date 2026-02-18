@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star, Pencil, Database, Download, Upload, FileJson, FileSpreadsheet, AlertTriangle, Languages } from 'lucide-react'
+import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star, Pencil, Database, Download, Upload, FileJson, FileSpreadsheet, AlertTriangle, Globe } from 'lucide-react'
 import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
@@ -121,7 +121,7 @@ function CodelistSection({
                 {translating ? (
                   <div className="w-4 h-4 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
                 ) : (
-                  <Languages className="w-4 h-4" />
+                  <Globe className="w-4 h-4" />
                 )}
               </button>
             </div>
@@ -226,7 +226,7 @@ function CodelistSection({
                       className="p-1.5 text-gray-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"
                       title={t('admin.editTranslations')}
                     >
-                      <Languages className="w-4 h-4" />
+                      <Globe className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => onDelete(item.id)}
