@@ -36,7 +36,8 @@
     "settings": "Nastavení",
     "logout": "Odhlásit se",
     "admin": "Administrace",
-    "classes": "Třídy"
+    "classes": "Třídy",
+    "tuition": "Předpisy"
   },
   "auth": {
     "login": "Přihlášení",

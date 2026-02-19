@@ -36,7 +36,8 @@
     "settings": "Mipangilio",
     "logout": "Ondoka",
     "admin": "Usimamizi",
-    "classes": "Madarasa"
+    "classes": "Madarasa",
+    "tuition": "Karo"
   },
   "auth": {
     "login": "Ingia",

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Users, Heart, CreditCard, BarChart3,
-  LogOut, Menu, X, Globe, Settings, GraduationCap, Moon, Sun
+  LogOut, Menu, X, Globe, Settings, GraduationCap, Moon, Sun, FileText
 } from 'lucide-react'
 
 import cs from '@/messages/cs.json'
@@ -61,6 +61,7 @@ export default function Sidebar({ user }: SidebarProps) {
     { href: '/classes', icon: GraduationCap, label: t('nav.classes') },
     { href: '/sponsors', icon: Heart, label: t('nav.sponsors'), roles: ['ADMIN', 'MANAGER', 'VOLUNTEER'] },
     { href: '/payments', icon: CreditCard, label: t('nav.payments'), roles: ['ADMIN', 'MANAGER'] },
+    { href: '/tuition', icon: FileText, label: t('nav.tuition'), roles: ['ADMIN', 'MANAGER'] },
     { href: '/reports', icon: BarChart3, label: t('nav.reports'), roles: ['ADMIN', 'MANAGER', 'VOLUNTEER'] },
     { href: '/admin', icon: Settings, label: t('nav.admin'), roles: ['ADMIN'] },
   ]

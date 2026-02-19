@@ -36,7 +36,8 @@
     "settings": "Settings",
     "logout": "Logout",
     "admin": "Administration",
-    "classes": "Classes"
+    "classes": "Classes",
+    "tuition": "Tuition"
   },
   "auth": {
     "login": "Login",
