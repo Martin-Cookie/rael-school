@@ -17,6 +17,14 @@ function fmtCurrency(amount: number, currency: string): string {
   return `${formatNumber(amount)} ${currency}`
 }
 
+type ChargePayment = {
+  amount: number
+  paymentType: string
+  paymentDate: string
+  sponsorId: string | null
+  sponsor: { id: string; firstName: string; lastName: string } | null
+}
+
 type Charge = {
   id: string
   studentId: string
@@ -28,6 +36,7 @@ type Charge = {
   student: { id: string; studentNo: string; firstName: string; lastName: string; className: string | null }
   paidAmount: number
   remainingAmount: number
+  payments?: ChargePayment[]
 }
 
 export default function TuitionPage() {
@@ -214,7 +223,8 @@ export default function TuitionPage() {
   const q = search.toLowerCase()
   const filtered = q ? charges.filter(c => {
     const name = `${c.student.firstName} ${c.student.lastName} ${c.student.studentNo}`
-    return name.toLowerCase().includes(q) || (c.student.className || '').toLowerCase().includes(q) || (c.notes || '').toLowerCase().includes(q)
+    const sponsorNames = c.payments?.map(p => p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '').join(' ') || ''
+    return name.toLowerCase().includes(q) || (c.student.className || '').toLowerCase().includes(q) || (c.notes || '').toLowerCase().includes(q) || sponsorNames.toLowerCase().includes(q)
   }) : charges
   const sorted = sortData(filtered)
 
@@ -229,18 +239,27 @@ export default function TuitionPage() {
 
   // CSV export
   function exportCharges() {
-    const headers = [t('student.studentNo'), t('student.lastName'), t('student.firstName'), t('tuition.class'), t('tuition.amount'), t('tuition.paidAmount'), t('tuition.remainingAmount'), t('tuition.status'), t('tuition.notes')]
-    const rows = sorted.map(c => [
-      c.student.studentNo,
-      c.student.lastName,
-      c.student.firstName,
-      c.student.className || '',
-      fmtCurrency(c.amount, c.currency),
-      fmtCurrency(c.paidAmount, c.currency),
-      fmtCurrency(c.remainingAmount, c.currency),
-      c.status,
-      c.notes || '',
-    ])
+    const headers = [t('student.studentNo'), t('student.lastName'), t('student.firstName'), t('tuition.class'), t('tuition.amount'), t('tuition.paidAmount'), t('tuition.remainingAmount'), t('tuition.status'), t('paymentImport.sponsor'), t('paymentImport.paymentType'), t('tuition.notes')]
+    const rows = sorted.map(c => {
+      const sponsors = c.payments?.reduce((acc: { id: string; firstName: string; lastName: string }[], p) => {
+        if (p.sponsor && !acc.some(s => s.id === p.sponsor!.id)) acc.push(p.sponsor)
+        return acc
+      }, []) || []
+      const paymentTypesArr = [...new Set(c.payments?.map(p => p.paymentType).filter(Boolean) || [])]
+      return [
+        c.student.studentNo,
+        c.student.lastName,
+        c.student.firstName,
+        c.student.className || '',
+        fmtCurrency(c.amount, c.currency),
+        fmtCurrency(c.paidAmount, c.currency),
+        fmtCurrency(c.remainingAmount, c.currency),
+        c.status,
+        sponsors.map(s => `${s.lastName} ${s.firstName}`).join('; '),
+        paymentTypesArr.join('; '),
+        c.notes || '',
+      ]
+    })
     downloadCSV(`tuition-${filterPeriod}.csv`, headers, rows)
   }
 
@@ -471,26 +490,51 @@ export default function TuitionPage() {
               <SH col="paidAmount">{t('tuition.paidAmount')}</SH>
               <SH col="remainingAmount">{t('tuition.remainingAmount')}</SH>
               <SH col="status">{t('tuition.status')}</SH>
+              <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('paymentImport.sponsor')}</th>
+              <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('paymentImport.paymentType')}</th>
               <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('tuition.notes')}</th>
             </tr>
           </thead>
           <tbody>
-            {sorted.map(c => (
-              <tr key={c.id} className="border-t border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                <td className="py-2 px-3 text-sm">
-                  <Link href={`/students/${c.student.id}`} className="text-primary-600 dark:text-primary-400 hover:underline font-medium">
-                    {c.student.lastName} {c.student.firstName}
-                  </Link>
-                  <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">#{c.student.studentNo}</span>
-                </td>
-                <td className="py-2 px-3 text-sm text-gray-700 dark:text-gray-300">{c.student.className || '-'}</td>
-                <td className="py-2 px-3 text-sm font-medium text-gray-900 dark:text-gray-100">{fmtCurrency(c.amount, c.currency)}</td>
-                <td className="py-2 px-3 text-sm text-green-600 dark:text-green-400 font-medium">{fmtCurrency(c.paidAmount, c.currency)}</td>
-                <td className="py-2 px-3 text-sm text-red-600 dark:text-red-400 font-medium">{c.remainingAmount > 0 ? fmtCurrency(c.remainingAmount, c.currency) : '-'}</td>
-                <td className="py-2 px-3">{statusBadge(c.status)}</td>
-                <td className="py-2 px-3 text-sm text-gray-500 dark:text-gray-400 max-w-[200px] truncate">{c.notes || ''}</td>
-              </tr>
-            ))}
+            {sorted.map(c => {
+              // Unique sponsors from payments
+              const sponsors = c.payments?.reduce((acc: { id: string; firstName: string; lastName: string }[], p) => {
+                if (p.sponsor && !acc.some(s => s.id === p.sponsor!.id)) acc.push(p.sponsor)
+                return acc
+              }, []) || []
+              // Unique payment types
+              const paymentTypesArr = [...new Set(c.payments?.map(p => p.paymentType).filter(Boolean) || [])]
+              return (
+                <tr key={c.id} className="border-t border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <td className="py-2 px-3 text-sm">
+                    <Link href={`/students/${c.student.id}`} className="text-primary-600 dark:text-primary-400 hover:underline font-medium">
+                      {c.student.lastName} {c.student.firstName}
+                    </Link>
+                    <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">#{c.student.studentNo}</span>
+                  </td>
+                  <td className="py-2 px-3 text-sm text-gray-700 dark:text-gray-300">{c.student.className || '-'}</td>
+                  <td className="py-2 px-3 text-sm font-medium text-gray-900 dark:text-gray-100">{fmtCurrency(c.amount, c.currency)}</td>
+                  <td className="py-2 px-3 text-sm text-green-600 dark:text-green-400 font-medium">{fmtCurrency(c.paidAmount, c.currency)}</td>
+                  <td className="py-2 px-3 text-sm text-red-600 dark:text-red-400 font-medium">{c.remainingAmount > 0 ? fmtCurrency(c.remainingAmount, c.currency) : '-'}</td>
+                  <td className="py-2 px-3">{statusBadge(c.status)}</td>
+                  <td className="py-2 px-3 text-sm">
+                    {sponsors.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {sponsors.map(s => (
+                          <Link key={s.id} href={`/sponsors?search=${encodeURIComponent(s.lastName)}`} className="text-primary-600 dark:text-primary-400 hover:underline whitespace-nowrap">
+                            {s.lastName} {s.firstName}
+                          </Link>
+                        ))}
+                      </div>
+                    ) : <span className="text-gray-400">-</span>}
+                  </td>
+                  <td className="py-2 px-3 text-sm text-gray-700 dark:text-gray-300">
+                    {paymentTypesArr.length > 0 ? paymentTypesArr.join(', ') : '-'}
+                  </td>
+                  <td className="py-2 px-3 text-sm text-gray-500 dark:text-gray-400 max-w-[200px] truncate">{c.notes || ''}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       )}

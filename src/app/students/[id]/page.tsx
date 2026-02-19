@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
   HandHeart, Stethoscope, Plus, Check, Trash2, Upload,
@@ -1114,9 +1115,15 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{t('tuition.relatedPayments')}</p>
                     {c.payments.map((p: any, i: number) => (
-                      <div key={i} className="flex items-center gap-2 py-1 text-xs">
+                      <div key={i} className="flex items-center gap-2 py-1.5 text-xs">
+                        <span className="text-gray-400 dark:text-gray-500">{p.paymentDate ? formatDate(p.paymentDate, locale) : ''}</span>
                         <span className="font-medium text-emerald-600 dark:text-emerald-400">{fmtCurrency(p.amount, c.currency)}</span>
-                        {p.sponsor && <span className="text-gray-500 dark:text-gray-400">— {p.sponsor.firstName} {p.sponsor.lastName}</span>}
+                        {p.paymentType && <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">{p.paymentType}</span>}
+                        {p.sponsor && (
+                          <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}`} className="text-primary-600 dark:text-primary-400 hover:underline">
+                            {p.sponsor.lastName} {p.sponsor.firstName}
+                          </Link>
+                        )}
                       </div>
                     ))}
                   </div>

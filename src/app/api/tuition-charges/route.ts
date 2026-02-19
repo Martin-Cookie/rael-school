@@ -61,8 +61,10 @@ export async function GET(request: NextRequest) {
           },
           select: {
             amount: true,
+            paymentType: true,
+            paymentDate: true,
             sponsorId: true,
-            sponsor: { select: { firstName: true, lastName: true } },
+            sponsor: { select: { id: true, firstName: true, lastName: true } },
           },
         })
 
