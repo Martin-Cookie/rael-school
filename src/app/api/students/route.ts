@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
         _count: {
           select: {
             needs: { where: { isFulfilled: false } },
+            sponsorships: { where: { isActive: true } },
             photos: true,
           },
         },
