@@ -96,6 +96,14 @@ export default function PaymentsPage() {
 
   const canEdit = userRole && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(userRole)
 
+  // Get sponsors assigned to a specific student
+  function getStudentSponsors(studentId: string) {
+    if (!studentId) return sponsors
+    return sponsors.filter((sp: any) =>
+      sp.sponsorships?.some((s: any) => s.student?.id === studentId)
+    )
+  }
+
   function getVoucherRate(currency: string): number | null {
     const vr = voucherRates.find(r => r.currency === currency)
     return vr ? vr.rate : null
@@ -400,13 +408,17 @@ export default function PaymentsPage() {
             {showAddSponsor && (
               <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
-                  <select value={newSP.studentId} onChange={(e) => setNewSP({ ...newSP, studentId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                  <select value={newSP.studentId} onChange={(e) => {
+                    const sid = e.target.value
+                    const matched = getStudentSponsors(sid)
+                    setNewSP({ ...newSP, studentId: sid, sponsorId: matched.length === 1 ? matched[0].id : '' })
+                  }} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
                     <option value="">{t('nav.students')} *</option>
                     {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName} ({s.studentNo})</option>)}
                   </select>
                   <select value={newSP.sponsorId} onChange={(e) => setNewSP({ ...newSP, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
                     <option value="">{t('sponsors.title')}</option>
-                    {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                    {(newSP.studentId ? getStudentSponsors(newSP.studentId) : sponsors).map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                   </select>
                   <input type="date" value={newSP.paymentDate} onChange={(e) => setNewSP({ ...newSP, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                   <input type="number" value={newSP.amount} onChange={(e) => setNewSP({ ...newSP, amount: e.target.value })} placeholder={t('payments.amount') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
@@ -468,7 +480,11 @@ export default function PaymentsPage() {
                       </div>
                     </td>
                     <td className="py-2 px-3">
-                      <select value={editData.studentId || ''} onChange={(e) => setEditData({ ...editData, studentId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
+                      <select value={editData.studentId || ''} onChange={(e) => {
+                        const sid = e.target.value
+                        const matched = getStudentSponsors(sid)
+                        setEditData({ ...editData, studentId: sid, sponsorId: matched.length === 1 ? matched[0].id : '' })
+                      }} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
                         <option value="">—</option>
                         {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                       </select>
@@ -476,7 +492,7 @@ export default function PaymentsPage() {
                     <td className="py-2 px-3">
                       <select value={editData.sponsorId || ''} onChange={(e) => setEditData({ ...editData, sponsorId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
                         <option value="">—</option>
-                        {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                        {(editData.studentId ? getStudentSponsors(editData.studentId) : sponsors).map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                       </select>
                     </td>
                     <td className="py-2 px-3"><input type="text" value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
@@ -545,7 +561,11 @@ export default function PaymentsPage() {
             {showAddVoucher && (
               <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
-                  <select value={newVP.studentId} onChange={(e) => setNewVP({ ...newVP, studentId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                  <select value={newVP.studentId} onChange={(e) => {
+                    const sid = e.target.value
+                    const matched = getStudentSponsors(sid)
+                    setNewVP({ ...newVP, studentId: sid, sponsorId: matched.length === 1 ? matched[0].id : '' })
+                  }} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
                     <option value="">{t('nav.students')} *</option>
                     {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName} ({s.studentNo})</option>)}
                   </select>
@@ -559,7 +579,7 @@ export default function PaymentsPage() {
                   <input type="number" value={newVP.count} onChange={(e) => setNewVP({ ...newVP, count: e.target.value })} placeholder={(() => { const rate = getVoucherRate(newVP.currency); return rate ? `${t('vouchers.count')} (1 = ${formatNumber(rate)} ${newVP.currency})` : t('vouchers.count') + ' *' })()} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                   <select value={newVP.sponsorId} onChange={(e) => setNewVP({ ...newVP, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
                     <option value="">{t('sponsors.title')}</option>
-                    {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                    {(newVP.studentId ? getStudentSponsors(newVP.studentId) : sponsors).map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                   </select>
                   <input type="text" value={newVP.notes} onChange={(e) => setNewVP({ ...newVP, notes: e.target.value })} placeholder={t('payments.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
                 </div>
@@ -594,7 +614,11 @@ export default function PaymentsPage() {
                     </td>
                     <td className="py-2 px-3"><input type="number" value={editData.count || ''} onChange={(e) => setEditData({ ...editData, count: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-16" /></td>
                     <td className="py-2 px-3">
-                      <select value={editData.studentId || ''} onChange={(e) => setEditData({ ...editData, studentId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
+                      <select value={editData.studentId || ''} onChange={(e) => {
+                        const sid = e.target.value
+                        const matched = getStudentSponsors(sid)
+                        setEditData({ ...editData, studentId: sid, sponsorId: matched.length === 1 ? matched[0].id : '' })
+                      }} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
                         <option value="">—</option>
                         {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                       </select>
@@ -602,7 +626,7 @@ export default function PaymentsPage() {
                     <td className="py-2 px-3">
                       <select value={editData.sponsorId || ''} onChange={(e) => setEditData({ ...editData, sponsorId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full">
                         <option value="">—</option>
-                        {sponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
+                        {(editData.studentId ? getStudentSponsors(editData.studentId) : sponsors).map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                       </select>
                     </td>
                     <td className="py-2 px-3"><input type="text" value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="px-2 py-1 rounded border border-gray-300 text-sm w-full" /></td>
