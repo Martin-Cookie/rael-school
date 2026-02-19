@@ -1120,7 +1120,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                         <span className="font-medium text-emerald-600 dark:text-emerald-400">{fmtCurrency(p.amount, c.currency)}</span>
                         {p.paymentType && <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">{p.paymentType}</span>}
                         {p.sponsor && (
-                          <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}`} className="text-primary-600 dark:text-primary-400 hover:underline">
+                          <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=${encodeURIComponent(`/students/${id}`)}`} className="text-primary-600 dark:text-primary-400 hover:underline">
                             {p.sponsor.lastName} {p.sponsor.firstName}
                           </Link>
                         )}
