@@ -66,9 +66,10 @@ model Student {
   healthChecks    HealthCheck[]
   payments        Payment[]
   volunteers      VolunteerAssignment[]
-  sponsorPayments SponsorPayment[]
-  importRows      PaymentImportRow[]
-  wishes          Wish[]
+  sponsorPayments  SponsorPayment[]
+  importRows       PaymentImportRow[]
+  wishes           Wish[]
+  tuitionCharges   TuitionCharge[]
 }
 
 // ============ EQUIPMENT ============
@@ -327,6 +328,37 @@ model VoucherRate {
   rate      Float    // cena 1 stravenky v dané měně
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+}
+
+// ============ TUITION RATES ============
+
+model TuitionRate {
+  id         String   @id @default(cuid())
+  name       String   @unique  // e.g. "PP1–Grade 6"
+  nameEn     String?
+  nameSw     String?
+  gradeFrom  Int               // ClassRoom.sortOrder min (inclusive)
+  gradeTo    Int               // ClassRoom.sortOrder max (inclusive)
+  annualFee  Float             // roční školné
+  currency   String   @default("CZK")
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+// ============ TUITION CHARGES ============
+
+model TuitionCharge {
+  id        String   @id @default(cuid())
+  studentId String
+  period    String            // e.g. "2026", "2025-H2"
+  amount    Float             // předepsaná částka
+  currency  String   @default("CZK")
+  status    String   @default("UNPAID") // UNPAID, PARTIAL, PAID
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 // ============ PAYMENT IMPORTS ============

@@ -204,6 +204,16 @@ async function main() {
   }
   console.log('✅ WishTypes seeded (' + wishTypes.length + ')')
 
+  // --- Sazby školného ---
+  const tuitionRates = [
+    { name: 'PP1–Grade 6', nameEn: 'PP1–Grade 6', nameSw: 'PP1–Daraja la 6', gradeFrom: 0, gradeTo: 7, annualFee: 3700, currency: 'CZK' },
+    { name: 'Grade 7–Grade 12', nameEn: 'Grade 7–Grade 12', nameSw: 'Daraja la 7–Daraja la 12', gradeFrom: 8, gradeTo: 13, annualFee: 4700, currency: 'CZK' },
+  ]
+  for (const rate of tuitionRates) {
+    await prisma.tuitionRate.create({ data: rate })
+  }
+  console.log('✅ TuitionRates seeded (' + tuitionRates.length + ')')
+
   // ============================================================
   // 3. UŽIVATELÉ — Admin, Manager, Dobrovolníci
   // ============================================================
