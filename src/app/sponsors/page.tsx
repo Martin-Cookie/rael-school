@@ -202,6 +202,11 @@ export default function SponsorsPage() {
     return <th className={`py-2 px-3 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
   }
 
+  function buildStudentFromUrl() {
+    const params = [search ? 'search=' + encodeURIComponent(search) : '', backUrl ? 'from=' + encodeURIComponent(backUrl) : ''].filter(Boolean).join('&')
+    return '/sponsors' + (params ? '?' + params : '')
+  }
+
   // Filter sponsors
   const filtered = sponsors.filter(s => {
     if (!search) return true
@@ -384,7 +389,7 @@ export default function SponsorsPage() {
                                 {s.sponsorships.map((sp) => (
                                   <Link
                                     key={sp.id}
-                                    href={`/students/${sp.student.id}?from=${encodeURIComponent('/sponsors' + (search ? '?search=' + encodeURIComponent(search) : ''))}`}
+                                    href={`/students/${sp.student.id}?from=${encodeURIComponent(buildStudentFromUrl())}`}
                                     className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
                                       sp.isActive
                                         ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
