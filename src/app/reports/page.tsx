@@ -502,8 +502,8 @@ export default function ReportsPage() {
                 <tbody>
                   {soSorted.map(s => (
                     <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="py-3 px-3 text-sm font-medium text-gray-900">
-                        {s.lastName} {s.firstName}
+                      <td className="py-3 px-3 text-sm font-medium">
+                        <Link href={`/sponsors?search=${encodeURIComponent(s.lastName)}&from=/reports`} className="text-primary-600 hover:underline">{s.lastName} {s.firstName}</Link>
                       </td>
                       <td className="py-3 px-3 text-sm text-gray-500">{s.email}</td>
                       <td className="py-3 px-3 text-sm text-center">
@@ -586,7 +586,7 @@ export default function ReportsPage() {
                         <td className="py-3 px-3 text-sm font-medium">
                           <Link href={`/students/${s.id}?from=/reports`} className="text-primary-600 hover:underline">{s.lastName}</Link>
                         </td>
-                        <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
+                        <td className="py-3 px-3 text-sm"><Link href={`/students/${s.id}?from=/reports`} className="text-primary-600 hover:underline">{s.firstName}</Link></td>
                         <td className="py-3 px-3 text-sm text-gray-500">{s.className || '-'}</td>
                         <td className="py-3 px-3 text-sm text-right">
                           {s.purchased > 0 ? <span className="font-medium text-gray-900">{s.purchased}</span> : <span className="text-gray-400">0</span>}
@@ -682,7 +682,7 @@ export default function ReportsPage() {
                       <td className="py-3 px-3 text-sm font-medium">
                         <Link href={`/students/${s.id}?from=/reports`} className="text-primary-600 hover:underline">{s.lastName}</Link>
                       </td>
-                      <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
+                      <td className="py-3 px-3 text-sm"><Link href={`/students/${s.id}?from=/reports`} className="text-primary-600 hover:underline">{s.firstName}</Link></td>
                       <td className="py-3 px-3 text-sm text-gray-500">{s.className || '-'}</td>
                       <td className="py-3 px-3 text-sm text-center">
                         {s.hasPayment
