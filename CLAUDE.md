@@ -337,6 +337,13 @@ Soubory:
 - Stránka Sponzoři čte `?search=` z URL a předvyplní vyhledávací pole
 - Při navigaci zpět z detailu studenta se stav hledání zachová
 
+**Zachování aktivní záložky v dashboardu:**
+- Soubor: `dashboard/page.tsx`
+- Všechny odkazy z dashboardu kódují aktivní záložku v `from=` parametru: `from=/dashboard?tab=sponsors`
+- Pomocná funkce `dashFrom()` generuje zakódovaný `from` URL s `tab` (a `paymentSubTab` pro platby)
+- Při návratu dashboard čte `tab` a `paymentSubTab` z URL parametrů a obnoví správnou záložku
+- Flow: Dashboard (záložka Sponzoři) → detail sponzora → zpět → Dashboard (záložka Sponzoři)
+
 **Řetězová zpětná navigace (detail studenta):**
 - Soubor: `students/[id]/page.tsx`
 - Tlačítko zpět si pamatuje cestu: Studenti → Sponzoři → Detail → zpět na Sponzoře → zpět na Studenty
