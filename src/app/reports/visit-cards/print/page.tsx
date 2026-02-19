@@ -429,15 +429,13 @@ ${parentStyles}
                     <col style={{ width: '4%' }} />
                     <col style={{ width: '22%' }} />
                     <col style={{ width: '11%' }} />
-                    <col style={{ width: '8%' }} />
-                    <col style={{ width: '55%' }} />
+                    <col style={{ width: '63%' }} />
                   </colgroup>
                   <thead>
                     <tr className="border-b-2 border-gray-400">
                       <th className="text-left py-1.5 px-2"></th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('equipment.type')}</th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('equipment.condition')}</th>
-                      <th className="text-right py-1.5 px-2 font-bold text-gray-600">{t('visitCards.price')}</th>
                       <th className="text-left py-1.5 px-2 font-bold text-gray-600">{t('visitCards.notesField')}</th>
                     </tr>
                   </thead>
@@ -453,7 +451,6 @@ ${parentStyles}
                           </td>
                           <td className={`py-1.5 px-2 ${existing ? 'font-bold' : ''}`}>{getLocaleName(eqType, locale)}</td>
                           <td className="py-1.5 px-2">{existing ? formatCondition(existing.condition) : ''}</td>
-                          <td className="py-1.5 px-2 text-right">{eqType.price ? formatNumber(eqType.price) : ''}</td>
                           <td className="py-1.5 px-2">{existing?.notes || ''}</td>
                         </tr>
                       )
