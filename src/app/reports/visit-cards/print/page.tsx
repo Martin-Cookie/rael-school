@@ -155,12 +155,16 @@ ${parentStyles}
   }, [])
 
   useEffect(() => {
-    const idsJson = sessionStorage.getItem('visitCardIds')
+    // Read from localStorage (shared across tabs — sessionStorage doesn't work in Safari new tabs)
+    const idsJson = localStorage.getItem('visitCardIds')
     if (!idsJson) {
       setLoading(false)
       setError(true)
       return
     }
+
+    // Clean up after reading (one-time use)
+    localStorage.removeItem('visitCardIds')
 
     const selectedIds: string[] = JSON.parse(idsJson)
     if (selectedIds.length === 0) {
@@ -170,7 +174,10 @@ ${parentStyles}
     }
 
     fetch('/api/reports/visit-cards')
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`API error: ${r.status}`)
+        return r.json()
+      })
       .then(data => {
         const allStudents: StudentData[] = data.students || []
         const selectedStudents = allStudents.filter(s => selectedIds.includes(s.id))
