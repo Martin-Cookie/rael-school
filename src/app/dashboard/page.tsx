@@ -95,7 +95,7 @@ export default function DashboardPage() {
 
   function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
     const isA = sortCol === col
-    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
+    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
   }
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
@@ -126,23 +126,23 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">{t('dashboard.title')}</h1>
+      <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] dark:bg-gray-900 pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">{t('dashboard.title')}</h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {statCards.map(card => (
-            <button key={card.key} onClick={() => { setActiveTab(card.key); prevTabRef.current = null; setSortCol(''); setSelectedClass(null) }} className={`bg-white rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 hover:border-gray-300'}`}>
-              <div className="flex items-start justify-between"><div><p className="text-sm text-gray-500 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900">{card.value}</p>{'subtitle' in card && card.subtitle && <p className="text-xs text-gray-400 mt-0.5">{card.subtitle}</p>}</div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
+            <button key={card.key} onClick={() => { setActiveTab(card.key); prevTabRef.current = null; setSortCol(''); setSelectedClass(null) }} className={`bg-white dark:bg-gray-800 rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}`}>
+              <div className="flex items-start justify-between"><div><p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900 dark:text-gray-100">{card.value}</p>{'subtitle' in card && card.subtitle && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{card.subtitle}</p>}</div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
 
         {/* Students */}
         {activeTab === 'students' && (
-          <div><h2 className="text-lg font-semibold text-gray-900 mb-4">{t('student.list')} ({students.length})</h2>
-          <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
+          <div><h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('student.list')} ({students.length})</h2>
+          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
             <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
@@ -152,12 +152,12 @@ export default function DashboardPage() {
             <SH col="_count.sponsorships" className="text-right">{t('sponsors.title')}</SH>
           </tr></thead><tbody>
             {sortData(students, sortCol).map((s: any) => (
-              <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
-                <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
+              <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{s.studentNo}</td>
                 <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
-                <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
+                <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{s.firstName}</td>
                 <td className="py-3 px-3 text-sm">{s.className ? <button onClick={() => { prevTabRef.current = activeTab; setActiveTab('classes'); setSelectedClass(s.className); setSortCol('') }} className="text-primary-600 hover:underline">{s.className}</button> : '-'}</td>
-                <td className="py-3 px-3 text-sm text-gray-900">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
+                <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
                 <td className="py-3 px-3 text-sm text-right">{s._count.needs > 0 ? <span className="badge badge-red">{s._count.needs}</span> : <span className="text-gray-400">0</span>}</td>
                 <td className="py-3 px-3 text-sm text-right">{s._count.sponsorships > 0 ? <span className="badge badge-green">{s._count.sponsorships}</span> : <span className="text-gray-400">0</span>}</td>
               </tr>
@@ -168,20 +168,20 @@ export default function DashboardPage() {
 
         {/* Sponsors */}
         {activeTab === 'sponsors' && (
-          <div><h2 className="text-lg font-semibold text-gray-900 mb-4">{t('sponsors.title')} ({sponsors.length})</h2>
-          <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
+          <div><h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('sponsors.title')} ({sponsors.length})</h2>
+          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
             <SH col="email" className="text-left">{t('sponsors.email')}</SH>
             <SH col="phone" className="text-left">{t('sponsors.phone')}</SH>
-            <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
+            <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('nav.students')}</th>
           </tr></thead><tbody>
             {sortData(sponsors, sortCol).map((sp: any) => (
-              <tr key={sp.id} className="border-b border-gray-50 hover:bg-gray-50">
-                <td className="py-3 px-3 text-sm font-medium text-gray-900">{sp.lastName}</td>
-                <td className="py-3 px-3 text-sm text-gray-900">{sp.firstName}</td>
-                <td className="py-3 px-3 text-sm text-gray-600">{sp.email}</td>
-                <td className="py-3 px-3 text-sm text-gray-600">{sp.phone || '-'}</td>
+              <tr key={sp.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <td className="py-3 px-3 text-sm font-medium text-gray-900 dark:text-gray-100">{sp.lastName}</td>
+                <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{sp.firstName}</td>
+                <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">{sp.email}</td>
+                <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">{sp.phone || '-'}</td>
                 <td className="py-3 px-3 text-sm">
                   {sp.sponsorships?.length > 0 ? <div className="flex flex-wrap gap-1">{sp.sponsorships.map((s: any, i: number) => (
                     <Link key={i} href={`/students/${s.student?.id || ''}?from=/dashboard`} className="badge badge-green hover:opacity-80">{s.student.firstName} {s.student.lastName}</Link>
@@ -197,12 +197,12 @@ export default function DashboardPage() {
         {activeTab === 'payments' && (
           <div>
             <div className="flex items-center gap-4 mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">{t('payments.title')}</h2>
-              <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-                <button onClick={() => { setPaymentSubTab('sponsor'); setSortCol('') }} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${paymentSubTab === 'sponsor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('payments.title')}</h2>
+              <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button onClick={() => { setPaymentSubTab('sponsor'); setSortCol('') }} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${paymentSubTab === 'sponsor' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>
                   {t('sponsorPayments.title')} ({sponsorPayments.length})
                 </button>
-                <button onClick={() => { setPaymentSubTab('voucher'); setSortCol('') }} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${paymentSubTab === 'voucher' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                <button onClick={() => { setPaymentSubTab('voucher'); setSortCol('') }} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${paymentSubTab === 'voucher' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>
                   {t('vouchers.purchases')} ({voucherPurchases.length})
                 </button>
               </div>
@@ -213,29 +213,29 @@ export default function DashboardPage() {
               <>
                 <div className="flex flex-wrap gap-3 mb-4">
                   {Object.keys(spByCur).sort().map(cur => (
-                    <div key={cur} className="bg-blue-50 rounded-xl px-4 py-3">
-                      <p className="text-xs text-blue-600 font-medium">{cur}</p>
-                      <p className="text-lg font-bold text-blue-900">{formatNumber(spByCur[cur])}</p>
+                    <div key={cur} className="bg-blue-50 dark:bg-blue-900/30 rounded-xl px-4 py-3">
+                      <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">{cur}</p>
+                      <p className="text-lg font-bold text-blue-900 dark:text-blue-100">{formatNumber(spByCur[cur])}</p>
                     </div>
                   ))}
                   {Object.keys(spByCur).length === 0 && <p className="text-gray-400 text-sm">{t('app.noData')}</p>}
                 </div>
-                <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
+                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
                   <SH col="paymentDate" className="text-left">{t('payments.paymentDate')}</SH>
                   <SH col="paymentType" className="text-left">{t('sponsorPayments.paymentType')}</SH>
                   <SH col="amount" className="text-left">{t('payments.amount')}</SH>
-                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
-                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('sponsors.title')}</th>
+                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('nav.students')}</th>
+                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('sponsors.title')}</th>
                   <SH col="notes" className="text-left">{t('payments.notes')}</SH>
                 </tr></thead><tbody>
                   {sortData(sponsorPayments, sortCol).map((p: any) => (
-                    <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="py-3 px-3 text-sm text-gray-900">{formatDate(p.paymentDate, locale)}</td>
+                    <tr key={p.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                      <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{formatDate(p.paymentDate, locale)}</td>
                       <td className="py-3 px-3 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{p.paymentType === 'tuition' ? t('sponsorPayments.tuition') : p.paymentType === 'medical' ? t('sponsorPayments.medical') : t('sponsorPayments.other')}</span></td>
-                      <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
+                      <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
                       <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}?from=/dashboard`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
-                      <td className="py-3 px-3 text-sm text-gray-700">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
-                      <td className="py-3 px-3 text-sm text-gray-500">{p.notes || '-'}</td>
+                      <td className="py-3 px-3 text-sm text-gray-700 dark:text-gray-300">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
+                      <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{p.notes || '-'}</td>
                     </tr>
                   ))}
                   {sponsorPayments.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
@@ -246,31 +246,31 @@ export default function DashboardPage() {
             {paymentSubTab === 'voucher' && (
               <>
                 <div className="flex flex-wrap gap-3 mb-4">
-                  <div className="bg-blue-50 rounded-xl px-4 py-3">
-                    <p className="text-xs text-blue-600 font-medium">{t('vouchers.totalAmount')}</p>
-                    <p className="text-lg font-bold text-blue-900">{fmtCurrency(stats?.voucherTotalAmount || 0, 'KES')}</p>
+                  <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl px-4 py-3">
+                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">{t('vouchers.totalAmount')}</p>
+                    <p className="text-lg font-bold text-blue-900 dark:text-blue-100">{fmtCurrency(stats?.voucherTotalAmount || 0, 'KES')}</p>
                   </div>
-                  <div className="bg-primary-50 rounded-xl px-4 py-3">
-                    <p className="text-xs text-primary-600 font-medium">{t('vouchers.totalPurchased')}</p>
-                    <p className="text-lg font-bold text-primary-900">{formatNumber(voucherPurchases.reduce((s: number, v: any) => s + v.count, 0))}</p>
+                  <div className="bg-primary-50 dark:bg-primary-900/30 rounded-xl px-4 py-3">
+                    <p className="text-xs text-primary-600 dark:text-primary-400 font-medium">{t('vouchers.totalPurchased')}</p>
+                    <p className="text-lg font-bold text-primary-900 dark:text-primary-100">{formatNumber(voucherPurchases.reduce((s: number, v: any) => s + v.count, 0))}</p>
                   </div>
                 </div>
-                <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
+                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
                   <SH col="purchaseDate" className="text-left">{t('vouchers.purchaseDate')}</SH>
                   <SH col="amount" className="text-left">{t('vouchers.amount')}</SH>
                   <SH col="count" className="text-left">{t('vouchers.count')}</SH>
-                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('nav.students')}</th>
+                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('nav.students')}</th>
                   <SH col="donorName" className="text-left">{t('vouchers.donorName')}</SH>
                   <SH col="notes" className="text-left">{t('payments.notes')}</SH>
                 </tr></thead><tbody>
                   {sortData(voucherPurchases, sortCol).map((v: any) => (
-                    <tr key={v.id} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="py-3 px-3 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
-                      <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(v.amount, 'KES')}</td>
-                      <td className="py-3 px-3 text-sm text-gray-900">{formatNumber(v.count)}</td>
+                    <tr key={v.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                      <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{formatDate(v.purchaseDate, locale)}</td>
+                      <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(v.amount, 'KES')}</td>
+                      <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{formatNumber(v.count)}</td>
                       <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}?from=/dashboard`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
-                      <td className="py-3 px-3 text-sm text-gray-700">{v.donorName || '-'}</td>
-                      <td className="py-3 px-3 text-sm text-gray-500">{v.notes || '-'}</td>
+                      <td className="py-3 px-3 text-sm text-gray-700 dark:text-gray-300">{v.donorName || '-'}</td>
+                      <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{v.notes || '-'}</td>
                     </tr>
                   ))}
                   {voucherPurchases.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
@@ -282,21 +282,21 @@ export default function DashboardPage() {
 
         {/* Needs */}
         {activeTab === 'needs' && (
-          <div><h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.studentsNeedingAttention')} ({studentsWithNeeds.length})</h2>
-          <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
+          <div><h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('dashboard.studentsNeedingAttention')} ({studentsWithNeeds.length})</h2>
+          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
             <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
             <SH col="className" className="text-left">{t('student.className')}</SH>
-            <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('needs.title')}</th>
+            <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('needs.title')}</th>
           </tr></thead><tbody>
             {sortData(studentsWithNeeds, sortCol).map((s: any) => (
-              <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
-                <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
+              <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{s.studentNo}</td>
                 <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
-                <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
+                <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{s.firstName}</td>
                 <td className="py-3 px-3 text-sm">{s.className ? <button onClick={() => { prevTabRef.current = activeTab; setActiveTab('classes'); setSelectedClass(s.className); setSortCol('') }} className="text-primary-600 hover:underline">{s.className}</button> : '-'}</td>
-                <td className="py-3 px-3 text-sm"><div className="space-y-1">{s.needs.map((n: any) => <div key={n.id} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span><span className="text-gray-700">{n.description}</span></div>)}</div></td>
+                <td className="py-3 px-3 text-sm"><div className="space-y-1">{s.needs.map((n: any) => <div key={n.id} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span><span className="text-gray-700 dark:text-gray-300">{n.description}</span></div>)}</div></td>
               </tr>
             ))}
           </tbody></table>
@@ -306,27 +306,27 @@ export default function DashboardPage() {
         {/* Tuition */}
         {activeTab === 'tuition' && (
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('tuition.title')} ({tuitionCharges.length})</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('tuition.title')} ({tuitionCharges.length})</h2>
             {/* Summary cards */}
             <div className="flex flex-wrap gap-3 mb-4">
-              <div className="bg-emerald-50 rounded-xl px-4 py-3">
-                <p className="text-xs text-emerald-600 font-medium">{t('tuition.statusPaid')}</p>
-                <p className="text-lg font-bold text-emerald-900">{formatNumber(stats?.tuitionPaidCount || 0)}</p>
+              <div className="bg-emerald-50 dark:bg-emerald-900/30 rounded-xl px-4 py-3">
+                <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">{t('tuition.statusPaid')}</p>
+                <p className="text-lg font-bold text-emerald-900 dark:text-emerald-100">{formatNumber(stats?.tuitionPaidCount || 0)}</p>
               </div>
-              <div className="bg-amber-50 rounded-xl px-4 py-3">
-                <p className="text-xs text-amber-600 font-medium">{t('tuition.statusPartial')}</p>
-                <p className="text-lg font-bold text-amber-900">{formatNumber(stats?.tuitionPartialCount || 0)}</p>
+              <div className="bg-amber-50 dark:bg-amber-900/30 rounded-xl px-4 py-3">
+                <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">{t('tuition.statusPartial')}</p>
+                <p className="text-lg font-bold text-amber-900 dark:text-amber-100">{formatNumber(stats?.tuitionPartialCount || 0)}</p>
               </div>
-              <div className="bg-red-50 rounded-xl px-4 py-3">
-                <p className="text-xs text-red-600 font-medium">{t('tuition.statusUnpaid')}</p>
-                <p className="text-lg font-bold text-red-900">{formatNumber(stats?.tuitionUnpaidCount || 0)}</p>
+              <div className="bg-red-50 dark:bg-red-900/30 rounded-xl px-4 py-3">
+                <p className="text-xs text-red-600 dark:text-red-400 font-medium">{t('tuition.statusUnpaid')}</p>
+                <p className="text-lg font-bold text-red-900 dark:text-red-100">{formatNumber(stats?.tuitionUnpaidCount || 0)}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl px-4 py-3">
-                <p className="text-xs text-gray-600 font-medium">{t('tuition.totalCharged')}</p>
-                <p className="text-lg font-bold text-gray-900">{fmtCurrency(stats?.tuitionTotalCharged || 0, 'CZK')}</p>
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl px-4 py-3">
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">{t('tuition.totalCharged')}</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{fmtCurrency(stats?.tuitionTotalCharged || 0, 'CZK')}</p>
               </div>
             </div>
-            <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
+            <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
               <SH col="student.lastName" className="text-left">{t('tuition.student')}</SH>
               <SH col="student.className" className="text-left">{t('tuition.class')}</SH>
               <SH col="period" className="text-left">{t('tuition.period')}</SH>
@@ -334,11 +334,11 @@ export default function DashboardPage() {
               <SH col="status" className="text-left">{t('tuition.status')}</SH>
             </tr></thead><tbody>
               {sortData(tuitionCharges, sortCol).map((c: any) => (
-                <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50">
+                <tr key={c.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="py-3 px-3 text-sm font-medium">{c.student ? <Link href={`/students/${c.student.id}?from=/dashboard`} className="text-primary-600 hover:underline">{c.student.lastName} {c.student.firstName}</Link> : '-'}</td>
-                  <td className="py-3 px-3 text-sm text-gray-900">{c.student?.className || '-'}</td>
-                  <td className="py-3 px-3 text-sm text-gray-900">{c.period}</td>
-                  <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(c.amount, c.currency)}</td>
+                  <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{c.student?.className || '-'}</td>
+                  <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{c.period}</td>
+                  <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(c.amount, c.currency)}</td>
                   <td className="py-3 px-3 text-sm">
                     <span className={`badge ${c.status === 'PAID' ? 'badge-green' : c.status === 'PARTIAL' ? 'badge-yellow' : 'badge-red'}`}>
                       {c.status === 'PAID' ? t('tuition.statusPaid') : c.status === 'PARTIAL' ? t('tuition.statusPartial') : t('tuition.statusUnpaid')}
@@ -354,15 +354,15 @@ export default function DashboardPage() {
         {/* Classes */}
         {activeTab === 'classes' && (
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.classOverview')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('dashboard.classOverview')}</h2>
             {!selectedClass ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {classNames.map(cn => {
                   const count = students.filter((s: any) => s.className === cn).length
                   return (
-                    <button key={cn} onClick={() => { setSelectedClass(cn) }} className="bg-gray-50 hover:bg-gray-100 rounded-xl p-4 border border-gray-200 text-left transition-colors">
-                      <p className="text-lg font-bold text-gray-900">{cn}</p>
-                      <p className="text-sm text-gray-500">{count} {locale === 'cs' ? 'studentů' : locale === 'sw' ? 'wanafunzi' : 'students'}</p>
+                    <button key={cn} onClick={() => { setSelectedClass(cn) }} className="bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 text-left transition-colors">
+                      <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{cn}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{count} {locale === 'cs' ? 'studentů' : locale === 'sw' ? 'wanafunzi' : 'students'}</p>
                     </button>
                   )
                 })}
@@ -371,8 +371,8 @@ export default function DashboardPage() {
             ) : (
               <div>
                 <button onClick={() => { if (prevTabRef.current) { const tab = prevTabRef.current; prevTabRef.current = null; setSelectedClass(null); setSortCol(''); setActiveTab(tab) } else { setSelectedClass(null) } }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {prevTabRef.current ? t('app.back') : t('dashboard.classOverview')}</button>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
-                <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
+                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
                   <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
                   <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
                   <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
@@ -380,11 +380,11 @@ export default function DashboardPage() {
                   <SH col="_count.needs" className="text-right">{t('needs.title')}</SH>
                 </tr></thead><tbody>
                   {sortData(students.filter((s: any) => s.className === selectedClass), sortCol).map((s: any) => (
-                    <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
+                    <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                      <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{s.studentNo}</td>
                       <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=/dashboard`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
-                      <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
-                      <td className="py-3 px-3 text-sm text-gray-900">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
+                      <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{s.firstName}</td>
+                      <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
                       <td className="py-3 px-3 text-sm text-right">{s._count.needs > 0 ? <span className="badge badge-red">{s._count.needs}</span> : <span className="text-gray-400">0</span>}</td>
                     </tr>
                   ))}
