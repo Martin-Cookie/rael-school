@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
+import { recalcTuitionStatus, isTuitionType } from '@/lib/tuition'
 
 // POST /api/payments — create sponsor payment or voucher purchase
 export async function POST(request: NextRequest) {
@@ -29,6 +30,10 @@ export async function POST(request: NextRequest) {
           notes: notes || null,
         },
       })
+      // Přepočítat stav předpisu pokud jde o školné
+      if (isTuitionType(paymentType)) {
+        await recalcTuitionStatus(studentId)
+      }
       return NextResponse.json({ payment }, { status: 201 })
     }
 
@@ -75,6 +80,8 @@ export async function PUT(request: NextRequest) {
     }
 
     if (type === 'sponsor') {
+      // Načíst starou platbu pro recalc (může se měnit student/typ)
+      const oldPayment = await prisma.sponsorPayment.findUnique({ where: { id } })
       const { studentId, sponsorId, paymentDate, amount, currency, paymentType, notes } = body
       const payment = await prisma.sponsorPayment.update({
         where: { id },
@@ -88,6 +95,13 @@ export async function PUT(request: NextRequest) {
           notes: notes ?? undefined,
         },
       })
+      // Přepočítat pro starého i nového studenta pokud jde o školné
+      const affectedStudents = new Set<string>()
+      if (oldPayment && isTuitionType(oldPayment.paymentType)) affectedStudents.add(oldPayment.studentId)
+      if (isTuitionType(payment.paymentType)) affectedStudents.add(payment.studentId)
+      for (const sid of affectedStudents) {
+        await recalcTuitionStatus(sid)
+      }
       return NextResponse.json({ payment })
     }
 
@@ -132,7 +146,13 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (type === 'sponsor') {
+      // Načíst platbu před smazáním pro recalc
+      const payment = await prisma.sponsorPayment.findUnique({ where: { id } })
       await prisma.sponsorPayment.delete({ where: { id } })
+      // Přepočítat stav předpisu pokud šlo o školné
+      if (payment && isTuitionType(payment.paymentType)) {
+        await recalcTuitionStatus(payment.studentId)
+      }
       return NextResponse.json({ success: true })
     }
 

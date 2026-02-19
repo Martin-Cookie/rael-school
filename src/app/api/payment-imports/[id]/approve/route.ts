@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
+import { recalcTuitionStatus } from '@/lib/tuition'
 
 // POST /api/payment-imports/[id]/approve — bulk approve rows
 export async function POST(
@@ -135,6 +136,18 @@ export async function POST(
         })
       }
     })
+
+    // Přepočítat stav předpisů pro studenty se školnými platbami
+    const tuitionTypeIds = allPaymentTypes
+      .filter(pt => /školné|tuition|karo/i.test(pt.name + (pt.nameEn || '') + (pt.nameSw || '')))
+      .map(pt => pt.id)
+    const tuitionStudentIds = [...new Set(
+      rows.filter(r => r.paymentTypeId && tuitionTypeIds.includes(r.paymentTypeId) && r.studentId)
+        .map(r => r.studentId!)
+    )]
+    for (const sid of tuitionStudentIds) {
+      await recalcTuitionStatus(sid)
+    }
 
     return NextResponse.json({ approved: approvedCount })
   } catch (error) {

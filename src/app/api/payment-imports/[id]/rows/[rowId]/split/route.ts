@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
+import { recalcTuitionStatus } from '@/lib/tuition'
 
 interface SplitPart {
   amount: number
@@ -199,6 +200,20 @@ export async function POST(
         }
       }
     })
+
+    // Přepočítat stav předpisů pro studenty se školnými platbami
+    if (approvedCount > 0) {
+      const tuitionTypeIds = allPaymentTypes
+        .filter(pt => /školné|tuition|karo/i.test(pt.name + (pt.nameEn || '') + (pt.nameSw || '')))
+        .map(pt => pt.id)
+      const tuitionStudentIds = [...new Set(
+        parts.filter(p => p.studentId && p.paymentTypeId && tuitionTypeIds.includes(p.paymentTypeId))
+          .map(p => p.studentId!)
+      )]
+      for (const sid of tuitionStudentIds) {
+        await recalcTuitionStatus(sid)
+      }
+    }
 
     return NextResponse.json({ success: true, parts: parts.length, approved: approvedCount })
   } catch (error) {
