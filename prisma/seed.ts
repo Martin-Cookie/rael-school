@@ -214,6 +214,18 @@ async function main() {
   }
   console.log('✅ TuitionRates seeded (' + tuitionRates.length + ')')
 
+  // --- Sazby stravenek ---
+  const voucherRates = [
+    { currency: 'CZK', rate: 80 },
+    { currency: 'EUR', rate: 3 },
+    { currency: 'USD', rate: 3.5 },
+    { currency: 'KES', rate: 80 },
+  ]
+  for (const vr of voucherRates) {
+    await prisma.voucherRate.create({ data: vr })
+  }
+  console.log('✅ VoucherRates seeded (' + voucherRates.length + ')')
+
   // ============================================================
   // 3. UŽIVATELÉ — Admin, Manager, Dobrovolníci
   // ============================================================

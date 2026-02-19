@@ -213,5 +213,15 @@
     "totalMonthly": 10500,
     "totalAnnual": 126000,
     "currency": "CZK"
+  },
+
+  "voucherRates": {
+    "description": "Sazby stravenek — cena 1 stravenky v dané měně",
+    "rates": [
+      { "currency": "CZK", "rate": 80 },
+      { "currency": "EUR", "rate": 3 },
+      { "currency": "USD", "rate": 3.5 },
+      { "currency": "KES", "rate": 80 }
+    ]
   }
 }
