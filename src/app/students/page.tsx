@@ -91,7 +91,7 @@ export default function StudentsPage() {
       s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '',
       s.dateOfBirth ? calculateAge(s.dateOfBirth) : '',
       s._count?.needs || 0,
-      s._count?.sponsorships || 0,
+      s.sponsorships?.map((sp: any) => `${sp.sponsor.lastName} ${sp.sponsor.firstName}`).join('; ') || '0',
     ])
     downloadCSV('students.csv', headers, rows)
   }
@@ -147,7 +147,15 @@ export default function StudentsPage() {
                       <td className="py-3 px-3 text-sm text-gray-900">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>
                       <td className="py-3 px-3 text-sm text-gray-900">{s.dateOfBirth ? calculateAge(s.dateOfBirth) : '-'}</td>
                       <td className="py-3 px-3 text-sm text-right">{s._count?.needs > 0 ? <span className="badge badge-red">{s._count.needs}</span> : <span className="text-gray-400">0</span>}</td>
-                      <td className="py-3 px-3 text-sm text-right">{s._count?.sponsorships > 0 ? <span className="badge badge-green">{s._count.sponsorships}</span> : <span className="text-gray-400">0</span>}</td>
+                      <td className="py-3 px-3 text-sm text-right">
+                        {s.sponsorships?.length > 0 ? (
+                          <div className="flex flex-wrap gap-1 justify-end">
+                            {s.sponsorships.map((sp: any) => (
+                              <Link key={sp.id} href={`/sponsors?search=${encodeURIComponent(sp.sponsor.lastName)}&from=/students`} className="badge badge-green hover:opacity-80">{sp.sponsor.lastName} {sp.sponsor.firstName}</Link>
+                            ))}
+                          </div>
+                        ) : <span className="text-gray-400">0</span>}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
