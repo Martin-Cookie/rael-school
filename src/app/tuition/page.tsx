@@ -526,7 +526,7 @@ export default function TuitionPage() {
               return (
                 <tr key={c.id} className="border-t border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="py-2 px-3 text-sm">
-                    <Link href={`/students/${c.student.id}`} className="text-primary-600 dark:text-primary-400 hover:underline font-medium">
+                    <Link href={`/students/${c.student.id}?from=/tuition`} className="text-primary-600 dark:text-primary-400 hover:underline font-medium">
                       {c.student.lastName} {c.student.firstName}
                     </Link>
                     <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">#{c.student.studentNo}</span>
@@ -540,7 +540,7 @@ export default function TuitionPage() {
                     {sponsors.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
                         {sponsors.map(s => (
-                          <Link key={s.id} href={`/sponsors?search=${encodeURIComponent(s.lastName)}`} className="text-primary-600 dark:text-primary-400 hover:underline whitespace-nowrap">
+                          <Link key={s.id} href={`/sponsors?search=${encodeURIComponent(s.lastName)}&from=/tuition`} className="text-primary-600 dark:text-primary-400 hover:underline whitespace-nowrap">
                             {s.lastName} {s.firstName}
                           </Link>
                         ))}
