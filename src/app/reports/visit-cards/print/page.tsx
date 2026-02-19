@@ -156,15 +156,13 @@ ${parentStyles}
 
   useEffect(() => {
     // Read from localStorage (shared across tabs — sessionStorage doesn't work in Safari new tabs)
+    // Note: don't remove here — React Strict Mode calls useEffect twice in dev mode
     const idsJson = localStorage.getItem('visitCardIds')
     if (!idsJson) {
       setLoading(false)
       setError(true)
       return
     }
-
-    // Clean up after reading (one-time use)
-    localStorage.removeItem('visitCardIds')
 
     const selectedIds: string[] = JSON.parse(idsJson)
     if (selectedIds.length === 0) {
