@@ -384,7 +384,7 @@ export default function SponsorsPage() {
                                 {s.sponsorships.map((sp) => (
                                   <Link
                                     key={sp.id}
-                                    href={`/students/${sp.student.id}?from=/sponsors`}
+                                    href={`/students/${sp.student.id}?from=${encodeURIComponent('/sponsors' + (search ? '?search=' + encodeURIComponent(search) : ''))}`}
                                     className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
                                       sp.isActive
                                         ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
