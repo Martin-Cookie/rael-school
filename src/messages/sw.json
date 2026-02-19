@@ -486,7 +486,11 @@
     "charged": "Imedaiwa",
     "paid": "Imelipwa",
     "remaining": "Iliyobaki",
-    "relatedPayments": "Malipo ya dai hili"
+    "relatedPayments": "Malipo ya dai hili",
+    "annual": "ya mwaka",
+    "semiAnnual": "nusu mwaka",
+    "chargesCount": "madai",
+    "paidChargesCount": "yaliyolipwa"
   },
   "pagination": {
     "showing": "Inaonyesha",

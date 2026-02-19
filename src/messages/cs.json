@@ -486,7 +486,11 @@
     "charged": "Předepsáno",
     "paid": "Zaplaceno",
     "remaining": "Zbývá",
-    "relatedPayments": "Platby k tomuto předpisu"
+    "relatedPayments": "Platby k tomuto předpisu",
+    "annual": "roční",
+    "semiAnnual": "půlroční",
+    "chargesCount": "předpisů",
+    "paidChargesCount": "zaplacených"
   },
   "pagination": {
     "showing": "Zobrazeno",

@@ -456,20 +456,39 @@ export default function TuitionPage() {
       )}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">{t('tuition.totalCharged')}</div>
-          <div className="text-xl font-bold text-gray-900 dark:text-gray-100">{fmtCurrency(summary.totalCharged, 'CZK')}</div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">{t('tuition.totalPaid')}</div>
-          <div className="text-xl font-bold text-green-600 dark:text-green-400">{fmtCurrency(summary.totalPaid, 'CZK')}</div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">{t('tuition.totalRemaining')}</div>
-          <div className="text-xl font-bold text-red-600 dark:text-red-400">{fmtCurrency(summary.totalRemaining, 'CZK')}</div>
-        </div>
-      </div>
+      {(() => {
+        const totalCount = charges.length
+        const paidCount = charges.filter(c => c.status === 'PAID').length
+        const annualCount = charges.filter(c => !c.period.includes('-')).length
+        const semiAnnualCount = charges.filter(c => c.period.includes('-')).length
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">{t('tuition.totalCharged')}</div>
+              <div className="text-xl font-bold text-gray-900 dark:text-gray-100">{fmtCurrency(summary.totalCharged, 'CZK')}</div>
+              <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                {formatNumber(totalCount)} {t('tuition.chargesCount')}
+                {annualCount > 0 && <span> · {formatNumber(annualCount)} {t('tuition.annual')}</span>}
+                {semiAnnualCount > 0 && <span> · {formatNumber(semiAnnualCount)} {t('tuition.semiAnnual')}</span>}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">{t('tuition.totalPaid')}</div>
+              <div className="text-xl font-bold text-green-600 dark:text-green-400">{fmtCurrency(summary.totalPaid, 'CZK')}</div>
+              <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                {formatNumber(paidCount)} {t('tuition.paidChargesCount')} / {formatNumber(totalCount)}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">{t('tuition.totalRemaining')}</div>
+              <div className="text-xl font-bold text-red-600 dark:text-red-400">{fmtCurrency(summary.totalRemaining, 'CZK')}</div>
+              <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                {formatNumber(totalCount - paidCount)} {t('tuition.chargesCount')}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Count */}
       <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">

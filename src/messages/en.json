@@ -486,7 +486,11 @@
     "charged": "Charged",
     "paid": "Paid",
     "remaining": "Remaining",
-    "relatedPayments": "Payments for this charge"
+    "relatedPayments": "Payments for this charge",
+    "annual": "annual",
+    "semiAnnual": "semi-annual",
+    "chargesCount": "charges",
+    "paidChargesCount": "paid"
   },
   "pagination": {
     "showing": "Showing",
