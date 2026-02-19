@@ -584,7 +584,7 @@ export default function ReportsPage() {
                     return (
                       <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                         <td className="py-3 px-3 text-sm font-medium">
-                          <Link href={`/students/${s.id}`} className="text-primary-600 hover:underline">{s.lastName}</Link>
+                          <Link href={`/students/${s.id}?from=/reports`} className="text-primary-600 hover:underline">{s.lastName}</Link>
                         </td>
                         <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                         <td className="py-3 px-3 text-sm text-gray-500">{s.className || '-'}</td>
@@ -680,7 +680,7 @@ export default function ReportsPage() {
                   {spSorted.map(s => (
                     <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
                       <td className="py-3 px-3 text-sm font-medium">
-                        <Link href={`/students/${s.id}`} className="text-primary-600 hover:underline">{s.lastName}</Link>
+                        <Link href={`/students/${s.id}?from=/reports`} className="text-primary-600 hover:underline">{s.lastName}</Link>
                       </td>
                       <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                       <td className="py-3 px-3 text-sm text-gray-500">{s.className || '-'}</td>
