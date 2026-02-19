@@ -482,7 +482,11 @@
     "student": "Mwanafunzi",
     "class": "Darasa",
     "notes": "Maelezo",
-    "noStudents": "Hakuna wanafunzi"
+    "noStudents": "Hakuna wanafunzi",
+    "charged": "Imedaiwa",
+    "paid": "Imelipwa",
+    "remaining": "Iliyobaki",
+    "relatedPayments": "Malipo ya dai hili"
   },
   "pagination": {
     "showing": "Inaonyesha",

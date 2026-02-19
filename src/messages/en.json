@@ -482,7 +482,11 @@
     "student": "Student",
     "class": "Class",
     "notes": "Notes",
-    "noStudents": "No students"
+    "noStudents": "No students",
+    "charged": "Charged",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "relatedPayments": "Payments for this charge"
   },
   "pagination": {
     "showing": "Showing",

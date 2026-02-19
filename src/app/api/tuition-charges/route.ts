@@ -40,6 +40,11 @@ export async function GET(request: NextRequest) {
       .filter(pt => /školné|tuition|karo/i.test(pt.name + (pt.nameEn || '') + (pt.nameSw || '')))
       .map(pt => pt.name)
 
+    // Načíst sazby a třídy pro určení názvu sazby
+    const rates = await prisma.tuitionRate.findMany({ where: { isActive: true } })
+    const classRooms = await prisma.classRoom.findMany({ where: { isActive: true } })
+    const classNameToSortOrder = new Map(classRooms.map(c => [c.name, c.sortOrder]))
+
     const chargesWithPaid = await Promise.all(
       charges.map(async (charge) => {
         // Součet plateb typu školné pro daného studenta v daném období (roce)
@@ -63,8 +68,17 @@ export async function GET(request: NextRequest) {
 
         const paidAmount = payments.reduce((sum, p) => sum + p.amount, 0)
 
+        // Najít odpovídající sazbu pro název předpisu
+        const sortOrder = classNameToSortOrder.get(charge.student?.className || '')
+        const matchedRate = sortOrder !== undefined
+          ? rates.find(r => sortOrder >= r.gradeFrom && sortOrder <= r.gradeTo)
+          : undefined
+
         return {
           ...charge,
+          rateName: matchedRate?.name || null,
+          rateNameEn: matchedRate?.nameEn || null,
+          rateNameSw: matchedRate?.nameSw || null,
           paidAmount,
           remainingAmount: Math.max(0, charge.amount - paidAmount),
           payments,

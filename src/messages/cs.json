@@ -482,7 +482,11 @@
     "student": "Student",
     "class": "Třída",
     "notes": "Poznámky",
-    "noStudents": "Žádní studenti"
+    "noStudents": "Žádní studenti",
+    "charged": "Předepsáno",
+    "paid": "Zaplaceno",
+    "remaining": "Zbývá",
+    "relatedPayments": "Platby k tomuto předpisu"
   },
   "pagination": {
     "showing": "Zobrazeno",
