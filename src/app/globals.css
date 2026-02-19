@@ -285,6 +285,62 @@ body.print-visit-cards aside { display: none !important; }
 body.print-visit-cards main { margin-left: 0 !important; padding-top: 0 !important; }
 body.print-visit-cards main > div { padding: 0 !important; max-width: none !important; }
 
+/* Reset dark mode colors for visit cards — cards have white background,
+   so all text must be dark regardless of dark mode setting */
+body.print-visit-cards .print-page,
+body.print-visit-cards .print-page * {
+  --foreground: #1a1a1a;
+  color: #1a1a1a;
+}
+body.print-visit-cards .print-page .bg-gray-100 {
+  background-color: #f3f4f6 !important;
+}
+body.print-visit-cards .print-page .border-gray-300 {
+  border-color: #d1d5db !important;
+}
+body.print-visit-cards .print-page .border-gray-400 {
+  border-color: #9ca3af !important;
+}
+body.print-visit-cards .print-page .border-gray-800 {
+  border-color: #1f2937 !important;
+}
+body.print-visit-cards .print-page .text-gray-900 {
+  color: #111827 !important;
+}
+body.print-visit-cards .print-page .text-gray-700 {
+  color: #374151 !important;
+}
+body.print-visit-cards .print-page .text-gray-600 {
+  color: #4b5563 !important;
+}
+body.print-visit-cards .print-page .text-gray-500 {
+  color: #6b7280 !important;
+}
+body.print-visit-cards .print-page .text-gray-400 {
+  color: #9ca3af !important;
+}
+body.print-visit-cards .print-page .text-red-700 {
+  color: #b91c1c !important;
+}
+body.print-visit-cards .print-page .text-red-600 {
+  color: #dc2626 !important;
+}
+body.print-visit-cards .print-page .text-blue-700 {
+  color: #1d4ed8 !important;
+}
+body.print-visit-cards .print-page .text-blue-600 {
+  color: #2563eb !important;
+}
+body.print-visit-cards .print-page .bg-red-600 {
+  background-color: #dc2626 !important;
+}
+body.print-visit-cards .print-page .bg-blue-600 {
+  background-color: #2563eb !important;
+}
+body.print-visit-cards .print-page .bg-gray-800 {
+  background-color: #1f2937 !important;
+}
+
 @media print {
   /* Reset dark mode for print */
   .dark { --foreground: #1a1a1a; --background: #ffffff; --card: #ffffff; }
