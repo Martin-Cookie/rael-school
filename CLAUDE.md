@@ -69,6 +69,7 @@ Stránky s tímto vzorem:
 | Platby – Sponzorské | `payments/page.tsx` | Datum, Typ, Částka, Student, Sponzor, Poznámky |
 | Platby – Stravenky | `payments/page.tsx` | Datum nákupu, Částka, Počet, Student, Sponzor, Poznámky |
 | Import detail | `payments/import/[id]/page.tsx` | Datum, Částka, Měna, Student, Sponzor, Typ, Stav |
+| Předpisy školného | `tuition/page.tsx` | Student, Třída, Částka, Zaplaceno, Zbývá, Stav |
 
 ### Sticky layout seznamů
 
@@ -278,10 +279,72 @@ Soubory:
 | Studenti | `students/page.tsx` | CSV se všemi studenty (číslo, jméno, třída, pohlaví, věk, potřeby, sponzoři) |
 | Sponzoři | `sponsors/page.tsx` | CSV se sponzory (jméno, email, telefon, počet studentů, celkem plateb) |
 | Platby | `payments/page.tsx` | CSV s platbami aktivního tabu (sponzorské nebo stravenky) |
+| Předpisy | `tuition/page.tsx` | CSV s předpisy (číslo, jméno, třída, částka, zaplaceno, zbývá, stav, sponzor, typ, poznámky) |
 
 **Funkce `downloadCSV(headers, rows, filename)`:**
 - BOM prefix pro správné kódování v Excelu (UTF-8)
 - Escapování uvozovek a čárek v hodnotách
+
+### Předpisy školného (Tuition Charges)
+
+Soubory:
+- UI: `src/app/tuition/page.tsx`
+- API: `src/app/api/tuition-charges/route.ts`
+- Prisma model: `TuitionCharge` (studentId, period, amount, currency, status)
+- Sazby: `TuitionRate` (annualFee, gradeFrom, gradeTo, currency)
+
+**Souhrnné karty (3 bubliny):**
+
+| Karta | Hlavní hodnota | Pod-text |
+|-------|---------------|----------|
+| Celkem předepsáno | Částka v CZK | Počet předpisů + roční/půlroční breakdown |
+| Celkem zaplaceno | Částka v CZK (zelená) | Počet zaplacených / celkem |
+| Celkem zbývá | Částka v CZK (červená) | Počet nezaplacených |
+
+- **Roční** = period je jen rok (`"2026"`), **půlroční** = period obsahuje `-H` (`"2026-H1"`)
+- Počty se zobrazují jako drobný text pod hlavní částkou
+
+**Generování předpisů:**
+- Panel s výběrem studentů (checkboxy, filtr tříd, hledání)
+- Sazba se určí automaticky podle třídy studenta a `TuitionRate` číselníku
+- Duplikáty se přeskakují (student + období)
+
+**Tabulka předpisů:**
+
+| Sloupec | Tříditelný | Popis |
+|---------|-----------|-------|
+| Student | ano | Jméno + číslo (odkaz na detail) |
+| Třída | ano | Třída studenta |
+| Částka | ano | Předepsaná částka |
+| Zaplaceno | ano | Součet plateb typu školné pro studenta v daném roce |
+| Zbývá | ano | Předepsáno − zaplaceno |
+| Stav | ano | UNPAID / PARTIAL / PAID (barevný badge) |
+| Sponzor | ne | Klikatelní sponzoři z plateb |
+| Typ platby | ne | Typy plateb z přiřazených SponsorPayment |
+| Poznámky | ne | Volitelné poznámky |
+
+**Výpočet zaplacené částky:**
+- Na serveru se sčítají `SponsorPayment` s typem obsahujícím "školné"/"tuition"/"karo"
+- Filtrováno podle studenta, roku z periody a měny předpisu
+
+### Cross-page navigace a klikatelné odkazy
+
+**Klikatelní sponzoři v seznamu studentů:**
+- Soubor: `students/page.tsx`
+- Ve sloupci sponzorů jsou jména klikatelná → odkaz na stránku Sponzoři s hledáním (`/sponsors?search=...`)
+
+**Zachování stavu hledání:**
+- Stránka Sponzoři čte `?search=` z URL a předvyplní vyhledávací pole
+- Při navigaci zpět z detailu studenta se stav hledání zachová
+
+**Řetězová zpětná navigace (detail studenta):**
+- Soubor: `students/[id]/page.tsx`
+- Tlačítko zpět si pamatuje cestu: Studenti → Sponzoři → Detail → zpět na Sponzoře → zpět na Studenty
+- Implementováno přes `document.referrer` a URL parametry
+
+**Filtr sponzorů ve formuláři platby:**
+- Soubor: `payments/page.tsx`
+- Dropdown sponzorů ve formuláři platby se filtruje podle vybraného studenta (zobrazí jen sponzory přiřazené k danému studentovi)
 
 ### Filtrování a vyhledávání na stránce Platby
 
