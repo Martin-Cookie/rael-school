@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     if (!user || (user.role !== 'ADMIN' && user.role !== 'MANAGER'))
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const { period } = await request.json()
+    const { period, studentIds } = await request.json()
     if (!period?.trim()) return NextResponse.json({ error: 'Period is required' }, { status: 400 })
 
     // Načíst sazby školného
@@ -104,9 +104,13 @@ export async function POST(request: NextRequest) {
     const classRooms = await prisma.classRoom.findMany({ where: { isActive: true } })
     const classNameToSortOrder = new Map(classRooms.map(c => [c.name, c.sortOrder]))
 
-    // Načíst aktivní studenty
+    // Načíst aktivní studenty (volitelně jen vybrané)
+    const studentWhere: Record<string, any> = { isActive: true }
+    if (Array.isArray(studentIds) && studentIds.length > 0) {
+      studentWhere.id = { in: studentIds }
+    }
     const students = await prisma.student.findMany({
-      where: { isActive: true },
+      where: studentWhere,
       select: { id: true, className: true },
     })
 

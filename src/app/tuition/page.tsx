@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { GraduationCap, FileText, Plus, Search, ChevronUp, ChevronDown, ArrowUpDown, Download, Check, X } from 'lucide-react'
+import { GraduationCap, FileText, Plus, Search, ChevronUp, ChevronDown, ArrowUpDown, Download, Check, X, CheckSquare, Square, Upload } from 'lucide-react'
 import { formatNumber, formatDate } from '@/lib/format'
 import { downloadCSV } from '@/lib/csv'
 
@@ -39,10 +39,15 @@ export default function TuitionPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [search, setSearch] = useState('')
 
-  // Generate form
+  // Generate form with student selection
   const [showGenerate, setShowGenerate] = useState(false)
   const [genPeriod, setGenPeriod] = useState(new Date().getFullYear().toString())
   const [generating, setGenerating] = useState(false)
+  const [genStudents, setGenStudents] = useState<any[]>([])
+  const [genSelected, setGenSelected] = useState<Set<string>>(new Set())
+  const [genClassFilter, setGenClassFilter] = useState('')
+  const [genSearch, setGenSearch] = useState('')
+  const [genLoading, setGenLoading] = useState(false)
 
   // Period filter
   const [filterPeriod, setFilterPeriod] = useState(new Date().getFullYear().toString())
@@ -103,15 +108,62 @@ export default function TuitionPage() {
 
   const canEdit = userRole && ['ADMIN', 'MANAGER'].includes(userRole)
 
+  // Open generate panel — fetch students
+  async function openGenerate() {
+    if (showGenerate) { setShowGenerate(false); return }
+    setShowGenerate(true)
+    setGenLoading(true)
+    setGenSelected(new Set())
+    setGenClassFilter('')
+    setGenSearch('')
+    try {
+      const res = await fetch('/api/students')
+      const data = await res.json()
+      setGenStudents(data.students || data || [])
+    } catch { setGenStudents([]) }
+    setGenLoading(false)
+  }
+
+  // Generate student list helpers
+  const genClassNames = [...new Set(genStudents.map((s: any) => s.className).filter(Boolean))].sort() as string[]
+  const genClassFiltered = genClassFilter ? genStudents.filter((s: any) => s.className === genClassFilter) : genStudents
+  const genQ = genSearch.trim().toLowerCase()
+  const genFiltered = genQ
+    ? genClassFiltered.filter((s: any) => {
+        return (s.lastName?.toLowerCase().includes(genQ) || s.firstName?.toLowerCase().includes(genQ) || String(s.studentNo || '').includes(genQ))
+      })
+    : genClassFiltered
+
+  function genToggle(id: string) {
+    setGenSelected(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function genSelectAll() {
+    setGenSelected(prev => {
+      const next = new Set(prev)
+      genFiltered.forEach((s: any) => next.add(s.id))
+      return next
+    })
+  }
+
+  function genDeselectAll() {
+    setGenSelected(new Set())
+  }
+
   // Generate charges
   async function handleGenerate() {
-    if (!genPeriod.trim()) return
+    if (!genPeriod.trim() || genSelected.size === 0) return
     setGenerating(true)
     try {
       const res = await fetch('/api/tuition-charges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ period: genPeriod.trim() }),
+        body: JSON.stringify({ period: genPeriod.trim(), studentIds: [...genSelected] }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -215,7 +267,7 @@ export default function TuitionPage() {
               <Download className="w-4 h-4" /> {t('app.exportCSV')}
             </button>
             {canEdit && (
-              <button onClick={() => setShowGenerate(!showGenerate)} className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors">
+              <button onClick={openGenerate} className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors">
                 <Plus className="w-4 h-4" /> {t('tuition.generate')}
               </button>
             )}
@@ -247,31 +299,138 @@ export default function TuitionPage() {
         </div>
       </div>
 
-      {/* Generate form */}
+      {/* Generate panel with student selection */}
       {showGenerate && (
-        <div className="mb-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('tuition.generateDesc')}</h3>
-          <div className="flex items-center gap-3">
-            <label className="text-sm text-gray-600 dark:text-gray-400">{t('tuition.period')}:</label>
-            <select
-              value={genPeriod}
-              onChange={(e) => setGenPeriod(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
-            >
-              {years.map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
-            <button
-              onClick={handleGenerate}
-              disabled={generating}
-              className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors"
-            >
-              {generating ? t('app.loading') : t('tuition.generate')}
-            </button>
+        <div className="mb-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('tuition.generateDesc')}</h3>
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Period */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600 dark:text-gray-400">{t('tuition.period')}:</label>
+                <select
+                  value={genPeriod}
+                  onChange={(e) => setGenPeriod(e.target.value)}
+                  className="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
+                >
+                  {years.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+
+              {/* Class filter */}
+              <select
+                value={genClassFilter}
+                onChange={e => setGenClassFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
+              >
+                <option value="">{t('visitCards.allClasses')}</option>
+                {genClassNames.map(cn => (
+                  <option key={cn} value={cn}>{cn}</option>
+                ))}
+              </select>
+
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={genSearch}
+                  onChange={e => setGenSearch(e.target.value)}
+                  placeholder={t('app.search')}
+                  className="pl-8 pr-8 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 dark:text-gray-100 w-48 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400"
+                />
+                {genSearch && (
+                  <button onClick={() => setGenSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Select/Deselect */}
+              <button onClick={genSelectAll} className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+                {t('visitCards.selectAll')}
+              </button>
+              <button onClick={genDeselectAll} className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+                {t('visitCards.deselectAll')}
+              </button>
+
+              <div className="flex-1" />
+
+              {/* Selected count */}
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {t('visitCards.selectedCount')}: <span className="font-bold text-primary-600 dark:text-primary-400">{formatNumber(genSelected.size)}</span> / {formatNumber(genFiltered.length)}
+              </span>
+            </div>
+          </div>
+
+          {/* Student list */}
+          <div className="max-h-[400px] overflow-y-auto">
+            {genLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
+                    <th className="py-2 px-3 w-10">
+                      <input
+                        type="checkbox"
+                        checked={genFiltered.length > 0 && genFiltered.every((s: any) => genSelected.has(s.id))}
+                        onChange={e => e.target.checked ? genSelectAll() : genDeselectAll()}
+                        className="rounded border-gray-300 dark:border-gray-600"
+                      />
+                    </th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-left">{t('student.studentNo')}</th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-left">{t('student.lastName')}</th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-left">{t('student.firstName')}</th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-left">{t('tuition.class')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {genFiltered.map((s: any) => (
+                    <tr
+                      key={s.id}
+                      className={`border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer ${genSelected.has(s.id) ? 'bg-primary-50 dark:bg-primary-900/20' : ''}`}
+                      onClick={() => genToggle(s.id)}
+                    >
+                      <td className="py-2 px-3" onClick={e => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={genSelected.has(s.id)}
+                          onChange={() => genToggle(s.id)}
+                          className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                      </td>
+                      <td className="py-2 px-3 text-sm text-gray-500 dark:text-gray-400">{s.studentNo}</td>
+                      <td className="py-2 px-3 text-sm font-medium text-gray-900 dark:text-gray-100">{s.lastName}</td>
+                      <td className="py-2 px-3 text-sm text-gray-900 dark:text-gray-100">{s.firstName}</td>
+                      <td className="py-2 px-3 text-sm text-gray-700 dark:text-gray-300">{s.className || '-'}</td>
+                    </tr>
+                  ))}
+                  {genFiltered.length === 0 && (
+                    <tr><td colSpan={5} className="py-4 text-center text-gray-400 text-sm">{t('tuition.noStudents')}</td></tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* Generate + Cancel buttons */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-end gap-3">
             <button
               onClick={() => setShowGenerate(false)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               {t('app.cancel')}
+            </button>
+            <button
+              onClick={handleGenerate}
+              disabled={generating || genSelected.size === 0}
+              className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              {generating ? t('app.loading') : `${t('tuition.generate')} (${formatNumber(genSelected.size)})`}
             </button>
           </div>
         </div>

@@ -481,7 +481,8 @@
     "totalRemaining": "Total remaining",
     "student": "Student",
     "class": "Class",
-    "notes": "Notes"
+    "notes": "Notes",
+    "noStudents": "No students"
   },
   "pagination": {
     "showing": "Showing",

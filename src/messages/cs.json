@@ -481,7 +481,8 @@
     "totalRemaining": "Celkem zbývá",
     "student": "Student",
     "class": "Třída",
-    "notes": "Poznámky"
+    "notes": "Poznámky",
+    "noStudents": "Žádní studenti"
   },
   "pagination": {
     "showing": "Zobrazeno",

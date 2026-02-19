@@ -481,7 +481,8 @@
     "totalRemaining": "Jumla iliyobaki",
     "student": "Mwanafunzi",
     "class": "Darasa",
-    "notes": "Maelezo"
+    "notes": "Maelezo",
+    "noStudents": "Hakuna wanafunzi"
   },
   "pagination": {
     "showing": "Inaonyesha",
