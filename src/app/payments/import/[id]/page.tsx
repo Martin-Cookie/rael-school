@@ -65,20 +65,20 @@ interface SplitPart {
 }
 
 const ROW_STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  NEW: { bg: 'bg-gray-100', text: 'text-gray-600' },
-  MATCHED: { bg: 'bg-green-100', text: 'text-green-700' },
-  PARTIAL: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
-  APPROVED: { bg: 'bg-blue-100', text: 'text-blue-700' },
-  REJECTED: { bg: 'bg-red-100', text: 'text-red-700' },
-  DUPLICATE: { bg: 'bg-orange-100', text: 'text-orange-700' },
-  SPLIT: { bg: 'bg-purple-100', text: 'text-purple-700' },
+  NEW: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-300' },
+  MATCHED: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400' },
+  PARTIAL: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-700 dark:text-yellow-400' },
+  APPROVED: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-400' },
+  REJECTED: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400' },
+  DUPLICATE: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-700 dark:text-orange-400' },
+  SPLIT: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-700 dark:text-purple-400' },
 }
 
 const CONFIDENCE_STYLES: Record<string, { bg: string; text: string }> = {
-  HIGH: { bg: 'bg-green-100', text: 'text-green-700' },
-  MEDIUM: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
-  LOW: { bg: 'bg-orange-100', text: 'text-orange-700' },
-  NONE: { bg: 'bg-gray-100', text: 'text-gray-500' },
+  HIGH: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400' },
+  MEDIUM: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-700 dark:text-yellow-400' },
+  LOW: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-700 dark:text-orange-400' },
+  NONE: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-500 dark:text-gray-400' },
 }
 
 type StatusFilter = 'ALL' | 'NEW' | 'MATCHED' | 'PARTIAL' | 'DUPLICATE' | 'APPROVED' | 'REJECTED' | 'SPLIT'
@@ -405,7 +405,7 @@ export default function ImportDetailPage() {
   function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
     const isA = sortCol === col
     return (
-      <th className={`py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none whitespace-nowrap ${className}`} onClick={() => handleSort(col)}>
+      <th className={`py-2.5 px-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:text-gray-700 dark:hover:text-gray-200 select-none whitespace-nowrap ${className}`} onClick={() => handleSort(col)}>
         <div className="flex items-center gap-1">
           {children}
           {isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
@@ -424,7 +424,7 @@ export default function ImportDetailPage() {
 
   if (!importData) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-gray-500 dark:text-gray-400">
         Import not found
       </div>
     )
@@ -439,13 +439,13 @@ export default function ImportDetailPage() {
 
   // Filter buttons with counts
   const filterButtons: { key: StatusFilter; label: string; count: number; color: string }[] = [
-    { key: 'ALL', label: t('paymentImport.filterAll'), count: stats?.total || 0, color: 'bg-gray-100 text-gray-700' },
-    { key: 'MATCHED', label: t('paymentImport.statusMatched'), count: stats?.matched || 0, color: 'bg-green-100 text-green-700' },
-    { key: 'PARTIAL', label: t('paymentImport.statusPartial'), count: stats?.partial || 0, color: 'bg-yellow-100 text-yellow-700' },
-    { key: 'NEW', label: t('paymentImport.statusNew'), count: stats?.new || 0, color: 'bg-gray-100 text-gray-600' },
-    { key: 'DUPLICATE', label: t('paymentImport.statusDuplicate'), count: stats?.duplicate || 0, color: 'bg-orange-100 text-orange-700' },
-    { key: 'APPROVED', label: t('paymentImport.statusApproved'), count: stats?.approved || 0, color: 'bg-blue-100 text-blue-700' },
-    { key: 'REJECTED', label: t('paymentImport.statusRejected'), count: stats?.rejected || 0, color: 'bg-red-100 text-red-700' },
+    { key: 'ALL', label: t('paymentImport.filterAll'), count: stats?.total || 0, color: 'bg-gray-100 text-gray-700 dark:text-gray-300' },
+    { key: 'MATCHED', label: t('paymentImport.statusMatched'), count: stats?.matched || 0, color: 'bg-green-100 text-green-700 dark:text-green-400' },
+    { key: 'PARTIAL', label: t('paymentImport.statusPartial'), count: stats?.partial || 0, color: 'bg-yellow-100 text-yellow-700 dark:text-yellow-400' },
+    { key: 'NEW', label: t('paymentImport.statusNew'), count: stats?.new || 0, color: 'bg-gray-100 text-gray-600 dark:text-gray-400' },
+    { key: 'DUPLICATE', label: t('paymentImport.statusDuplicate'), count: stats?.duplicate || 0, color: 'bg-orange-100 text-orange-700 dark:text-orange-400' },
+    { key: 'APPROVED', label: t('paymentImport.statusApproved'), count: stats?.approved || 0, color: 'bg-blue-100 text-blue-700 dark:text-blue-400' },
+    { key: 'REJECTED', label: t('paymentImport.statusRejected'), count: stats?.rejected || 0, color: 'bg-red-100 text-red-700 dark:text-red-400' },
   ]
 
   // Split modal calculations
@@ -462,12 +462,12 @@ export default function ImportDetailPage() {
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/payments/import" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
+        <Link href="/payments/import" className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">{t('paymentImport.title')}</h1>
-          <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('paymentImport.title')}</h1>
+          <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
             <span className="flex items-center gap-1"><FileText className="w-4 h-4" /> {importData.fileName}</span>
             <span>{formatDate(importData.createdAt, locale)}</span>
             <span>{importData.importedBy.firstName} {importData.importedBy.lastName}</span>
@@ -484,10 +484,10 @@ export default function ImportDetailPage() {
             className={`rounded-xl px-4 py-3 text-center transition-all border-2 ${
               filter === fb.key
                 ? 'border-primary-500 shadow-sm'
-                : 'border-transparent hover:border-gray-200'
+                : 'border-transparent hover:border-gray-200 dark:hover:border-gray-600'
             }`}
           >
-            <p className="text-2xl font-bold text-gray-900">{formatNumber(fb.count)}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{formatNumber(fb.count)}</p>
             <p className={`text-xs font-medium mt-0.5 ${fb.color.split(' ')[1]}`}>{fb.label}</p>
           </button>
         ))}
@@ -497,14 +497,14 @@ export default function ImportDetailPage() {
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <button
           onClick={selectAllMatched}
-          className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+          className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
         >
           {t('paymentImport.selectAllMatched')}
         </button>
 
         {selectedRows.size > 0 && (
           <>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               {selectedRows.size} {t('paymentImport.selected')}
             </span>
             <button
@@ -525,7 +525,7 @@ export default function ImportDetailPage() {
             </button>
             <button
               onClick={() => setSelectedRows(new Set())}
-              className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700"
+              className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
             >
               {t('app.cancel')}
             </button>
@@ -534,11 +534,11 @@ export default function ImportDetailPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 <th className="py-2.5 px-1 w-8">
                   <input
                     type="checkbox"
@@ -553,10 +553,10 @@ export default function ImportDetailPage() {
                 <SH col="amount" className="text-right">{t('paymentImport.amount')}</SH>
                 <SH col="variableSymbol" className="text-left">{t('paymentImport.variableSymbol')}</SH>
                 <SH col="message" className="text-left">{t('paymentImport.message')}</SH>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[160px]">{t('paymentImport.sponsor')}</th>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[170px]">{t('paymentImport.student')}</th>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase min-w-[140px]">{t('paymentImport.paymentType')}</th>
-                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 uppercase w-16">{t('app.actions')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase min-w-[160px]">{t('paymentImport.sponsor')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase min-w-[170px]">{t('paymentImport.student')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase min-w-[140px]">{t('paymentImport.paymentType')}</th>
+                <th className="text-left py-2.5 px-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase w-16">{t('app.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -567,7 +567,7 @@ export default function ImportDetailPage() {
                 const selectable = canSelect(row)
 
                 return (
-                  <tr key={row.id} className={`border-b border-gray-50 hover:bg-gray-50/50 group ${selectedRows.has(row.id) ? 'bg-primary-50/50' : ''}`}>
+                  <tr key={row.id} className={`border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 group ${selectedRows.has(row.id) ? 'bg-primary-50/50 dark:bg-primary-900/20' : ''}`}>
                     {/* Checkbox */}
                     <td className="py-2.5 px-1">
                       {selectable && (
@@ -595,27 +595,27 @@ export default function ImportDetailPage() {
                     </td>
 
                     {/* Date */}
-                    <td className="py-2 px-1.5 text-xs text-gray-900 whitespace-nowrap">
+                    <td className="py-2 px-1.5 text-xs text-gray-900 dark:text-gray-100 whitespace-nowrap">
                       {formatDate(row.transactionDate, locale)}
                     </td>
 
                     {/* Sender */}
-                    <td className="py-2 px-1.5 text-xs text-gray-700 max-w-[140px] truncate" title={row.senderName || ''}>
+                    <td className="py-2 px-1.5 text-xs text-gray-700 dark:text-gray-300 max-w-[140px] truncate" title={row.senderName || ''}>
                       {row.senderName || '-'}
                     </td>
 
                     {/* Amount */}
-                    <td className="py-2 px-1.5 text-xs text-gray-900 font-medium text-right whitespace-nowrap">
+                    <td className="py-2 px-1.5 text-xs text-gray-900 dark:text-gray-100 font-medium text-right whitespace-nowrap">
                       {formatNumber(row.amount)} {row.currency}
                     </td>
 
                     {/* VS */}
-                    <td className="py-2 px-1.5 text-xs text-gray-500 whitespace-nowrap">
+                    <td className="py-2 px-1.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {row.variableSymbol || '-'}
                     </td>
 
                     {/* Message */}
-                    <td className="py-2 px-1.5 text-xs text-gray-500" title={row.message || ''}>
+                    <td className="py-2 px-1.5 text-xs text-gray-500 dark:text-gray-400" title={row.message || ''}>
                       <div className="line-clamp-2">{row.message || '-'}</div>
                     </td>
 
@@ -625,7 +625,7 @@ export default function ImportDetailPage() {
                         <select
                           value={row.sponsorId || ''}
                           onChange={(e) => updateRow(row.id, 'sponsorId', e.target.value)}
-                          className="w-full px-2 py-1 rounded border border-gray-200 text-sm bg-white hover:border-gray-300 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
+                          className="w-full px-2 py-1 rounded border border-gray-200 dark:border-gray-600 text-sm bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
                         >
                           <option value="">{t('paymentImport.selectSponsor')}</option>
                           {sponsors.map((s: any) => (
@@ -633,7 +633,7 @@ export default function ImportDetailPage() {
                           ))}
                         </select>
                       ) : (
-                        <span className="text-sm text-gray-700 whitespace-nowrap">
+                        <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                           {row.sponsor ? `${row.sponsor.lastName} ${row.sponsor.firstName}` : '-'}
                         </span>
                       )}
@@ -645,7 +645,7 @@ export default function ImportDetailPage() {
                         <select
                           value={row.studentId || ''}
                           onChange={(e) => updateRow(row.id, 'studentId', e.target.value)}
-                          className="w-full px-2 py-1 rounded border border-gray-200 text-sm bg-white hover:border-gray-300 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
+                          className="w-full px-2 py-1 rounded border border-gray-200 dark:border-gray-600 text-sm bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
                         >
                           <option value="">{t('paymentImport.selectStudent')}</option>
                           {students.map((s: any) => (
@@ -653,7 +653,7 @@ export default function ImportDetailPage() {
                           ))}
                         </select>
                       ) : (
-                        <span className="text-sm text-gray-700 whitespace-nowrap">
+                        <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                           {row.student ? `${row.student.lastName} ${row.student.firstName}` : '-'}
                         </span>
                       )}
@@ -666,7 +666,7 @@ export default function ImportDetailPage() {
                           <select
                             value={row.paymentTypeId || ''}
                             onChange={(e) => updateRow(row.id, 'paymentTypeId', e.target.value)}
-                            className="w-full px-2 py-1 rounded border border-gray-200 text-sm bg-white hover:border-gray-300 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
+                            className="w-full px-2 py-1 rounded border border-gray-200 dark:border-gray-600 text-sm bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
                           >
                             <option value="">{t('paymentImport.selectPaymentType')}</option>
                             {paymentTypes.map((pt: any) => (
@@ -675,12 +675,12 @@ export default function ImportDetailPage() {
                           </select>
                           {row.paymentTypeId && isVoucherType(row.paymentTypeId) && (
                             <div className="flex items-center gap-1 mt-1">
-                              <label className="text-xs text-gray-500">{t('vouchers.count')}:</label>
+                              <label className="text-xs text-gray-500 dark:text-gray-400">{t('vouchers.count')}:</label>
                               <input
                                 type="number"
                                 value={row.voucherCount ?? ''}
                                 onChange={(e) => updateRow(row.id, 'voucherCount', e.target.value)}
-                                className="w-16 px-1.5 py-0.5 rounded border border-gray-200 text-sm bg-white hover:border-gray-300 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
+                                className="w-16 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-600 text-sm bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500 focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
                                 min="1"
                               />
                               <span className="text-xs text-gray-400">ks</span>
@@ -688,7 +688,7 @@ export default function ImportDetailPage() {
                           )}
                         </>
                       ) : (
-                        <span className="text-sm text-gray-700 whitespace-nowrap">
+                        <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                           {(() => { const pt = paymentTypes.find((pt: any) => pt.id === row.paymentTypeId); return pt ? getLocaleName(pt, locale) : '-' })()}
                           {row.paymentTypeId && isVoucherType(row.paymentTypeId) && row.voucherCount && (
                             <span className="text-xs text-gray-400 ml-1">({row.voucherCount} ks)</span>
@@ -703,7 +703,7 @@ export default function ImportDetailPage() {
                         {editable && (
                           <button
                             onClick={() => openSplitModal(row)}
-                            className="p-1 text-gray-400 hover:text-purple-600 rounded"
+                            className="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 rounded"
                             title={t('paymentImport.split')}
                           >
                             <Scissors className="w-4 h-4" />
@@ -713,7 +713,7 @@ export default function ImportDetailPage() {
                           <div className="relative">
                             <button
                               onClick={() => setTooltipRow(tooltipRow === row.id ? null : row.id)}
-                              className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                              className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded"
                             >
                               <Info className="w-4 h-4" />
                             </button>
@@ -735,7 +735,7 @@ export default function ImportDetailPage() {
 
               {filteredRows.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="py-12 text-center text-gray-500 text-sm">
+                  <td colSpan={11} className="py-12 text-center text-gray-500 dark:text-gray-400 text-sm">
                     {t('paymentImport.noRows')}
                   </td>
                 </tr>
@@ -745,7 +745,7 @@ export default function ImportDetailPage() {
         </div>
 
         {/* Row count footer */}
-        <div className="px-4 py-3 border-t border-gray-200 bg-gray-50 text-sm text-gray-500">
+        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400">
           {t('pagination.showing')} {formatNumber(filteredRows.length)} {t('pagination.of')} {formatNumber(importData.rows.length)}
         </div>
       </div>
@@ -754,32 +754,32 @@ export default function ImportDetailPage() {
       {splitRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50" onClick={() => setSplitRow(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-6">
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-6">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-semibold text-gray-900">{t('paymentImport.splitPayment')}</h3>
-              <button onClick={() => setSplitRow(null)} className="p-1 text-gray-400 hover:text-gray-600 rounded">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('paymentImport.splitPayment')}</h3>
+              <button onClick={() => setSplitRow(null)} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Original amount */}
-            <div className="flex justify-between items-center mb-4 p-3 bg-gray-50 rounded-lg">
-              <span className="text-sm text-gray-600">{t('paymentImport.splitOriginalAmount')}</span>
-              <span className="text-lg font-bold text-gray-900">{formatNumber(splitRow.amount)} {splitRow.currency}</span>
+            <div className="flex justify-between items-center mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <span className="text-sm text-gray-600 dark:text-gray-300">{t('paymentImport.splitOriginalAmount')}</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatNumber(splitRow.amount)} {splitRow.currency}</span>
             </div>
 
             {/* Parts */}
             <div className="space-y-3 mb-4">
               {splitParts.map((part, i) => (
-                <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-2">
+                <div key={i} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-500 w-6">{i + 1}.</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 w-6">{i + 1}.</span>
                     <input
                       type="number"
                       value={part.amount}
                       onChange={(e) => updateSplitPart(i, 'amount', e.target.value)}
                       placeholder={t('paymentImport.amount')}
-                      className="w-28 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                      className="w-28 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 text-sm"
                       step="0.01"
                     />
                     <span className="text-sm text-gray-400">{splitRow?.currency}</span>
@@ -794,7 +794,7 @@ export default function ImportDetailPage() {
                     <select
                       value={part.studentId}
                       onChange={(e) => updateSplitPart(i, 'studentId', e.target.value)}
-                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 text-sm"
                     >
                       <option value="">{t('paymentImport.selectStudent')}</option>
                       {students.map((s: any) => (
@@ -804,7 +804,7 @@ export default function ImportDetailPage() {
                     <select
                       value={part.paymentTypeId}
                       onChange={(e) => updateSplitPart(i, 'paymentTypeId', e.target.value)}
-                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 text-sm"
                     >
                       <option value="">{t('paymentImport.selectPaymentType')}</option>
                       {paymentTypes.map((pt: any) => (
@@ -814,12 +814,12 @@ export default function ImportDetailPage() {
                   </div>
                   {isVoucherType(part.paymentTypeId) && (
                     <div className="flex items-center gap-2 ml-8">
-                      <label className="text-xs text-gray-500">{t('vouchers.count')}:</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">{t('vouchers.count')}:</label>
                       <input
                         type="number"
                         value={part.count}
                         onChange={(e) => updateSplitPart(i, 'count', e.target.value)}
-                        className="w-24 px-2 py-1.5 rounded border border-gray-300 text-sm"
+                        className="w-24 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 text-sm"
                         min="1"
                       />
                       <span className="text-xs text-gray-400">ks{(() => { const r = getVoucherRate(splitRow?.currency || 'CZK'); return r ? ` (1 = ${r} ${splitRow?.currency || 'CZK'})` : '' })()}</span>
@@ -840,9 +840,9 @@ export default function ImportDetailPage() {
             )}
 
             {/* Sum validation */}
-            <div className={`flex justify-between items-center p-3 rounded-lg mb-5 ${splitValid ? 'bg-green-50' : 'bg-red-50'}`}>
-              <span className="text-sm text-gray-600">{t('paymentImport.splitRemaining')}</span>
-              <span className={`text-sm font-bold ${splitValid ? 'text-green-700' : 'text-red-700'}`}>
+            <div className={`flex justify-between items-center p-3 rounded-lg mb-5 ${splitValid ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
+              <span className="text-sm text-gray-600 dark:text-gray-300">{t('paymentImport.splitRemaining')}</span>
+              <span className={`text-sm font-bold ${splitValid ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
                 {formatNumber(Math.round((splitRow.amount - splitSum) * 100) / 100)} {splitRow.currency}
               </span>
             </div>
@@ -855,7 +855,7 @@ export default function ImportDetailPage() {
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setSplitRow(null)}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               >
                 {t('app.cancel')}
               </button>
