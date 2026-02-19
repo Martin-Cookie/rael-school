@@ -373,7 +373,7 @@ Soubor: `src/app/payments/page.tsx`
 
 | Soubor | Obsah | Obnovení |
 |--------|-------|----------|
-| `prisma/dev.db.primary` | **VSTUPNÍ PRIMÁRNÍ DATA** — 148 reálných studentů, 137 sponzorů | `cp prisma/dev.db.primary prisma/dev.db` |
+| `prisma/dev.db.primary` | **PLNÁ ZÁLOHA** — vše včetně runtime dat (předpisy, platby, stravenky…) | `cp prisma/dev.db.primary prisma/dev.db` |
 | `prisma/dev.db.backup` | Demo data — 30 testovacích studentů | `cp prisma/dev.db.backup prisma/dev.db` |
 | `prisma/seed-demo.ts` | Demo seed script (30 testovacích studentů) | `cp prisma/seed-demo.ts prisma/seed.ts && npm run db:seed` |
 
@@ -382,28 +382,58 @@ Soubor: `src/app/payments/page.tsx`
 | Soubor | Obsah |
 |--------|-------|
 | `data/students-real.json` | 148 studentů — kompletní strukturovaná data (DOB, třída, škola, sponzoři, zdravotní stav, rodinná situace, 30 sourozeneckých skupin, přijaté předměty, zubní prohlídky) |
-| `data/config-real.json` | Číselníky — třídy (PP1–Grade 12), typy plateb, školné, typy zdravotních prohlídek, měsíční sponzoři ordinace |
+| `data/config-real.json` | Číselníky — třídy (PP1–Grade 12), typy plateb, školné, typy zdravotních prohlídek, měsíční sponzoři ordinace, sazby stravenek |
+
+### Co je v záloze (dev.db.primary) vs. co je v seedu
+
+| Data | dev.db.primary | seed.ts | Poznámka |
+|------|:-:|:-:|--------|
+| Studenti (148) | Ano | Ano | Ze `students-real.json` |
+| Sponzoři (137) | Ano | Ano | Ze `students-real.json` |
+| Sponzorství (160) | Ano | Ano | Vazby student↔sponzor |
+| Vybavení (224) | Ano | Ano | Equipment z JSON |
+| Zdravotní prohlídky (31) | Ano | Ano | HealthCheck z JSON |
+| Uživatelé (admin, manager…) | Ano | Ano | S hesly |
+| **Číselníky** (třídy, typy, potřeby…) | Ano | Ano | ClassRoom, PaymentType, NeedType… |
+| **TuitionRate** (sazby školného) | Ano | Ano | 2 sazby (PP1–G6, G7–G12) |
+| **VoucherRate** (sazby stravenek) | Ano | Ano | 4 měny (CZK, EUR, USD, KES) |
+| **TuitionCharge** (předpisy) | **Ano** | **Ne** | Runtime — jen v záloze DB |
+| **SponsorPayment** (platby) | **Ano** | **Ne** | Runtime — jen v záloze DB |
+| **VoucherPurchase** (stravenky) | **Ano** | **Ne** | Runtime — jen v záloze DB |
+| **Need, Wish** (potřeby/přání studentů) | **Ano** | **Ne** | Runtime — jen v záloze DB |
+| **PaymentImport** (importy) | **Ano** | **Ne** | Runtime — jen v záloze DB |
+| **Photo** (fotografie) | **Ano** | **Ne** | Runtime — jen v záloze DB |
 
 ### Obnovení dat
 
-**Obnovit primární reálná data:**
+**Obnovit plnou zálohu (doporučeno):**
 ```bash
 cp prisma/dev.db.primary prisma/dev.db
 ```
+Obnoví vše — studenty, číselníky, **i předpisy, platby, stravenky a další runtime data**.
+
+**Znovu naseedit od nuly (pouze základní data):**
+```bash
+npx prisma db push && npm run db:seed
+```
+Vytvoří studenty, sponzory, číselníky, sazby — ale **ne** předpisy, platby, stravenky a další runtime data.
 
 **Obnovit demo data:**
 ```bash
 cp prisma/dev.db.backup prisma/dev.db
 ```
 
-**Znovu naseedit reálná data (ze JSON):**
-```bash
-npx prisma db push && npm run db:seed
-```
-
 **Znovu naseedit demo data:**
 ```bash
 cp prisma/seed-demo.ts prisma/seed.ts && npm run db:seed
+```
+
+### Aktualizace primární zálohy
+
+Po vytvoření důležitých runtime dat (předpisy, platby…) je nutné aktualizovat zálohu:
+```bash
+cp prisma/dev.db prisma/dev.db.primary
+git add prisma/dev.db.primary && git commit -m "Update primary DB backup" && git push origin main
 ```
 
 **Jak se dostat k datům při ztrátě kontextu:**
