@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
   HandHeart, Stethoscope, Plus, Check, Trash2, Upload,
-  Pencil, Package, Heart, CreditCard, Loader2, Star
+  Pencil, Package, Heart, CreditCard, Loader2, Star, FileText
 } from 'lucide-react'
 import { formatDate, formatDateForInput, formatNumber, calculateAge } from '@/lib/format'
 import { validateImageFile, compressImage } from '@/lib/imageUtils'
@@ -16,7 +16,7 @@ import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
 const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
-type Tab = 'personal' | 'equipment' | 'needs' | 'wishes' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments'
+type Tab = 'personal' | 'equipment' | 'needs' | 'wishes' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments' | 'tuition'
 function fmtCurrency(amount: number, currency: string): string { return `${formatNumber(amount)} ${currency}` }
 
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
@@ -45,6 +45,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   const [wishTypes, setWishTypes] = useState<any[]>([])
   const [voucherRates, setVoucherRates] = useState<any[]>([])
+  const [tuitionCharges, setTuitionCharges] = useState<any[]>([])
   const [newWish, setNewWish] = useState('')
   const [selectedWishType, setSelectedWishType] = useState('')
   const [showAddWish, setShowAddWish] = useState(false)
@@ -89,7 +90,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     return () => window.removeEventListener('locale-change', handler)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes(); fetchWishTypes(); fetchVoucherRates() }, [id])
+  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes(); fetchWishTypes(); fetchVoucherRates(); fetchTuitionCharges() }, [id])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
@@ -121,6 +122,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   async function fetchVoucherRates() {
     try { const res = await fetch('/api/voucher-rates'); const d = await res.json(); setVoucherRates(d.voucherRates || []) } catch {}
+  }
+
+  async function fetchTuitionCharges() {
+    try { const res = await fetch(`/api/tuition-charges?studentId=${id}`); const d = await res.json(); setTuitionCharges(d.charges || []) } catch {}
   }
 
   function getVoucherRate(cur: string): number | null {
@@ -366,6 +371,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     { key: 'wishes', label: t('wishes.title'), icon: Star, color: 'bg-violet-50 border-violet-200 text-violet-600 hover:bg-violet-100 dark:bg-violet-900/30 dark:border-violet-700 dark:text-violet-400 dark:hover:bg-violet-900/50', activeColor: 'bg-violet-600 text-white border-violet-600' },
     { key: 'vouchers', label: t('student.tabs.vouchers'), icon: Ticket, color: 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/50', activeColor: 'bg-blue-600 text-white border-blue-600' },
     { key: 'sponsorPayments', label: t('sponsorPayments.title'), icon: CreditCard, color: 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:border-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-900/50', activeColor: 'bg-indigo-600 text-white border-indigo-600' },
+    { key: 'tuition', label: t('tuition.charges'), icon: FileText, color: 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/50', activeColor: 'bg-emerald-600 text-white border-emerald-600' },
     { key: 'health', label: t('student.tabs.health'), icon: Stethoscope, color: 'bg-teal-50 border-teal-200 text-teal-600 hover:bg-teal-100 dark:bg-teal-900/30 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-900/50', activeColor: 'bg-teal-600 text-white border-teal-600' },
     { key: 'photos', label: t('student.tabs.photos'), icon: Camera, color: 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700', activeColor: 'bg-slate-600 text-white border-slate-600' },
   ]
@@ -470,6 +476,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           wishes: student.wishes?.filter((w: any) => !w.isFulfilled).length || 0,
           photos: student.photos?.length || 0,
           sponsorPayments: student.sponsorPayments?.length || 0,
+          tuition: tuitionCharges.length,
         }
         return (
           <div className="flex flex-wrap gap-1.5 mb-6">
@@ -1012,6 +1019,83 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               ))}
             </tbody></table></div>
           ) : <div className="text-center py-12"><CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" /><p className="text-gray-500 dark:text-gray-400">{t('app.noData')}</p></div>}
+        </div>
+      )}
+
+      {/* ===== TUITION CHARGES ===== */}
+      {activeTab === 'tuition' && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg"><FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /></div>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('tuition.charges')}</h3>
+          </div>
+          {tuitionCharges.length > 0 ? (
+            <>
+              {/* Summary */}
+              {(() => {
+                const totalCharged = tuitionCharges.reduce((s: number, c: any) => s + c.amount, 0)
+                const totalPaid = tuitionCharges.reduce((s: number, c: any) => s + (c.paidAmount || 0), 0)
+                const totalRemaining = tuitionCharges.reduce((s: number, c: any) => s + (c.remainingAmount || 0), 0)
+                return (
+                  <div className="grid grid-cols-3 gap-3 mb-5">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('tuition.totalCharged')}</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{fmtCurrency(totalCharged, tuitionCharges[0]?.currency || 'CZK')}</p>
+                    </div>
+                    <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('tuition.totalPaid')}</p>
+                      <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{fmtCurrency(totalPaid, tuitionCharges[0]?.currency || 'CZK')}</p>
+                    </div>
+                    <div className="p-3 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('tuition.totalRemaining')}</p>
+                      <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">{fmtCurrency(totalRemaining, tuitionCharges[0]?.currency || 'CZK')}</p>
+                    </div>
+                  </div>
+                )
+              })()}
+              {/* Table */}
+              <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-200 dark:border-gray-600">
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('tuition.period')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('tuition.amount')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('tuition.paidAmount')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('tuition.remainingAmount')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('tuition.status')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('tuition.notes')}</th>
+              </tr></thead><tbody>
+                {tuitionCharges.map((c: any) => (
+                  <tr key={c.id} className="border-b border-gray-50 dark:border-gray-700">
+                    <td className="py-3 px-2 text-sm font-medium text-gray-900 dark:text-gray-100">{c.period}</td>
+                    <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{fmtCurrency(c.amount, c.currency)}</td>
+                    <td className="py-3 px-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">{fmtCurrency(c.paidAmount || 0, c.currency)}</td>
+                    <td className="py-3 px-2 text-sm font-medium text-amber-700 dark:text-amber-400">{fmtCurrency(c.remainingAmount || 0, c.currency)}</td>
+                    <td className="py-3 px-2 text-sm">
+                      <span className={`badge ${c.status === 'PAID' ? 'badge-green' : c.status === 'PARTIAL' ? 'badge-yellow' : 'badge-red'}`}>
+                        {c.status === 'PAID' ? t('tuition.statusPaid') : c.status === 'PARTIAL' ? t('tuition.statusPartial') : t('tuition.statusUnpaid')}
+                      </span>
+                    </td>
+                    <td className="py-3 px-2 text-sm text-gray-500 dark:text-gray-400">{c.notes || '-'}</td>
+                  </tr>
+                ))}
+              </tbody></table></div>
+              {/* Payments detail */}
+              {tuitionCharges.some((c: any) => c.payments?.length > 0) && (
+                <div className="mt-5 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{t('sponsorPayments.title')}</h4>
+                  {tuitionCharges.filter((c: any) => c.payments?.length > 0).map((c: any) => (
+                    <div key={c.id} className="mb-3">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{c.period}</p>
+                      {c.payments.map((p: any, i: number) => (
+                        <div key={i} className="flex items-center gap-3 py-1.5 text-sm">
+                          <span className="text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(p.amount, c.currency)}</span>
+                          {p.sponsor && <span className="text-gray-500 dark:text-gray-400">— {p.sponsor.firstName} {p.sponsor.lastName}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : <div className="text-center py-12"><FileText className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" /><p className="text-gray-500 dark:text-gray-400">{t('tuition.noCharges')}</p></div>}
         </div>
       )}
 

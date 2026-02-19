@@ -10,9 +10,11 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period')
+    const studentId = searchParams.get('studentId')
 
     const where: Record<string, any> = {}
     if (period) where.period = period
+    if (studentId) where.studentId = studentId
 
     const charges = await prisma.tuitionCharge.findMany({
       where,

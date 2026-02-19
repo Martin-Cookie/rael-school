@@ -20,6 +20,7 @@ export async function GET() {
       studentsWithNeeds,
       sponsorPayments,
       voucherPurchases,
+      tuitionCharges,
     ] = await Promise.all([
       prisma.student.count({ where: { isActive: true } }),
       prisma.user.count({ where: { role: 'SPONSOR', isActive: true } }),
@@ -72,6 +73,12 @@ export async function GET() {
           sponsor: { select: { id: true, firstName: true, lastName: true } },
         },
       }),
+      prisma.tuitionCharge.findMany({
+        include: {
+          student: { select: { id: true, studentNo: true, firstName: true, lastName: true, className: true } },
+        },
+        orderBy: [{ period: 'desc' }, { student: { lastName: 'asc' } }],
+      }),
     ])
 
     // Aggregate sponsor payments by currency
@@ -84,6 +91,12 @@ export async function GET() {
     // Aggregate voucher purchases by currency (vouchers don't have currency field, use KES as default)
     const voucherTotalAmount = voucherPurchases.reduce((sum: number, v: any) => sum + v.amount, 0)
 
+    // Tuition summary
+    const tuitionTotalCharged = tuitionCharges.reduce((sum: number, c: any) => sum + c.amount, 0)
+    const tuitionPaidCount = tuitionCharges.filter((c: any) => c.status === 'PAID').length
+    const tuitionPartialCount = tuitionCharges.filter((c: any) => c.status === 'PARTIAL').length
+    const tuitionUnpaidCount = tuitionCharges.filter((c: any) => c.status === 'UNPAID').length
+
     return NextResponse.json({
       stats: {
         totalStudents,
@@ -93,10 +106,16 @@ export async function GET() {
         unfulfilledNeeds,
         sponsorPaymentsByCurrency,
         voucherTotalAmount,
+        tuitionTotalCharged,
+        tuitionTotalCharges: tuitionCharges.length,
+        tuitionPaidCount,
+        tuitionPartialCount,
+        tuitionUnpaidCount,
       },
       recentPayments,
       sponsorPayments,
       voucherPurchases,
+      tuitionCharges,
       students,
       sponsors,
       studentsWithNeeds,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { Users, CreditCard, HandHeart, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, GraduationCap, Ticket } from 'lucide-react'
+import { Users, CreditCard, HandHeart, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, GraduationCap, Ticket, FileText } from 'lucide-react'
 
 import { formatNumber, formatDate, calculateAge } from '@/lib/format'
 import cs from '@/messages/cs.json'
@@ -12,7 +12,7 @@ import { createTranslator, type Locale } from '@/lib/i18n'
 
 const msgs: Record<string, any> = { cs, en, sw }
 
-type DashTab = 'students' | 'sponsors' | 'payments' | 'needs' | 'classes'
+type DashTab = 'students' | 'sponsors' | 'payments' | 'needs' | 'classes' | 'tuition'
 type SortDir = 'asc' | 'desc'
 
 function fmtCurrency(amount: number, currency: string): string {
@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [students, setStudents] = useState<any[]>([])
   const [sponsors, setSponsors] = useState<any[]>([])
   const [studentsWithNeeds, setStudentsWithNeeds] = useState<any[]>([])
+  const [tuitionCharges, setTuitionCharges] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [locale, setLocale] = useState<Locale>('cs')
   const [activeTab, setActiveTab] = useState<DashTab>('students')
@@ -71,6 +72,7 @@ export default function DashboardPage() {
       setStudents(data.students || [])
       setSponsors(data.sponsors || [])
       setStudentsWithNeeds(data.studentsWithNeeds || [])
+      setTuitionCharges(data.tuitionCharges || [])
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [])
@@ -119,13 +121,14 @@ export default function DashboardPage() {
     { key: 'payments' as DashTab, label: t('sponsorPayments.title'), value: paymentSummary, icon: CreditCard, color: 'bg-blue-50 text-blue-600', borderColor: 'border-blue-200' },
     { key: 'needs' as DashTab, label: t('dashboard.studentsNeedingAttention'), value: formatNumber(stats?.unfulfilledNeeds || 0), icon: AlertCircle, color: 'bg-red-50 text-red-600', borderColor: 'border-red-200' },
     { key: 'classes' as DashTab, label: t('dashboard.classOverview'), value: formatNumber(classNames.length), icon: GraduationCap, color: 'bg-purple-50 text-purple-600', borderColor: 'border-purple-200' },
+    { key: 'tuition' as DashTab, label: t('tuition.charges'), value: formatNumber(stats?.tuitionTotalCharges || 0), subtitle: `${formatNumber(stats?.tuitionPaidCount || 0)} ${t('tuition.statusPaid').toLowerCase()} / ${formatNumber(stats?.tuitionUnpaidCount || 0)} ${t('tuition.statusUnpaid').toLowerCase()}`, icon: FileText, color: 'bg-emerald-50 text-emerald-600', borderColor: 'border-emerald-200' },
   ]
 
   return (
     <div>
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <h1 className="text-2xl font-bold text-gray-900 mb-3">{t('dashboard.title')}</h1>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {statCards.map(card => (
             <button key={card.key} onClick={() => { setActiveTab(card.key); prevTabRef.current = null; setSortCol(''); setSelectedClass(null) }} className={`bg-white rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 hover:border-gray-300'}`}>
               <div className="flex items-start justify-between"><div><p className="text-sm text-gray-500 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900">{card.value}</p>{'subtitle' in card && card.subtitle && <p className="text-xs text-gray-400 mt-0.5">{card.subtitle}</p>}</div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
@@ -297,6 +300,54 @@ export default function DashboardPage() {
               </tr>
             ))}
           </tbody></table>
+          </div>
+        )}
+
+        {/* Tuition */}
+        {activeTab === 'tuition' && (
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('tuition.title')} ({tuitionCharges.length})</h2>
+            {/* Summary cards */}
+            <div className="flex flex-wrap gap-3 mb-4">
+              <div className="bg-emerald-50 rounded-xl px-4 py-3">
+                <p className="text-xs text-emerald-600 font-medium">{t('tuition.statusPaid')}</p>
+                <p className="text-lg font-bold text-emerald-900">{formatNumber(stats?.tuitionPaidCount || 0)}</p>
+              </div>
+              <div className="bg-amber-50 rounded-xl px-4 py-3">
+                <p className="text-xs text-amber-600 font-medium">{t('tuition.statusPartial')}</p>
+                <p className="text-lg font-bold text-amber-900">{formatNumber(stats?.tuitionPartialCount || 0)}</p>
+              </div>
+              <div className="bg-red-50 rounded-xl px-4 py-3">
+                <p className="text-xs text-red-600 font-medium">{t('tuition.statusUnpaid')}</p>
+                <p className="text-lg font-bold text-red-900">{formatNumber(stats?.tuitionUnpaidCount || 0)}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl px-4 py-3">
+                <p className="text-xs text-gray-600 font-medium">{t('tuition.totalCharged')}</p>
+                <p className="text-lg font-bold text-gray-900">{fmtCurrency(stats?.tuitionTotalCharged || 0, 'CZK')}</p>
+              </div>
+            </div>
+            <table className="w-full"><thead><tr className="border-b border-gray-100 bg-white sticky z-20" style={{ top: theadTop }}>
+              <SH col="student.lastName" className="text-left">{t('tuition.student')}</SH>
+              <SH col="student.className" className="text-left">{t('tuition.class')}</SH>
+              <SH col="period" className="text-left">{t('tuition.period')}</SH>
+              <SH col="amount" className="text-left">{t('tuition.amount')}</SH>
+              <SH col="status" className="text-left">{t('tuition.status')}</SH>
+            </tr></thead><tbody>
+              {sortData(tuitionCharges, sortCol).map((c: any) => (
+                <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50">
+                  <td className="py-3 px-3 text-sm font-medium">{c.student ? <Link href={`/students/${c.student.id}?from=/dashboard`} className="text-primary-600 hover:underline">{c.student.lastName} {c.student.firstName}</Link> : '-'}</td>
+                  <td className="py-3 px-3 text-sm text-gray-900">{c.student?.className || '-'}</td>
+                  <td className="py-3 px-3 text-sm text-gray-900">{c.period}</td>
+                  <td className="py-3 px-3 text-sm text-gray-900 font-medium">{fmtCurrency(c.amount, c.currency)}</td>
+                  <td className="py-3 px-3 text-sm">
+                    <span className={`badge ${c.status === 'PAID' ? 'badge-green' : c.status === 'PARTIAL' ? 'badge-yellow' : 'badge-red'}`}>
+                      {c.status === 'PAID' ? t('tuition.statusPaid') : c.status === 'PARTIAL' ? t('tuition.statusPartial') : t('tuition.statusUnpaid')}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {tuitionCharges.length === 0 && <tr><td colSpan={5} className="py-4 text-center text-gray-500 text-sm">{t('tuition.noCharges')}</td></tr>}
+            </tbody></table>
           </div>
         )}
 
