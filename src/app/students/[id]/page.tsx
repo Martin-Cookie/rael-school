@@ -79,6 +79,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     const params = new URLSearchParams(window.location.search)
     const from = params.get('from')
     if (from) setBackUrl(from)
+    const tab = params.get('tab')
+    if (tab) setActiveTab(tab as Tab)
   }, [])
 
   useEffect(() => {
