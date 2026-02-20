@@ -79,6 +79,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     const params = new URLSearchParams(window.location.search)
     const from = params.get('from')
     if (from) setBackUrl(from)
+    const tab = params.get('tab')
+    if (tab) setActiveTab(tab as Tab)
   }, [])
 
   useEffect(() => {
@@ -791,8 +793,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <table className="w-full table-fixed"><thead><tr className="border-b border-gray-200">
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('vouchers.purchaseDate')}</th>
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('vouchers.amount')}</th>
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-16">{t('vouchers.count')}</th>
-                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-32">{t('vouchers.donorName')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-20">{t('vouchers.count')}</th>
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('vouchers.donorName')}</th>
                 <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
                 {canEditData && <th className="w-10"></th>}
               </tr></thead><tbody>
@@ -801,7 +803,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     <td className="py-3 px-2 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
                     <td className="py-3 px-2 text-sm text-gray-900">{fmtCurrency(v.amount, v.currency || 'CZK')}</td>
                     <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
-                    <td className="py-3 px-2 text-sm text-gray-700">{v.donorName || '-'}</td>
+                    <td className="py-3 px-2 text-sm text-gray-700">{v.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(v.sponsor.lastName)}&from=${encodeURIComponent(`/students/${student.id}?tab=vouchers`)}`} className="text-accent-600 dark:text-accent-400 hover:underline">{v.sponsor.firstName} {v.sponsor.lastName}</Link> : (v.donorName || '-')}</td>
                     <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
                     {canEditData && <td className="py-3 px-1 text-right"><button onClick={() => deleteVoucher(v.id, 'purchase')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                   </tr>
@@ -1013,7 +1015,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatDate(p.paymentDate, locale)}</td>
                   <td className="py-3 px-2 text-sm"><span className={`badge ${p.paymentType === 'tuition' ? 'badge-green' : p.paymentType === 'medical' ? 'badge-yellow' : 'badge-red'}`}>{ptLabel(p.paymentType)}</span></td>
                   <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
-                  <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '-'}</td>
+                  <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{p.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=${encodeURIComponent(`/students/${student.id}?tab=sponsorPayments`)}`} className="text-accent-600 dark:text-accent-400 hover:underline">{p.sponsor.firstName} {p.sponsor.lastName}</Link> : '-'}</td>
                   <td className="py-3 px-2 text-sm text-gray-500 dark:text-gray-400">{p.notes || '-'}</td>
                   {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteSponsorPayment(p.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                 </tr>
@@ -1120,7 +1122,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                         <span className="font-medium text-emerald-600 dark:text-emerald-400">{fmtCurrency(p.amount, c.currency)}</span>
                         {p.paymentType && <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">{p.paymentType}</span>}
                         {p.sponsor && (
-                          <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=${encodeURIComponent(`/students/${id}`)}`} className="text-primary-600 dark:text-primary-400 hover:underline">
+                          <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=${encodeURIComponent(`/students/${id}?tab=tuition`)}`} className="text-primary-600 dark:text-primary-400 hover:underline">
                             {p.sponsor.lastName} {p.sponsor.firstName}
                           </Link>
                         )}

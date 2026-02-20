@@ -154,6 +154,11 @@ th {
   color: #991b1b;
 }
 
+.badge-blue {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
 .dark .badge-green {
   background-color: #133813;
   color: #80c780;
@@ -167,6 +172,11 @@ th {
 .dark .badge-red {
   background-color: #450a0a;
   color: #fca5a5;
+}
+
+.dark .badge-blue {
+  background-color: #1e3a5f;
+  color: #93c5fd;
 }
 
 /* ===== DARK MODE — Tailwind utility overrides ===== */

@@ -20,7 +20,10 @@ export async function GET(
         equipment: { orderBy: { type: 'asc' } },
         needs: { orderBy: { createdAt: 'desc' } },
         photos: { orderBy: { takenAt: 'desc' } },
-        vouchers: { orderBy: { purchaseDate: 'desc' } },
+        vouchers: {
+          orderBy: { purchaseDate: 'desc' },
+          include: { sponsor: { select: { id: true, firstName: true, lastName: true } } },
+        },
         voucherUsages: { orderBy: { usageDate: 'desc' } },
         sponsorships: {
           include: { sponsor: { select: { id: true, firstName: true, lastName: true, email: true, phone: true } } },
