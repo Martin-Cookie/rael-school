@@ -801,7 +801,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     <td className="py-3 px-2 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
                     <td className="py-3 px-2 text-sm text-gray-900">{fmtCurrency(v.amount, v.currency || 'CZK')}</td>
                     <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
-                    <td className="py-3 px-2 text-sm text-gray-700">{v.donorName || '-'}</td>
+                    <td className="py-3 px-2 text-sm text-gray-700">{v.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(v.sponsor.lastName)}`} className="text-accent-600 dark:text-accent-400 hover:underline">{v.sponsor.firstName} {v.sponsor.lastName}</Link> : (v.donorName || '-')}</td>
                     <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
                     {canEditData && <td className="py-3 px-1 text-right"><button onClick={() => deleteVoucher(v.id, 'purchase')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                   </tr>
