@@ -3,37 +3,26 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { GraduationCap, ChevronUp, ChevronDown, ArrowUpDown, Search } from 'lucide-react'
+import { GraduationCap, Search } from 'lucide-react'
 import { formatNumber } from '@/lib/format'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
-
-type SortDir = 'asc' | 'desc'
+import { useLocale } from '@/hooks/useLocale'
+import { useSorting } from '@/hooks/useSorting'
+import { SortHeader } from '@/components/SortHeader'
 
 export default function ClassesPage() {
   const [students, setStudents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [locale, setLocale] = useState<Locale>('cs')
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [sortCol, setSortCol] = useState<string>('')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [fromPage, setFromPage] = useState<string | null>(null)
   const router = useRouter()
 
-  const t = createTranslator(msgs[locale])
+  const { locale, t } = useLocale()
+  const { sortCol, sortDir, handleSort, sortData, setSortCol } = useSorting()
 
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
+  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
+    return <SortHeader col={col} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} className={className}>{children}</SortHeader>
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -49,27 +38,6 @@ export default function ClassesPage() {
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [])
-
-  function handleSort(col: string) {
-    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
-    else { setSortCol(col); setSortDir('asc') }
-  }
-
-  function sortData<T>(data: T[], col: string): T[] {
-    if (!col) return data
-    return [...data].sort((a: any, b: any) => {
-      let va = col.startsWith('_count.') ? a._count?.[col.replace('_count.', '')] ?? 0 : a[col]
-      let vb = col.startsWith('_count.') ? b._count?.[col.replace('_count.', '')] ?? 0 : b[col]
-      if (va == null) va = ''; if (vb == null) vb = ''
-      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
-      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
-    })
-  }
-
-  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
-    const isA = sortCol === col
-    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
-  }
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
 

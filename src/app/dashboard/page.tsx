@@ -2,22 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { Users, CreditCard, HandHeart, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, GraduationCap, Ticket, FileText } from 'lucide-react'
-
-import { formatNumber, formatDate, calculateAge } from '@/lib/format'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { Users, CreditCard, HandHeart, AlertCircle, GraduationCap, Ticket, FileText } from 'lucide-react'
+import { formatNumber, formatDate, calculateAge, fmtCurrency } from '@/lib/format'
+import { useLocale } from '@/hooks/useLocale'
+import { useSorting } from '@/hooks/useSorting'
+import { useStickyTop } from '@/hooks/useStickyTop'
+import { SortHeader } from '@/components/SortHeader'
 
 type DashTab = 'students' | 'sponsors' | 'payments' | 'needs' | 'classes' | 'tuition'
-type SortDir = 'asc' | 'desc'
-
-function fmtCurrency(amount: number, currency: string): string {
-  return `${formatNumber(amount)} ${currency}`
-}
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null)
@@ -29,17 +21,18 @@ export default function DashboardPage() {
   const [studentsWithNeeds, setStudentsWithNeeds] = useState<any[]>([])
   const [tuitionCharges, setTuitionCharges] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [locale, setLocale] = useState<Locale>('cs')
   const [activeTab, setActiveTab] = useState<DashTab>('students')
-  const [sortCol, setSortCol] = useState<string>('')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
-  const stickyRef = useRef<HTMLDivElement>(null)
-  const [theadTop, setTheadTop] = useState(0)
   const prevTabRef = useRef<DashTab | null>(null)
   const [paymentSubTab, setPaymentSubTab] = useState<'sponsor' | 'voucher'>('sponsor')
 
-  const t = createTranslator(msgs[locale])
+  const { locale, t } = useLocale()
+  const { sortCol, sortDir, handleSort, sortData, setSortCol } = useSorting()
+  const { stickyRef, theadTop } = useStickyTop([loading])
+
+  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
+    return <SortHeader col={col} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} className={className}>{children}</SortHeader>
+  }
 
   // Restore active tab from URL params (when returning from detail pages)
   useEffect(() => {
@@ -55,28 +48,6 @@ export default function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
-
-  useEffect(() => {
-    const el = stickyRef.current
-    if (!el) return
-    function update() {
-      const offset = window.innerWidth >= 1024 ? 0 : 64
-      setTheadTop(offset + el!.offsetHeight)
-    }
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    window.addEventListener('resize', update)
-    return () => { ro.disconnect(); window.removeEventListener('resize', update) }
-  }, [loading])
-
-  useEffect(() => {
     fetch('/api/dashboard').then(r => r.json()).then(data => {
       setStats(data.stats)
       setRecentPayments(data.recentPayments || [])
@@ -89,27 +60,6 @@ export default function DashboardPage() {
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [])
-
-  function handleSort(col: string) {
-    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
-    else { setSortCol(col); setSortDir('asc') }
-  }
-
-  function sortData<T>(data: T[], col: string): T[] {
-    if (!col) return data
-    return [...data].sort((a: any, b: any) => {
-      let va = col.startsWith('_count.') ? a._count?.[col.replace('_count.', '')] ?? 0 : col.includes('.') ? col.split('.').reduce((o: any, k: string) => o?.[k], a) : a[col]
-      let vb = col.startsWith('_count.') ? b._count?.[col.replace('_count.', '')] ?? 0 : col.includes('.') ? col.split('.').reduce((o: any, k: string) => o?.[k], b) : b[col]
-      if (va == null) va = ''; if (vb == null) vb = ''
-      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
-      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
-    })
-  }
-
-  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
-    const isA = sortCol === col
-    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
-  }
 
   // Build encoded "from" URL that includes current tab info
   function dashFrom() {

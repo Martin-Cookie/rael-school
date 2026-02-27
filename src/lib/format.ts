@@ -8,6 +8,11 @@ export function formatCurrency(amount: number): string {
   return `${formatNumber(amount)} KES`
 }
 
+// Format amount with any currency
+export function fmtCurrency(amount: number, currency: string): string {
+  return `${formatNumber(amount)} ${currency}`
+}
+
 // Format date to locale string
 export function formatDate(date: Date | string | null | undefined, locale: string = 'cs'): string {
   if (!date) return '-'
