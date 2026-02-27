@@ -41,9 +41,9 @@
 
 - Next.js 14 **NEPOUŽÍVÁ** `use(params)` hook — params jsou synchronní objekt `{ params: { id: string } }`, ne Promise
 - Auth funkce: `getCurrentUser()` z `@/lib/auth`
-- Toast notifikace: `showMsg('success' | 'error', text)`
+- Toast notifikace: `const { message, showMsg } = useToast()` + `<Toast message={message} />`
 - Čísla formátovat s oddělovačem tisíců (mezerou): `1 000` ne `1000`
-- Měna za číslem: `1 500 KES`
+- Měna za číslem: `fmtCurrency(1500, 'KES')` → `1 500 KES` (import z `@/lib/format`)
 - Stravenky jsou vždy v KES
 - Sazba stravenek (cena za 1 stravenku) je konfigurovatelná per měna v administraci (`VoucherRate` model), výchozí 80 CZK
 - Konstanty `CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']` — předdefinované měny používané v dropdownech
@@ -51,15 +51,42 @@
 
 ## UI vzory
 
+### Sdílené hooky a komponenty
+
+Všechny hlavní stránky používají sdílené hooky a komponenty (místo dřívějšího copy-paste kódu):
+
+| Hook / Komponenta | Soubor | Popis |
+|---|---|---|
+| `useLocale()` | `src/hooks/useLocale.ts` | Vrací `{ locale, t }` — locale stav + translator, naslouchá na `locale-change` event |
+| `useSorting(valueExtractor?)` | `src/hooks/useSorting.ts` | Vrací `{ sortCol, sortDir, handleSort, sortData, setSortCol }` — třídění tabulek |
+| `useStickyTop(deps)` | `src/hooks/useStickyTop.ts` | Vrací `{ stickyRef, theadTop }` — dynamická výška sticky hlavičky |
+| `useToast()` | `src/hooks/useToast.ts` | Vrací `{ message, showMsg }` — toast notifikace |
+| `<SortHeader>` | `src/components/SortHeader.tsx` | Tříditelná hlavička `<th>` se šipkami (ChevronUp/ChevronDown/ArrowUpDown) |
+| `<Toast>` | `src/components/Toast.tsx` | Toast notifikace — `<Toast message={message} />` |
+| `fmtCurrency()` | `src/lib/format.ts` | Formátování částky s měnou — `fmtCurrency(1500, 'KES')` → `1 500 KES` |
+
+**useSorting — valueExtractor:**
+- Default extractor zvládá: přímé property, nested (`student.className`), `_count.*` pro Prisma relace
+- Vlastní extractor pro custom sloupce (`_studentName`, `_sponsorshipCount` atd.)
+
+**Použití hooků na stránkách:**
+
+| Stránka | useLocale | useSorting | useStickyTop | useToast | SortHeader | Toast |
+|---------|:-:|:-:|:-:|:-:|:-:|:-:|
+| `students/page.tsx` | x | x | x | - | x | - |
+| `sponsors/page.tsx` | x | x | x | x | x | x |
+| `payments/page.tsx` | x | x | x | x | x | x |
+| `dashboard/page.tsx` | x | x | x | - | x | - |
+| `tuition/page.tsx` | x | x | x | x | x | x |
+| `classes/page.tsx` | x | x | - | - | x | - |
+| `payments/import/[id]/page.tsx` | x | x | - | x | vlastní SH* | x |
+| `students/[id]/page.tsx` | x | - | - | x | - | x |
+
+*Import detail má vlastní `SH` komponentu s odlišným stylem (`text-xs uppercase`), ale používá sdílený `useSorting` hook.
+
 ### Třídění tabulek (SortHeader pattern)
 
-Všechny hlavní stránky se seznamy používají jednotný vzor tříditelné tabulky:
-
-- **`handleSort(col)`** — přepíná asc/desc, nebo nastaví nový sloupec
-- **`sortData(data, col)`** — třídí pole podle sloupce (čísla numericky, řetězce abecedně, `_count.*` pro Prisma relace)
-- **`SH` komponenta** — tříditelná hlavička `<th>` se šipkami (ChevronUp/ChevronDown/ArrowUpDown)
-
-Stránky s tímto vzorem:
+Stránky s tříděním:
 | Stránka | Soubor | Sloupce |
 |---------|--------|---------|
 | Přehled | `dashboard/page.tsx` | Studenti, Sponzoři, Platby, Potřeby, Třídy |
@@ -84,10 +111,12 @@ sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8
 
 **2. Sticky thead (z-20)** — řádek s třídícími hlavičkami, pod sticky hlavičkou:
 ```tsx
+const { stickyRef, theadTop } = useStickyTop([loading])
+// ...
 <tr className="... bg-white sticky z-20" style={{ top: theadTop }}>
 ```
 - `theadTop` = dynamicky měřená výška sticky hlavičky + mobilní offset
-- Měřeno přes `useRef` + `ResizeObserver` + `window resize` listener
+- Hook `useStickyTop` interně používá `ResizeObserver` + `window resize` listener
 - Dependency `[loading]` — na stránkách s early `if (loading) return` se ref naplní až po načtení
 
 **Důležité:**
