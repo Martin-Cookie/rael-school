@@ -47,7 +47,7 @@
 - Toast notifikace: `const { message, showMsg } = useToast()` + `<Toast message={message} />`
 - Čísla formátovat s oddělovačem tisíců (mezerou): `1 000` ne `1000`
 - Měna za číslem: `fmtCurrency(1500, 'KES')` → `1 500 KES` (import z `@/lib/format`)
-- Stravenky jsou vždy v KES
+- Stravenky (VoucherPurchase) mohou být v libovolné měně (default CZK), sponzorské platby (SponsorPayment) mají default KES
 - Sazba stravenek (cena za 1 stravenku) je konfigurovatelná per měna v administraci (`VoucherRate` model), výchozí 80 CZK
 - Konstanty `CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']` — předdefinované měny používané v dropdownech
 - Každý nový text v UI musí mít klíč ve **všech třech** jazycích (cs, en, sw)
@@ -263,7 +263,7 @@ git pull origin <aktuální-branch> && npm run dev
 1. **Přečti CLAUDE.md** a pochop strukturu projektu
 2. **Analyzuj** současný stav relevantních souborů — VŽDY číst z disku, ne z paměti
 3. **Pokud ti něco není jasné — ZEPTEJ SE**, nedomýšlej si
-4. **Ukaž strukturovaný plán** přes update_plan tool (co budeš měnit, které soubory, jak)
+4. **Ukaž strukturovaný plán** (co budeš měnit, které soubory, jak)
 5. **POČKEJ NA SCHVÁLENÍ** — neimplementuj dokud uživatel neschválí plán
 6. **Implementuj** po schválení
 7. **Ověř** že existující funkce stále fungují (spusť `npm run dev`, otestuj dotčené stránky)
