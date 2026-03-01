@@ -1,83 +1,77 @@
-# Rael School — Informační systém
+# Rael School — Informationssystem
 
-## Popis projektu
+## Projektbeschreibung
+Webbasiertes Informationssystem zur Verwaltung der Rael-Schule in Kenia. Erfasst Schüler, Sponsoren, Essensmarken, Gesundheitsuntersuchungen und Zahlungen.
 
-Webový informační systém pro správu školy Rael v Keni. Sleduje studenty, sponzory, stravenky, zdravotní prohlídky a platby.
-
-## Technologie
-
+## Technologien
 - **Framework:** Next.js 14 (React 18)
-- **Databáze:** SQLite + Prisma ORM
+- **Datenbank:** SQLite + Prisma ORM
 - **Styling:** Tailwind CSS
-- **Jazyk:** TypeScript
-- **Autentizace:** JWT + bcryptjs
-- **Jazyky rozhraní:** čeština, angličtina, svahilština
+- **Sprache:** TypeScript
+- **Authentifizierung:** JWT + bcryptjs
+- **Oberflächensprachen:** Tschechisch, Englisch, Suaheli
 
-## Implementované funkce
+## Implementierte Funktionen
 
-### Fáze 1 — Jádro systému
-- Databáze se všemi tabulkami (studenti, sponzoři, stravenky, vybavení, potřeby, zdravotní prohlídky, platby)
-- Přihlašovací systém se 4 rolemi (Admin, Manager, Sponzor, Dobrovolník)
-- Dashboard s přehledem statistik
-- Seznam studentů s vyhledáváním
-- Detail studenta se záložkami (osobní údaje, fotky, stravenky, sponzoři, zdravotní prohlídky, platby)
-- Přidání nového studenta (s výběrem třídy z číselníku)
-- Režim úprav s potvrzovacím dialogem
-- Trojjazyčnost (čeština, angličtina, svahilština)
-- Formátování čísel na tisíce
+### Phase 1 — Kernsystem
+- Datenbank mit allen Tabellen (Schüler, Sponsoren, Essensmarken, Ausstattung, Bedürfnisse, Gesundheitsuntersuchungen, Zahlungen)
+- Anmeldesystem mit 4 Rollen (Admin, Manager, Sponsor, Freiwilliger)
+- Dashboard mit Statistikübersicht
+- Schülerliste mit Suchfunktion
+- Schülerdetail mit Registerkarten (persönliche Daten, Fotos, Essensmarken, Sponsoren, Gesundheitsuntersuchungen, Zahlungen)
+- Neuen Schüler hinzufügen (mit Klassenauswahl aus dem Verzeichnis)
+- Bearbeitungsmodus mit Bestätigungsdialog
+- Dreisprachigkeit (Tschechisch, Englisch, Suaheli)
+- Zahlenformatierung in Tausender
 
-### Fáze 2 — Rozšíření
-- Stránka Sponzoři — seznam s vyhledáváním, přidání, editace, aktivace/deaktivace
-- Stránka Platby — záložky sponzorské platby a stravenky, CRUD operace
-- Stránka Třídy — přehled tříd se studenty, řazení
-- Stránka Statistiky — stravenky na studenta, platby od sponzorů, filtrování
-- Stránka Administrace — číselníky tříd, typů prohlídek a typů plateb (CRUD, řazení)
-- Stránkování (pagination) na stránkách Studenti (12/str), Sponzoři (10/str), Platby (15/str)
-- Znovupoužitelná komponenta `Pagination` s překlady ve 3 jazycích
-- Nahrávání fotek — klientská komprese obrázků (Canvas API, max 1600px galerie / 400px profil), validace typu a velikosti (max 10 MB), loading indikátor při nahrávání
+### Phase 2 — Erweiterungen
+- Sponsorenseite — Liste mit Suche, Hinzufügen, Bearbeiten, Aktivieren/Deaktivieren
+- Zahlungsseite — Registerkarten für Sponsorenzahlungen und Essensmarken, CRUD-Operationen
+- Klassenseite — Klassenübersicht mit Schülern, Sortierung
+- Statistikseite — Essensmarken pro Schüler, Zahlungen von Sponsoren, Filterung
+- Administrationsseite — Verzeichnisse für Klassen, Untersuchungstypen und Zahlungstypen (CRUD, Sortierung)
+- Seitenumbruch (Pagination) auf den Seiten Schüler (12/Seite), Sponsoren (10/Seite), Zahlungen (15/Seite)
+- Wiederverwendbare `Pagination`-Komponente mit Übersetzungen in 3 Sprachen
+- Foto-Upload — clientseitige Bildkomprimierung (Canvas API, max. 1600px Galerie / 400px Profil), Typ- und Größenvalidierung (max. 10 MB), Ladeindikator beim Hochladen
 
-## Struktura projektu
-
+## Projektstruktur
 ```
 src/
   app/
-    api/              # API routes (students, sponsors, payments, dashboard, statistics, admin)
-    students/         # Seznam studentů, detail, nový student
-    sponsors/         # Seznam sponzorů
-    payments/         # Platby (sponzorské + stravenky)
-    dashboard/        # Přehledový dashboard
-    classes/          # Přehled tříd
-    reports/          # Statistiky
-    admin/            # Administrace číselníků
-    login/            # Přihlášení
+    api/              # API-Routen (Schüler, Sponsoren, Zahlungen, Dashboard, Statistiken, Admin)
+    students/         # Schülerliste, Detail, neuer Schüler
+    sponsors/         # Sponsorenliste
+    payments/         # Zahlungen (Sponsoren + Essensmarken)
+    dashboard/        # Übersichts-Dashboard
+    classes/          # Klassenübersicht
+    reports/          # Statistiken
+    admin/            # Verwaltung der Verzeichnisse
+    login/            # Anmeldung
   components/
     layout/           # Sidebar, Header
-    Pagination.tsx    # Znovupoužitelná paginace
-  lib/                # DB, auth, formátování, i18n, komprese obrázků
-  messages/           # Překlady (cs.json, en.json, sw.json)
+    Pagination.tsx    # Wiederverwendbare Pagination
+  lib/                # DB, Auth, Formatierung, i18n, Bildkomprimierung
+  messages/           # Übersetzungen (cs.json, en.json, sw.json)
 prisma/
-  schema.prisma       # Datový model (13 tabulek)
-  seed.ts             # Testovací data
+  schema.prisma       # Datenmodell (13 Tabellen)
+  seed.ts             # Testdaten
 ```
 
-## Instalace a spuštění
-
+## Installation und Start
 ```bash
 npm install
-npm run setup        # Vytvoří databázi a naplní testovacími daty
-npm run dev          # Spustí vývojový server na http://localhost:3000
+npm run setup        # Erstellt die Datenbank und befüllt sie mit Testdaten
+npm run dev          # Startet den Entwicklungsserver unter http://localhost:3000
 ```
 
-## Testovací přihlášení
+## Test-Anmeldedaten
+| Rolle        | E-Mail                 | Passwort     |
+|--------------|------------------------|--------------|
+| Admin        | admin@rael.school      | admin123     |
+| Manager      | manager@rael.school    | manager123   |
+| Sponsor      | sponsor@rael.school    | sponsor123   |
+| Freiwilliger | volunteer@rael.school  | volunteer123 |
 
-| Role         | Email                  | Heslo       |
-|--------------|------------------------|-------------|
-| Admin        | admin@rael.school      | admin123    |
-| Manager      | manager@rael.school    | manager123  |
-| Sponzor      | sponsor@rael.school    | sponsor123  |
-| Dobrovolník  | volunteer@rael.school  | volunteer123|
-
-## Jak zastavit a znovu spustit
-
-- Zastavit: **Ctrl + C** v terminálu
-- Spustit znovu: `npm run dev`
+## Stoppen und neu starten
+- Stoppen: **Ctrl + C** im Terminal
+- Neu starten: `npm run dev`
