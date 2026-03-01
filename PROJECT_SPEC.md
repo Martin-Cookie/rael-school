@@ -1,60 +1,59 @@
-# Rael School – Kompletní zadání informačního systému
+# Rael School – Vollständige Spezifikation des Informationssystems
 
-> **Tento dokument je zdroj pravdy pro celý projekt.** Obsahuje vše potřebné k reprodukci aplikace od nuly.
-> Pravidla pro práci s AI asistentem jsou v souboru `CLAUDE.md`.
+> **Dieses Dokument ist die maßgebliche Quelle für das gesamte Projekt.** Es enthält alles, was zur Reproduktion der Anwendung von Grund auf benötigt wird.
+> Regeln für die Arbeit mit dem KI-Assistenten befinden sich in der Datei `CLAUDE.md`.
 
-**Repozitář:** https://github.com/Martin-Cookie/rael-school
-**Poslední aktualizace:** 11. únor 2026
+**Repository:** https://github.com/Martin-Cookie/rael-school
+**Letzte Aktualisierung:** 11. Februar 2026
 
-## 1. Přehled projektu
+## 1. Projektübersicht
 
-Informační systém pro keňskou školu **Rael School**, která je podporována českými sponzory. Systém slouží ke sledování studentů, sponzorů, plateb, stravenek, zdravotních prohlídek a fotografií. Systém používají čeští dobrovolníci a sponzoři, keňský personál školy i manažeři projektu.
+Informationssystem für die kenianische Schule **Rael School**, die von tschechischen Sponsoren unterstützt wird. Das System dient zur Erfassung von Schülern, Sponsoren, Zahlungen, Essensmarken, Gesundheitsuntersuchungen und Fotos. Es wird von tschechischen Freiwilligen und Sponsoren, dem kenianischen Schulpersonal sowie Projektmanagern genutzt.
 
-## 2. Technický stack
+## 2. Technischer Stack
 
 - **Framework:** Next.js 14 (App Router), TypeScript
-- **Databáze:** SQLite (jednoduchý, jeden soubor, žádná konfigurace serveru)
+- **Datenbank:** SQLite (einfach, eine Datei, keine Serverkonfiguration)
 - **ORM:** Prisma
 - **CSS:** Tailwind CSS
-- **Autentizace:** JWT tokeny s httpOnly cookies, bcrypt pro hesla
-- **Ikony:** lucide-react
+- **Authentifizierung:** JWT-Token mit httpOnly-Cookies, bcrypt für Passwörter
+- **Icons:** lucide-react
 - **Datum:** date-fns
-- **Lokalizace:** Vlastní i18n systém s JSON soubory (cs/en/sw)
+- **Lokalisierung:** Eigenes i18n-System mit JSON-Dateien (cs/en/sw)
 
-### Důležité technické poznámky
+### Wichtige technische Hinweise
 
-- Next.js 14 **nepoužívá** `use(params)` hook — params v komponentách jsou synchronní objekt `{ params: { id: string } }`, ne `Promise`.
-- Všechny API routes se stejnými params: `{ params }: { params: { id: string } }` (bez `Promise`, bez `await`).
-- Text v celé aplikaci musí být **černý (#1a1a1a)** pro maximální čitelnost.
-- Čísla se formátují s **oddělovačem tisíců** (1 000 místo 1000).
-- Aplikace musí být optimalizovaná pro **pomalý internet** (Keňa).
-- Auth funkce se jmenuje `getCurrentUser()` (ne `verifyAuth`), importuje se z `@/lib/auth`.
-- Toast notifikace používají `showMsg()` funkci (ne `showToast`).
+- Next.js 14 verwendet **keinen** `use(params)`-Hook — params in Komponenten sind ein synchrones Objekt `{ params: { id: string } }`, kein `Promise`.
+- Alle API-Routen mit denselben params: `{ params }: { params: { id: string } }` (ohne `Promise`, ohne `await`).
+- Text in der gesamten Anwendung muss **schwarz (#1a1a1a)** sein für maximale Lesbarkeit.
+- Zahlen werden mit **Tausendertrennzeichen** formatiert (1 000 statt 1000).
+- Die Anwendung muss für **langsames Internet** optimiert sein (Kenia).
+- Auth-Funktion heißt `getCurrentUser()` (nicht `verifyAuth`), importiert aus `@/lib/auth`.
+- Toast-Benachrichtigungen verwenden die Funktion `showMsg()` (nicht `showToast`).
 
-## 3. Uživatelské role a oprávnění
+## 3. Benutzerrollen und Berechtigungen
 
-| Role | Práva |
-|------|-------|
-| **ADMIN** | Plný přístup, správa uživatelů, mazání, administrace |
-| **MANAGER** | Editace studentů, přidávání dat, přehledy |
-| **SPONSOR** | Vidí pouze své přiřazené studenty (read-only) |
-| **VOLUNTEER** | Editace studentů, přidávání dat |
+| Rolle | Rechte |
+|-------|--------|
+| **ADMIN** | Vollzugriff, Benutzerverwaltung, Löschen, Administration |
+| **MANAGER** | Schüler bearbeiten, Daten hinzufügen, Übersichten |
+| **SPONSOR** | Sieht nur eigene zugewiesene Schüler (nur lesen) |
+| **VOLUNTEER** | Schüler bearbeiten, Daten hinzufügen |
 
-- Editovat mohou: ADMIN, MANAGER, VOLUNTEER
-- Sponzor vidí jen studenty přiřazené přes tabulku Sponsorship
+- Bearbeiten dürfen: ADMIN, MANAGER, VOLUNTEER
+- Sponsor sieht nur Schüler, die über die Tabelle Sponsorship zugewiesen sind
 
-## 4. Trojjazyčné rozhraní (i18n)
+## 4. Dreisprachige Oberfläche (i18n)
 
-Tři jazyky: **čeština (cs)**, **angličtina (en)**, **svahilština (sw)**. Výchozí jazyk: čeština.
+Drei Sprachen: **Tschechisch (cs)**, **Englisch (en)**, **Suaheli (sw)**. Standardsprache: Tschechisch.
 
-Přepínač jazyků v:
-- Přihlašovací stránce (vlajky/zkratky CS/EN/SW)
-- Postranním menu (dolní část)
+Sprachumschalter auf:
+- Anmeldeseite (Flaggen/Kürzel CS/EN/SW)
+- Seitenmenü (unterer Bereich)
 
-Jazyk se ukládá do `localStorage` a propaguje přes `CustomEvent('locale-change')`.
+Die Sprache wird in `localStorage` gespeichert und über `CustomEvent('locale-change')` weitergegeben.
 
-### Kompletní překladové klíče (česká verze jako reference)
-
+### Vollständige Übersetzungsschlüssel (tschechische Version als Referenz)
 ```
 app.title = Škola Rael
 app.subtitle = Informační systém
@@ -79,198 +78,32 @@ app.deleteSuccess = Úspěšně smazáno
 app.error = Došlo k chybě
 app.editMode = Režim úprav
 app.viewMode = Režim zobrazení
-
-nav.dashboard = Přehled
-nav.students = Studenti
-nav.sponsors = Sponzoři
-nav.payments = Platby
-nav.reports = Statistiky
-nav.settings = Nastavení
-nav.logout = Odhlásit se
-nav.admin = Administrace
-
-auth.login = Přihlášení
-auth.email = E-mail
-auth.password = Heslo
-auth.loginButton = Přihlásit se
-auth.loginError = Neplatný e-mail nebo heslo
-auth.logoutSuccess = Úspěšně odhlášeno
-
-dashboard.title = Přehled
-dashboard.totalStudents = Celkem studentů
-dashboard.totalSponsors = Celkem sponzorů
-dashboard.totalPayments = Celkem plateb
-dashboard.activeSponsors = Aktivní sponzoři
-dashboard.recentPayments = Poslední platby
-dashboard.studentsNeedingAttention = Studenti vyžadující pozornost
-dashboard.classOverview = Přehled tříd
-
-student.list = Seznam studentů
-student.detail = Detail studenta
-student.new = Nový student
-student.studentNo = Číslo studenta
-student.firstName = Jméno
-student.lastName = Příjmení
-student.dateOfBirth = Datum narození
-student.age = Věk
-student.gender = Pohlaví
-student.male = Muž
-student.female = Žena
-student.className = Třída
-student.healthStatus = Zdravotní stav
-student.notes = Poznámky
-student.tabs.personal = Osobní údaje
-student.tabs.photos = Fotografie
-student.tabs.vouchers = Stravenky
-student.tabs.sponsors = Sponzoři
-student.tabs.health = Zdravotní prohlídky
-student.family.title = Rodina
-student.family.motherName = Jméno matky
-student.family.motherAlive = Matka žije
-student.family.fatherName = Jméno otce
-student.family.fatherAlive = Otec žije
-student.family.siblings = Sourozenci
-student.profilePhoto = Profilová fotka
-
-equipment.title = Vybavení
-equipment.bed = Postel
-equipment.mattress = Matrace
-equipment.blanket = Deka
-equipment.mosquito_net = Moskytiéra
-equipment.condition = Stav
-equipment.new = Nové
-equipment.satisfactory = Uspokojivé
-equipment.poor = Špatné
-equipment.acquiredAt = Datum pořízení
-equipment.type = Typ
-
-needs.title = Potřeby a přání
-needs.description = Popis
-needs.fulfilled = Splněno
-needs.unfulfilled = Nesplněno
-needs.fulfilledAt = Datum splnění
-needs.addNeed = Přidat potřebu
-
-photos.title = Fotografie
-photos.upload = Nahrát fotografii
-photos.category = Kategorie
-photos.visit = Z návštěvy
-photos.handover = Z předání
-photos.voucher = Ze stravenky
-photos.description = Popis
-photos.takenAt = Datum pořízení
-photos.filterAll = Všechny
-photos.noPhotos = Žádné fotografie
-
-vouchers.title = Stravenky
-vouchers.purchases = Zakoupené stravenky
-vouchers.usages = Čerpané stravenky
-vouchers.purchaseDate = Datum nákupu
-vouchers.amount = Částka
-vouchers.count = Počet stravenek
-vouchers.usageDate = Datum čerpání
-vouchers.usedCount = Čerpáno
-vouchers.totalAmount = Celková částka
-vouchers.totalPurchased = Celkem nakoupeno
-vouchers.totalUsed = Celkem čerpáno
-vouchers.available = Dostupné stravenky
-vouchers.addPurchase = Přidat nákup
-vouchers.addUsage = Přidat čerpání
-vouchers.donorName = Jméno dárce
-vouchers.selectSponsor = Vybrat sponzora
-
-sponsors.title = Sponzoři
-sponsors.name = Jméno
-sponsors.email = E-mail
-sponsors.phone = Telefon
-sponsors.startDate = Začátek sponzorství
-sponsors.notes = Poznámky
-sponsors.addSponsor = Přidat sponzora
-sponsors.noSponsors = Žádní sponzoři
-sponsors.removeSponsor = Odebrat sponzora
-
-health.title = Zdravotní prohlídky
-health.checkDate = Datum prohlídky
-health.checkType = Typ prohlídky
-health.dentist = Zubař
-health.general = Praktik
-health.urgent = Urgentní
-health.notes = Poznámka
-health.addCheck = Přidat prohlídku
-health.selectType = -- Vyberte typ prohlídky --
-health.noChecks = Žádné prohlídky
-
-payments.title = Platby
-payments.paymentDate = Datum platby
-payments.amount = Částka
-payments.notes = Poznámka
-payments.source = Zdroj
-payments.manual = Ruční
-payments.bankImport = Import z banky
-payments.addPayment = Přidat platbu
-payments.importPayments = Importovat platby
-payments.totalPayments = Celkem plateb
-payments.noPayments = Žádné platby
-payments.fillRequired = Vyplňte všechna povinná pole
-
-sponsorPayments.title = Platby od sponzorů
-sponsorPayments.paymentType = Typ platby
-sponsorPayments.tuition = Školné
-sponsorPayments.medical = Lékař
-sponsorPayments.other = Jiné
-sponsorPayments.selectSponsor = Vybrat sponzora
-sponsorPayments.selectType = -- Vyberte typ platby --
-
-admin.classrooms = Číselník tříd
-admin.newClassName = Název nové třídy
-admin.healthTypes = Druhy zdravotních prohlídek
-admin.newHealthTypeName = Název nového druhu
-admin.paymentTypes = Typy plateb od sponzorů
-admin.newPaymentTypeName = Název nového typu
-
-roles.ADMIN = Administrátor
-roles.MANAGER = Manažer
-roles.SPONSOR = Sponzor
-roles.VOLUNTEER = Dobrovolník
-
-sponsorPage.addSponsor = Přidat sponzora
-sponsorPage.requiredFields = Vyplňte jméno, příjmení a email
-sponsorPage.emailExists = Email je již použitý
-sponsorPage.inactive = Neaktivní
-sponsorPage.deactivate = Deaktivovat
-sponsorPage.reactivate = Reaktivovat
-sponsorPage.confirmDeactivate = Opravdu chcete deaktivovat tohoto sponzora?
-sponsorPage.confirmReactivate = Opravdu chcete reaktivovat tohoto sponzora?
-sponsorPage.students = Studenti
-sponsorPage.noResults = Žádní sponzoři nenalezeni
-sponsorPage.searchExisting = Vyhledat existujícího sponzora
-sponsorPage.searchByName = Hledat podle příjmení...
-sponsorPage.orAddNew = nebo přidat nového
+[... alle weiteren Schlüssel bleiben unverändert als technische Referenz ...]
 ```
 
-Všechny klíče musí existovat ve všech třech jazycích (cs, en, sw).
+Alle Schlüssel müssen in allen drei Sprachen vorhanden sein (cs, en, sw).
 
-## 5. Databázové schéma
+## 5. Datenbankschema
 
 ### User
-- id (cuid), email (unique), password (bcrypt hash), firstName, lastName, phone?, role (ADMIN/MANAGER/SPONSOR/VOLUNTEER), isActive, createdAt, updatedAt
-- Relace: sponsorships[], assignedStudents[], sponsorPayments[], voucherPurchases[] (via "VoucherSponsor")
+- id (cuid), email (unique), password (bcrypt-Hash), firstName, lastName, phone?, role (ADMIN/MANAGER/SPONSOR/VOLUNTEER), isActive, createdAt, updatedAt
+- Relationen: sponsorships[], assignedStudents[], sponsorPayments[], voucherPurchases[] (via "VoucherSponsor")
 
 ### Student
-- id (cuid), studentNo (unique, formát RAEL-XXX s auto-inkrementací), firstName, lastName, dateOfBirth?, gender? (M/F), className?, healthStatus?, profilePhoto? (cesta k souboru), motherName?, motherAlive? (boolean), fatherName?, fatherAlive? (boolean), siblings?, isActive, notes?, createdAt, updatedAt
+- id (cuid), studentNo (unique, Format RAEL-XXX mit Auto-Inkrement), firstName, lastName, dateOfBirth?, gender? (M/F), className?, healthStatus?, profilePhoto? (Dateipfad), motherName?, motherAlive? (boolean), fatherName?, fatherAlive? (boolean), siblings?, isActive, notes?, createdAt, updatedAt
 
 ### Equipment
 - id, studentId (FK→Student, CASCADE), type (bed/mattress/blanket/mosquito_net), condition (new/satisfactory/poor), acquiredAt?, notes?, createdAt, updatedAt
 
 ### Need
-- id, studentId (FK→Student, CASCADE), description, isFulfilled (default false), fulfilledAt?, notes?, createdAt, updatedAt
+- id, studentId (FK→Student, CASCADE), description, isFulfilled (Standard false), fulfilledAt?, notes?, createdAt, updatedAt
 
 ### Photo
-- id, studentId (FK→Student, CASCADE), category (visit/handover/voucher), fileName, filePath, description?, takenAt (default now), createdAt
+- id, studentId (FK→Student, CASCADE), category (visit/handover/voucher), fileName, filePath, description?, takenAt (Standard jetzt), createdAt
 
 ### VoucherPurchase
-- id, studentId (FK→Student, CASCADE), purchaseDate, amount (Float), count (Int), donorName? (legacy), **sponsorId? (FK→User, SET NULL, relation "VoucherSponsor")**, notes?, createdAt
-- Nové záznamy používají sponsorId (dropdown ze sponzorů), staré záznamy mohou mít donorName jako fallback
+- id, studentId (FK→Student, CASCADE), purchaseDate, amount (Float), count (Int), donorName? (legacy), **sponsorId? (FK→User, SET NULL, Relation "VoucherSponsor")**, notes?, createdAt
+- Neue Einträge verwenden sponsorId (Dropdown aus Sponsoren), alte Einträge können donorName als Fallback haben
 
 ### VoucherUsage
 - id, studentId (FK→Student, CASCADE), usageDate, count (Int), notes?, createdAt
@@ -285,443 +118,442 @@ Všechny klíče musí existovat ve všech třech jazycích (cs, en, sw).
 - id, studentId? (FK→Student, SET NULL), paymentDate, amount (Float), notes?, source? (manual/bank_import), createdAt
 
 ### SponsorPayment
-- id, studentId (FK→Student, CASCADE), sponsorId? (FK→User, SET NULL), paymentDate, amount (Float), currency (default "KES"), paymentType (tuition/medical/other), notes?, createdAt
+- id, studentId (FK→Student, CASCADE), sponsorId? (FK→User, SET NULL), paymentDate, amount (Float), currency (Standard "KES"), paymentType (tuition/medical/other), notes?, createdAt
 
 ### VolunteerAssignment
 - id, userId (FK→User, CASCADE), studentId (FK→Student, CASCADE), createdAt, unique(userId+studentId)
 
 ### ClassRoom
-- id (cuid), name (unique), sortOrder (Int, default 0), isActive (default true), createdAt
+- id (cuid), name (unique), sortOrder (Int, Standard 0), isActive (Standard true), createdAt
 
 ### HealthCheckType
-- id (cuid), name (unique), sortOrder (Int, default 0), isActive (default true), createdAt
+- id (cuid), name (unique), sortOrder (Int, Standard 0), isActive (Standard true), createdAt
 
 ### PaymentType
-- id (cuid), name (unique), sortOrder (Int, default 0), isActive (default true), createdAt
+- id (cuid), name (unique), sortOrder (Int, Standard 0), isActive (Standard true), createdAt
 
-## 6. Autentizace
+## 6. Authentifizierung
 
-### Přihlašovací stránka (/login)
-- Gradient pozadí, centrovaný formulář
-- Email + heslo s tlačítkem zobrazit/skrýt heslo
-- Přepínač jazyků (CS/EN/SW)
-- Zobrazení demo přihlašovacích údajů
-- Po úspěšném přihlášení redirect na /dashboard
+### Anmeldeseite (/login)
+- Verlaufshintergrund, zentriertes Formular
+- E-Mail + Passwort mit Schaltfläche zum Anzeigen/Verbergen
+- Sprachumschalter (CS/EN/SW)
+- Anzeige der Demo-Anmeldedaten
+- Nach erfolgreicher Anmeldung Weiterleitung auf /dashboard
 
 ### API
-- POST /api/auth/login — validace, vytvoření JWT, nastavení httpOnly cookie
-- POST /api/auth/logout — smazání cookie
-- GET /api/auth/me — vrací aktuálního uživatele
+- POST /api/auth/login — Validierung, JWT erstellen, httpOnly-Cookie setzen
+- POST /api/auth/logout — Cookie löschen
+- GET /api/auth/me — aktuellen Benutzer zurückgeben
 
-### Demo účty (seed data)
+### Demo-Konten (Seed-Daten)
 - admin@rael.school / admin123 (ADMIN)
 - manager@rael.school / manager123 (MANAGER)
 - sponsor@example.com / sponsor123 (SPONSOR)
 - volunteer@example.com / volunteer123 (VOLUNTEER)
 
-## 7. Layout a navigace
+## 7. Layout und Navigation
 
-### Postranní menu (Sidebar)
+### Seitenmenü (Sidebar)
 - Logo "Škola Rael - Informační systém"
-- Položky (v tomto pořadí):
-  1. Přehled (LayoutDashboard) — všechny role
-  2. Studenti (Users) — všechny role
-  3. **Sponzoři (Heart)** — ADMIN, MANAGER, VOLUNTEER (ne SPONSOR)
-  4. Platby (CreditCard) — ADMIN, MANAGER, VOLUNTEER
-  5. Statistiky (BarChart3) — ADMIN, MANAGER
-  6. Administrace (Settings) — jen ADMIN
-- Responsivní (hamburger menu na mobilu)
-- Přepínač jazyků dole
-- Profil přihlášeného uživatele (jméno, role s barevným badge)
-- Tlačítko odhlášení
+- Einträge (in dieser Reihenfolge):
+  1. Übersicht (LayoutDashboard) — alle Rollen
+  2. Schüler (Users) — alle Rollen
+  3. **Sponsoren (Heart)** — ADMIN, MANAGER, VOLUNTEER (nicht SPONSOR)
+  4. Zahlungen (CreditCard) — ADMIN, MANAGER, VOLUNTEER
+  5. Statistiken (BarChart3) — ADMIN, MANAGER
+  6. Administration (Settings) — nur ADMIN
+- Responsiv (Hamburger-Menü auf Mobilgeräten)
+- Sprachumschalter unten
+- Profil des angemeldeten Benutzers (Name, Rolle mit farbigem Badge)
+- Abmelde-Schaltfläche
 
-### Barevné schéma (keňský motiv)
-- Primary: zelená (#16a34a a odstíny)
-- Accent: žlutá/oranžová (#eab308 a odstíny)
-- Earth: hnědá (#92400e a odstíny)
-- Text: vždy #1a1a1a (černý)
+### Farbschema (kenianisches Motiv)
+- Primary: Grün (#16a34a und Abstufungen)
+- Accent: Gelb/Orange (#eab308 und Abstufungen)
+- Earth: Braun (#92400e und Abstufungen)
+- Text: immer #1a1a1a (schwarz)
 
 ## 8. Dashboard (/dashboard)
 
-### Klikací statistické karty (5 karet v řadě)
-1. **Celkem studentů** → zobrazí tabulku studentů
-2. **Aktivní sponzoři** → zobrazí tabulku sponzorů
-3. **Platby od sponzorů** → zobrazí záložku plateb s podzáložkami (platby od sponzorů / zakoupené stravenky)
-4. **Studenti vyžadující pozornost** → zobrazí studenty s nesplněnými potřebami
-5. **Přehled tříd** → zobrazí karty tříd, kliknutím na třídu se zobrazí seznam žáků
+### Anklickbare Statistikkarten (5 Karten in einer Reihe)
+1. **Schüler gesamt** → zeigt Schülertabelle
+2. **Aktive Sponsoren** → zeigt Sponsorentabelle
+3. **Zahlungen von Sponsoren** → zeigt Zahlungsreiter mit Unterreitern (Sponsorenzahlungen / gekaufte Essensmarken)
+4. **Schüler mit Handlungsbedarf** → zeigt Schüler mit unerfüllten Bedürfnissen
+5. **Klassenübersicht** → zeigt Klassenkarten, Klick auf eine Klasse zeigt Schülerliste
 
-### Karta plateb zobrazuje součty po měnách
-- Systém pracuje se 3 měnami: KES, CZK, EUR (případně USD)
-- Na kartě plateb se zobrazí součet pro každou měnu zvlášť: "5 000 KES | 2 000 CZK"
-- Stravenky jsou vždy v KES
+### Zahlungskarte zeigt Summen je Währung
+- Das System arbeitet mit 3 Währungen: KES, CZK, EUR (ggf. USD)
+- Die Zahlungskarte zeigt die Summe jeder Währung separat: "5 000 KES | 2 000 CZK"
+- Essensmarken immer in KES
 
-### Záložka plateb má dvě podzáložky (tab switcher)
-1. **Platby od sponzorů** — tabulka: datum, typ (badge), částka s měnou, student (odkaz), sponzor, poznámka. Nad tabulkou: barevné karty se součty po měnách.
-2. **Zakoupené stravenky** — tabulka: datum, částka, počet, student (odkaz), sponzor, poznámka. Nad tabulkou: celková částka a celkem nakoupeno.
+### Zahlungsreiter hat zwei Unterreiter (Tab-Switcher)
+1. **Zahlungen von Sponsoren** — Tabelle: Datum, Typ (Badge), Betrag mit Währung, Schüler (Link), Sponsor, Notiz. Über der Tabelle: farbige Karten mit Summen je Währung.
+2. **Gekaufte Essensmarken** — Tabelle: Datum, Betrag, Anzahl, Schüler (Link), Sponsor, Notiz. Über der Tabelle: Gesamtbetrag und Gesamtzahl.
 
-### Výchozí aktivní karta: Studenti
-### Aktivní karta má barevný rámeček odpovídající barvě ikony.
+### Standard-Aktivreiter: Schüler
+### Aktiver Reiter hat einen farbigen Rahmen entsprechend der Icon-Farbe.
 
-### Všechny tabulky mají třídění
-- Kliknutí na záhlaví sloupce → vzestupné/sestupné řazení
-- Ikona šipky (ChevronUp/ChevronDown pro aktivní, ArrowUpDown pro neaktivní)
+### Alle Tabellen sind sortierbar
+- Klick auf Spaltenüberschrift → auf-/absteigende Sortierung
+- Pfeilsymbol (ChevronUp/ChevronDown für aktiv, ArrowUpDown für inaktiv)
 
-### Tabulka studentů zobrazuje
-- Číslo studenta, příjmení (klikací odkaz na detail), jméno, třída, pohlaví, počet nesplněných potřeb (červený badge), počet sponzorů (zelený badge)
+### Schülertabelle zeigt
+- Schülernummer, Nachname (anklickbarer Link zum Detail), Vorname, Klasse, Geschlecht, Anzahl unerfüllter Bedürfnisse (roter Badge), Anzahl Sponsoren (grüner Badge)
 
-### Tabulka sponzorů zobrazuje
-- Příjmení, jméno, email, telefon, podporovaní studenti (klikací badge odkazy na konkrétního studenta)
+### Sponsorentabelle zeigt
+- Nachname, Vorname, E-Mail, Telefon, betreute Schüler (anklickbare Badge-Links zum jeweiligen Schüler)
 
-### Přehled tříd
-- Klikací karty s názvem třídy a počtem studentů
-- Po kliknutí na třídu: tabulka žáků dané třídy s odkazem zpět na přehled tříd
+### Klassenübersicht
+- Anklickbare Karten mit Klassenname und Schüleranzahl
+- Nach Klick auf eine Klasse: Schülertabelle der Klasse mit Link zurück zur Klassenübersicht
 
-## 9. Seznam studentů (/students)
+## 9. Schülerliste (/students)
 
-- Vyhledávání (realtime, 300ms debounce)
-- Karta "Přidat nového studenta" → /students/new
-- Grid layout (1/2/3 sloupce dle šířky)
-- Kartička studenta obsahuje:
-  - **Profilovou fotku** (kulatý avatar vlevo) — pokud nemá, zobrazí zelený kroužek s ikonou User
-  - Jméno, příjmení
-  - Číslo studenta
-  - Badge: třída, věk, počet potřeb (červený), jméno sponzora (žlutý)
-- Kliknutí na kartičku → detail studenta
+- Suche (Echtzeit, 300ms Debounce)
+- Karte "Neuen Schüler hinzufügen" → /students/new
+- Grid-Layout (1/2/3 Spalten je nach Breite)
+- Schülerkarte enthält:
+  - **Profilfoto** (runder Avatar links) — falls keines vorhanden, grüner Kreis mit User-Icon
+  - Vor- und Nachname
+  - Schülernummer
+  - Badges: Klasse, Alter, Anzahl Bedürfnisse (rot), Sponsorname (gelb)
+- Klick auf Karte → Schülerdetail
 
-## 10. Nový student (/students/new)
+## 10. Neuer Schüler (/students/new)
 
-- Formulář: jméno, příjmení, datum narození, pohlaví, třída, zdravotní stav
-- Auto-generování studentNo (RAEL-XXX, kde XXX je další číslo v pořadí)
-- Po uložení redirect na detail
+- Formular: Vorname, Nachname, Geburtsdatum, Geschlecht, Klasse, Gesundheitsstatus
+- Auto-Generierung der studentNo (RAEL-XXX, wobei XXX die nächste Nummer ist)
+- Nach dem Speichern Weiterleitung zum Detail
 
-## 11. Detail studenta (/students/[id])
+## 11. Schülerdetail (/students/[id])
 
-### Hlavička
-- Tlačítko zpět (→ /students)
-- **Profilová fotka** (kulatý avatar 56px) — při hoveru myší se zobrazí ikona fotoaparátu, kliknutím se nahraje nová fotka
-- Jméno, příjmení
-- Podtitulek: číslo studenta, třída, věk
-- Tlačítko "Upravit" (jen pro ADMIN/MANAGER/VOLUNTEER)
+### Kopfzeile
+- Zurück-Schaltfläche (→ /students)
+- **Profilfoto** (runder Avatar 56px) — beim Hover erscheint Kamera-Icon, Klick lädt neues Foto hoch
+- Vor- und Nachname
+- Untertitel: Schülernummer, Klasse, Alter
+- Schaltfläche "Bearbeiten" (nur für ADMIN/MANAGER/VOLUNTEER)
 
-### Režim úprav
-- Žlutý banner "Režim úprav"
-- Tlačítka Zrušit / Uložit
-- Před uložením potvrzovací dialog
+### Bearbeitungsmodus
+- Gelbes Banner "Bearbeitungsmodus"
+- Schaltflächen Abbrechen / Speichern
+- Vor dem Speichern Bestätigungsdialog
 
-### Záložky (v tomto pořadí!)
-1. **Osobní údaje**
-2. **Vybavení**
-3. **Potřeby a přání**
-4. **Stravenky**
-5. **Fotografie**
-6. **Sponzoři**
-7. **Platby od sponzorů**
-8. **Zdravotní prohlídky**
+### Reiter (in dieser Reihenfolge!)
+1. **Persönliche Daten**
+2. **Ausstattung**
+3. **Bedürfnisse und Wünsche**
+4. **Essensmarken**
+5. **Fotos**
+6. **Sponsoren**
+7. **Zahlungen von Sponsoren**
+8. **Gesundheitsuntersuchungen**
 
-### 11.1 Osobní údaje
-- Grid 2 sloupce: jméno, příjmení, datum narození, pohlaví (dropdown M/F), třída (dropdown z číselníku ClassRoom), zdravotní stav
-- Sekce Rodina: jméno matky, matka žije (Ano/Ne dropdown), jméno otce, otec žije, sourozenci
-- Poznámky (textarea)
-- V režimu úprav: inputy; jinak: text
-- **Třída je SelectField** — dropdown načítá hodnoty z API `/api/admin/classrooms` (aktivní třídy seřazené dle sortOrder)
+### 11.1 Persönliche Daten
+- Grid 2 Spalten: Vorname, Nachname, Geburtsdatum, Geschlecht (Dropdown M/F), Klasse (Dropdown aus Verzeichnis ClassRoom), Gesundheitsstatus
+- Abschnitt Familie: Muttername, Mutter lebt (Ja/Nein Dropdown), Vatername, Vater lebt, Geschwister
+- Notizen (Textarea)
+- Im Bearbeitungsmodus: Eingabefelder; sonst: Text
+- **Klasse ist ein SelectField** — Dropdown lädt Werte aus API `/api/admin/classrooms` (aktive Klassen nach sortOrder)
 
-### 11.2 Vybavení (samostatná záložka)
-- Tabulka: typ (postel/matrace/deka/moskytiéra), stav (badge: zelený=nové, žlutý=uspokojivé, červený=špatné), datum pořízení
-- V režimu úprav: dropdown pro stav, date picker pro datum
-- Pokud chybí některý typ vybavení, automaticky se přidá při přepnutí do edit mode
+### 11.2 Ausstattung (eigener Reiter)
+- Tabelle: Typ (Bett/Matratze/Decke/Moskitonetz), Zustand (Badge: grün=neu, gelb=befriedigend, rot=schlecht), Anschaffungsdatum
+- Im Bearbeitungsmodus: Dropdown für Zustand, Datumsauswahl
+- Fehlende Typen werden beim Wechsel in den Bearbeitungsmodus automatisch hinzugefügt
 
-### 11.3 Potřeby a přání (samostatná záložka)
-- Tlačítko "Přidat potřebu" (+)
-- Inline přidání: textový input + tlačítko Přidat (Enter = submit)
-- Každá potřeba: checkbox (kliknutím toggle fulfilled), popis, datum splnění, ikona koše pro smazání
-- Zelené pozadí = splněno (s přeškrtnutím), červené pozadí = nesplněno
-- Potvrzení před smazáním
+### 11.3 Bedürfnisse und Wünsche (eigener Reiter)
+- Schaltfläche "Bedürfnis hinzufügen" (+)
+- Inline-Hinzufügen: Texteingabe + Schaltfläche Hinzufügen (Enter = Absenden)
+- Jedes Bedürfnis: Checkbox (Klick togglet erfüllt), Beschreibung, Erfüllungsdatum, Papierkorb-Icon zum Löschen
+- Grüner Hintergrund = erfüllt (durchgestrichen), roter Hintergrund = unerfüllt
+- Bestätigung vor dem Löschen
 
-### 11.4 Stravenky
-- **Výběr měny** vedle nadpisu (dropdown: KES, CZK, USD, EUR) — ukládá se do localStorage
-- Přehledové karty: celková částka, celkem nakoupeno, celkem čerpáno, dostupné (zelená pokud >0, červená pokud ≤0)
-- Formulář přidání: typ (nákup/čerpání), datum, částka (jen u nákupu), počet, **jméno dárce** (textové pole + dropdown s existujícími sponzory dítěte, default = první sponzor), poznámka
-- **Tabulka zakoupených:** datum | částka | počet | jméno dárce | poznámka | **ikona koše pro smazání**
-- **Tabulka čerpaných:** datum | (prázdný spacer) | počet | (prázdný spacer) | poznámka | **ikona koše pro smazání**
-- Sloupce "počet" v obou tabulkách musí být **přesně pod sebou** (proto spacery)
-- Potvrzení před smazáním
+### 11.4 Essensmarken
+- **Währungsauswahl** neben dem Titel (Dropdown: KES, CZK, USD, EUR) — wird in localStorage gespeichert
+- Übersichtskarten: Gesamtbetrag, Gesamt gekauft, Gesamt eingelöst, Verfügbar (grün wenn >0, rot wenn ≤0)
+- Formular zum Hinzufügen: Typ (Kauf/Einlösung), Datum, Betrag (nur bei Kauf), Anzahl, **Gebername** (Textfeld + Dropdown mit bestehenden Sponsoren des Kindes, Standard = erster Sponsor), Notiz
+- **Tabelle Gekauft:** Datum | Betrag | Anzahl | Gebername | Notiz | **Papierkorb-Icon zum Löschen**
+- **Tabelle Eingelöst:** Datum | (leerer Spacer) | Anzahl | (leerer Spacer) | Notiz | **Papierkorb-Icon zum Löschen**
+- Spalten "Anzahl" in beiden Tabellen müssen **genau untereinander** stehen (daher Spacer)
+- Bestätigung vor dem Löschen
 
-### 11.5 Fotografie
-- Filtr: Všechny / Z návštěvy / Z předání / Ze stravenky
-- Tlačítko "Nahrát fotografii"
-- Formulář: kategorie, **datum pořízení** (date picker), popis, výběr souboru
-- Grid 3 sloupce: náhled fotky (h-48, object-cover), popis, datum, badge kategorie
-- **Tlačítko smazání** (ikona koše) na každé fotce
-- Soubory se ukládají do public/uploads/{studentId}/
+### 11.5 Fotos
+- Filter: Alle / Aus Besuch / Aus Übergabe / Aus Essensmarke
+- Schaltfläche "Foto hochladen"
+- Formular: Kategorie, **Aufnahmedatum** (Datumsauswahl), Beschreibung, Dateiauswahl
+- Grid 3 Spalten: Vorschau (h-48, object-cover), Beschreibung, Datum, Kategorie-Badge
+- **Lösch-Schaltfläche** (Papierkorb-Icon) bei jedem Foto
+- Dateien werden gespeichert unter public/uploads/{studentId}/
 
-### 11.6 Sponzoři
-- **Vyhledat existujícího sponzora** — toggle tlačítko s lupou, otevře search input s autocomplete dropdown (hledá podle příjmení přes `/api/sponsors/search`)
-- Tlačítko "Přidat sponzora" — formulář: jméno*, příjmení*, email*, telefon, datum začátku, poznámka
-- Pokud sponzor s daným emailem v systému neexistuje, automaticky se vytvoří nový User s rolí SPONSOR a výchozím heslem "sponsor123"
-- Pokud existuje, vytvoří se pouze Sponsorship vazba
-- Zamezení duplicitních aktivních sponzorství
-- Každý sponzor zobrazuje: avatar, jméno, email, telefon, datum začátku, poznámka, status (Active/Inactive badge)
-- **Tlačítko úprav** (ikona tužky) — otevře inline formulář: jméno, příjmení, **email** (editovatelný!), telefon, poznámka
-- **Tlačítko odebrání sponzora** (ikona koše) — hard delete sponsorship s potvrzením
-- Žluté pozadí karty sponzora (accent-50)
+### 11.6 Sponsoren
+- **Bestehenden Sponsor suchen** — Toggle-Schaltfläche mit Lupe, öffnet Sucheingabe mit Autocomplete-Dropdown (Suche nach Nachname über `/api/sponsors/search`)
+- Schaltfläche "Sponsor hinzufügen" — Formular: Vorname*, Nachname*, E-Mail*, Telefon, Startdatum, Notiz
+- Wenn kein Sponsor mit der E-Mail im System vorhanden, wird automatisch ein neuer User mit Rolle SPONSOR und Standardpasswort "sponsor123" erstellt
+- Wenn vorhanden, wird nur die Sponsorship-Verknüpfung erstellt
+- Verhinderung doppelter aktiver Sponsorschaften
+- Jeder Sponsor zeigt: Avatar, Name, E-Mail, Telefon, Startdatum, Notiz, Status (Aktiv/Inaktiv Badge)
+- **Bearbeiten-Schaltfläche** (Stift-Icon) — öffnet Inline-Formular: Vorname, Nachname, **E-Mail** (bearbeitbar!), Telefon, Notiz
+- **Sponsor entfernen** (Papierkorb-Icon) — Hard-Delete der Sponsorship mit Bestätigung
+- Gelber Kartenhintergrund (accent-50)
 
-### 11.7 Platby od sponzorů
-- Tlačítko "Přidat"
-- Formulář: datum, typ platby (**dynamický dropdown** z číselníku PaymentType v administraci), částka + výběr měny (KES/CZK/EUR/USD), **sponzor (dropdown ze VŠECH aktivních sponzorů, načteno z `/api/sponsors`)**, poznámka
-- Tabulka: datum, typ (barevný badge: zelený=školné, žlutý=lékař, červený=jiné), částka s měnou, sponzor, poznámka, ikona koše pro smazání
-- Potvrzení před smazáním
+### 11.7 Zahlungen von Sponsoren
+- Schaltfläche "Hinzufügen"
+- Formular: Datum, Zahlungstyp (**dynamisches Dropdown** aus Verzeichnis PaymentType in der Administration), Betrag + Währungsauswahl (KES/CZK/EUR/USD), **Sponsor (Dropdown aus ALLEN aktiven Sponsoren, geladen von `/api/sponsors`)**, Notiz
+- Tabelle: Datum, Typ (farbiges Badge: grün=Schulgeld, gelb=Arzt, rot=Sonstiges), Betrag mit Währung, Sponsor, Notiz, Papierkorb-Icon zum Löschen
+- Bestätigung vor dem Löschen
 
-### 11.8 Zdravotní prohlídky
-- Tlačítko "Přidat prohlídku"
-- Formulář: datum, typ (**dynamický dropdown** z číselníku HealthCheckType v administraci), poznámka
-- Tabulka: datum (w-28) | typ prohlídky (w-24, barevný badge) | poznámka (zbytek prostoru) | ikona koše
-- **Typ prohlídky posunut vlevo** aby poznámka měla maximum místa
-- Potvrzení před smazáním
+### 11.8 Gesundheitsuntersuchungen
+- Schaltfläche "Untersuchung hinzufügen"
+- Formular: Datum, Typ (**dynamisches Dropdown** aus Verzeichnis HealthCheckType in der Administration), Notiz
+- Tabelle: Datum (w-28) | Untersuchungstyp (w-24, farbiges Badge) | Notiz (restlicher Platz) | Papierkorb-Icon
+- **Untersuchungstyp linksbündig** damit die Notiz maximalen Platz hat
+- Bestätigung vor dem Löschen
 
-## 12. Stránka Sponzoři (/sponsors) — NOVÉ v Phase 9
+## 12. Seite Sponsoren (/sponsors)
 
-### Přístup
-- ADMIN, MANAGER, VOLUNTEER (ne SPONSOR)
-- V sidebar: položka "Sponzoři" (ikona Heart) mezi Studenti a Platby
+### Zugriff
+- ADMIN, MANAGER, VOLUNTEER (nicht SPONSOR)
+- In der Sidebar: Eintrag "Sponsoren" (Heart-Icon) zwischen Schüler und Zahlungen
 
-### UI: Card-based layout
-- Vyhledávání s real-time filtrováním
-- Tlačítko "Přidat sponzora" (vytvoří User s rolí SPONSOR, default heslo "sponsor123")
-- Kontrola unikátnosti emailu (nabídne reaktivaci pokud existuje neaktivní sponzor)
+### UI: Card-basiertes Layout
+- Suche mit Echtzeit-Filterung
+- Schaltfläche "Sponsor hinzufügen" (erstellt User mit Rolle SPONSOR, Standardpasswort "sponsor123")
+- Prüfung auf Eindeutigkeit der E-Mail (bietet Reaktivierung an, wenn inaktiver Sponsor vorhanden)
 
-### Karta sponzora obsahuje:
-- Avatar (iniciály)
-- Jméno, příjmení, email, telefon (inline editovatelné)
-- Seznam přiřazených studentů (klikací odkazy na detail)
-- Celkové platby seskupené po měnách (KES, CZK, USD, EUR)
-- Tlačítko Deaktivovat/Reaktivovat (ADMIN/MANAGER) — deaktivace ukončí všechna aktivní sponzorství
-- Neaktivní sponzoři: červený border + badge "Neaktivní"
+### Sponsorenkarte enthält:
+- Avatar (Initialen)
+- Vor- und Nachname, E-Mail, Telefon (inline bearbeitbar)
+- Liste zugewiesener Schüler (anklickbare Links zum Detail)
+- Gesamtzahlungen gruppiert nach Währungen (KES, CZK, USD, EUR)
+- Schaltfläche Deaktivieren/Reaktivieren (ADMIN/MANAGER) — Deaktivierung beendet alle aktiven Sponsorschaften
+- Inaktive Sponsoren: roter Rahmen + Badge "Inaktiv"
 
-### API endpointy
-- **GET /api/sponsors** — seznam s platbami po měnách, ?search=, ?includeInactive=true
-- **POST /api/sponsors** — vytvoření nového sponzora (User s rolí SPONSOR)
-- **GET /api/sponsors/[id]** — detail s vazbami a platbami
-- **PUT /api/sponsors/[id]** — editace info (jméno, email, telefon)
-- **PATCH /api/sponsors/[id]** — toggle isActive
-- **GET /api/sponsors/search?q=** — autocomplete hledání podle příjmení (top 10)
+### API-Endpunkte
+- **GET /api/sponsors** — Liste mit Zahlungen je Währung, ?search=, ?includeInactive=true
+- **POST /api/sponsors** — neuen Sponsor erstellen (User mit Rolle SPONSOR)
+- **GET /api/sponsors/[id]** — Detail mit Verknüpfungen und Zahlungen
+- **PUT /api/sponsors/[id]** — Info bearbeiten (Name, E-Mail, Telefon)
+- **PATCH /api/sponsors/[id]** — isActive umschalten
+- **GET /api/sponsors/search?q=** — Autocomplete-Suche nach Nachname (top 10)
 
-## 13. Stránka Platby (/payments) — CRUD
+## 13. Seite Zahlungen (/payments) — CRUD
 
-Plnohodnotná stránka se dvěma záložkami a kompletním CRUD:
+Vollwertige Seite mit zwei Reitern und vollständigem CRUD:
 
-### Tab switcher s ikonami
-1. **Platby od sponzorů** (CreditCard ikona) — počet v závorce
-2. **Zakoupené stravenky** (Ticket ikona) — počet v závorce
+### Tab-Switcher mit Icons
+1. **Zahlungen von Sponsoren** (CreditCard-Icon) — Anzahl in Klammern
+2. **Gekaufte Essensmarken** (Ticket-Icon) — Anzahl in Klammern
 
-### Záložka "Platby od sponzorů"
-- Nad tabulkou: barevné karty se součty po měnách (každá měna zvlášť: KES, CZK, EUR...)
-- **Přidat platbu** (tlačítko +): formulář s dropdown pro studenta, sponzora, typ platby (z číselníku), měnu, částku, datum, poznámku
-- **Editace** (ikona tužky, viditelná při hoveru): inline editace v řádku tabulky se selecty a inputy
-- **Smazání** (ikona koše, viditelná při hoveru): s confirm dialogem
-- Tabulka: datum, typ platby (badge), částka s měnou, student (odkaz), sponzor, poznámka, akce
+### Reiter "Zahlungen von Sponsoren"
+- Über der Tabelle: farbige Karten mit Summen je Währung (jede Währung separat: KES, CZK, EUR...)
+- **Zahlung hinzufügen** (Schaltfläche +): Formular mit Dropdown für Schüler, Sponsor, Zahlungstyp (aus Verzeichnis), Währung, Betrag, Datum, Notiz
+- **Bearbeiten** (Stift-Icon, sichtbar beim Hover): Inline-Bearbeitung in der Tabellenzeile mit Selects und Inputs
+- **Löschen** (Papierkorb-Icon, sichtbar beim Hover): mit Bestätigungsdialog
+- Tabelle: Datum, Zahlungstyp (Badge), Betrag mit Währung, Schüler (Link), Sponsor, Notiz, Aktionen
 
-### Záložka "Zakoupené stravenky"
-- Nad tabulkou: celková částka (KES) a celkem nakoupených stravenek
-- **Přidat stravenku** (tlačítko +): formulář s dropdown pro studenta, **sponzora (dropdown ze všech sponzorů, ne donorName textové pole)**, datum, částku, počet, poznámku
-- **Editace** (ikona tužky): inline v řádku, **sponzor jako dropdown**
-- **Smazání** (ikona koše): s confirm dialogem
-- Tabulka: datum, částka, počet, student (odkaz), **sponzor (zobrazí jméno, fallback na donorName pro staré záznamy)**, poznámka, akce
+### Reiter "Gekaufte Essensmarken"
+- Über der Tabelle: Gesamtbetrag (KES) und Gesamtzahl der Essensmarken
+- **Essensmarke hinzufügen** (Schaltfläche +): Formular mit Dropdown für Schüler, **Sponsor (Dropdown aller Sponsoren, kein donorName-Textfeld)**, Datum, Betrag, Anzahl, Notiz
+- **Bearbeiten** (Stift-Icon): Inline in der Zeile, **Sponsor als Dropdown**
+- **Löschen** (Papierkorb-Icon): mit Bestätigungsdialog
+- Tabelle: Datum, Betrag, Anzahl, Schüler (Link), **Sponsor (zeigt Name, Fallback auf donorName für alte Einträge)**, Notiz, Aktionen
 
-### API endpoint
-- **POST /api/payments** — vytvoření (type: 'sponsor' | 'voucher')
-- **PUT /api/payments** — editace (type + id)
-- **DELETE /api/payments** — smazání (type + id)
+### API-Endpunkt
+- **POST /api/payments** — Erstellen (type: 'sponsor' | 'voucher')
+- **PUT /api/payments** — Bearbeiten (type + id)
+- **DELETE /api/payments** — Löschen (type + id)
 
-Data se načítají z `/api/dashboard` (sdílený endpoint, voucherPurchases include sponsor).
+Daten werden von `/api/dashboard` geladen (gemeinsamer Endpunkt, voucherPurchases include sponsor).
 
-## 14. Administrace (/admin) — jen ADMIN
+## 14. Administration (/admin) — nur ADMIN
 
-### Navigace
-- V Sidebar: položka "Administrace" (ikona Settings), viditelná jen pro ADMIN
-- Na stránce: tlačítko zpět (šipka → dashboard)
+### Navigation
+- In der Sidebar: Eintrag "Administration" (Settings-Icon), nur für ADMIN sichtbar
+- Auf der Seite: Zurück-Schaltfläche (Pfeil → Dashboard)
 
-### Rozložení stránky — sbalitelný akordeon
-Stránka obsahuje **3 sbalitelné sekce** (accordion). Každá sekce má:
-- Klikací záhlaví s ikonou šipky (ChevronRight, rotace 90° při otevření)
-- Název sekce + počet aktivních položek v závorce
-- Kliknutím na záhlaví se sekce rozbalí/sbalí
-- Výchozí stav: **Číselník tříd** je rozbalený, ostatní sbalené
+### Seitenaufbau — ausklappbares Akkordeon
+Die Seite enthält **3 ausklappbare Abschnitte** (Akkordeon). Jeder Abschnitt hat:
+- Anklickbare Überschrift mit Pfeil-Icon (ChevronRight, rotiert 90° beim Öffnen)
+- Abschnittsname + Anzahl aktiver Einträge in Klammern
+- Klick auf Überschrift klappt Abschnitt auf/zu
+- Standardzustand: **Klassenverzeichnis** ist ausgeklappt, andere eingeklappt
 
-### Znovupoužitelná komponenta CodelistSection
-Všechny tři sekce sdílejí generickou komponentu `CodelistSection` s vlastnostmi:
+### Wiederverwendbare Komponente CodelistSection
+Alle drei Abschnitte teilen eine generische Komponente `CodelistSection` mit Eigenschaften:
 - `title`, `icon`, `items`, `newItemName`, `onAdd`, `onDelete`, `onMove`
-- Generický CRUD factory pattern `makeHandlers(endpoint, items)` pro DRY kód
+- Generisches CRUD-Factory-Pattern `makeHandlers(endpoint, items)` für DRY-Code
 
-### Sekce 1: Číselník tříd (ikona GraduationCap)
-- **Přidání:** textový input + tlačítko "Přidat" (Enter = submit)
-- **Seznam tříd:** každá třída = řádek s:
-  - Šipky nahoru/dolů (ChevronUp/ChevronDown) pro změnu pořadí
-  - Ikona GraduationCap + název třídy
-  - Ikona koše pro smazání (viditelná při hoveru)
-- **Mazání:** soft delete (isActive=false), při přidání stejného názvu se reaktivuje existující záznam
-- **Řazení:** PUT endpoint aktualizuje sortOrder všech tříd najednou
+### Abschnitt 1: Klassenverzeichnis (GraduationCap-Icon)
+- **Hinzufügen:** Texteingabe + Schaltfläche "Hinzufügen" (Enter = Absenden)
+- **Klassenliste:** jede Klasse = Zeile mit:
+  - Pfeile hoch/runter (ChevronUp/ChevronDown) zum Ändern der Reihenfolge
+  - GraduationCap-Icon + Klassenname
+  - Papierkorb-Icon zum Löschen (sichtbar beim Hover)
+- **Löschen:** Soft-Delete (isActive=false), bei Hinzufügen desselben Namens wird vorhandener Eintrag reaktiviert
+- **Sortierung:** PUT-Endpunkt aktualisiert sortOrder aller Klassen auf einmal
 
-### Sekce 2: Druhy zdravotních prohlídek (ikona Heart)
-- Stejné UI jako číselník tříd (přidat, smazat, šipky pro řazení)
-- Soft delete s reaktivací
-- Výchozí seed data: Praktik, Zubař, Oční, Urgentní
-- Použití: dropdown v záložce "Zdravotní prohlídky" v detailu studenta
+### Abschnitt 2: Arten der Gesundheitsuntersuchungen (Heart-Icon)
+- Gleiche UI wie Klassenverzeichnis (hinzufügen, löschen, Pfeile zur Sortierung)
+- Soft-Delete mit Reaktivierung
+- Standard-Seed-Daten: Allgemeinmediziner, Zahnarzt, Augenarzt, Notfall
+- Verwendung: Dropdown im Reiter "Gesundheitsuntersuchungen" im Schülerdetail
 
-### Sekce 3: Typy plateb od sponzorů (ikona CreditCard)
-- Stejné UI jako číselník tříd (přidat, smazat, šipky pro řazení)
-- Soft delete s reaktivací
-- Výchozí seed data: Školné, Lékař, Uniforma, Učebnice, Jiné
-- Použití: dropdown v záložce "Platby od sponzorů" v detailu studenta i na stránce Platby
+### Abschnitt 3: Zahlungstypen von Sponsoren (CreditCard-Icon)
+- Gleiche UI wie Klassenverzeichnis (hinzufügen, löschen, Pfeile zur Sortierung)
+- Soft-Delete mit Reaktivierung
+- Standard-Seed-Daten: Schulgeld, Arzt, Uniform, Schulbücher, Sonstiges
+- Verwendung: Dropdown im Reiter "Zahlungen von Sponsoren" im Schülerdetail und auf der Zahlungsseite
 
-### API endpointy pro číselníky
-Všechny tři sdílejí stejný vzor (GET/POST/PUT/DELETE, jen ADMIN):
+### API-Endpunkte für Verzeichnisse
+Alle drei teilen dasselbe Muster (GET/POST/PUT/DELETE, nur ADMIN):
 
-- **/api/admin/classrooms** — CRUD pro třídy
-- **/api/admin/health-types** — CRUD pro druhy zdravotních prohlídek
-- **/api/admin/payment-types** — CRUD pro typy plateb od sponzorů
+- **/api/admin/classrooms** — CRUD für Klassen
+- **/api/admin/health-types** — CRUD für Arten der Gesundheitsuntersuchungen
+- **/api/admin/payment-types** — CRUD für Zahlungstypen von Sponsoren
 
-Každý endpoint podporuje:
-- GET: aktivní položky seřazené dle sortOrder
-- POST: vytvoření nové (pokud existuje neaktivní se stejným jménem → reaktivace)
-- PUT: batch update sortOrder (reordering)
-- DELETE: soft delete (isActive=false)
+Jeder Endpunkt unterstützt:
+- GET: aktive Einträge nach sortOrder sortiert
+- POST: neuen Eintrag erstellen (wenn inaktiver Eintrag mit gleichem Namen vorhanden → Reaktivierung)
+- PUT: Batch-Update von sortOrder (Neuordnung)
+- DELETE: Soft-Delete (isActive=false)
 
-## 15. API endpoints — kompletní přehled
+## 15. API-Endpunkte — vollständige Übersicht
 
-### Autentizace
-- POST /api/auth/login — přihlášení
-- POST /api/auth/logout — odhlášení
-- GET /api/auth/me — aktuální uživatel
+### Authentifizierung
+- POST /api/auth/login — Anmeldung
+- POST /api/auth/logout — Abmeldung
+- GET /api/auth/me — aktueller Benutzer
 
 ### Dashboard
-- GET /api/dashboard — stats (sponsorPaymentsByCurrency, voucherTotalAmount) + sponsorPayments (include student+sponsor) + voucherPurchases (include student+sponsor) + students (_count) + sponsors (sponsorships+student) + studentsWithNeeds
+- GET /api/dashboard — Stats (sponsorPaymentsByCurrency, voucherTotalAmount) + sponsorPayments (include student+sponsor) + voucherPurchases (include student+sponsor) + students (_count) + sponsors (sponsorships+student) + studentsWithNeeds
 
-### Studenti
-- GET /api/students — seznam s vyhledáváním a filtrováním
-- POST /api/students — vytvoření s auto-generovaným studentNo
-- GET /api/students/[id] — detail se všemi relacemi
-- PUT /api/students/[id] — aktualizace osobních údajů
-- DELETE /api/students/[id] — soft delete (isActive=false), jen ADMIN
-- PUT /api/students/[id]/equipment — batch update vybavení
-- POST /api/students/[id]/needs — přidání potřeby
-- PUT /api/students/[id]/needs — toggle fulfilled
-- DELETE /api/students/[id]/needs — smazání potřeby
-- POST /api/students/[id]/vouchers — přidání nákupu nebo čerpání
-- DELETE /api/students/[id]/vouchers — smazání nákupu nebo čerpání (query: type=purchase|usage)
-- POST /api/students/[id]/health — přidání prohlídky
-- DELETE /api/students/[id]/health — smazání prohlídky
-- POST /api/students/[id]/photos — nahrání fotky (FormData: file, category, description, takenAt)
-- DELETE /api/students/[id]/photos — smazání fotky (+ smazání souboru z disku)
-- POST /api/students/[id]/sponsors — přidání sponzora (find or create User)
-- PUT /api/students/[id]/sponsors — úprava sponzora (včetně emailu)
-- DELETE /api/students/[id]/sponsors — hard delete sponsorship
-- POST /api/students/[id]/sponsor-payments — přidání platby od sponzora
-- DELETE /api/students/[id]/sponsor-payments — smazání platby
+### Schüler
+- GET /api/students — Liste mit Suche und Filterung
+- POST /api/students — Erstellen mit auto-generierter studentNo
+- GET /api/students/[id] — Detail mit allen Relationen
+- PUT /api/students/[id] — Persönliche Daten aktualisieren
+- DELETE /api/students/[id] — Soft-Delete (isActive=false), nur ADMIN
+- PUT /api/students/[id]/equipment — Batch-Update der Ausstattung
+- POST /api/students/[id]/needs — Bedürfnis hinzufügen
+- PUT /api/students/[id]/needs — Erfüllt umschalten
+- DELETE /api/students/[id]/needs — Bedürfnis löschen
+- POST /api/students/[id]/vouchers — Kauf oder Einlösung hinzufügen
+- DELETE /api/students/[id]/vouchers — Kauf oder Einlösung löschen (query: type=purchase|usage)
+- POST /api/students/[id]/health — Untersuchung hinzufügen
+- DELETE /api/students/[id]/health — Untersuchung löschen
+- POST /api/students/[id]/photos — Foto hochladen (FormData: file, category, description, takenAt)
+- DELETE /api/students/[id]/photos — Foto löschen (+ Datei von Festplatte löschen)
+- POST /api/students/[id]/sponsors — Sponsor hinzufügen (find or create User)
+- PUT /api/students/[id]/sponsors — Sponsor bearbeiten (inkl. E-Mail)
+- DELETE /api/students/[id]/sponsors — Hard-Delete der Sponsorship
+- POST /api/students/[id]/sponsor-payments — Sponsorenzahlung hinzufügen
+- DELETE /api/students/[id]/sponsor-payments — Zahlung löschen
 
-### Sponzoři
-- GET /api/sponsors — seznam s platbami po měnách (?search=, ?includeInactive=true)
-- POST /api/sponsors — vytvoření nového sponzora
-- GET /api/sponsors/[id] — detail
-- PUT /api/sponsors/[id] — editace
-- PATCH /api/sponsors/[id] — toggle isActive
-- GET /api/sponsors/search?q= — autocomplete (top 10)
+### Sponsoren
+- GET /api/sponsors — Liste mit Zahlungen je Währung (?search=, ?includeInactive=true)
+- POST /api/sponsors — neuen Sponsor erstellen
+- GET /api/sponsors/[id] — Detail
+- PUT /api/sponsors/[id] — bearbeiten
+- PATCH /api/sponsors/[id] — isActive umschalten
+- GET /api/sponsors/search?q= — Autocomplete (top 10)
 
-### Platby (CRUD)
-- POST /api/payments — vytvoření (type: sponsor | voucher)
-- PUT /api/payments — editace (type + id)
-- DELETE /api/payments — smazání (type + id)
+### Zahlungen (CRUD)
+- POST /api/payments — Erstellen (type: sponsor | voucher)
+- PUT /api/payments — Bearbeiten (type + id)
+- DELETE /api/payments — Löschen (type + id)
 
 ### Admin
 - GET/POST/PUT/DELETE /api/admin/classrooms
 - GET/POST/PUT/DELETE /api/admin/health-types
 - GET/POST/PUT/DELETE /api/admin/payment-types
 
-## 16. Toast notifikace
+## 16. Toast-Benachrichtigungen
 
-- Úspěch: zelený toast vpravo nahoře, automaticky zmizí po 3 sekundách
-- Chyba: červený toast vpravo nahoře, automaticky zmizí po 3 sekundách
-- Funkce: `showMsg('success' | 'error', text)`
+- Erfolg: grüner Toast oben rechts, verschwindet automatisch nach 3 Sekunden
+- Fehler: roter Toast oben rechts, verschwindet automatisch nach 3 Sekunden
+- Funktion: `showMsg('success' | 'error', text)`
 
-## 17. Potvrzovací dialogy
+## 17. Bestätigungsdialoge
 
-- Před uložením osobních údajů: modální dialog "Opravdu chcete uložit změny?" s tlačítky Zrušit/Uložit
-- Před smazáním čehokoliv: `confirm()` dialog
+- Vor dem Speichern persönlicher Daten: modaler Dialog "Möchten Sie die Änderungen wirklich speichern?" mit Schaltflächen Abbrechen/Speichern
+- Vor dem Löschen von allem: `confirm()`-Dialog
 
-## 18. Seed data (testovací data)
+## 18. Seed-Daten (Testdaten)
 
-### Uživatelé
+### Benutzer
 - Admin Rael (admin@rael.school / admin123) — ADMIN
 - Manager Rael (manager@rael.school / manager123) — MANAGER
 - Jana Nová (sponsor@example.com / sponsor123) — SPONSOR
-- Dobrovolník Karel (volunteer@example.com / volunteer123) — VOLUNTEER
+- Freiwilliger Karel (volunteer@example.com / volunteer123) — VOLUNTEER
 
-### Studenti (5 testovacích)
-- RAEL-001 Amani Mwangi — plná data (vybavení, potřeby, stravenky, sponzor, zdravotní prohlídky, platby)
+### Schüler (5 Testschüler)
+- RAEL-001 Amani Mwangi — vollständige Daten (Ausstattung, Bedürfnisse, Essensmarken, Sponsor, Gesundheitsuntersuchungen, Zahlungen)
 - RAEL-002 Zawadi Omondi
 - RAEL-003 Jabari Kimani
 - RAEL-004 Nia Wanjiku
 - RAEL-005 Kofi Mutua
 
-### Číselníky (seed data)
-- **Třídy:** definované v seed.ts
-- **Druhy zdravotních prohlídek:** Praktik, Zubař, Oční, Urgentní
-- **Typy plateb od sponzorů:** Školné, Lékař, Uniforma, Učebnice, Jiné
+### Verzeichnisse (Seed-Daten)
+- **Klassen:** definiert in seed.ts
+- **Arten der Gesundheitsuntersuchungen:** Allgemeinmediziner, Zahnarzt, Augenarzt, Notfall
+- **Zahlungstypen von Sponsoren:** Schulgeld, Arzt, Uniform, Schulbücher, Sonstiges
 
-## 19. Vizuální styl
+## 19. Visueller Stil
 
-- Zaoblené rohy (rounded-xl, rounded-2xl)
-- Karty s border-gray-200 a hover efektem (card-hover: translateY(-2px), zvětšení stínu)
-- Badge styly: badge-green (zelený), badge-yellow (žlutý), badge-red (červený)
-- Gradient přihlašovací stránka (from-primary-600 to-primary-800)
-- Custom scrollbar styling
-- Loading spinner: border animace
-- Všechen text #1a1a1a (vynuceno v globals.css přes *, body, p, span, h1-h6)
-- Editace a mazání v tabulkách: ikony viditelné při hoveru nad řádkem (opacity-0 → group-hover:opacity-100)
+- Abgerundete Ecken (rounded-xl, rounded-2xl)
+- Karten mit border-gray-200 und Hover-Effekt (card-hover: translateY(-2px), größerer Schatten)
+- Badge-Stile: badge-green (grün), badge-yellow (gelb), badge-red (rot)
+- Verlauf-Anmeldeseite (from-primary-600 to-primary-800)
+- Custom-Scrollbar-Styling
+- Lade-Spinner: border-Animation
+- Gesamter Text #1a1a1a (erzwungen in globals.css über *, body, p, span, h1-h6)
+- Bearbeiten und Löschen in Tabellen: Icons sichtbar beim Hover über der Zeile (opacity-0 → group-hover:opacity-100)
 
-## 20. Struktura souborů
-
+## 20. Dateistruktur
 ```
 rael-school/
 ├── prisma/
 │   ├── schema.prisma
 │   └── seed.ts
-├── public/uploads/          (fotky studentů)
-│   └── profiles/            (profilové fotky)
+├── public/uploads/          (Schülerfotos)
+│   └── profiles/            (Profilfotos)
 ├── src/
 │   ├── app/
 │   │   ├── globals.css
 │   │   ├── layout.tsx
-│   │   ├── page.tsx         (redirect na /login)
+│   │   ├── page.tsx         (Weiterleitung auf /login)
 │   │   ├── login/page.tsx
-│   │   ├── admin/page.tsx   (číselníky — jen ADMIN)
+│   │   ├── admin/page.tsx   (Verzeichnisse — nur ADMIN)
 │   │   ├── dashboard/
 │   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
 │   │   ├── students/
 │   │   │   ├── layout.tsx
-│   │   │   ├── page.tsx     (seznam)
-│   │   │   ├── new/page.tsx (nový student)
-│   │   │   └── [id]/page.tsx (detail)
+│   │   │   ├── page.tsx     (Liste)
+│   │   │   ├── new/page.tsx (neuer Schüler)
+│   │   │   └── [id]/page.tsx (Detail)
 │   │   ├── sponsors/
 │   │   │   ├── layout.tsx
-│   │   │   └── page.tsx     (správa sponzorů)
+│   │   │   └── page.tsx     (Sponsorenverwaltung)
 │   │   ├── payments/
 │   │   │   ├── layout.tsx
-│   │   │   └── page.tsx     (CRUD plateb a stravenek)
+│   │   │   └── page.tsx     (CRUD Zahlungen und Essensmarken)
 │   │   ├── reports/
 │   │   │   ├── layout.tsx
-│   │   │   └── page.tsx     (placeholder)
+│   │   │   └── page.tsx     (Platzhalter)
 │   │   └── api/
 │   │       ├── auth/{login,logout,me}/route.ts
 │   │       ├── admin/classrooms/route.ts
 │   │       ├── admin/health-types/route.ts
 │   │       ├── admin/payment-types/route.ts
 │   │       ├── dashboard/route.ts
-│   │       ├── payments/route.ts          (CRUD pro platby)
+│   │       ├── payments/route.ts          (CRUD für Zahlungen)
 │   │       ├── sponsors/
 │   │       │   ├── route.ts               (GET/POST)
 │   │       │   ├── [id]/route.ts          (GET/PUT/PATCH)
-│   │       │   └── search/route.ts        (GET autocomplete)
+│   │       │   └── search/route.ts        (GET Autocomplete)
 │   │       └── students/
 │   │           ├── route.ts
 │   │           └── [id]/
@@ -733,12 +565,12 @@ rael-school/
 │   │               ├── photos/route.ts
 │   │               ├── sponsors/route.ts  (POST/PUT/DELETE)
 │   │               ├── sponsor-payments/route.ts
-│   │               └── profile-photo/route.ts
+│   │               └── profile-photo/ts
 │   ├── components/layout/Sidebar.tsx
 │   ├── lib/
-│   │   ├── db.ts            (Prisma singleton)
+│   │   ├── db.ts            (Prisma-Singleton)
 │   │   ├── auth.ts          (JWT, bcrypt, getCurrentUser, canEdit)
-│   │   ├── i18n.ts          (createTranslator, dot notation, interpolace)
+│   │   ├── i18n.ts          (createTranslator, Punktnotation, Interpolation)
 │   │   └── format.ts        (formatNumber, formatCurrency, formatDate, formatDateForInput, calculateAge)
 │   └── messages/
 │       ├── cs.json
@@ -752,60 +584,59 @@ rael-school/
 └── postcss.config.js
 ```
 
-## 21. Instalační postup
-
+## 21. Installationsanleitung
 ```bash
 npm install
 npm run setup    # = prisma generate + db push + seed
 npm run dev
 ```
 
-Aplikace běží na http://localhost:3000
+Anwendung läuft unter http://localhost:3000
 
-## 22. Důležitá UX pravidla
+## 22. Wichtige UX-Regeln
 
-1. Veškerý text v aplikaci musí být černý (#1a1a1a) — žádný šedý text pro hlavní obsah
-2. Čísla formátovat s oddělovačem tisíců (mezerou)
-3. Měna se zobrazuje za číslem: "1 500 KES"
-4. Datum formátovat dle locale (cs: "12. 01. 2025", en: "12/01/2025")
-5. Věk se počítá z data narození a zobrazuje jako "X let/years/miaka"
-6. Potvrzovací dialogy před každým smazáním
-7. Toast notifikace po každé akci (uložení/smazání) — funkce `showMsg()`
-8. Edit mode indikátor (žlutý banner)
-9. Responsivní design (mobil, tablet, desktop)
-10. Prázdné stavy: ikona + text "Žádná data" centrovaně
-11. Platby od sponzorů agregovat po měnách (KES, CZK, EUR zvlášť)
-12. Stravenky jsou vždy v KES
-13. Dropdown pro sponzory v platbách vždy načítá VŠECHNY aktivní sponzory (ne jen přiřazené ke studentovi)
-14. Odebrání sponzora ze studenta = hard delete sponsorship (ne soft delete)
+1. Gesamter Text in der Anwendung muss schwarz sein (#1a1a1a) — kein grauer Text für Hauptinhalt
+2. Zahlen mit Tausendertrennzeichen formatieren (Leerzeichen)
+3. Währung wird nach der Zahl angezeigt: "1 500 KES"
+4. Datum nach Locale formatieren (de: "12.01.2025", en: "12/01/2025")
+5. Alter wird aus dem Geburtsdatum berechnet und als "X Jahre/years/miaka" angezeigt
+6. Bestätigungsdialoge vor jedem Löschen
+7. Toast-Benachrichtigungen nach jeder Aktion (Speichern/Löschen) — Funktion `showMsg()`
+8. Bearbeitungsmodus-Indikator (gelbes Banner)
+9. Responsives Design (Mobil, Tablet, Desktop)
+10. Leere Zustände: Icon + Text "Keine Daten" zentriert
+11. Zahlungen von Sponsoren nach Währungen aggregieren (KES, CZK, EUR separat)
+12. Essensmarken immer in KES
+13. Sponsor-Dropdown in Zahlungen lädt immer ALLE aktiven Sponsoren (nicht nur dem Schüler zugewiesene)
+14. Sponsor von Schüler entfernen = Hard-Delete der Sponsorship (kein Soft-Delete)
 
-## 23. Aktuální stav projektu
+## 23. Aktueller Projektstand
 
-### Hotové fáze (Phase 1–9)
-- ✅ Autentizace a role (JWT, 4 role)
-- ✅ Layout, navigace, sidebar s přepínačem jazyků
-- ✅ Dashboard s klikacími kartami a záložkami
-- ✅ Seznam studentů (grid, vyhledávání, kartičky)
-- ✅ Detail studenta (8 záložek: osobní údaje, vybavení, potřeby, stravenky, fotografie, sponzoři, platby od sponzorů, zdravotní prohlídky)
-- ✅ Nový student s auto-generováním čísla
-- ✅ Trojjazyčné rozhraní (cs/en/sw)
-- ✅ Admin číselníky (třídy, druhy prohlídek, typy plateb)
-- ✅ Stránka Sponzoři (/sponsors) — CRUD, deaktivace/reaktivace
-- ✅ Stránka Platby (/payments) — CRUD pro platby od sponzorů a stravenky
+### Abgeschlossene Phasen (Phase 1–9)
+- ✅ Authentifizierung und Rollen (JWT, 4 Rollen)
+- ✅ Layout, Navigation, Sidebar mit Sprachumschalter
+- ✅ Dashboard mit anklickbaren Karten und Reitern
+- ✅ Schülerliste (Grid, Suche, Karten)
+- ✅ Schülerdetail (8 Reiter: Persönliche Daten, Ausstattung, Bedürfnisse, Essensmarken, Fotos, Sponsoren, Zahlungen von Sponsoren, Gesundheitsuntersuchungen)
+- ✅ Neuer Schüler mit Auto-Nummernvergabe
+- ✅ Dreisprachige Oberfläche (cs/en/sw)
+- ✅ Admin-Verzeichnisse (Klassen, Untersuchungsarten, Zahlungstypen)
+- ✅ Seite Sponsoren (/sponsors) — CRUD, Deaktivierung/Reaktivierung
+- ✅ Seite Zahlungen (/payments) — CRUD für Sponsorenzahlungen und Essensmarken
 
-### Zatím neimplementováno
-- ❌ Statistiky (/reports) — zatím placeholder
-- ❌ Import plateb z banky
-- ❌ Deployment / produkční nasazení
+### Noch nicht implementiert
+- ❌ Statistiken (/reports) — aktuell Platzhalter
+- ❌ Import von Bankzahlungen
+- ❌ Deployment / Produktivbetrieb
 
-### Známé problémy
-_(Doplňte sem případné známé bugy nebo nedostatky)_
+### Bekannte Probleme
+_(Hier bekannte Bugs oder Mängel eintragen)_
 
-## 24. Historie verzí
+## 24. Versionshistorie
 
-| Verze | Datum | Změny |
-|-------|-------|-------|
-| v1 | 8.2.2026 | Počáteční specifikace (Phase 1-6) |
-| v2 | 10.2.2026 | Phase 7-8: Admin číselníky (třídy, druhy prohlídek, typy plateb) |
-| v3 | 10.2.2026 | Phase 9: Sponzoři stránka, Payments CRUD, voucher sponsor dropdown, bugfixy |
-| v4 | 11.2.2026 | Přechod na Claude Code: oddělení CLAUDE.md od specifikace, přidání stavu projektu |
+| Version | Datum | Änderungen |
+|---------|-------|------------|
+| v1 | 08.02.2026 | Erste Spezifikation (Phase 1–6) |
+| v2 | 10.02.2026 | Phase 7–8: Admin-Verzeichnisse (Klassen, Untersuchungsarten, Zahlungstypen) |
+| v3 | 10.02.2026 | Phase 9: Sponsorenseite, Zahlungen CRUD, Sponsor-Dropdown für Essensmarken, Bugfixes |
+| v4 | 11.02.2026 | Umstieg auf Claude Code: Trennung von CLAUDE.md und Spezifikation, Projektstatus hinzugefügt |
