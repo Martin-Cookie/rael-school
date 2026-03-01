@@ -1,20 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  ArrowLeft, Heart, Plus, Search, Pencil, X, Check, UserX, UserCheck,
-  ChevronUp, ChevronDown, ArrowUpDown, Download
+  ArrowLeft, Plus, Search, Pencil, X, Check, UserX, UserCheck, Download
 } from 'lucide-react'
-
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
 import { downloadCSV } from '@/lib/csv'
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { useLocale } from '@/hooks/useLocale'
+import { useSorting } from '@/hooks/useSorting'
+import { useStickyTop } from '@/hooks/useStickyTop'
+import { useToast } from '@/hooks/useToast'
+import { SortHeader } from '@/components/SortHeader'
+import { Toast } from '@/components/Toast'
 
 interface Sponsor {
   id: string
@@ -39,8 +37,6 @@ interface Sponsor {
   paymentsByCurrency: Record<string, number>
 }
 
-type SortDir = 'asc' | 'desc'
-
 export default function SponsorsPage() {
   const router = useRouter()
   const [sponsors, setSponsors] = useState<Sponsor[]>([])
@@ -49,20 +45,20 @@ export default function SponsorsPage() {
   const [backUrl, setBackUrl] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [locale, setLocale] = useState<Locale>('cs')
   const [user, setUser] = useState<any>(null)
-  const [sortCol, setSortCol] = useState<string>('')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const stickyRef = useRef<HTMLDivElement>(null)
-  const [theadTop, setTheadTop] = useState(0)
+
+  const { locale, t } = useLocale()
+  const { message, showMsg } = useToast()
+  const { sortCol, sortDir, handleSort, sortData } = useSorting((item: any, col: string) => {
+    if (col === '_sponsorshipCount') return item.sponsorships?.length ?? 0
+    return item[col]
+  })
+  const { stickyRef, theadTop } = useStickyTop([loading])
 
   // Form state for new sponsor
   const [newForm, setNewForm] = useState({ firstName: '', lastName: '', email: '', phone: '' })
   // Form state for editing
   const [editForm, setEditForm] = useState({ firstName: '', lastName: '', email: '', phone: '' })
-
-  const t = createTranslator(msgs[locale])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -71,28 +67,6 @@ export default function SponsorsPage() {
     const searchParam = params.get('search')
     if (searchParam) setSearch(searchParam)
   }, [])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
-
-  useEffect(() => {
-    const el = stickyRef.current
-    if (!el) return
-    function update() {
-      const offset = window.innerWidth >= 1024 ? 0 : 64
-      setTheadTop(offset + el!.offsetHeight)
-    }
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    window.addEventListener('resize', update)
-    return () => { ro.disconnect(); window.removeEventListener('resize', update) }
-  }, [loading])
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => setUser(d.user)).catch(() => {})
@@ -106,11 +80,6 @@ export default function SponsorsPage() {
       setSponsors(data.sponsors || [])
       setLoading(false)
     } catch { setLoading(false) }
-  }
-
-  function showMsg(type: 'success' | 'error', text: string) {
-    setMessage({ type, text })
-    setTimeout(() => setMessage(null), 3000)
   }
 
   async function addSponsor() {
@@ -181,25 +150,8 @@ export default function SponsorsPage() {
     return amount.toLocaleString('cs-CZ').replace(/,/g, ' ')
   }
 
-  function handleSort(col: string) {
-    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
-    else { setSortCol(col); setSortDir('asc') }
-  }
-
-  function sortData<T>(data: T[], col: string): T[] {
-    if (!col) return data
-    return [...data].sort((a: any, b: any) => {
-      let va = col === '_sponsorshipCount' ? (a.sponsorships?.length ?? 0) : a[col]
-      let vb = col === '_sponsorshipCount' ? (b.sponsorships?.length ?? 0) : b[col]
-      if (va == null) va = ''; if (vb == null) vb = ''
-      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
-      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
-    })
-  }
-
   function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
-    const isA = sortCol === col
-    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
+    return <SortHeader col={col} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} className={className}>{children}</SortHeader>
   }
 
   function buildStudentFromUrl() {
@@ -243,11 +195,7 @@ export default function SponsorsPage() {
 
   return (
     <div>
-      {message && (
-        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>
-          {message.text}
-        </div>
-      )}
+      <Toast message={message} />
 
       {/* Sticky header + search */}
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
@@ -438,7 +386,6 @@ export default function SponsorsPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <Heart className="w-12 h-12 mx-auto mb-3 text-gray-300" />
           <p className="text-gray-500 text-sm">{search ? t('sponsorPage.noResults') : t('sponsors.noSponsors')}</p>
         </div>
       )}

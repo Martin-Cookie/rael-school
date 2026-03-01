@@ -1,21 +1,16 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { GraduationCap, FileText, Plus, Search, ChevronUp, ChevronDown, ArrowUpDown, Download, Check, X, CheckSquare, Square, Upload } from 'lucide-react'
-import { formatNumber, formatDate } from '@/lib/format'
+import { FileText, Plus, Search, Download, X } from 'lucide-react'
+import { formatNumber, fmtCurrency } from '@/lib/format'
 import { downloadCSV } from '@/lib/csv'
-
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
-
-function fmtCurrency(amount: number, currency: string): string {
-  return `${formatNumber(amount)} ${currency}`
-}
+import { useLocale } from '@/hooks/useLocale'
+import { useSorting } from '@/hooks/useSorting'
+import { useStickyTop } from '@/hooks/useStickyTop'
+import { useToast } from '@/hooks/useToast'
+import { SortHeader } from '@/components/SortHeader'
+import { Toast } from '@/components/Toast'
 
 type ChargePayment = {
   amount: number
@@ -43,9 +38,7 @@ export default function TuitionPage() {
   const [charges, setCharges] = useState<Charge[]>([])
   const [summary, setSummary] = useState({ totalCharged: 0, totalPaid: 0, totalRemaining: 0 })
   const [loading, setLoading] = useState(true)
-  const [locale, setLocale] = useState<Locale>('cs')
   const [userRole, setUserRole] = useState('')
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [search, setSearch] = useState('')
 
   // Generate form with student selection
@@ -61,35 +54,18 @@ export default function TuitionPage() {
   // Period filter
   const [filterPeriod, setFilterPeriod] = useState(new Date().getFullYear().toString())
 
-  // Sorting
-  const [sortCol, setSortCol] = useState('')
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
-  const stickyRef = useRef<HTMLDivElement>(null)
-  const [theadTop, setTheadTop] = useState(0)
+  const { locale, t } = useLocale()
+  const { message, showMsg } = useToast()
+  const { sortCol, sortDir, handleSort, sortData } = useSorting((item: any, col: string) => {
+    if (col === '_studentName') return `${item.student.lastName} ${item.student.firstName}`
+    if (col === '_className') return item.student.className || ''
+    return item[col]
+  })
+  const { stickyRef, theadTop } = useStickyTop([loading])
 
-  const t = createTranslator(msgs[locale])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
-
-  useEffect(() => {
-    const el = stickyRef.current
-    if (!el) return
-    function update() {
-      const offset = window.innerWidth >= 1024 ? 0 : 64
-      setTheadTop(offset + el!.offsetHeight)
-    }
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    window.addEventListener('resize', update)
-    return () => { ro.disconnect(); window.removeEventListener('resize', update) }
-  }, [loading])
+  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
+    return <SortHeader col={col} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} className={className}>{children}</SortHeader>
+  }
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => setUserRole(d.user?.role || '')).catch(() => {})
@@ -108,11 +84,6 @@ export default function TuitionPage() {
       setSummary(data.summary || { totalCharged: 0, totalPaid: 0, totalRemaining: 0 })
     } catch { /* ignore */ }
     setLoading(false)
-  }
-
-  function showMsg(type: 'success' | 'error', text: string) {
-    setMessage({ type, text })
-    setTimeout(() => setMessage(null), 3000)
   }
 
   const canEdit = userRole && ['ADMIN', 'MANAGER'].includes(userRole)
@@ -187,38 +158,6 @@ export default function TuitionPage() {
     setGenerating(false)
   }
 
-  // Sorting
-  function handleSort(col: string) {
-    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
-    else { setSortCol(col); setSortDir('asc') }
-  }
-
-  function sortData(data: Charge[]): Charge[] {
-    if (!sortCol) return data
-    return [...data].sort((a, b) => {
-      let va: any, vb: any
-      if (sortCol === '_studentName') {
-        va = `${a.student.lastName} ${a.student.firstName}`
-        vb = `${b.student.lastName} ${b.student.firstName}`
-      } else if (sortCol === '_className') {
-        va = a.student.className || ''
-        vb = b.student.className || ''
-      } else if (sortCol === 'paidAmount' || sortCol === 'remainingAmount' || sortCol === 'amount') {
-        va = (a as any)[sortCol]; vb = (b as any)[sortCol]
-      } else {
-        va = (a as any)[sortCol]; vb = (b as any)[sortCol]
-      }
-      if (va == null) va = ''; if (vb == null) vb = ''
-      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
-      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
-    })
-  }
-
-  function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
-    const isA = sortCol === col
-    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-200 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
-  }
-
   // Search
   const q = search.toLowerCase()
   const filtered = q ? charges.filter(c => {
@@ -226,7 +165,7 @@ export default function TuitionPage() {
     const sponsorNames = c.payments?.map(p => p.sponsor ? `${p.sponsor.firstName} ${p.sponsor.lastName}` : '').join(' ') || ''
     return name.toLowerCase().includes(q) || (c.student.className || '').toLowerCase().includes(q) || (c.notes || '').toLowerCase().includes(q) || sponsorNames.toLowerCase().includes(q)
   }) : charges
-  const sorted = sortData(filtered)
+  const sorted = sortData(filtered, sortCol)
 
   // Status color
   function statusBadge(status: string) {
@@ -271,11 +210,7 @@ export default function TuitionPage() {
 
   return (
     <div>
-      {message && (
-        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>
-          {message.text}
-        </div>
-      )}
+      <Toast message={message} />
 
       {/* Sticky header */}
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] dark:bg-gray-900 pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">

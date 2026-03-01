@@ -5,12 +5,11 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { ArrowLeft, FileText, Info, CheckCircle2, XCircle, Scissors, X, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/format'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { getLocaleName } from '@/lib/i18n'
+import { useLocale } from '@/hooks/useLocale'
+import { useSorting } from '@/hooks/useSorting'
+import { useToast } from '@/hooks/useToast'
+import { Toast } from '@/components/Toast'
 
 interface ImportRow {
   id: string
@@ -88,9 +87,7 @@ export default function ImportDetailPage() {
   const [importData, setImportData] = useState<ImportDetail | null>(null)
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [locale, setLocale] = useState<Locale>('cs')
   const [filter, setFilter] = useState<StatusFilter>('ALL')
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   // Reference data for dropdowns
   const [sponsors, setSponsors] = useState<any[]>([])
@@ -111,19 +108,9 @@ export default function ImportDetailPage() {
   // Action loading
   const [actionLoading, setActionLoading] = useState(false)
 
-  // Sorting
-  const [sortCol, setSortCol] = useState('')
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
-
-  const t = createTranslator(msgs[locale])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
+  const { locale, t } = useLocale()
+  const { message, showMsg } = useToast()
+  const { sortCol, sortDir, handleSort, sortData } = useSorting()
 
   useEffect(() => {
     fetchImportDetail()
@@ -169,10 +156,6 @@ export default function ImportDetailPage() {
     }
   }
 
-  function showMsg(type: 'success' | 'error', text: string) {
-    setMessage({ type, text })
-    setTimeout(() => setMessage(null), 4000)
-  }
 
   async function updateRow(rowId: string, field: string, value: string, extraFields?: Record<string, any>) {
     try {
@@ -385,23 +368,6 @@ export default function ImportDetailPage() {
     return map[conf] || conf
   }
 
-  function handleSort(col: string) {
-    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
-    else { setSortCol(col); setSortDir('asc') }
-  }
-
-  function sortData(data: ImportRow[]): ImportRow[] {
-    if (!sortCol) return data
-    return [...data].sort((a: any, b: any) => {
-      let va = a[sortCol]
-      let vb = b[sortCol]
-      if (va == null) va = ''
-      if (vb == null) vb = ''
-      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
-      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
-    })
-  }
-
   function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
     const isA = sortCol === col
     return (
@@ -432,7 +398,7 @@ export default function ImportDetailPage() {
 
   const filteredRows = sortData(importData.rows.filter(
     (r) => filter === 'ALL' || r.status === filter
-  ))
+  ), sortCol)
 
   const canEdit = (row: ImportRow) => !['APPROVED', 'REJECTED', 'DUPLICATE', 'SPLIT'].includes(row.status)
   const canSelect = (row: ImportRow) => !['APPROVED', 'REJECTED', 'SPLIT'].includes(row.status)
@@ -454,11 +420,7 @@ export default function ImportDetailPage() {
 
   return (
     <div>
-      {message && (
-        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>
-          {message.text}
-        </div>
-      )}
+      <Toast message={message} />
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">

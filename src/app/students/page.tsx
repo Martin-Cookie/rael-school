@@ -1,53 +1,22 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Search, Plus, User, Heart, ChevronUp, ChevronDown, ArrowUpDown, Download } from 'lucide-react'
+import { Search, Plus, User, Download } from 'lucide-react'
 import { calculateAge } from '@/lib/format'
 import { downloadCSV } from '@/lib/csv'
-
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
-
-type SortDir = 'asc' | 'desc'
+import { useLocale } from '@/hooks/useLocale'
+import { useSorting } from '@/hooks/useSorting'
+import { useStickyTop } from '@/hooks/useStickyTop'
+import { SortHeader } from '@/components/SortHeader'
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [locale, setLocale] = useState<Locale>('cs')
-  const [sortCol, setSortCol] = useState<string>('')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const stickyRef = useRef<HTMLDivElement>(null)
-  const [theadTop, setTheadTop] = useState(0)
-
-  const t = createTranslator(msgs[locale])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
-
-  useEffect(() => {
-    const el = stickyRef.current
-    if (!el) return
-    function update() {
-      const offset = window.innerWidth >= 1024 ? 0 : 64
-      setTheadTop(offset + el!.offsetHeight)
-    }
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    window.addEventListener('resize', update)
-    return () => { ro.disconnect(); window.removeEventListener('resize', update) }
-  }, [])
+  const { locale, t } = useLocale()
+  const { sortCol, sortDir, handleSort, sortData } = useSorting()
+  const { stickyRef, theadTop } = useStickyTop([])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -58,28 +27,11 @@ export default function StudentsPage() {
     return () => clearTimeout(timer)
   }, [search])
 
-  function handleSort(col: string) {
-    if (sortCol === col) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
-    else { setSortCol(col); setSortDir('asc') }
-  }
-
-  function sortData<T>(data: T[], col: string): T[] {
-    if (!col) return data
-    return [...data].sort((a: any, b: any) => {
-      let va = col.startsWith('_count.') ? a._count?.[col.replace('_count.', '')] ?? 0 : col.includes('.') ? col.split('.').reduce((o: any, k: string) => o?.[k], a) : a[col]
-      let vb = col.startsWith('_count.') ? b._count?.[col.replace('_count.', '')] ?? 0 : col.includes('.') ? col.split('.').reduce((o: any, k: string) => o?.[k], b) : b[col]
-      if (va == null) va = ''; if (vb == null) vb = ''
-      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
-      return sortDir === 'asc' ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase()) : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
-    })
-  }
+  const sorted = sortData(students, sortCol)
 
   function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
-    const isA = sortCol === col
-    return <th className={`py-2 px-3 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none ${className}`} onClick={() => handleSort(col)}><div className="flex items-center gap-1">{children}{isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}</div></th>
+    return <SortHeader col={col} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} className={className}>{children}</SortHeader>
   }
-
-  const sorted = sortData(students, sortCol)
 
   function exportStudents() {
     const headers = [t('student.studentNo'), t('student.lastName'), t('student.firstName'), t('student.className'), t('student.gender'), t('student.age'), t('needs.title'), t('sponsors.title')]

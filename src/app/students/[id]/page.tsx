@@ -8,17 +8,15 @@ import {
   HandHeart, Stethoscope, Plus, Check, Trash2, Upload,
   Pencil, Package, Heart, CreditCard, Loader2, Star, FileText
 } from 'lucide-react'
-import { formatDate, formatDateForInput, formatNumber, calculateAge } from '@/lib/format'
+import { formatDate, formatDateForInput, formatNumber, calculateAge, fmtCurrency } from '@/lib/format'
 import { validateImageFile, compressImage } from '@/lib/imageUtils'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
+import { getLocaleName } from '@/lib/i18n'
+import { useLocale } from '@/hooks/useLocale'
+import { useToast } from '@/hooks/useToast'
+import { Toast } from '@/components/Toast'
 
-const msgs: Record<string, any> = { cs, en, sw }
 const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
 type Tab = 'personal' | 'equipment' | 'needs' | 'wishes' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments' | 'tuition'
-function fmtCurrency(amount: number, currency: string): string { return `${formatNumber(amount)} ${currency}` }
 
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
   const id = params.id
@@ -31,8 +29,6 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [editData, setEditData] = useState<any>({})
   const [editEquipment, setEditEquipment] = useState<any[]>([])
   const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [locale, setLocale] = useState<Locale>('cs')
   const [showConfirm, setShowConfirm] = useState(false)
   const [userRole, setUserRole] = useState<string>('')
   const [currency, setCurrency] = useState('KES')
@@ -73,7 +69,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [showAddPayment, setShowAddPayment] = useState(false)
   const [newPayment, setNewPayment] = useState({ paymentDate: '', amount: '', currency: 'CZK', paymentType: '', sponsorId: '', notes: '' })
 
-  const t = createTranslator(msgs[locale])
+  const { locale, t } = useLocale()
+  const { message, showMsg } = useToast()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -84,13 +81,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }, [])
 
   useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
     const savedC = localStorage.getItem('rael-currency')
     if (savedC) setCurrency(savedC)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
   }, [])
 
   useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes(); fetchWishTypes(); fetchVoucherRates(); fetchTuitionCharges() }, [id])
@@ -160,7 +152,6 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     setSaving(false)
   }
 
-  function showMsg(type: 'success' | 'error', text: string) { setMessage({ type, text }); setTimeout(() => setMessage(null), 3000) }
   function cancelEdit() { setEditData(student); setEditEquipment(student.equipment?.map((eq: any) => ({ ...eq })) || []); setEditMode(false) }
   function changeCurrency(c: string) { setCurrency(c); localStorage.setItem('rael-currency', c) }
 
@@ -414,7 +405,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           </div>
         </div>
       )}
-      {message && <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>{message.text}</div>}
+      <Toast message={message} />
 
       {/* ===== HERO HEADER ===== */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 shadow-sm">
