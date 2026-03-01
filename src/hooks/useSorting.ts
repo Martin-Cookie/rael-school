@@ -12,22 +12,17 @@ const defaultExtractor: ValueExtractor = (item, col) => {
 }
 
 export function useSorting(valueExtractor?: ValueExtractor) {
-  const [sortCol, setSortCol] = useState('')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [sort, setSort] = useState<{ col: string; dir: SortDir }>({ col: '', dir: 'asc' })
 
   const handleSort = useCallback((col: string) => {
-    setSortCol(prev => {
-      if (prev === col) {
-        setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-        return prev
-      }
-      setSortDir('asc')
-      return col
-    })
+    setSort(prev => ({
+      col,
+      dir: prev.col === col && prev.dir === 'asc' ? 'desc' : 'asc',
+    }))
   }, [])
 
   const sortData = useCallback(<T,>(data: T[], col?: string): T[] => {
-    const c = col ?? sortCol
+    const c = col ?? sort.col
     if (!c) return data
     const extract = valueExtractor || defaultExtractor
     return [...data].sort((a: any, b: any) => {
@@ -35,12 +30,16 @@ export function useSorting(valueExtractor?: ValueExtractor) {
       let vb = extract(b, c)
       if (va == null) va = ''
       if (vb == null) vb = ''
-      if (typeof va === 'number' && typeof vb === 'number') return sortDir === 'asc' ? va - vb : vb - va
-      return sortDir === 'asc'
+      if (typeof va === 'number' && typeof vb === 'number') return sort.dir === 'asc' ? va - vb : vb - va
+      return sort.dir === 'asc'
         ? String(va).toLowerCase().localeCompare(String(vb).toLowerCase())
         : String(vb).toLowerCase().localeCompare(String(va).toLowerCase())
     })
-  }, [sortCol, sortDir, valueExtractor])
+  }, [sort.col, sort.dir, valueExtractor])
 
-  return { sortCol, sortDir, handleSort, sortData, setSortCol }
+  const setSortCol = useCallback((col: string) => {
+    setSort(prev => ({ ...prev, col }))
+  }, [])
+
+  return { sortCol: sort.col, sortDir: sort.dir, handleSort, sortData, setSortCol }
 }
