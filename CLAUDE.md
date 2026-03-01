@@ -1,5 +1,8 @@
 # Pravidla projektu
 
+> **UI/frontend konvence** (layout, tabulky, hooky, komponenty, dark mode, formuláře, navigace) jsou v **[docs/UI_GUIDE.md](docs/UI_GUIDE.md)**.
+> Tento soubor definuje backend pravidla, datový model, workflow a projektová specifika.
+
 ## Workflow pro změny kódu
 
 1. **Udělej změnu kódu** podle pokynu uživatele
@@ -145,7 +148,7 @@ const { stickyRef, theadTop } = useStickyTop([loading])
 
 Soubor: `src/app/students/[id]/page.tsx`
 
-9 záložek v tomto pořadí:
+10 záložek v tomto pořadí:
 
 | # | Záložka | Klíč | Barva | Ikona |
 |---|---------|------|-------|-------|
@@ -156,8 +159,9 @@ Soubor: `src/app/students/[id]/page.tsx`
 | 5 | Přání | `wishes` | violet | Star |
 | 6 | Stravenky | `vouchers` | blue | Ticket |
 | 7 | Platby od sponzorů | `sponsorPayments` | indigo | CreditCard |
-| 8 | Zdraví | `health` | teal | Stethoscope |
-| 9 | Fotografie | `photos` | slate | Camera |
+| 8 | Školné | `tuition` | emerald | FileText |
+| 9 | Zdraví | `health` | teal | Stethoscope |
+| 10 | Fotografie | `photos` | slate | Camera |
 
 ### Návštěvní karty (Visit Cards) — tiskový layout
 
@@ -284,7 +288,7 @@ Aplikace podporuje plný dark mode přepínatelný tlačítkem v sidebaru (Moon/
 **Implementace:**
 - Třída `dark` na `<html>` elementu — Tailwind `darkMode: 'class'` v `tailwind.config.js`
 - CSS proměnné v `globals.css` pro barvy pozadí, textu, borderů (`:root` / `.dark`)
-- Stav uložen v `localStorage` (`theme`) + systémová preference jako fallback
+- Stav uložen v `localStorage` (`rael-theme`) + systémová preference jako fallback
 - Sidebar: `src/components/layout/Sidebar.tsx` — toggle `dark` třídy na `document.documentElement`
 
 **Konvence pro dark mode v komponentách:**
@@ -525,3 +529,41 @@ git pull origin <aktuální-branch> && npm run dev
 - **30 sourozeneckých skupin**
 - **14 tříd** (PP1–Grade 12), celkem 467 aktivních žáků
 - **Školné:** 3 700 CZK (do Grade 6), 4 700 CZK (od Grade 7)
+
+---
+
+## Pravidla pro práci na úkolech
+
+### Vždy dodržuj tento postup:
+
+1. **Přečti CLAUDE.md** a pochop strukturu projektu
+2. **Analyzuj** současný stav relevantních souborů — VŽDY číst z disku, ne z paměti
+3. **Pokud ti něco není jasné — ZEPTEJ SE**, nedomýšlej si
+4. **Ukaž strukturovaný plán** přes update_plan tool (co budeš měnit, které soubory, jak)
+5. **POČKEJ NA SCHVÁLENÍ** — neimplementuj dokud uživatel neschválí plán
+6. **Implementuj** po schválení
+7. **Ověř** že existující funkce stále fungují (spusť `npm run dev`, otestuj dotčené stránky)
+8. **Commitni a pushni** každý úkol zvlášť s výstižnou českou commit message
+9. Pokud měníš strukturu projektu → **aktualizuj CLAUDE.md**
+10. **Aktualizuj dokumentaci** po každém pushi
+
+### Na konci každého úkolu vypiš:
+- Co jsi změnil (soubory + stručný popis)
+- Co má uživatel otestovat (konkrétní URL a kroky)
+- Příkaz pro aktualizaci na lokále: `git pull origin main && npm run dev`
+
+### Při více úkolech:
+- Dělej úkoly JEDEN PO DRUHÉM (ne všechny najednou)
+- Po každém úkolu commitni a pushni zvlášť
+- Na konci vypiš souhrnnou tabulku:
+
+| # | Úkol | Stav | Změněné soubory | Co otestovat |
+|---|------|------|-----------------|--------------|
+
+### Striktní pravidla:
+- **Piš česky** (komunikace i commit messages)
+- **Nedělej víc než je zadáno**
+- **Nedomýšlej si požadavky** — radši se zeptej
+- **Neměň nesouvisející kód** — i když vidíš problém, pouze ho nahlas
+- **Každý nový text v UI** musí mít klíč ve všech třech jazycích (cs, en, sw)
+- **Po opravě chyby** se zeptej, zda se stejný problém nemá zkontrolovat v celém projektu

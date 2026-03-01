@@ -35,7 +35,7 @@ Otevřete **http://localhost:3000**
 
 ### Dashboard (Přehled)
 - Souhrnné statistiky (studenti, sponzoři, platby, potřeby)
-- 5 záložek: Studenti, Sponzoři, Platby, Potřeby, Třídy
+- 6 záložek: Studenti, Sponzoři, Platby, Potřeby, Třídy, Školné
 - Tříditelné tabulky s kliknutím na záhlaví
 - Třídy zobrazeny jako karty/bubliny v gridu s přirozeným řazením (PP1 → Grade 12)
 - Cross-tab navigace — klik na třídu v záložce Studenti/Potřeby přepne na detail třídy
@@ -116,8 +116,8 @@ Otevřete **http://localhost:3000**
 src/
 ├── app/
 │   ├── login/              # Přihlášení
-│   ├── dashboard/          # Dashboard (5 záložek)
-│   ├── students/           # Seznam + detail (9 záložek) + nový student
+│   ├── dashboard/          # Dashboard (6 záložek)
+│   ├── students/           # Seznam + detail (10 záložek) + nový student
 │   ├── sponsors/           # Seznam sponzorů
 │   ├── classes/            # Přehled tříd
 │   ├── payments/           # Platby + import bankovních výpisů
@@ -128,7 +128,14 @@ src/
 ├── components/
 │   ├── layout/
 │   │   └── Sidebar.tsx     # Navigační sidebar + dark mode toggle
+│   ├── SortHeader.tsx      # Tříditelná hlavička tabulky
+│   ├── Toast.tsx           # Toast notifikace
 │   └── Pagination.tsx
+├── hooks/                  # Sdílené React hooky
+│   ├── useLocale.ts        # Locale stav + translator
+│   ├── useSorting.ts       # Třídění tabulek
+│   ├── useStickyTop.ts     # Dynamická výška sticky hlavičky
+│   └── useToast.ts         # Toast notifikace
 ├── lib/                    # Auth, DB, i18n, formátování, CSV, parser
 └── messages/               # Překlady (cs.json, en.json, sw.json)
 prisma/
