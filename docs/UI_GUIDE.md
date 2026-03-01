@@ -79,7 +79,7 @@ Stránky s tříděním:
 
 | Stránka | Soubor | Sloupce |
 |---------|--------|---------|
-| Přehled | `dashboard/page.tsx` | Studenti, Sponzoři, Platby, Potřeby, Třídy |
+| Přehled | `dashboard/page.tsx` | Studenti, Sponzoři, Platby, Potřeby, Třídy, Školné |
 | Studenti | `students/page.tsx` | Číslo, Příjmení, Jméno, Třída, Pohlaví, Věk, Potřeby, Sponzoři |
 | Sponzoři | `sponsors/page.tsx` | Příjmení, Jméno, Email, Telefon, Studenti, Platby |
 | Třídy | `classes/page.tsx` | Karty tříd (přirozené řazení PP1→Grade 12) + detail třídy se studenty |
@@ -260,8 +260,7 @@ Dvoustránkový A4 formulář (výška `calc(297mm - 16mm)`):
 | Checkbox | 4% |
 | Typ | 22% |
 | Stav | 11% |
-| Cena | 8% |
-| Poznámky | 55% |
+| Poznámky | 63% |
 
 ---
 
