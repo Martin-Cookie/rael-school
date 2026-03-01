@@ -1,101 +1,94 @@
-# Rael School — Informační systém
+# Rael School — Informationssystem
+Verwaltungssystem für die Rael-Schule in Kenia. Erfassung von Schülern, Sponsoren, Essensmarken, Gesundheitsuntersuchungen und Zahlungen.
 
-Evidenční systém pro školu Rael v Keni. Sledování studentů, sponzorů, stravenek, zdravotních prohlídek a plateb.
-
-## Rychlé spuštění
-
+## Schnellstart
 ```bash
 npm install
 npm run setup
 npm run dev
 ```
+Öffnen Sie **http://localhost:3000**
 
-Otevřete **http://localhost:3000**
-
-## Přihlašovací údaje (demo)
-
-| Role | Email | Heslo |
-|------|-------|-------|
+## Anmeldedaten (Demo)
+| Rolle | E-Mail | Passwort |
+|-------|--------|----------|
 | Admin | admin@rael.school | admin123 |
 | Manager | manager@rael.school | manager123 |
-| Sponzor | sponsor@example.com | sponsor123 |
-| Dobrovolník | volunteer@example.com | volunteer123 |
+| Sponsor | sponsor@example.com | sponsor123 |
+| Freiwilliger | volunteer@example.com | volunteer123 |
 
-## Technologie
-
+## Technologien
 - Next.js 14 (React)
 - SQLite + Prisma ORM
 - Tailwind CSS
 - TypeScript
 
-## Funkce
+## Funktionen
 
-### Dashboard (Přehled)
-- Statistiky: počet studentů, sponzorů, plateb, stravenek, potřeb
-- Tabulkový přehled studentů, sponzorů, plateb, stravenek, potřeb a tříd
-- Řazení sloupců kliknutím na záhlaví
+### Dashboard (Übersicht)
+- Statistiken: Anzahl der Schüler, Sponsoren, Zahlungen, Essensmarken, Bedürfnisse
+- Tabellarische Übersicht der Schüler, Sponsoren, Zahlungen, Essensmarken, Bedürfnisse und Klassen
+- Spaltensortierung per Klick auf die Spaltenüberschrift
 
-### Studenti
-- Seznam studentů (dlaždice s kartami)
-- Detail studenta se záložkami:
-  - **Osobní údaje** — jméno, datum narození, třída, pohlaví, rodinné informace
-  - **Vybavení** — uniformy, boty, pomůcky
-  - **Potřeby** — evidence nesplněných potřeb
-  - **Stravenky** — nákupy a čerpání stravenek
-  - **Fotky** — fotogalerie s kategoriemi
-  - **Sponzoři** — přiřazení sponzoři
-  - **Zdravotní prohlídky** — záznamy o prohlídkách
-  - **Platby sponzorů** — přehled plateb od sponzorů
-- Přidání nového studenta
-- Režim úprav s potvrzovacím dialogem
-- Nahrávání profilové fotky
+### Schüler
+- Schülerliste (Kachelansicht mit Karten)
+- Schülerdetail mit Registerkarten:
+  - **Persönliche Daten** — Name, Geburtsdatum, Klasse, Geschlecht, Familieninformationen
+  - **Ausstattung** — Uniformen, Schuhe, Lernmittel
+  - **Bedürfnisse** — Erfassung unerfüllter Bedürfnisse
+  - **Essensmarken** — Kauf und Einlösung von Essensmarken
+  - **Fotos** — Fotogalerie mit Kategorien
+  - **Sponsoren** — zugewiesene Sponsoren
+  - **Gesundheitsuntersuchungen** — Untersuchungsaufzeichnungen
+  - **Sponsorenzahlungen** — Übersicht der Zahlungen von Sponsoren
+- Neuen Schüler hinzufügen
+- Bearbeitungsmodus mit Bestätigungsdialog
+- Profilbild hochladen
 
-### Sponzoři
-- Seznam sponzorů
-- Detail sponzora s přiřazenými studenty
-- Vyhledávání sponzorů
+### Sponsoren
+- Sponsorenliste
+- Sponsorendetail mit zugewiesenen Schülern
+- Sponsorensuche
 
-### Platby
-- Evidence plateb (školné, zdravotní, ostatní)
-- Filtrování a přehled
+### Zahlungen
+- Zahlungserfassung (Schulgeld, Gesundheit, Sonstiges)
+- Filterung und Übersicht
 
-### Reporty
-- Přehledy a statistiky
+### Berichte
+- Übersichten und Statistiken
 
-### Administrace
-- Správa tříd (ClassRooms)
-- Správa typů zdravotních prohlídek
-- Správa typů plateb
+### Administration
+- Klassenverwaltung (ClassRooms)
+- Verwaltung der Gesundheitsuntersuchungstypen
+- Verwaltung der Zahlungstypen
 
-### Další funkce
-- 3 jazyky: čeština, angličtina, svahilština
-- 4 uživatelské role s různými oprávněními (Admin, Manager, Sponzor, Dobrovolník)
-- Přepínání měn (KES, CZK, USD, EUR)
+### Weitere Funktionen
+- 3 Sprachen: Tschechisch, Englisch, Suaheli
+- 4 Benutzerrollen mit unterschiedlichen Berechtigungen (Admin, Manager, Sponsor, Freiwilliger)
+- Währungsumschaltung (KES, CZK, USD, EUR)
 
-## Struktura projektu
-
+## Projektstruktur
 ```
 src/
 ├── app/
-│   ├── login/          # Přihlášení
-│   ├── dashboard/      # Dashboard (Přehled)
-│   ├── students/       # Studenti (seznam + detail + nový)
-│   ├── sponsors/       # Sponzoři
-│   ├── payments/       # Platby
-│   ├── reports/        # Reporty
-│   ├── admin/          # Administrace
-│   └── api/            # REST API endpointy
+│   ├── login/          # Anmeldung
+│   ├── dashboard/      # Dashboard (Übersicht)
+│   ├── students/       # Schüler (Liste + Detail + Neu)
+│   ├── sponsors/       # Sponsoren
+│   ├── payments/       # Zahlungen
+│   ├── reports/        # Berichte
+│   ├── admin/          # Administration
+│   └── api/            # REST-API-Endpunkte
 ├── components/
 │   └── layout/
-│       └── Sidebar.tsx  # Navigační sidebar
-├── lib/                 # Pomocné funkce (auth, formátování, i18n)
-└── messages/            # Jazykové soubory (cs, en, sw)
+│       └── Sidebar.tsx  # Navigations-Sidebar
+├── lib/                 # Hilfsfunktionen (Auth, Formatierung, i18n)
+└── messages/            # Sprachdateien (cs, en, sw)
 prisma/
-├── schema.prisma        # Databázové modely
-└── dev.db               # SQLite databáze
+├── schema.prisma        # Datenbankmodelle
+└── dev.db               # SQLite-Datenbank
 ```
 
 ## Changelog
-
 ### 2025-02-11
-- Opravena navigace zpět z detailu studenta — tlačítko zpět nyní správně vrací na stránku odkud uživatel přišel (dashboard nebo seznam studentů) pomocí URL parametru `?from=`
+- Navigation zurück aus der Schülerdetailansicht korrigiert — die Zurück-Schaltfläche leitet den Benutzer nun korrekt zur Seite weiter, von der er gekommen ist (Dashboard oder Schülerliste), mithilfe des URL-Parameters `?from=`
