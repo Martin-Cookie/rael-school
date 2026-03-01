@@ -18,23 +18,23 @@ export async function recalcTuitionStatus(studentId: string) {
     .filter(pt => /školné|tuition|karo/i.test(pt.name + (pt.nameEn || '') + (pt.nameSw || '')))
     .map(pt => pt.name)
 
+  // Batch-load: všechny platby školného pro studenta jedním dotazem
+  const allPayments = tuitionTypeNames.length > 0 ? await prisma.sponsorPayment.findMany({
+    where: {
+      studentId,
+      paymentType: { in: tuitionTypeNames },
+    },
+    select: { amount: true, paymentDate: true, currency: true },
+  }) : []
+
   for (const charge of charges) {
     const year = charge.period.split('-')[0]
     const startDate = new Date(`${year}-01-01T00:00:00Z`)
     const endDate = new Date(`${parseInt(year) + 1}-01-01T00:00:00Z`)
 
-    // Součet plateb typu školné pro daného studenta v daném období a měně
-    const payments = await prisma.sponsorPayment.findMany({
-      where: {
-        studentId: charge.studentId,
-        paymentType: { in: tuitionTypeNames },
-        paymentDate: { gte: startDate, lt: endDate },
-        currency: charge.currency,
-      },
-      select: { amount: true },
-    })
-
-    const paidAmount = payments.reduce((sum, p) => sum + p.amount, 0)
+    const paidAmount = allPayments
+      .filter(p => p.currency === charge.currency && p.paymentDate >= startDate && p.paymentDate < endDate)
+      .reduce((sum, p) => sum + p.amount, 0)
 
     let status: string
     if (paidAmount <= 0) {

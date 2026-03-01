@@ -26,6 +26,16 @@ export async function POST(
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
+    // Validate file type and size
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    const MAX_SIZE = 10 * 1024 * 1024 // 10 MB
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json({ error: 'Invalid file type. Allowed: JPEG, PNG, WebP, GIF' }, { status: 400 })
+    }
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json({ error: 'File too large. Maximum size: 10 MB' }, { status: 400 })
+    }
+
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', studentId)
     await mkdir(uploadDir, { recursive: true })
 

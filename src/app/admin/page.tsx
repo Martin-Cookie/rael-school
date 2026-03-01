@@ -6,11 +6,11 @@ import cs from '@/messages/cs.json'
 import en from '@/messages/en.json'
 import sw from '@/messages/sw.json'
 import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
+import { CURRENCIES } from '@/lib/constants'
 
 
 
 const msgs: Record<string, any> = { cs, en, sw }
-const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
 
 type CodelistItem = { id: string; name: string; nameEn?: string | null; nameSw?: string | null; sortOrder: number; isActive: boolean; price?: number | null }
 type VoucherRateItem = { id: string; currency: string; rate: number; isActive: boolean }

@@ -14,8 +14,7 @@ import { getLocaleName } from '@/lib/i18n'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/hooks/useToast'
 import { Toast } from '@/components/Toast'
-
-const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
+import { CURRENCIES } from '@/lib/constants'
 type Tab = 'personal' | 'equipment' | 'needs' | 'wishes' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments' | 'tuition'
 
 export default function StudentDetailPage({ params }: { params: { id: string } }) {

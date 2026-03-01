@@ -50,7 +50,7 @@ export default function StudentsPage() {
 
   return (
     <div>
-      <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
+      <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] dark:bg-gray-900 pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{t('student.list')} <span className="text-sm font-normal text-gray-500">({students.length})</span></h1>
           <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export default function StudentsPage() {
           <div className="bg-white rounded-xl border border-gray-200">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50 sticky z-20" style={{ top: theadTop }}>
+                  <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
                     <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
                     <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
                     <SH col="firstName" className="text-left">{t('student.firstName')}</SH>

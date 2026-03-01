@@ -45,48 +45,54 @@ export async function GET(request: NextRequest) {
     const classRooms = await prisma.classRoom.findMany({ where: { isActive: true } })
     const classNameToSortOrder = new Map(classRooms.map(c => [c.name, c.sortOrder]))
 
-    const chargesWithPaid = await Promise.all(
-      charges.map(async (charge) => {
-        // Součet plateb typu školné pro daného studenta v daném období (roce)
-        const year = charge.period.split('-')[0]
-        const startDate = new Date(`${year}-01-01T00:00:00Z`)
-        const endDate = new Date(`${parseInt(year) + 1}-01-01T00:00:00Z`)
+    // Batch-load: všechny platby školného jedním dotazem (místo N+1)
+    const uniqueStudentIds = [...new Set(charges.map(c => c.studentId))]
+    const allTuitionPayments = tuitionTypeIds.length > 0 ? await prisma.sponsorPayment.findMany({
+      where: {
+        studentId: { in: uniqueStudentIds },
+        paymentType: { in: tuitionTypeIds },
+      },
+      select: {
+        amount: true,
+        paymentType: true,
+        paymentDate: true,
+        studentId: true,
+        currency: true,
+        sponsorId: true,
+        sponsor: { select: { id: true, firstName: true, lastName: true } },
+      },
+    }) : []
 
-        const payments = await prisma.sponsorPayment.findMany({
-          where: {
-            studentId: charge.studentId,
-            paymentType: { in: tuitionTypeIds },
-            paymentDate: { gte: startDate, lt: endDate },
-            currency: charge.currency,
-          },
-          select: {
-            amount: true,
-            paymentType: true,
-            paymentDate: true,
-            sponsorId: true,
-            sponsor: { select: { id: true, firstName: true, lastName: true } },
-          },
-        })
+    const chargesWithPaid = charges.map((charge) => {
+      const year = charge.period.split('-')[0]
+      const startDate = new Date(`${year}-01-01T00:00:00Z`)
+      const endDate = new Date(`${parseInt(year) + 1}-01-01T00:00:00Z`)
 
-        const paidAmount = payments.reduce((sum, p) => sum + p.amount, 0)
+      // Filtrovat platby pro tento konkrétní předpis
+      const payments = allTuitionPayments.filter(p =>
+        p.studentId === charge.studentId &&
+        p.currency === charge.currency &&
+        p.paymentDate >= startDate &&
+        p.paymentDate < endDate
+      )
 
-        // Najít odpovídající sazbu pro název předpisu
-        const sortOrder = classNameToSortOrder.get(charge.student?.className || '')
-        const matchedRate = sortOrder !== undefined
-          ? rates.find(r => sortOrder >= r.gradeFrom && sortOrder <= r.gradeTo)
-          : undefined
+      const paidAmount = payments.reduce((sum, p) => sum + p.amount, 0)
 
-        return {
-          ...charge,
-          rateName: matchedRate?.name || null,
-          rateNameEn: matchedRate?.nameEn || null,
-          rateNameSw: matchedRate?.nameSw || null,
-          paidAmount,
-          remainingAmount: Math.max(0, charge.amount - paidAmount),
-          payments,
-        }
-      })
-    )
+      const sortOrder = classNameToSortOrder.get(charge.student?.className || '')
+      const matchedRate = sortOrder !== undefined
+        ? rates.find(r => sortOrder >= r.gradeFrom && sortOrder <= r.gradeTo)
+        : undefined
+
+      return {
+        ...charge,
+        rateName: matchedRate?.name || null,
+        rateNameEn: matchedRate?.nameEn || null,
+        rateNameSw: matchedRate?.nameSw || null,
+        paidAmount,
+        remainingAmount: Math.max(0, charge.amount - paidAmount),
+        payments,
+      }
+    })
 
     // Souhrn
     const totalCharged = chargesWithPaid.reduce((sum, c) => sum + c.amount, 0)

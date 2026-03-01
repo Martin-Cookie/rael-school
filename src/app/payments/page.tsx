@@ -12,8 +12,7 @@ import { useToast } from '@/hooks/useToast'
 import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
 import { getLocaleName } from '@/lib/i18n'
-
-const CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']
+import { CURRENCIES } from '@/lib/constants'
 
 type UnifiedPayment = {
   id: string

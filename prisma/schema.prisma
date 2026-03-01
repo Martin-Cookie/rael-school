@@ -85,6 +85,8 @@ model Equipment {
   updatedAt  DateTime @updatedAt
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
 }
 
 // ============ NEEDS ============
@@ -135,6 +137,9 @@ model VoucherPurchase {
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
   sponsor User?   @relation("VoucherSponsor", fields: [sponsorId], references: [id], onDelete: SetNull)
+
+  @@index([studentId])
+  @@index([purchaseDate])
 }
 
 model VoucherUsage {
@@ -210,6 +215,10 @@ model SponsorPayment {
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
   sponsor User?   @relation(fields: [sponsorId], references: [id], onDelete: SetNull)
+
+  @@index([studentId])
+  @@index([paymentDate])
+  @@index([sponsorId])
 }
 
 // ============ VOLUNTEER ASSIGNMENTS ============
@@ -359,6 +368,8 @@ model TuitionCharge {
   updatedAt DateTime @updatedAt
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
 }
 
 // ============ PAYMENT IMPORTS ============
@@ -421,4 +432,7 @@ model PaymentImportRow {
   student      Student?            @relation(fields: [studentId], references: [id])
   parentRow    PaymentImportRow?   @relation("SplitRows", fields: [parentRowId], references: [id])
   splitRows    PaymentImportRow[]  @relation("SplitRows")
+
+  @@index([importId])
+  @@index([status])
 }

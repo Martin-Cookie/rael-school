@@ -3,7 +3,11 @@ import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
 import { prisma } from './db'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'rael-school-secret-key'
+const JWT_SECRET = (() => {
+  const secret = process.env.JWT_SECRET
+  if (!secret) throw new Error('JWT_SECRET environment variable must be set in .env')
+  return secret
+})()
 
 export interface UserPayload {
   id: string

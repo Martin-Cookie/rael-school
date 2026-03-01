@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { getCurrentUser, canEdit, isAdmin } from '@/lib/auth'
+import { getCurrentUser, canEdit, isAdmin, isSponsor } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
@@ -13,6 +13,16 @@ export async function GET(
     }
 
     const { id } = params
+
+    // SPONSOR users can only access their assigned students
+    if (isSponsor(user.role)) {
+      const sponsorship = await prisma.sponsorship.findFirst({
+        where: { userId: user.id, studentId: id, isActive: true },
+      })
+      if (!sponsorship) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+    }
 
     const student = await prisma.student.findUnique({
       where: { id },
