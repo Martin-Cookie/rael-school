@@ -19,7 +19,7 @@ Otevřete **http://localhost:3000**
 |------|-------|-------|
 | Admin | admin@rael.school | admin123 |
 | Manager | manager@rael.school | manager123 |
-| Sponzor | `<jmeno.prijmeni>@sponsor.rael.school` | sponsor123 |
+| Sponzor | `<jmeno.prijmeni>@sponsor.rael.school` (ze seedu) | sponsor123 |
 | Dobrovolník | volunteer@rael.school | volunteer123 |
 
 ## Technologie
@@ -43,7 +43,7 @@ Otevřete **http://localhost:3000**
 ### Studenti
 - Seznam studentů s vyhledáváním a tříditelným tabulkovým přehledem
 - CSV export
-- Detail studenta s 9 záložkami:
+- Detail studenta s 10 záložkami:
   1. **Osobní údaje** — jméno, DOB, třída, pohlaví, rodinné informace
   2. **Sponzoři** — přiřazení sponzoři
   3. **Vybavení** — uniformy, boty, pomůcky
@@ -51,8 +51,9 @@ Otevřete **http://localhost:3000**
   5. **Přání** — přání studentů
   6. **Stravenky** — nákupy stravenek s auto-přepočtem podle sazby
   7. **Platby od sponzorů** — přehled sponzorských plateb
-  8. **Zdraví** — záznamy o zdravotních prohlídkách
-  9. **Fotografie** — fotogalerie s kategoriemi
+  8. **Školné** — předpisy školného pro studenta
+  9. **Zdraví** — záznamy o zdravotních prohlídkách
+  10. **Fotografie** — fotogalerie s kategoriemi
 - Přidání nového studenta, režim úprav, nahrávání profilové fotky
 
 ### Sponzoři
@@ -136,7 +137,7 @@ src/
 │   ├── useSorting.ts       # Třídění tabulek
 │   ├── useStickyTop.ts     # Dynamická výška sticky hlavičky
 │   └── useToast.ts         # Toast notifikace
-├── lib/                    # Auth, DB, i18n, formátování, CSV, parser
+├── lib/                    # Auth, DB, i18n, formátování, CSV, parser, tuition, imageUtils, paymentMatcher
 └── messages/               # Překlady (cs.json, en.json, sw.json)
 prisma/
 ├── schema.prisma           # Datový model
