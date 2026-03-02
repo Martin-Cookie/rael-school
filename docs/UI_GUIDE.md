@@ -2,7 +2,7 @@
 
 Tento soubor je **jediný zdroj pravdy** pro UI/frontend vzory a konvence. Stack: **Next.js 14 (App Router) + TypeScript + Tailwind CSS + lucide-react**.
 
-> Backend pravidla (API, Prisma, modely, autentizace, workflow) jsou v [CLAUDE.md](./CLAUDE.md).
+> Backend pravidla (API, Prisma, modely, autentizace, workflow) jsou v [CLAUDE.md](../CLAUDE.md).
 
 ---
 
@@ -186,7 +186,7 @@ dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
 ## 8. Detail studenta — záložky
 
 Soubory:
-- Hlavní stránka: `src/app/students/[id]/page.tsx` (599 řádků)
+- Hlavní stránka: `src/app/students/[id]/page.tsx` (619 řádků)
 - Záložky: `src/components/student-detail/` (10 tab komponent + FormFields)
 
 ### Lazy-load dat per záložka

@@ -160,7 +160,12 @@ prisma/
 └── dev.db.backup           # Demo záloha (30 studentů)
 data/
 ├── students-real.json      # 148 studentů — strukturovaná data
-└── config-real.json        # Číselníky (třídy, typy, sazby)
+├── config-real.json        # Číselníky (třídy, typy, sazby)
+├── test-bank-import.csv    # Testovací bankovní výpis
+└── fio-vypisek-vzor.pdf    # Vzorový PDF výpis z Fio
+docs/
+├── UI_GUIDE.md             # UI/frontend konvence
+└── SPEC-payment-import.md  # Specifikace importu plateb
 ```
 
 ## Zálohy a obnova dat

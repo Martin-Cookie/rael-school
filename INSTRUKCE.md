@@ -9,22 +9,23 @@ Webový informační systém pro správu školy Rael v Keni. Evidence studentů,
 - **Framework:** Next.js 14 (App Router), TypeScript
 - **Databáze:** SQLite + Prisma ORM
 - **Styling:** Tailwind CSS (včetně dark mode)
-- **Autentizace:** JWT (httpOnly cookies) + bcrypt
+- **Autentizace:** JWT (httpOnly cookies, SameSite=strict) + bcrypt
 - **Ikony:** lucide-react
+- **Testy:** Vitest
 - **Lokalizace:** Vlastní i18n (čeština, angličtina, svahilština)
 
 ## Implementované funkce
 
 ### Dashboard (Přehled)
 - Souhrnné statistiky (studenti, sponzoři, platby, potřeby)
-- 5 záložek: Studenti, Sponzoři, Platby, Potřeby, Třídy
+- 6 záložek: Studenti, Sponzoři, Platby, Potřeby, Třídy, Školné
 - Tříditelné tabulky kliknutím na záhlaví (SortHeader pattern)
 - Třídy jako karty/bubliny v gridu s přirozeným řazením (PP1 → Grade 12)
 - Cross-tab navigace — klik na třídu přepne na detail, zpět vrací na zdrojovou záložku
 
 ### Studenti
 - Tříditelný seznam s vyhledáváním a CSV exportem
-- Detail studenta s 9 záložkami:
+- Detail studenta s 10 záložkami:
   1. Osobní údaje — jméno, DOB, třída, pohlaví, osiřelost, rodinné informace
   2. Sponzoři — přiřazení sponzoři
   3. Vybavení — uniformy, boty, pomůcky (s cenou a stavem)
@@ -32,8 +33,10 @@ Webový informační systém pro správu školy Rael v Keni. Evidence studentů,
   5. Přání — přání studentů
   6. Stravenky — nákupy stravenek s auto-přepočtem podle VoucherRate
   7. Platby od sponzorů — přehled sponzorských plateb
-  8. Zdraví — záznamy o zdravotních prohlídkách
-  9. Fotografie — fotogalerie s kategoriemi
+  8. Školné — předpisy školného pro studenta
+  9. Zdraví — záznamy o zdravotních prohlídkách
+  10. Fotografie — fotogalerie s kategoriemi
+- Lazy-load dat per záložka (číselníky se fetchují až při kliknutí)
 - Přidání nového studenta, režim úprav, nahrávání profilové fotky
 - Klientská komprese obrázků (Canvas API)
 
@@ -44,12 +47,14 @@ Webový informační systém pro správu školy Rael v Keni. Evidence studentů,
 
 ### Platby
 - Dvě záložky: Sponzorské platby / Stravenky
+- Dedikovaný GET /api/payments endpoint (odděleno od dashboard)
 - Vyhledávání, filtr sponzora, filtr typu platby (AND logika)
 - Auto-přepočet počtu stravenek podle sazby z VoucherRate
 - CSV export
 
 ### Import bankovních výpisů
 - Nahrání CSV bankovního výpisu
+- Automatické párování plateb (VS, jméno, účet)
 - Rozdělení platby na části (split) s přiřazením studentů a typu
 - Auto-approve při kompletních údajích (studentId + paymentTypeId)
 - Ruční schvalování/odmítnutí neúplných řádků
@@ -74,11 +79,20 @@ Webový informační systém pro správu školy Rael v Keni. Evidence studentů,
 - Sazby stravenek (VoucherRate) — cena 1 stravenky per měna (CZK, EUR, USD, KES)
 - Sazby školného (TuitionRate) — roční poplatek podle rozsahu tříd
 - Záloha a obnova databáze
+- Rozděleno do komponent: CodelistSection, VoucherRateSection, TuitionRateSection, BackupSection
 
 ### Dark mode
 - Přepínání v sidebaru (Moon/Sun ikona)
 - Tailwind `darkMode: 'class'` + CSS proměnné
 - Uloženo v localStorage (`rael-theme`), systémová preference jako fallback
+
+### Bezpečnost
+- Rate limiting na login (5 pokusů / 15 min per IP)
+- CSRF ochrana (SameSite=strict cookie)
+- MIME type validace při upload fotek (whitelist + max 10 MB)
+- Validace délky řetězců na API vstupu
+- Sponsor role vidí pouze své přiřazené studenty
+- API vrací 404 místo 500 pro neexistující záznamy (isNotFoundError helper)
 
 ### Cross-page navigace
 - Klikatelní sponzoři v seznamu studentů → stránka Sponzoři s vyhledáváním
@@ -99,10 +113,13 @@ Webový informační systém pro správu školy Rael v Keni. Evidence studentů,
 
 ```
 src/
+├── __tests__/              # Vitest testy
+│   ├── format.test.ts      # Testy formátovacích funkcí
+│   └── rateLimit.test.ts   # Testy rate limiteru
 ├── app/
 │   ├── login/              # Přihlášení
-│   ├── dashboard/          # Dashboard (5 záložek)
-│   ├── students/           # Seznam + detail (9 záložek) + nový student
+│   ├── dashboard/          # Dashboard (6 záložek)
+│   ├── students/           # Seznam + detail (10 záložek) + nový student
 │   ├── sponsors/           # Seznam sponzorů
 │   ├── classes/            # Přehled tříd
 │   ├── payments/           # Platby + import bankovních výpisů
@@ -113,15 +130,22 @@ src/
 ├── components/
 │   ├── layout/
 │   │   └── Sidebar.tsx     # Navigační sidebar + dark mode toggle
+│   ├── admin/              # Komponenty administrace (CodelistSection, VoucherRate, TuitionRate, Backup)
+│   ├── student-detail/     # Záložky detailu studenta (10 tab komponent + FormFields)
+│   ├── SortHeader.tsx      # Tříditelná hlavička tabulky
+│   ├── Toast.tsx           # Toast notifikace
 │   └── Pagination.tsx
-├── lib/                    # Auth, DB, i18n, formátování, CSV, parser
+├── hooks/                  # Sdílené React hooky
+│   ├── useLocale.ts        # Locale stav + translator
+│   ├── useSorting.ts       # Třídění tabulek
+│   ├── useStickyTop.ts     # Dynamická výška sticky hlavičky
+│   └── useToast.ts         # Toast notifikace
+├── lib/                    # Auth, DB, i18n, formátování, CSV, parser, tuition, imageUtils, paymentMatcher, rateLimit, constants
 └── messages/               # Překlady (cs.json, en.json, sw.json)
 prisma/
-├── schema.prisma           # Datový model
+├── schema.prisma           # Datový model (s DB indexy)
 ├── seed.ts                 # Seed script (148 studentů, 137 sponzorů)
-├── dev.db                  # SQLite databáze
-├── dev.db.primary          # Plná záloha (včetně runtime dat)
-└── dev.db.backup           # Demo záloha (30 studentů)
+└── dev.db                  # SQLite databáze
 data/
 ├── students-real.json      # 148 studentů — strukturovaná data
 └── config-real.json        # Číselníky (třídy, typy, sazby)
@@ -137,6 +161,13 @@ npm run dev
 ```
 
 Otevřete **http://localhost:3000**
+
+### Testy
+
+```bash
+npm test          # jednorázové spuštění (26 testů)
+npm run test:watch # watch mode
+```
 
 ## Přihlašovací údaje
 
@@ -154,19 +185,9 @@ Otevřete **http://localhost:3000**
 
 ## Zálohy a obnova dat
 
-**Obnovit plnou zálohu** (včetně předpisů, plateb, stravenek):
-```bash
-cp prisma/dev.db.primary prisma/dev.db
-```
-
-**Znovu naseedit od nuly** (pouze základní data):
+**Znovu naseedit od nuly** (148 studentů, 137 sponzorů, číselníky):
 ```bash
 npx prisma db push && npm run db:seed
-```
-
-**Obnovit demo data** (30 testovacích studentů):
-```bash
-cp prisma/dev.db.backup prisma/dev.db
 ```
 
 ## Statistiky dat

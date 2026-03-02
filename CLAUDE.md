@@ -152,6 +152,15 @@ Soubory:
 |--------|-------|
 | `data/students-real.json` | 148 studentů — kompletní strukturovaná data (DOB, třída, škola, sponzoři, zdravotní stav, rodinná situace, 30 sourozeneckých skupin, přijaté předměty, zubní prohlídky) |
 | `data/config-real.json` | Číselníky — třídy (PP1–Grade 12), typy plateb, školné, typy zdravotních prohlídek, měsíční sponzoři ordinace, sazby stravenek |
+| `data/test-bank-import.csv` | Testovací bankovní výpis pro import plateb |
+| `data/fio-vypisek-vzor.pdf` | Vzorový PDF výpis z Fio banky |
+
+### Dokumentace
+
+| Soubor | Obsah |
+|--------|-------|
+| `docs/UI_GUIDE.md` | UI/frontend konvence (layout, tabulky, hooky, komponenty, dark mode, formuláře) |
+| `docs/SPEC-payment-import.md` | Specifikace importu bankovních výpisů (formát CSV, párovací logika, split flow) |
 
 ### Co je v záloze (dev.db.primary) vs. co je v seedu
 
