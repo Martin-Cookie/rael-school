@@ -12,6 +12,7 @@ import { validateImageFile, compressImage } from '@/lib/imageUtils'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/hooks/useToast'
 import { useFetchList } from '@/hooks/useFetchList'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { Toast } from '@/components/Toast'
 import { PersonalTab } from '@/components/student-detail/PersonalTab'
 import { EquipmentTab } from '@/components/student-detail/EquipmentTab'
@@ -38,6 +39,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [editEquipment, setEditEquipment] = useState<any[]>([])
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const confirmRef = useFocusTrap(showConfirm)
   const [userRole, setUserRole] = useState<string>('')
   const [currency, setCurrency] = useState('KES')
   const [classrooms, fetchClassrooms] = useFetchList('/api/admin/classrooms', 'classrooms')
@@ -379,7 +381,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     <div>
       {/* Confirm dialog */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" ref={confirmRef} onKeyDown={(e) => e.key === 'Escape' && setShowConfirm(false)}>
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('app.confirm')}</h3>
             <p className="text-gray-600 mb-6">{t('app.confirmSave')}</p>

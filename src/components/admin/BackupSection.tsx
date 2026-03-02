@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Database, Download, Upload, FileJson, FileSpreadsheet, AlertTriangle, ChevronDown } from 'lucide-react'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import type { BackupSectionProps } from './types'
 
 export function BackupSection({ t, showMsg }: BackupSectionProps) {
@@ -9,6 +10,7 @@ export function BackupSection({ t, showMsg }: BackupSectionProps) {
   const [downloading, setDownloading] = useState<string | null>(null)
   const [restoring, setRestoring] = useState(false)
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false)
+  const restoreModalRef = useFocusTrap(showRestoreConfirm)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -155,7 +157,7 @@ export function BackupSection({ t, showMsg }: BackupSectionProps) {
 
           {/* Restore confirmation modal */}
           {showRestoreConfirm && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" ref={restoreModalRef} onKeyDown={(e) => e.key === 'Escape' && setShowRestoreConfirm(false)}>
               <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">

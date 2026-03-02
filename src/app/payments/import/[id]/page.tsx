@@ -9,6 +9,7 @@ import { getLocaleName } from '@/lib/i18n'
 import { useLocale } from '@/hooks/useLocale'
 import { useSorting } from '@/hooks/useSorting'
 import { useToast } from '@/hooks/useToast'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { Toast } from '@/components/Toast'
 
 interface ImportRow {
@@ -104,6 +105,7 @@ export default function ImportDetailPage() {
   // Split modal
   const [splitRow, setSplitRow] = useState<ImportRow | null>(null)
   const [splitParts, setSplitParts] = useState<SplitPart[]>([])
+  const splitModalRef = useFocusTrap(!!splitRow)
 
   // Action loading
   const [actionLoading, setActionLoading] = useState(false)
@@ -716,7 +718,7 @@ export default function ImportDetailPage() {
 
       {/* Split modal */}
       {splitRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" ref={splitModalRef} onKeyDown={(e) => e.key === 'Escape' && setSplitRow(null)}>
           <div className="fixed inset-0 bg-black/50" onClick={() => setSplitRow(null)} />
           <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-6">
             <div className="flex items-center justify-between mb-5">
