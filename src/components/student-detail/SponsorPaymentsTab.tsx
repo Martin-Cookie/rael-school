@@ -40,7 +40,7 @@ export function SponsorPaymentsTab({
         {canEditData && <button onClick={() => { setNewPayment({ ...newPayment, sponsorId: student.sponsorships?.[0]?.sponsor?.id || '' }); setShowAddPayment(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
       </div>
       {showAddPayment && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
             <input type="date" value={newPayment.paymentDate} onChange={(e) => setNewPayment({ ...newPayment, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
             <select value={newPayment.paymentType} onChange={(e) => setNewPayment({ ...newPayment, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
@@ -48,7 +48,7 @@ export function SponsorPaymentsTab({
             </select>
             <div className="flex gap-2">
               <input type="number" value={newPayment.amount} onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
-              <select value={newPayment.currency} onChange={(e) => setNewPayment({ ...newPayment, currency: e.target.value })} className="px-2 py-2 rounded-lg border border-gray-300 text-sm w-20">{CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
+              <select value={newPayment.currency} onChange={(e) => setNewPayment({ ...newPayment, currency: e.target.value })} className="px-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-20">{CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
             </div>
             <select value={newPayment.sponsorId} onChange={(e) => setNewPayment({ ...newPayment, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
               <option value="">{t('sponsorPayments.selectSponsor')}</option>

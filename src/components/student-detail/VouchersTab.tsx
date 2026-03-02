@@ -48,8 +48,8 @@ export function VouchersTab({
           <p className="text-xl font-bold text-accent-900 dark:text-accent-300">{formatNumber(totalUsed)}</p>
         </div>
         <div className={`bg-white dark:bg-gray-800 rounded-xl border p-4 shadow-sm ${available > 0 ? 'border-primary-200 dark:border-primary-700' : 'border-red-200 dark:border-red-700'}`}>
-          <p className={`text-xs font-medium ${available > 0 ? 'text-primary-600' : 'text-red-600'}`}>{t('vouchers.available')}</p>
-          <p className={`text-xl font-bold ${available > 0 ? 'text-primary-900' : 'text-red-900'}`}>{formatNumber(available)}</p>
+          <p className={`text-xs font-medium ${available > 0 ? 'text-primary-600 dark:text-primary-400' : 'text-red-600 dark:text-red-400'}`}>{t('vouchers.available')}</p>
+          <p className={`text-xl font-bold ${available > 0 ? 'text-primary-900 dark:text-primary-300' : 'text-red-900 dark:text-red-300'}`}>{formatNumber(available)}</p>
         </div>
       </div>
 
@@ -63,10 +63,10 @@ export function VouchersTab({
           {canEditData && <button onClick={() => { setNewVoucher({ ...newVoucher, donorName: defaultDonor, sponsorId: '' }); setShowAddVoucher(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
         </div>
         {showAddVoucher && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-              <select value={newVoucher.type} onChange={(e) => setNewVoucher({ ...newVoucher, type: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none"><option value="purchase">{t('vouchers.addPurchase')}</option><option value="usage">{t('vouchers.addUsage')}</option></select>
-              <input type="date" value={newVoucher.date} onChange={(e) => setNewVoucher({ ...newVoucher, date: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              <select value={newVoucher.type} onChange={(e) => setNewVoucher({ ...newVoucher, type: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none"><option value="purchase">{t('vouchers.addPurchase')}</option><option value="usage">{t('vouchers.addUsage')}</option></select>
+              <input type="date" value={newVoucher.date} onChange={(e) => setNewVoucher({ ...newVoucher, date: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
               {newVoucher.type === 'purchase' && (
                 <div className="flex gap-2">
                   <input type="number" value={newVoucher.amount} onChange={(e) => {
@@ -74,21 +74,21 @@ export function VouchersTab({
                     const rate = getVoucherRate(newVoucher.currency)
                     const autoCount = (amt && rate) ? String(Math.floor(parseFloat(amt) / rate)) : ''
                     setNewVoucher({ ...newVoucher, amount: amt, count: autoCount })
-                  }} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  }} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                   <select value={newVoucher.currency} onChange={(e) => {
                     const cur = e.target.value
                     const rate = getVoucherRate(cur)
                     const autoCount = (newVoucher.amount && rate) ? String(Math.floor(parseFloat(newVoucher.amount) / rate)) : ''
                     setNewVoucher({ ...newVoucher, currency: cur, count: autoCount })
-                  }} className="w-20 px-2 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                  }} className="w-20 px-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                     {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
               )}
-              <input type="number" value={newVoucher.count} onChange={(e) => setNewVoucher({ ...newVoucher, count: e.target.value })} placeholder={t('vouchers.count')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              <input type="number" value={newVoucher.count} onChange={(e) => setNewVoucher({ ...newVoucher, count: e.target.value })} placeholder={t('vouchers.count')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
               {newVoucher.type === 'purchase' && (
                 <div className="sm:col-span-2">
-                  <label htmlFor="newVoucherSponsor" className="block text-xs text-gray-500 mb-1">{t('vouchers.donorName')}</label>
+                  <label htmlFor="newVoucherSponsor" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('vouchers.donorName')}</label>
                   <select id="newVoucherSponsor" value={newVoucher.sponsorId} onChange={(e) => {
                     const sp = allSponsors.find((s: any) => s.id === e.target.value)
                     if (sp) {
@@ -96,64 +96,64 @@ export function VouchersTab({
                     } else {
                       setNewVoucher({ ...newVoucher, sponsorId: '', donorName: '' })
                     }
-                  }} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                  }} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                     <option value="">{t('vouchers.selectSponsor')}</option>
                     {allSponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}{s.email ? ` (${s.email})` : ''}</option>)}
                   </select>
                 </div>
               )}
             </div>
-            <input type="text" value={newVoucher.notes} onChange={(e) => setNewVoucher({ ...newVoucher, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none mb-3" />
+            <input type="text" value={newVoucher.notes} onChange={(e) => setNewVoucher({ ...newVoucher, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none mb-3" />
             <div className="flex gap-2">
               <button onClick={addVoucher} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
-              <button onClick={() => setShowAddVoucher(false)} className="px-3 py-2 text-gray-500 hover:text-gray-700 text-sm">{t('app.cancel')}</button>
+              <button onClick={() => setShowAddVoucher(false)} className="px-3 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm">{t('app.cancel')}</button>
             </div>
           </div>
         )}
-        <h4 className="text-sm font-semibold text-gray-700 mb-3">{t('vouchers.purchases')}</h4>
+        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{t('vouchers.purchases')}</h4>
         <div className="overflow-x-auto mb-6">
-          <table className="w-full table-fixed"><thead><tr className="border-b border-gray-200">
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('vouchers.purchaseDate')}</th>
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('vouchers.amount')}</th>
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-20">{t('vouchers.count')}</th>
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('vouchers.donorName')}</th>
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
+          <table className="w-full table-fixed"><thead><tr className="border-b border-gray-200 dark:border-gray-600">
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-28">{t('vouchers.purchaseDate')}</th>
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-28">{t('vouchers.amount')}</th>
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-20">{t('vouchers.count')}</th>
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('vouchers.donorName')}</th>
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('student.notes')}</th>
             {canEditData && <th className="w-10"></th>}
           </tr></thead><tbody>
             {student.vouchers?.map((v: any) => (
-              <tr key={v.id} className="border-b border-gray-50">
-                <td className="py-3 px-2 text-sm text-gray-900">{formatDate(v.purchaseDate, locale)}</td>
-                <td className="py-3 px-2 text-sm text-gray-900">{fmtCurrency(v.amount, v.currency || 'CZK')}</td>
-                <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
-                <td className="py-3 px-2 text-sm text-gray-700">{v.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(v.sponsor.lastName)}&from=${encodeURIComponent(`/students/${student.id}?tab=vouchers`)}`} className="text-accent-600 dark:text-accent-400 hover:underline">{v.sponsor.firstName} {v.sponsor.lastName}</Link> : (v.donorName || '-')}</td>
-                <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
+              <tr key={v.id} className="border-b border-gray-50 dark:border-gray-700">
+                <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatDate(v.purchaseDate, locale)}</td>
+                <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{fmtCurrency(v.amount, v.currency || 'CZK')}</td>
+                <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatNumber(v.count)}</td>
+                <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{v.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(v.sponsor.lastName)}&from=${encodeURIComponent(`/students/${student.id}?tab=vouchers`)}`} className="text-accent-600 dark:text-accent-400 hover:underline">{v.sponsor.firstName} {v.sponsor.lastName}</Link> : (v.donorName || '-')}</td>
+                <td className="py-3 px-2 text-sm text-gray-500 dark:text-gray-400">{v.notes || '-'}</td>
                 {canEditData && <td className="py-3 px-1 text-right"><button aria-label="Smazat" onClick={() => deleteVoucher(v.id, 'purchase')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
               </tr>
             ))}
-            {(!student.vouchers || student.vouchers.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+            {(!student.vouchers || student.vouchers.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 dark:text-gray-400 text-sm">{t('app.noData')}</td></tr>}
           </tbody></table>
         </div>
-        <h4 className="text-sm font-semibold text-gray-700 mb-3">{t('vouchers.usages')}</h4>
+        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{t('vouchers.usages')}</h4>
         <div className="overflow-x-auto">
-          <table className="w-full table-fixed"><thead><tr className="border-b border-gray-200">
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28">{t('vouchers.usageDate')}</th>
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-28"></th>
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-16">{t('vouchers.usedCount')}</th>
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 w-32"></th>
-            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500">{t('student.notes')}</th>
+          <table className="w-full table-fixed"><thead><tr className="border-b border-gray-200 dark:border-gray-600">
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-28">{t('vouchers.usageDate')}</th>
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-28"></th>
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-16">{t('vouchers.usedCount')}</th>
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400 w-32"></th>
+            <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">{t('student.notes')}</th>
             {canEditData && <th className="w-10"></th>}
           </tr></thead><tbody>
             {student.voucherUsages?.map((v: any) => (
-              <tr key={v.id} className="border-b border-gray-50">
-                <td className="py-3 px-2 text-sm text-gray-900">{formatDate(v.usageDate, locale)}</td>
+              <tr key={v.id} className="border-b border-gray-50 dark:border-gray-700">
+                <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatDate(v.usageDate, locale)}</td>
                 <td className="py-3 px-2"></td>
-                <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
+                <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatNumber(v.count)}</td>
                 <td className="py-3 px-2"></td>
-                <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
+                <td className="py-3 px-2 text-sm text-gray-500 dark:text-gray-400">{v.notes || '-'}</td>
                 {canEditData && <td className="py-3 px-1 text-right"><button aria-label="Smazat" onClick={() => deleteVoucher(v.id, 'usage')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
               </tr>
             ))}
-            {(!student.voucherUsages || student.voucherUsages.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+            {(!student.voucherUsages || student.voucherUsages.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 dark:text-gray-400 text-sm">{t('app.noData')}</td></tr>}
           </tbody></table>
         </div>
       </div>

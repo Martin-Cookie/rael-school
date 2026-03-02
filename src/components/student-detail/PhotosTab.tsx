@@ -32,12 +32,12 @@ export function PhotosTab({
           <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('photos.title')}</h3>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">{[{ key:'all',label:t('photos.filterAll') },{ key:'visit',label:t('photos.visit') },{ key:'handover',label:t('photos.handover') },{ key:'voucher',label:t('photos.voucher') }].map(f => <button key={f.key} onClick={() => setPhotoFilter(f.key)} className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${photoFilter === f.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{f.label}</button>)}</div>
+          <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">{[{ key:'all',label:t('photos.filterAll') },{ key:'visit',label:t('photos.visit') },{ key:'handover',label:t('photos.handover') },{ key:'voucher',label:t('photos.voucher') }].map(f => <button key={f.key} onClick={() => setPhotoFilter(f.key)} className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${photoFilter === f.key ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>{f.label}</button>)}</div>
           {canEditData && <button onClick={() => setShowAddPhoto(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"><Upload className="w-4 h-4" /> {t('photos.upload')}</button>}
         </div>
       </div>
       {showAddPhoto && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
             <select value={newPhoto.category} onChange={(e) => setNewPhoto({ ...newPhoto, category: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"><option value="visit">{t('photos.visit')}</option><option value="handover">{t('photos.handover')}</option><option value="voucher">{t('photos.voucher')}</option></select>
             <input type="date" value={newPhoto.takenAt} onChange={(e) => setNewPhoto({ ...newPhoto, takenAt: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
@@ -53,7 +53,7 @@ export function PhotosTab({
             {photo.filePath ? <div className="relative w-full h-48"><Image src={photo.filePath} alt={photo.description || `${student.firstName} ${student.lastName}`} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" /></div> : <div className="w-full h-48 bg-gray-200 dark:bg-gray-600 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400 dark:text-gray-500" /></div>}
             <div className="p-3">
               <div className="flex items-start justify-between"><p className="text-sm font-medium text-gray-900 dark:text-gray-100">{photo.description || '-'}</p>{canEditData && <button aria-label="Smazat" onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}</div>
-              <div className="flex items-center justify-between mt-2"><span className="text-xs text-gray-500">{formatDate(photo.takenAt, locale)}</span><span className={`badge ${photo.category === 'visit' ? 'badge-green' : photo.category === 'handover' ? 'badge-yellow' : 'badge-red'}`}>{photo.category === 'visit' ? t('photos.visit') : photo.category === 'handover' ? t('photos.handover') : t('photos.voucher')}</span></div>
+              <div className="flex items-center justify-between mt-2"><span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(photo.takenAt, locale)}</span><span className={`badge ${photo.category === 'visit' ? 'badge-green' : photo.category === 'handover' ? 'badge-yellow' : 'badge-red'}`}>{photo.category === 'visit' ? t('photos.visit') : photo.category === 'handover' ? t('photos.handover') : t('photos.voucher')}</span></div>
             </div>
           </div>
         ))}</div>

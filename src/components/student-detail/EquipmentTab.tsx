@@ -51,9 +51,9 @@ export function EquipmentTab({
         {canEditData && !editMode && <button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>}
       </div>
       {showAddEquipment && !editMode && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="flex flex-col sm:flex-row gap-2">
-            <select value={newEquipmentType} onChange={(e) => setNewEquipmentType(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+            <select value={newEquipmentType} onChange={(e) => setNewEquipmentType(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
               <option value="">{t('equipment.selectType')}</option>
               {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}{et.price ? ` (${formatNumber(et.price)} CZK)` : ''}</option>)}
             </select>
@@ -65,22 +65,22 @@ export function EquipmentTab({
       {editMode ? (
         <div className="space-y-3">
           {editEquipment.map((eq: any, idx: number) => (
-            <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 rounded-xl">
-              <select value={eq.type} onChange={(e) => updateEquipment(idx, 'type', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none sm:w-40">
+            <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+              <select value={eq.type} onChange={(e) => updateEquipment(idx, 'type', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none sm:w-40">
                 <option value={eq.type}>{eqLabel(eq.type)}</option>
                 {equipmentTypes.filter((et: any) => et.name !== eq.type).map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
               </select>
-              <select value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+              <select value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                 <option value="new">{t('equipment.new')}</option>
                 <option value="satisfactory">{t('equipment.satisfactory')}</option>
                 <option value="poor">{t('equipment.poor')}</option>
               </select>
-              <input type="date" value={formatDateForInput(eq.acquiredAt)} onChange={(e) => updateEquipment(idx, 'acquiredAt', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              <input type="date" value={formatDateForInput(eq.acquiredAt)} onChange={(e) => updateEquipment(idx, 'acquiredAt', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
               <button onClick={() => removeEquipmentItem(idx)} className="p-1.5 text-gray-400 hover:text-red-500" title={t('equipment.removeItem')}><Trash2 className="w-4 h-4" /></button>
             </div>
           ))}
           <div className="flex gap-2 pt-2">
-            <select id="addEquipmentSelect" className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" defaultValue="">
+            <select id="addEquipmentSelect" className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" defaultValue="">
               <option value="">{t('equipment.selectType')}</option>
               {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}{et.price ? ` (${formatNumber(et.price)} CZK)` : ''}</option>)}
             </select>
@@ -90,13 +90,13 @@ export function EquipmentTab({
       ) : student.equipment?.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {student.equipment.map((eq: any) => (
-            <div key={eq.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl group">
+            <div key={eq.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl group">
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   {eqLabel(eq.type)}
-                  {(() => { const et = equipmentTypes.find((t: any) => t.name === eq.type); return et?.price ? <span className="ml-2 text-xs font-normal text-gray-500">({formatNumber(et.price)} CZK)</span> : null })()}
+                  {(() => { const et = equipmentTypes.find((t: any) => t.name === eq.type); return et?.price ? <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">({formatNumber(et.price)} CZK)</span> : null })()}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">{formatDate(eq.acquiredAt, locale)}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{formatDate(eq.acquiredAt, locale)}</p>
               </div>
               <div className="flex items-center gap-2">
                 {condBadge(eq.condition)}
@@ -105,7 +105,7 @@ export function EquipmentTab({
             </div>
           ))}
         </div>
-      ) : <p className="text-gray-500 text-sm text-center py-8">{t('app.noData')}</p>}
+      ) : <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-8">{t('app.noData')}</p>}
     </div>
   )
 }
