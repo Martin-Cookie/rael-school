@@ -75,7 +75,7 @@ export function SponsorPaymentsTab({
               <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
               <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{p.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=${encodeURIComponent(`/students/${student.id}?tab=sponsorPayments`)}`} className="text-accent-600 dark:text-accent-400 hover:underline">{p.sponsor.firstName} {p.sponsor.lastName}</Link> : '-'}</td>
               <td className="py-3 px-2 text-sm text-gray-500 dark:text-gray-400">{p.notes || '-'}</td>
-              {canEditData && <td className="py-3 px-2 text-right"><button aria-label="Smazat" onClick={() => deleteSponsorPayment(p.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+              {canEditData && <td className="py-3 px-2 text-right"><button aria-label="Smazat" onClick={() => deleteSponsorPayment(p.id)} className="p-2 text-gray-400 hover:text-red-500 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400"><Trash2 className="w-4 h-4" /></button></td>}
             </tr>
           ))}
         </tbody></table></div>

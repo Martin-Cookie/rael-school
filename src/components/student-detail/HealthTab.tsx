@@ -38,9 +38,9 @@ export function HealthTab({
       {showAddHealth && (
         <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-            <input aria-label="Datum prohlidky" type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
-            <select aria-label="Typ prohlidky" value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{getLocaleName(ht, locale)}</option>)}</select>
-            <input aria-label="Poznamky k prohlidce" type="text" value={newHealth.notes} onChange={(e) => setNewHealth({ ...newHealth, notes: e.target.value })} placeholder={t('health.notes')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+            <input aria-label="Datum prohlidky" type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
+            <select aria-label="Typ prohlidky" value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{getLocaleName(ht, locale)}</option>)}</select>
+            <input aria-label="Poznamky k prohlidce" type="text" value={newHealth.notes} onChange={(e) => setNewHealth({ ...newHealth, notes: e.target.value })} placeholder={t('health.notes')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
           </div>
           <div className="flex gap-2"><button onClick={addHealthCheck} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddHealth(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
         </div>
@@ -57,7 +57,7 @@ export function HealthTab({
               <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatDate(hc.checkDate, locale)}</td>
               <td className="py-3 px-2 text-sm"><span className={`badge ${hc.checkType === 'urgent' ? 'badge-red' : hc.checkType === 'dentist' ? 'badge-yellow' : 'badge-green'}`}>{htLabel(hc.checkType)}</span></td>
               <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{hc.notes || '-'}</td>
-              {canEditData && <td className="py-3 px-2 text-right"><button aria-label="Smazat" onClick={() => deleteHealthCheck(hc.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+              {canEditData && <td className="py-3 px-2 text-right"><button aria-label="Smazat" onClick={() => deleteHealthCheck(hc.id)} className="p-2 text-gray-400 hover:text-red-500 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400"><Trash2 className="w-4 h-4" /></button></td>}
             </tr>
           ))}
         </tbody></table></div>

@@ -48,7 +48,7 @@ export function VoucherRateSection({
                 <select
                   value={newCurrency}
                   onChange={(e) => setNewCurrency(e.target.value)}
-                  className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  className="w-28 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none text-sm"
                 >
                   <option value="">{t('admin.newCurrency')}</option>
                   {available.map(c => <option key={c} value={c}>{c}</option>)}
@@ -58,7 +58,7 @@ export function VoucherRateSection({
                   value={newRate}
                   onChange={(e) => setNewRate(e.target.value)}
                   placeholder={t('admin.ratePerVoucher')}
-                  className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none text-sm"
                   onKeyDown={(e) => e.key === 'Enter' && onAdd()}
                 />
                 <button
@@ -101,7 +101,7 @@ export function VoucherRateSection({
                           }
                           if (e.key === 'Escape') setEditingId(null)
                         }}
-                        className="w-24 px-2 py-1 rounded-lg border border-primary-400 dark:border-primary-500 dark:bg-gray-700 dark:text-gray-100 text-sm text-right focus:ring-2 focus:ring-primary-500 outline-none"
+                        className="w-24 px-2 py-1 rounded-lg border border-primary-400 dark:border-primary-500 dark:bg-gray-700 dark:text-gray-100 text-sm text-right focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none"
                         autoFocus
                       />
                     ) : (
@@ -117,7 +117,7 @@ export function VoucherRateSection({
                     <button
                       aria-label="Smazat"
                       onClick={() => onDelete(item.id)}
-                      className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="p-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

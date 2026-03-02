@@ -36,13 +36,13 @@ export function NeedsTab({
       {showAddNeed && (
         <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="flex flex-col sm:flex-row gap-2">
-            <select aria-label="Typ potreby" value={selectedNeedType} onChange={(e) => { setSelectedNeedType(e.target.value); if (e.target.value !== '__custom__') setNewNeed('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+            <select aria-label="Typ potreby" value={selectedNeedType} onChange={(e) => { setSelectedNeedType(e.target.value); if (e.target.value !== '__custom__') setNewNeed('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none">
               <option value="">{t('needs.selectType')}</option>
               {needTypes.map((nt: any) => <option key={nt.id} value={nt.name}>{getLocaleName(nt, locale)}{nt.price ? ` (${formatNumber(nt.price)} CZK)` : ''}</option>)}
               <option value="__custom__">{t('needs.customNeed')}</option>
             </select>
             {selectedNeedType === '__custom__' && (
-              <input aria-label="Vlastni potreba" type="text" value={newNeed} onChange={(e) => setNewNeed(e.target.value)} placeholder={t('needs.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addNeed()} />
+              <input aria-label="Vlastni potreba" type="text" value={newNeed} onChange={(e) => setNewNeed(e.target.value)} placeholder={t('needs.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" onKeyDown={(e) => e.key === 'Enter' && addNeed()} />
             )}
             <button onClick={addNeed} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
             <button aria-label="Zavrit" onClick={() => { setShowAddNeed(false); setNewNeed(''); setSelectedNeedType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
@@ -60,7 +60,7 @@ export function NeedsTab({
             </div>
             <div className="flex items-center gap-2">
               {need.isFulfilled && <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(need.fulfilledAt, locale)}</span>}
-              {canEditData && <button aria-label="Smazat" onClick={() => deleteNeed(need.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>}
+              {canEditData && <button aria-label="Smazat" onClick={() => deleteNeed(need.id)} className="p-2 text-gray-400 hover:text-red-500 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400"><Trash2 className="w-4 h-4" /></button>}
             </div>
           </div>
         ))}

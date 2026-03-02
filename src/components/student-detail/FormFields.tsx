@@ -13,7 +13,7 @@ export function Field({ label, value, type = 'text', editMode, onChange }: Field
     <div>
       <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>
       {editMode ? (
-        <input type={type} value={value || ''} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" />
+        <input type={type} value={value || ''} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
       ) : (
         <p className="text-gray-900 dark:text-gray-100 py-2">{type === 'date' ? formatDate(value) : value || '-'}</p>
       )}
@@ -35,7 +35,7 @@ export function SelectField({ label, value, editMode, options, displayValue, onC
     <div>
       <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>
       {editMode ? (
-        <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none">
+        <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none">
           {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       ) : (

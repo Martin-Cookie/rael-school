@@ -58,7 +58,7 @@ export function SponsorsTab({
                 value={sponsorSearch}
                 onChange={(e) => searchSponsors(e.target.value)}
                 placeholder={t('sponsorPage.searchByName')}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none text-sm"
               />
               {sponsorResults.length > 0 && (
                 <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-600 max-h-48 overflow-y-auto">
@@ -100,7 +100,7 @@ export function SponsorsTab({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input aria-label="Jmeno sponzora" type="text" value={editSponsorData.firstName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, firstName: e.target.value })} placeholder={t('student.firstName')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
                   <input aria-label="Prijmeni sponzora" type="text" value={editSponsorData.lastName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, lastName: e.target.value })} placeholder={t('student.lastName')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
-                  <input aria-label="E-mail sponzora" type="email" value={editSponsorData.email || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, email: e.target.value })} placeholder={t('sponsors.email')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <input aria-label="E-mail sponzora" type="email" value={editSponsorData.email || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, email: e.target.value })} placeholder={t('sponsors.email')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
                   <input aria-label="Telefon sponzora" type="text" value={editSponsorData.phone || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
                   <div className="sm:col-span-2"><input aria-label="Poznamky ke sponzorovi" type="text" value={editSponsorData.notes || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, notes: e.target.value })} placeholder={t('sponsors.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" /></div>
                 </div>

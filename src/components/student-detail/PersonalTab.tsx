@@ -53,7 +53,7 @@ export function PersonalTab({ student, editData, setEditData, editMode, classroo
           <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg"><Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" /></div>
           <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('student.notes')}</h3>
         </div>
-        {editMode ? <textarea value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={4} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none resize-none" /> : <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{student.notes || '-'}</p>}
+        {editMode ? <textarea value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={4} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none resize-none" /> : <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{student.notes || '-'}</p>}
       </div>
     </div>
   )

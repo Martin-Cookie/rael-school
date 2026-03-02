@@ -64,7 +64,7 @@ export function TuitionRateSection({
                           }
                           if (e.key === 'Escape') setEditingId(null)
                         }}
-                        className="w-28 px-2 py-1 rounded-lg border border-primary-400 dark:border-primary-500 dark:bg-gray-700 dark:text-gray-100 text-sm text-right focus:ring-2 focus:ring-primary-500 outline-none"
+                        className="w-28 px-2 py-1 rounded-lg border border-primary-400 dark:border-primary-500 dark:bg-gray-700 dark:text-gray-100 text-sm text-right focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none"
                         autoFocus
                       />
                     ) : (
@@ -79,7 +79,7 @@ export function TuitionRateSection({
                     <button
                       aria-label="Smazat"
                       onClick={() => onDelete(item.id)}
-                      className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="p-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
