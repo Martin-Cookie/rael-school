@@ -91,7 +91,26 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     if (savedC) setCurrency(savedC)
   }, [])
 
-  useEffect(() => { fetchStudent(); fetchUser(); fetchClassrooms(); fetchHealthTypes(); fetchPaymentTypes(); fetchNeedTypes(); fetchEquipmentTypes(); fetchWishTypes(); fetchVoucherRates(); fetchTuitionCharges() }, [id])
+  // Eager: student data + user role (needed for all tabs)
+  useEffect(() => { fetchStudent(); fetchUser() }, [id])
+
+  // Lazy-load: fetch tab-specific data only when tab is activated
+  const [loadedTabs, setLoadedTabs] = useState<Set<string>>(new Set())
+  useEffect(() => {
+    if (loadedTabs.has(activeTab)) return
+    setLoadedTabs(prev => new Set(prev).add(activeTab))
+    const fetchers: Record<string, () => void> = {
+      personal: fetchClassrooms,
+      equipment: () => { fetchClassrooms(); fetchEquipmentTypes() },
+      needs: fetchNeedTypes,
+      wishes: fetchWishTypes,
+      vouchers: fetchVoucherRates,
+      sponsorPayments: fetchPaymentTypes,
+      tuition: fetchTuitionCharges,
+      health: fetchHealthTypes,
+    }
+    fetchers[activeTab]?.()
+  }, [activeTab])
 
   async function fetchUser() {
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}

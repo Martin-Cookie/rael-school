@@ -3,6 +3,60 @@ import { prisma } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 import { recalcTuitionStatus, isTuitionType } from '@/lib/tuition'
 
+// GET /api/payments — list all payments with students and sponsors
+export async function GET() {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const [sponsorPayments, voucherPurchases, students, sponsors] = await Promise.all([
+      prisma.sponsorPayment.findMany({
+        take: 1000,
+        orderBy: { paymentDate: 'desc' },
+        include: {
+          student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
+          sponsor: { select: { id: true, firstName: true, lastName: true } },
+        },
+      }),
+      prisma.voucherPurchase.findMany({
+        take: 1000,
+        orderBy: { purchaseDate: 'desc' },
+        include: {
+          student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
+          sponsor: { select: { id: true, firstName: true, lastName: true } },
+        },
+      }),
+      prisma.student.findMany({
+        where: { isActive: true },
+        select: {
+          id: true, studentNo: true, firstName: true, lastName: true,
+          className: true, dateOfBirth: true, gender: true,
+          _count: { select: { needs: { where: { isFulfilled: false } }, sponsorships: { where: { isActive: true } } } },
+        },
+        orderBy: { lastName: 'asc' },
+      }),
+      prisma.user.findMany({
+        where: { role: 'SPONSOR', isActive: true },
+        select: {
+          id: true, firstName: true, lastName: true, email: true, phone: true,
+          sponsorships: {
+            where: { isActive: true },
+            select: { student: { select: { id: true, firstName: true, lastName: true, studentNo: true } } },
+          },
+        },
+        orderBy: { lastName: 'asc' },
+      }),
+    ])
+
+    return NextResponse.json({ sponsorPayments, voucherPurchases, students, sponsors })
+  } catch (error) {
+    console.error('GET /api/payments error:', error)
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  }
+}
+
 // POST /api/payments — create sponsor payment or voucher purchase
 export async function POST(request: NextRequest) {
   try {

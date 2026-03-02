@@ -76,7 +76,7 @@ export default function PaymentsPage() {
 
   async function fetchData() {
     try {
-      const res = await fetch('/api/dashboard')
+      const res = await fetch('/api/payments')
       const data = await res.json()
       setSponsorPayments(data.sponsorPayments || [])
       setVoucherPurchases(data.voucherPurchases || [])
