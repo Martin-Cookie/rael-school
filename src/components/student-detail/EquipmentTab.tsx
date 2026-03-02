@@ -53,7 +53,7 @@ export function EquipmentTab({
       {showAddEquipment && !editMode && (
         <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="flex flex-col sm:flex-row gap-2">
-            <select value={newEquipmentType} onChange={(e) => setNewEquipmentType(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+            <select aria-label="Typ vybaveni" value={newEquipmentType} onChange={(e) => setNewEquipmentType(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
               <option value="">{t('equipment.selectType')}</option>
               {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}{et.price ? ` (${formatNumber(et.price)} CZK)` : ''}</option>)}
             </select>
@@ -66,21 +66,21 @@ export function EquipmentTab({
         <div className="space-y-3">
           {editEquipment.map((eq: any, idx: number) => (
             <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-              <select value={eq.type} onChange={(e) => updateEquipment(idx, 'type', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none sm:w-40">
+              <select aria-label="Typ vybaveni" value={eq.type} onChange={(e) => updateEquipment(idx, 'type', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none sm:w-40">
                 <option value={eq.type}>{eqLabel(eq.type)}</option>
                 {equipmentTypes.filter((et: any) => et.name !== eq.type).map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}</option>)}
               </select>
-              <select value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+              <select aria-label="Stav vybaveni" value={eq.condition} onChange={(e) => updateEquipment(idx, 'condition', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
                 <option value="new">{t('equipment.new')}</option>
                 <option value="satisfactory">{t('equipment.satisfactory')}</option>
                 <option value="poor">{t('equipment.poor')}</option>
               </select>
-              <input type="date" value={formatDateForInput(eq.acquiredAt)} onChange={(e) => updateEquipment(idx, 'acquiredAt', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              <input aria-label="Datum porizeni" type="date" value={formatDateForInput(eq.acquiredAt)} onChange={(e) => updateEquipment(idx, 'acquiredAt', e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
               <button onClick={() => removeEquipmentItem(idx)} className="p-1.5 text-gray-400 hover:text-red-500" title={t('equipment.removeItem')}><Trash2 className="w-4 h-4" /></button>
             </div>
           ))}
           <div className="flex gap-2 pt-2">
-            <select id="addEquipmentSelect" className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" defaultValue="">
+            <select aria-label="Pridat vybaveni" id="addEquipmentSelect" className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" defaultValue="">
               <option value="">{t('equipment.selectType')}</option>
               {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}{et.price ? ` (${formatNumber(et.price)} CZK)` : ''}</option>)}
             </select>

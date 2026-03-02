@@ -65,17 +65,17 @@ export function VouchersTab({
         {showAddVoucher && (
           <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-              <select value={newVoucher.type} onChange={(e) => setNewVoucher({ ...newVoucher, type: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none"><option value="purchase">{t('vouchers.addPurchase')}</option><option value="usage">{t('vouchers.addUsage')}</option></select>
-              <input type="date" value={newVoucher.date} onChange={(e) => setNewVoucher({ ...newVoucher, date: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              <select aria-label="Typ stravenky" value={newVoucher.type} onChange={(e) => setNewVoucher({ ...newVoucher, type: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none"><option value="purchase">{t('vouchers.addPurchase')}</option><option value="usage">{t('vouchers.addUsage')}</option></select>
+              <input aria-label="Datum" type="date" value={newVoucher.date} onChange={(e) => setNewVoucher({ ...newVoucher, date: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
               {newVoucher.type === 'purchase' && (
                 <div className="flex gap-2">
-                  <input type="number" value={newVoucher.amount} onChange={(e) => {
+                  <input aria-label="Castka" type="number" value={newVoucher.amount} onChange={(e) => {
                     const amt = e.target.value
                     const rate = getVoucherRate(newVoucher.currency)
                     const autoCount = (amt && rate) ? String(Math.floor(parseFloat(amt) / rate)) : ''
                     setNewVoucher({ ...newVoucher, amount: amt, count: autoCount })
                   }} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
-                  <select value={newVoucher.currency} onChange={(e) => {
+                  <select aria-label="Mena" value={newVoucher.currency} onChange={(e) => {
                     const cur = e.target.value
                     const rate = getVoucherRate(cur)
                     const autoCount = (newVoucher.amount && rate) ? String(Math.floor(parseFloat(newVoucher.amount) / rate)) : ''
@@ -85,7 +85,7 @@ export function VouchersTab({
                   </select>
                 </div>
               )}
-              <input type="number" value={newVoucher.count} onChange={(e) => setNewVoucher({ ...newVoucher, count: e.target.value })} placeholder={t('vouchers.count')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              <input aria-label="Pocet stravenek" type="number" value={newVoucher.count} onChange={(e) => setNewVoucher({ ...newVoucher, count: e.target.value })} placeholder={t('vouchers.count')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
               {newVoucher.type === 'purchase' && (
                 <div className="sm:col-span-2">
                   <label htmlFor="newVoucherSponsor" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('vouchers.donorName')}</label>
@@ -103,7 +103,7 @@ export function VouchersTab({
                 </div>
               )}
             </div>
-            <input type="text" value={newVoucher.notes} onChange={(e) => setNewVoucher({ ...newVoucher, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none mb-3" />
+            <input aria-label="Poznamky" type="text" value={newVoucher.notes} onChange={(e) => setNewVoucher({ ...newVoucher, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none mb-3" />
             <div className="flex gap-2">
               <button onClick={addVoucher} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
               <button onClick={() => setShowAddVoucher(false)} className="px-3 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm">{t('app.cancel')}</button>
