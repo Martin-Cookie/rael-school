@@ -506,7 +506,7 @@ export default function ImportDetailPage() {
                     type="checkbox"
                     checked={filteredRows.filter(r => canSelect(r)).length > 0 && filteredRows.filter(r => canSelect(r)).every(r => selectedRows.has(r.id))}
                     onChange={toggleSelectAll}
-                    className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-400"
                   />
                 </th>
                 <SH col="status" className="text-left">{t('paymentImport.status')}</SH>
@@ -537,7 +537,7 @@ export default function ImportDetailPage() {
                           type="checkbox"
                           checked={selectedRows.has(row.id)}
                           onChange={() => toggleRow(row.id)}
-                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-400"
                         />
                       )}
                     </td>

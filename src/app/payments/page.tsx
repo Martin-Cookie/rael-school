@@ -346,7 +346,7 @@ export default function PaymentsPage() {
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('app.search')} className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('app.search')} className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 outline-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700" />
         </div>
       </div>
 
@@ -358,24 +358,24 @@ export default function PaymentsPage() {
               const sid = e.target.value
               const matched = getStudentSponsors(sid)
               setNewPayment(prev => ({ ...prev, studentId: sid, sponsorId: matched.length === 1 ? matched[0].id : '' }))
-            }} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm">
+            }} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
               <option value="">{t('nav.students')} *</option>
               {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName} ({s.studentNo})</option>)}
             </select>
-            <select value={newPayment.sponsorId} onChange={(e) => setNewPayment(prev => ({ ...prev, sponsorId: e.target.value }))} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm">
+            <select value={newPayment.sponsorId} onChange={(e) => setNewPayment(prev => ({ ...prev, sponsorId: e.target.value }))} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
               <option value="">{t('sponsors.title')}</option>
               {(newPayment.studentId ? getStudentSponsors(newPayment.studentId) : sponsors).map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
             </select>
-            <input type="date" value={newPayment.date} onChange={(e) => setNewPayment(prev => ({ ...prev, date: e.target.value }))} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm" />
+            <input type="date" value={newPayment.date} onChange={(e) => setNewPayment(prev => ({ ...prev, date: e.target.value }))} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
             <div className="flex gap-2">
               <input type="number" value={newPayment.amount} onChange={(e) => {
                 const amt = e.target.value
                 setNewPayment(prev => ({ ...prev, amount: amt, count: isVoucherType(prev.paymentType) ? autoVoucherCount(amt, prev.currency) : '' }))
-              }} placeholder={t('payments.amount') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm flex-1" />
+              }} placeholder={t('payments.amount') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm flex-1" />
               <select value={newPayment.currency} onChange={(e) => {
                 const cur = e.target.value
                 setNewPayment(prev => ({ ...prev, currency: cur, count: isVoucherType(prev.paymentType) ? autoVoucherCount(prev.amount, cur) : '' }))
-              }} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-24">
+              }} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-24">
                 {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -386,7 +386,7 @@ export default function PaymentsPage() {
                 paymentType: pt,
                 count: isVoucherType(pt) ? autoVoucherCount(prev.amount, prev.currency) : '',
               }))
-            }} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm">
+            }} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
               <option value="">{t('sponsorPayments.selectType')} *</option>
               {paymentTypes.length > 0
                 ? paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{getLocaleName(pt, locale)}</option>)
@@ -399,9 +399,9 @@ export default function PaymentsPage() {
             </select>
             {/* Voucher count - visible only when voucher type selected */}
             {isVoucherType(newPayment.paymentType) && (
-              <input type="number" value={newPayment.count} onChange={(e) => setNewPayment(prev => ({ ...prev, count: e.target.value }))} placeholder={(() => { const rate = getVoucherRate(newPayment.currency); return rate ? `${t('vouchers.count')} (1 = ${formatNumber(rate)} ${newPayment.currency})` : t('vouchers.count') + ' *' })()} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm" />
+              <input type="number" value={newPayment.count} onChange={(e) => setNewPayment(prev => ({ ...prev, count: e.target.value }))} placeholder={(() => { const rate = getVoucherRate(newPayment.currency); return rate ? `${t('vouchers.count')} (1 = ${formatNumber(rate)} ${newPayment.currency})` : t('vouchers.count') + ' *' })()} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
             )}
-            <input type="text" value={newPayment.notes} onChange={(e) => setNewPayment(prev => ({ ...prev, notes: e.target.value }))} placeholder={t('payments.notes')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm sm:col-span-2 lg:col-span-3" />
+            <input type="text" value={newPayment.notes} onChange={(e) => setNewPayment(prev => ({ ...prev, notes: e.target.value }))} placeholder={t('payments.notes')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:col-span-2 lg:col-span-3" />
           </div>
           <div className="flex gap-2">
             <button onClick={addPayment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
@@ -458,10 +458,10 @@ export default function PaymentsPage() {
           {sorted.map((p) => (
             editingId === p.id ? (
               <tr key={`${p._type}-${p.id}`} className="border-b border-gray-50 dark:border-gray-700 bg-primary-50 dark:bg-primary-900/20">
-                <td className="py-2 px-3"><input type="date" value={editData.date || ''} onChange={(e) => setEditData({ ...editData, date: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-full" /></td>
+                <td className="py-2 px-3"><input type="date" value={editData.date || ''} onChange={(e) => setEditData({ ...editData, date: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-full" /></td>
                 <td className="py-2 px-3">
                   {editType === 'sponsor' ? (
-                    <select value={editData.paymentType || ''} onChange={(e) => setEditData({ ...editData, paymentType: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-full">
+                    <select value={editData.paymentType || ''} onChange={(e) => setEditData({ ...editData, paymentType: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-full">
                       {paymentTypes.length > 0
                         ? paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{getLocaleName(pt, locale)}</option>)
                         : <>
@@ -477,15 +477,15 @@ export default function PaymentsPage() {
                 </td>
                 <td className="py-2 px-3">
                   <div className="flex gap-1">
-                    <input type="number" value={editData.amount || ''} onChange={(e) => setEditData({ ...editData, amount: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-20" />
-                    <select value={editData.currency || 'KES'} onChange={(e) => setEditData({ ...editData, currency: e.target.value })} className="px-1 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-16">
+                    <input type="number" value={editData.amount || ''} onChange={(e) => setEditData({ ...editData, amount: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-20" />
+                    <select value={editData.currency || 'KES'} onChange={(e) => setEditData({ ...editData, currency: e.target.value })} className="px-1 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-16">
                       {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                 </td>
                 <td className="py-2 px-3">
                   {editType === 'voucher' ? (
-                    <input type="number" value={editData.count || ''} onChange={(e) => setEditData({ ...editData, count: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-16" />
+                    <input type="number" value={editData.count || ''} onChange={(e) => setEditData({ ...editData, count: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-16" />
                   ) : <span className="text-gray-300 dark:text-gray-600">-</span>}
                 </td>
                 <td className="py-2 px-3">
@@ -493,18 +493,18 @@ export default function PaymentsPage() {
                     const sid = e.target.value
                     const matched = getStudentSponsors(sid)
                     setEditData({ ...editData, studentId: sid, sponsorId: matched.length === 1 ? matched[0].id : '' })
-                  }} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-full">
+                  }} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-full">
                     <option value="">—</option>
                     {students.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                   </select>
                 </td>
                 <td className="py-2 px-3">
-                  <select value={editData.sponsorId || ''} onChange={(e) => setEditData({ ...editData, sponsorId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-full">
+                  <select value={editData.sponsorId || ''} onChange={(e) => setEditData({ ...editData, sponsorId: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-full">
                     <option value="">—</option>
                     {(editData.studentId ? getStudentSponsors(editData.studentId) : sponsors).map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                   </select>
                 </td>
-                <td className="py-2 px-3"><input type="text" value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-full" /></td>
+                <td className="py-2 px-3"><input type="text" value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm w-full" /></td>
                 <td className="py-2 px-3 text-right">
                   <div className="flex gap-1 justify-end">
                     <button aria-label="Potvrdit" onClick={() => saveEdit(p.id)} className="p-1.5 text-primary-600 hover:text-primary-800"><Check className="w-4 h-4" /></button>

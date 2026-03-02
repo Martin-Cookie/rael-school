@@ -62,19 +62,19 @@ export default function NewStudentPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.firstName')} *</label>
-            <input id="firstName" type="text" required value={form.firstName} onChange={(e) => updateField('firstName', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input id="firstName" type="text" required value={form.firstName} onChange={(e) => updateField('firstName', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
           </div>
           <div>
             <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.lastName')} *</label>
-            <input id="lastName" type="text" required value={form.lastName} onChange={(e) => updateField('lastName', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input id="lastName" type="text" required value={form.lastName} onChange={(e) => updateField('lastName', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
           </div>
           <div>
             <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.dateOfBirth')}</label>
-            <input id="dateOfBirth" type="date" value={form.dateOfBirth} onChange={(e) => updateField('dateOfBirth', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input id="dateOfBirth" type="date" value={form.dateOfBirth} onChange={(e) => updateField('dateOfBirth', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
           </div>
           <div>
             <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.gender')}</label>
-            <select id="gender" value={form.gender} onChange={(e) => updateField('gender', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none">
+            <select id="gender" value={form.gender} onChange={(e) => updateField('gender', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none">
               <option value="">-</option>
               <option value="M">{t('student.male')}</option>
               <option value="F">{t('student.female')}</option>
@@ -82,14 +82,14 @@ export default function NewStudentPage() {
           </div>
           <div>
             <label htmlFor="className" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.className')}</label>
-            <select id="className" value={form.className} onChange={(e) => updateField('className', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none">
+            <select id="className" value={form.className} onChange={(e) => updateField('className', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none">
               <option value="">-</option>
               {classrooms.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
             </select>
           </div>
           <div>
             <label htmlFor="healthStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.healthStatus')}</label>
-            <input id="healthStatus" type="text" value={form.healthStatus} onChange={(e) => updateField('healthStatus', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input id="healthStatus" type="text" value={form.healthStatus} onChange={(e) => updateField('healthStatus', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
           </div>
         </div>
 
@@ -97,11 +97,11 @@ export default function NewStudentPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <label htmlFor="motherName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.family.motherName')}</label>
-            <input id="motherName" type="text" value={form.motherName} onChange={(e) => updateField('motherName', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input id="motherName" type="text" value={form.motherName} onChange={(e) => updateField('motherName', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
           </div>
           <div>
             <label htmlFor="motherAlive" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.family.motherAlive')}</label>
-            <select id="motherAlive" value={form.motherAlive} onChange={(e) => updateField('motherAlive', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none">
+            <select id="motherAlive" value={form.motherAlive} onChange={(e) => updateField('motherAlive', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none">
               <option value="">-</option>
               <option value="true">{t('app.yes')}</option>
               <option value="false">{t('app.no')}</option>
@@ -109,11 +109,11 @@ export default function NewStudentPage() {
           </div>
           <div>
             <label htmlFor="fatherName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.family.fatherName')}</label>
-            <input id="fatherName" type="text" value={form.fatherName} onChange={(e) => updateField('fatherName', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input id="fatherName" type="text" value={form.fatherName} onChange={(e) => updateField('fatherName', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
           </div>
           <div>
             <label htmlFor="fatherAlive" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.family.fatherAlive')}</label>
-            <select id="fatherAlive" value={form.fatherAlive} onChange={(e) => updateField('fatherAlive', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none">
+            <select id="fatherAlive" value={form.fatherAlive} onChange={(e) => updateField('fatherAlive', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none">
               <option value="">-</option>
               <option value="true">{t('app.yes')}</option>
               <option value="false">{t('app.no')}</option>
@@ -121,13 +121,13 @@ export default function NewStudentPage() {
           </div>
           <div className="md:col-span-2">
             <label htmlFor="siblings" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.family.siblings')}</label>
-            <input id="siblings" type="text" value={form.siblings} onChange={(e) => updateField('siblings', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input id="siblings" type="text" value={form.siblings} onChange={(e) => updateField('siblings', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
           </div>
         </div>
 
         <div className="mb-6">
           <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('student.notes')}</label>
-          <textarea id="notes" value={form.notes} onChange={(e) => updateField('notes', e.target.value)} rows={3} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none resize-none placeholder:text-gray-400" />
+          <textarea id="notes" value={form.notes} onChange={(e) => updateField('notes', e.target.value)} rows={3} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none resize-none placeholder:text-gray-400" />
         </div>
 
         <button
