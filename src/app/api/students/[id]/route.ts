@@ -76,6 +76,10 @@ export async function PUT(
     const { id } = params
     const data = await request.json()
 
+    if (!data.firstName?.trim() || !data.lastName?.trim()) {
+      return NextResponse.json({ error: 'First name and last name are required' }, { status: 400 })
+    }
+
     const student = await prisma.student.update({
       where: { id },
       data: {

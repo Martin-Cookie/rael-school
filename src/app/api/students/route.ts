@@ -79,10 +79,15 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json()
 
+    // Validate required fields
+    if (!data.firstName?.trim() || !data.lastName?.trim()) {
+      return NextResponse.json({ error: 'First name and last name are required' }, { status: 400 })
+    }
+
     // Validate string lengths
     const MAX_NAME = 100
     const MAX_TEXT = 500
-    if (data.firstName?.length > MAX_NAME || data.lastName?.length > MAX_NAME) {
+    if (data.firstName.length > MAX_NAME || data.lastName.length > MAX_NAME) {
       return NextResponse.json({ error: 'Name too long (max 100 chars)' }, { status: 400 })
     }
     if (data.notes?.length > MAX_TEXT || data.healthStatus?.length > MAX_TEXT) {
