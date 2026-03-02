@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit, isAdmin, isSponsor } from '@/lib/auth'
+import { studentSchema, formatZodErrors } from '@/lib/validations'
 
 export async function GET(
   request: NextRequest,
@@ -74,11 +75,12 @@ export async function PUT(
     }
 
     const { id } = params
-    const data = await request.json()
-
-    if (!data.firstName?.trim() || !data.lastName?.trim()) {
-      return NextResponse.json({ error: 'First name and last name are required' }, { status: 400 })
+    const raw = await request.json()
+    const parsed = studentSchema.safeParse(raw)
+    if (!parsed.success) {
+      return NextResponse.json({ error: formatZodErrors(parsed.error) }, { status: 400 })
     }
+    const data = parsed.data
 
     const student = await prisma.student.update({
       where: { id },

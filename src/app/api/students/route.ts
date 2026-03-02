@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, canEdit, isSponsor } from '@/lib/auth'
+import { studentSchema, formatZodErrors } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
@@ -77,22 +78,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const data = await request.json()
-
-    // Validate required fields
-    if (!data.firstName?.trim() || !data.lastName?.trim()) {
-      return NextResponse.json({ error: 'First name and last name are required' }, { status: 400 })
+    const raw = await request.json()
+    const parsed = studentSchema.safeParse(raw)
+    if (!parsed.success) {
+      return NextResponse.json({ error: formatZodErrors(parsed.error) }, { status: 400 })
     }
-
-    // Validate string lengths
-    const MAX_NAME = 100
-    const MAX_TEXT = 500
-    if (data.firstName.length > MAX_NAME || data.lastName.length > MAX_NAME) {
-      return NextResponse.json({ error: 'Name too long (max 100 chars)' }, { status: 400 })
-    }
-    if (data.notes?.length > MAX_TEXT || data.healthStatus?.length > MAX_TEXT) {
-      return NextResponse.json({ error: 'Text too long (max 500 chars)' }, { status: 400 })
-    }
+    const data = parsed.data
 
     // Generate unique student number
     const lastStudent = await prisma.student.findFirst({
