@@ -5,12 +5,12 @@
 
 ## Souhrn
 
-- **CRITICAL: 12** (8 vyřešeno ✅, 4 otevřeno)
-- **HIGH: 16** (13 vyřešeno ✅, 3 otevřeno)
-- **MEDIUM: 22** (2 vyřešeno ✅, 20 otevřeno)
+- **CRITICAL: 12** (10 vyřešeno ✅, 2 otevřeno)
+- **HIGH: 16** (15 vyřešeno ✅, 1 otevřeno)
+- **MEDIUM: 22** (8 vyřešeno ✅, 14 otevřeno)
 - **LOW: 10**
 
-**Celkem: 60 nálezů (23 vyřešeno ve Fázích 1–2)**
+**Celkem: 60 nálezů (33 vyřešeno ve Fázích 1–3)**
 
 ### Fáze 1 — vyřešené CRITICAL nálezy (2026-03-02)
 
@@ -35,6 +35,18 @@
 | `f8328ed` | Validace povinných polí (firstName, lastName) na student API |
 | `5f61220` | Testy: csvParser (14), paymentMatcher (15), auth (9) — celkem 64 testů |
 
+### Fáze 3 — vyřešené MEDIUM + zbývající CRITICAL/HIGH nálezy (2026-03-02)
+
+| Commit | Popis |
+|--------|-------|
+| `d3e1fa9` | parseFloat/parseInt NaN validace v payments API |
+| `b2093cd` | .gitignore: .vscode/, .idea/, coverage/, dist/, .turbo/ |
+| `3b10bcf` | Security headers: X-Content-Type-Options, X-Frame-Options atd. |
+| `2351d5f` | SortHeader keyboard + Pagination aria atributy |
+| `024fa2a` | Sidebar language dropdown keyboard (Escape, šipky) |
+| `34a854f` | Statistics bez take:5000 + Dashboard server-side groupBy/aggregate |
+| `0b24f3c` | Rate limit na backup restore, JSON/CSV/DB export |
+
 ---
 
 ## Souhrnná tabulka
@@ -49,14 +61,14 @@
 | 6 | UI | `components/layout/Sidebar.tsx:72-186` | ✅ CRITICAL | Sidebar nemá žádné `dark:` třídy | Kompletní dark mode (`9940b25`) |
 | 7 | UI | Více tab komponent | ✅ CRITICAL | Form inputy bez `dark:bg-gray-700` | 8 komponent opraveno (`8aef4f5`) |
 | 8 | UI | Více formulářů | ✅ CRITICAL | Inputy bez `<label>` nebo `aria-label` (WCAG A) | 40 aria-label přidáno (`956a549`) |
-| 9 | Výkon | `api/statistics/route.ts:31-52` | CRITICAL | `take: 5000` bez paginace | Cachovat agregace, přidat filtr |
-| 10 | Výkon | `api/dashboard/route.ts:63-84` | CRITICAL | Dashboard načítá 1000+ záznamů najednou | Agregovat server-side |
+| 9 | Výkon | `api/statistics/route.ts:31-52` | ✅ CRITICAL | `take: 5000` bez paginace | Odstraněno take:5000 (`34a854f`) |
+| 10 | Výkon | `api/dashboard/route.ts:63-84` | ✅ CRITICAL | Dashboard načítá 1000+ záznamů najednou | groupBy/aggregate + take:100 (`34a854f`) |
 | 11 | Výkon | `prisma/schema.prisma` | ✅ CRITICAL | Chybí indexy: VoucherPurchase.sponsorId, PaymentImportRow.sponsorId, TuitionCharge.period | Přidáno (`332a7a9`) |
 | 12 | Error | 10+ stránek | ✅ CRITICAL | `.catch(() => {})` — tiché selhání fetch volání | console.error logování (`2b8bbc4`) |
 | 13 | Bezpečnost | `lib/auth.ts:29` | HIGH | JWT expirace 7 dní — příliš dlouhá | Snížit na 1–2 hodiny + refresh token |
 | 14 | Bezpečnost | `api/students/[id]/photos/route.ts:29-36` | ✅ HIGH | File upload validuje jen MIME type, ne obsah | Magic bytes validace (`5c86dad`) |
-| 15 | Bezpečnost | `api/admin/backup/restore/route.ts` | HIGH | DB restore bez rate limitu a potvrzení | Přidat approval workflow |
-| 16 | Bezpečnost | `api/admin/backup/json/route.ts` | HIGH | Bulk export bez rate limitu a audit logu | Přidat rate limit + logování |
+| 15 | Bezpečnost | `api/admin/backup/restore/route.ts` | ✅ HIGH | DB restore bez rate limitu a potvrzení | Rate limit 3/h (`0b24f3c`) |
+| 16 | Bezpečnost | `api/admin/backup/json/route.ts` | ✅ HIGH | Bulk export bez rate limitu a audit logu | Rate limit 5/h (`0b24f3c`) |
 | 17 | Kód | Split + Approve routes | ✅ HIGH | Duplicitní logika detekce voucher typů | Extrahováno do `paymentTypes.ts` (`b6f660a`) |
 | 18 | Kód | Více souborů | ✅ HIGH | Hardcoded fallback `80` pro voucher rate | `constants.ts` (`b6f660a`) |
 | 19 | Kód | Více souborů | ✅ HIGH | Nekonzistentní default měny (CZK vs KES) | Centralizováno (`b6f660a`) |
@@ -74,10 +86,10 @@
 | 31 | Testy | `lib/auth.ts` | ✅ HIGH | Auth funkce bez testů | 9 testů (`5f61220`) |
 | 32 | Bezpečnost | Všechny POST endpointy | MEDIUM | Žádná CSRF ochrana | Přidat CSRF tokeny |
 | 33 | Bezpečnost | `api/students/route.ts:82-90` | MEDIUM | Validace jen délky, ne obsahu | Použít `zod` schema |
-| 34 | Bezpečnost | Všechny odpovědi | MEDIUM | Chybí security headers (CSP, HSTS) | Přidat v `headers()` |
+| 34 | Bezpečnost | Všechny odpovědi | ✅ MEDIUM | Chybí security headers (CSP, HSTS) | Přidáno v next.config.js (`3b10bcf`) |
 | 35 | Bezpečnost | Více endpointů | MEDIUM | Nekonzistentní auth checks | Centralizovat helpers |
 | 36 | Bezpečnost | `prisma/dev.db.primary` | MEDIUM | DB zálohy s citlivými daty v git historii | Přesunout mimo repo |
-| 37 | Bezpečnost | Více endpointů | MEDIUM | Rate limiting jen na login | Rozšířit na upload, export |
+| 37 | Bezpečnost | Více endpointů | ✅ MEDIUM | Rate limiting jen na login | Přidáno na restore+export (`0b24f3c`) |
 | 38 | Kód | `payments/import/[id]/page.tsx` | MEDIUM | 839 řádků — těžko testovatelný | Rozdělit na komponenty |
 | 39 | Kód | `reports/page.tsx` | MEDIUM | 705 řádků | Extrahovat sekce |
 | 40 | Kód | `students/[id]/page.tsx:31-77` | MEDIUM | 52 useState hooků | Seskupit do custom hooků |
@@ -87,15 +99,15 @@
 | 44 | Dokument | `src/lib/*.ts` | MEDIUM | Utility funkce bez JSDoc | Přidat JSDoc |
 | 45 | UI | Více stránek | MEDIUM | Nekonzistentní button padding | Definovat size systém |
 | 46 | UI | Více tab komponent | MEDIUM | Některé inputy chybí `dark:bg-gray-700` | Sjednotit |
-| 47 | UI | `components/SortHeader.tsx` | MEDIUM | `<th>` bez keyboard handlerů | Přidat `onKeyDown`, `tabIndex` |
-| 48 | UI | `Sidebar.tsx:126-145` | MEDIUM | Dropdown bez Escape a arrow navigace | Přidat keyboard handlery |
+| 47 | UI | `components/SortHeader.tsx` | ✅ MEDIUM | `<th>` bez keyboard handlerů | tabIndex + onKeyDown (`2351d5f`) |
+| 48 | UI | `Sidebar.tsx:126-145` | ✅ MEDIUM | Dropdown bez Escape a arrow navigace | Escape + šipky (`024fa2a`) |
 | 49 | UI | Formuláře plateb | MEDIUM | Chybí focus trap v panelech | Implementovat focus trap |
-| 50 | UI | `Pagination.tsx:58-68` | MEDIUM | Tlačítka bez `aria-label`, `aria-current` | Přidat |
+| 50 | UI | `Pagination.tsx:58-68` | ✅ MEDIUM | Tlačítka bez `aria-label`, `aria-current` | Přidáno (`2351d5f`) |
 | 51 | UI | Více komponent | MEDIUM | Focus ring v dark mode špatně viditelný | `dark:focus:ring-primary-400` |
 | 52 | Výkon | Více API endpointů | MEDIUM | Odpovědi bez `select:` — zbytečná data | Přidat `select: {}` |
-| 53 | Error | `api/payments/route.ts:81,105` | MEDIUM | `parseFloat()` bez NaN kontroly | Validovat před uložením |
+| 53 | Error | `api/payments/route.ts:81,105` | ✅ MEDIUM | `parseFloat()` bez NaN kontroly | NaN validace (`d3e1fa9`) |
 | 54 | Error | `api/.../approve/route.ts:78` | ✅ MEDIUM | `\|\|` místo `??` — 0 je falsy | Opraveno na `??` (`b6f660a`) |
-| 55 | Git | `.gitignore` | MEDIUM | Chybí `.vscode/`, `.idea/`, `coverage/` | Doplnit |
+| 55 | Git | `.gitignore` | ✅ MEDIUM | Chybí `.vscode/`, `.idea/`, `coverage/` | Doplněno (`b2093cd`) |
 | 56 | Kód | Více stránek | LOW | Přímý localStorage bez encapsulace | Vytvořit `useLocalStorage` hook |
 | 57 | Kód | `import/[id]/page.tsx:654` | LOW | Komplexní IIFE v JSX | Extrahovat do helper funkce |
 | 58 | UI | Více stránek | LOW | Nekonzistentní icon sizes (w-4/w-5/w-6) | Definovat icon size systém |
