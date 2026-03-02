@@ -6,3 +6,12 @@ prisma/dev.db*
 *.log
 *.tsbuildinfo
 .DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Build & test output
+dist/
+coverage/
+.turbo/
