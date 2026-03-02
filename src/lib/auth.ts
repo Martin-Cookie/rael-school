@@ -1,11 +1,21 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import { cookies } from 'next/headers'
 import { prisma } from './db'
 
 const JWT_SECRET = (() => {
   const secret = process.env.JWT_SECRET
-  if (!secret) throw new Error('JWT_SECRET environment variable must be set in .env')
+  if (!secret) {
+    // Auto-generate a strong secret for development (not persisted)
+    const generated = crypto.randomBytes(32).toString('base64')
+    console.warn('[AUTH] JWT_SECRET not set — using auto-generated secret. Set JWT_SECRET in .env for production.')
+    return generated
+  }
+  // Warn about weak secrets (short or containing predictable patterns)
+  if (secret.length < 32 || /rael|school|secret|password|test|demo/i.test(secret)) {
+    console.warn('[AUTH] JWT_SECRET appears weak. Generate a strong one: openssl rand -base64 32')
+  }
   return secret
 })()
 
