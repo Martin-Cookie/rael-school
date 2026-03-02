@@ -37,7 +37,6 @@
 - **CSS:** Tailwind CSS
 - **Autentizace:** JWT (httpOnly cookies) + bcrypt
 - **Ikony:** lucide-react
-- **Testy:** Vitest (`npm test` / `npm run test:watch`)
 - **Lokalizace:** Vlastní i18n (cs/en/sw)
 - **Dark mode:** Tailwind `dark:` třídy + CSS proměnné, přepínání v sidebaru (Moon/Sun ikona)
 
@@ -51,17 +50,192 @@
 - Stravenky (VoucherPurchase) mohou být v libovolné měně (default CZK), sponzorské platby (SponsorPayment) mají default KES
 - Sazba stravenek (cena za 1 stravenku) je konfigurovatelná per měna v administraci (`VoucherRate` model), výchozí 80 CZK
 - Konstanty `CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']` — předdefinované měny používané v dropdownech (import z `@/lib/constants`)
+- Detekce typů plateb: `getVoucherTypeIds()`, `getTuitionTypeIds()` z `@/lib/paymentTypes`
+- Fallback sazby: `DEFAULT_VOUCHER_RATE_FALLBACK = 80`, `AMOUNT_TOLERANCE = 0.01` z `@/lib/constants`
 - Každý nový text v UI musí mít klíč ve **všech třech** jazycích (cs, en, sw)
-- Rate limiting na login: `checkRateLimit()` z `@/lib/rateLimit` (5 pokusů / 15 min per IP)
-- API error handling: `isNotFoundError()` z `@/lib/db` — v catch bloku před 500 vrátí 404 pro Prisma P2025
-- Obrázky: používat `<Image>` z `next/image`, ne `<img>`
-- Detail studenta: lazy-load dat per záložka (číselníky se fetchují při prvním kliknutí na záložku)
 
 ## UI vzory
 
-> **Detailní UI/frontend konvence** (hooky, komponenty, layout, tabulky, sticky hlavičky, dark mode, formuláře, navigace, záložky, CSV export) jsou v **[docs/UI_GUIDE.md](docs/UI_GUIDE.md)**.
->
-> Níže jsou pouze **backend/domain pravidla** související s UI stránkami.
+### Sdílené hooky a komponenty
+
+Všechny hlavní stránky používají sdílené hooky a komponenty (místo dřívějšího copy-paste kódu):
+
+| Hook / Komponenta | Soubor | Popis |
+|---|---|---|
+| `useLocale()` | `src/hooks/useLocale.ts` | Vrací `{ locale, t }` — locale stav + translator, naslouchá na `locale-change` event |
+| `useSorting(valueExtractor?)` | `src/hooks/useSorting.ts` | Vrací `{ sortCol, sortDir, handleSort, sortData, setSortCol }` — třídění tabulek |
+| `useStickyTop(deps)` | `src/hooks/useStickyTop.ts` | Vrací `{ stickyRef, theadTop }` — dynamická výška sticky hlavičky |
+| `useToast()` | `src/hooks/useToast.ts` | Vrací `{ message, showMsg }` — toast notifikace |
+| `<SortHeader>` | `src/components/SortHeader.tsx` | Tříditelná hlavička `<th>` se šipkami (ChevronUp/ChevronDown/ArrowUpDown) |
+| `<Toast>` | `src/components/Toast.tsx` | Toast notifikace — `<Toast message={message} />` |
+| `fmtCurrency()` | `src/lib/format.ts` | Formátování částky s měnou — `fmtCurrency(1500, 'KES')` → `1 500 KES` |
+
+**useSorting — valueExtractor:**
+- Default extractor zvládá: přímé property, nested (`student.className`), `_count.*` pro Prisma relace
+- Vlastní extractor pro custom sloupce (`_studentName`, `_sponsorshipCount` atd.)
+
+**Použití hooků na stránkách:**
+
+| Stránka | useLocale | useSorting | useStickyTop | useToast | SortHeader | Toast |
+|---------|:-:|:-:|:-:|:-:|:-:|:-:|
+| `students/page.tsx` | x | x | x | - | x | - |
+| `sponsors/page.tsx` | x | x | x | x | x | x |
+| `payments/page.tsx` | x | x | x | x | x | x |
+| `dashboard/page.tsx` | x | x | x | - | x | - |
+| `tuition/page.tsx` | x | x | x | x | x | x |
+| `classes/page.tsx` | x | x | - | - | x | - |
+| `payments/import/[id]/page.tsx` | x | x | - | x | vlastní SH* | x |
+| `students/[id]/page.tsx` | x | - | - | x | - | x |
+
+*Import detail má vlastní `SH` komponentu s odlišným stylem (`text-xs uppercase`), ale používá sdílený `useSorting` hook.
+
+### Třídění tabulek (SortHeader pattern)
+
+Stránky s tříděním:
+| Stránka | Soubor | Sloupce |
+|---------|--------|---------|
+| Přehled | `dashboard/page.tsx` | Studenti, Sponzoři, Platby, Potřeby, Třídy |
+| Studenti | `students/page.tsx` | Číslo, Příjmení, Jméno, Třída, Pohlaví, Věk, Potřeby, Sponzoři |
+| Sponzoři | `sponsors/page.tsx` | Příjmení, Jméno, Email, Telefon, Studenti, Platby |
+| Třídy | `classes/page.tsx` | Karty tříd (přirozené řazení PP1→Grade 12) + detail třídy se studenty |
+| Platby – Sponzorské | `payments/page.tsx` | Datum, Typ, Částka, Student, Sponzor, Poznámky |
+| Platby – Stravenky | `payments/page.tsx` | Datum nákupu, Částka, Počet, Student, Sponzor, Poznámky |
+| Import detail | `payments/import/[id]/page.tsx` | Datum, Částka, Měna, Student, Sponzor, Typ, Stav |
+| Předpisy školného | `tuition/page.tsx` | Student, Třída, Částka, Zaplaceno, Zbývá, Stav |
+
+### Sticky layout seznamů
+
+Všechny hlavní seznamy (Studenti, Sponzoři, Platby, Přehled) používají dvouvrstvý sticky layout:
+
+**1. Sticky hlavička (z-30)** — title + search/tlačítka, vždy nahoře:
+```
+sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8
+```
+- `top-16` = pod mobilním headerem (64px), `lg:top-0` = na desktopu nahoře
+- Negativní margin + padding = pozadí do krajů (kompenzuje padding rodiče)
+
+**2. Sticky thead (z-20)** — řádek s třídícími hlavičkami, pod sticky hlavičkou:
+```tsx
+const { stickyRef, theadTop } = useStickyTop([loading])
+// ...
+<tr className="... bg-white sticky z-20" style={{ top: theadTop }}>
+```
+- `theadTop` = dynamicky měřená výška sticky hlavičky + mobilní offset
+- Hook `useStickyTop` interně používá `ResizeObserver` + `window resize` listener
+- Dependency `[loading]` — na stránkách s early `if (loading) return` se ref naplní až po načtení
+
+**Důležité:**
+- Tabulky NESMÍ být obaleny v `overflow-hidden` ani `overflow-x-auto` — tyto CSS vlastnosti vytvářejí nový scroll kontext a ruší `position: sticky`
+- Pozadí thead musí být neprůhledné (`bg-white` nebo `bg-gray-50`, ne `bg-gray-50/50`)
+
+**Bez stránkování** — všechny záznamy se zobrazují najednou (data se načítají celá z API)
+
+### Dashboard — přehled tříd a cross-tab navigace
+
+**Přehled tříd (záložka Třídy):**
+- Místo tabulky zobrazeny jako **karty/bubliny** v gridu (2→3→4 sloupce dle šířky)
+- Přirozené řazení: PP1, PP2, Grade 1, Grade 2, …, Grade 12
+- Klik na kartu → detail třídy se seznamem studentů
+
+**Cross-tab navigace (klikatelné názvy tříd):**
+- V záložkách **Studenti** a **Potřeby** je název třídy klikatelný
+- Klik přepne na záložku Třídy s detailem dané třídy
+- Tlačítko zpět vrací na **zdrojovou záložku** (ne na přehled tříd) — implementováno přes `useRef<DashTab>` (`prevTabRef`)
+- Pokud uživatel přišel přímo z přehledu tříd, zpět vrací na grid tříd
+
+**Karta Celkem studentů:**
+- Pod hlavním číslem zobrazuje počet chlapců / dívek
+
+### Detail studenta — záložky
+
+Soubor: `src/app/students/[id]/page.tsx`
+
+10 záložek v tomto pořadí:
+
+| # | Záložka | Klíč | Barva | Ikona |
+|---|---------|------|-------|-------|
+| 1 | Osobní údaje | `personal` | gray | User |
+| 2 | Sponzoři | `sponsors` | accent | HandHeart |
+| 3 | Vybavení | `equipment` | amber | Package |
+| 4 | Potřeby | `needs` | rose | Heart |
+| 5 | Přání | `wishes` | violet | Star |
+| 6 | Stravenky | `vouchers` | blue | Ticket |
+| 7 | Platby od sponzorů | `sponsorPayments` | indigo | CreditCard |
+| 8 | Školné | `tuition` | emerald | FileText |
+| 9 | Zdraví | `health` | teal | Stethoscope |
+| 10 | Fotografie | `photos` | slate | Camera |
+
+### Návštěvní karty (Visit Cards) — tiskový layout
+
+Soubor: `src/app/reports/visit-cards/print/page.tsx`
+
+Dvoustránkový A4 formulář pro každého studenta (výška stránky `calc(297mm - 16mm)`):
+
+| Stránka | Sekce |
+|---------|-------|
+| 1 | Header, Sponzoři, Základní info (třída, škola, DOB, pohlaví, osiřelost, zdraví), Rodina, Vybavení |
+| 2 | Potřeby, Přání, Obecné poznámky (flex-fill do konce stránky) |
+
+**Layout sekcí na stránce 2:**
+
+| Sekce | Layout |
+|-------|--------|
+| Potřeby | CSS grid 3 sloupce — checkbox + název + cena (bez individuálních poznámek) |
+| Přání | CSS grid 3 sloupce — checkbox + název + cena (bez individuálních poznámek) |
+| Obecné poznámky | flex-fill do konce stránky |
+
+**Layout tabulky Vybavení (stránka 1, colgroup + table-fixed):**
+
+| Sekce | Sloupce (šířky) |
+|-------|----------------|
+| Vybavení | checkbox 4%, typ 22%, stav 11%, cena 8%, poznámky 55% |
+
+- Tisk přes iframe (izolovaný HTML snapshot nezávislý na React lifecycle)
+- Poznámkový rámeček na stránce 2 se automaticky roztáhne do konce stránky (flex: 1)
+- Ceny z číselníků `needTypes`, `wishTypes`, `equipmentTypes` (API `/api/reports/visit-cards`)
+
+### Administrace číselníků — auto-překlad
+
+Soubory:
+- UI: `src/app/admin/page.tsx` (komponenta `CodelistSection`)
+- Translate endpoint: `src/app/api/admin/translate/route.ts`
+
+**Přidání nové položky s překladem:**
+1. Admin zadá český název
+2. Klikne Globe tlačítko → otevře EN/SW pole + spustí auto-překlad (MyMemory API)
+3. Opětovný klik na Globe → skryje překladová pole a vymaže hodnoty
+4. Po kliknutí "Přidat" se pole automaticky skryjí
+
+**Layout vstupního formuláře:**
+```
+[ Český název (celá šířka)          ] [ 🌐 ]
+[ Cena ]                  ← jen u číselníků s cenou
+[ EN: auto-překlad                         ]
+[ SW: auto-překlad                         ]
+[        + Přidat         |   Zrušit       ]
+```
+
+- Název + Globe jsou na jednom řádku, Cena na samostatném řádku pod nimi
+- Překladová pole jsou **vertikálně pod sebou** (ne vedle sebe)
+- Globe tlačítko je **toggle** s vizuálním zvýrazněním aktivního stavu (modrý rámeček)
+- Globe tlačítko má `flex-shrink-0` — nepřetéká přes okraj karty
+- Tlačítko **Zrušit** se zobrazí jakmile uživatel začne vyplňovat — resetuje název, cenu i překlady
+
+**Editace názvů existujících položek:**
+- Klik na název položky → inline textový input (click-to-edit)
+- Enter nebo blur uloží změnu přes PUT endpoint (`body.name`)
+- Escape zruší editaci
+- Tužka (Pencil) se zobrazí při hoveru nad položkou
+
+**Editace překladu u existujících položek:**
+- Ikona Globe na řádku položky (viditelná při hoveru)
+- Klik otevře inline EN/SW inputy pod položkou (vertikálně)
+- Uložení přes PUT endpoint (Enter nebo tlačítko Uložit)
+
+**Translate endpoint:**
+- `POST /api/admin/translate` — přijme `{ text }`, vrátí `{ en, sw }`
+- Dvě paralelní volání MyMemory API (`cs|en`, `cs|sw`) přes `Promise.allSettled`
+- Timeout 5s, vyžaduje autentizaci
 
 ### Sazby stravenek (VoucherRate)
 
@@ -109,6 +283,43 @@ Soubory:
 **SponsorPayment z bank importu:**
 - Nastavuje `sponsorId` (relace) — detail studenta i stránka plateb zobrazují přes `p.sponsor`
 
+### Dark mode
+
+Aplikace podporuje plný dark mode přepínatelný tlačítkem v sidebaru (Moon/Sun ikona).
+
+**Implementace:**
+- Třída `dark` na `<html>` elementu — Tailwind `darkMode: 'class'` v `tailwind.config.js`
+- CSS proměnné v `globals.css` pro barvy pozadí, textu, borderů (`:root` / `.dark`)
+- Stav uložen v `localStorage` (`theme`) + systémová preference jako fallback
+- Sidebar: `src/components/layout/Sidebar.tsx` — toggle `dark` třídy na `document.documentElement`
+
+**Konvence pro dark mode v komponentách:**
+- Karty/kontejnery: `bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700`
+- Hlavní text: `text-gray-900 dark:text-gray-100`
+- Sekundární text: `text-gray-700 dark:text-gray-300` nebo `text-gray-500 dark:text-gray-400`
+- Ikony v barevných kruzích: `bg-*-50 dark:bg-*-900/30`, `text-*-600 dark:text-*-400`
+- Inputy: `border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100`
+- Sticky hlavičky: `bg-[#fafaf8] dark:bg-gray-900` (stránky), `bg-white dark:bg-gray-800` (thead)
+- Tabulkové řádky: `border-gray-50 dark:border-gray-700`
+
+### CSV export
+
+Soubory:
+- Helper: `src/lib/csv.ts` (funkce `downloadCSV`)
+- UI tlačítka: na stránkách Studenti, Sponzoři, Platby
+
+**Stránky s exportem:**
+| Stránka | Soubor | Export |
+|---------|--------|--------|
+| Studenti | `students/page.tsx` | CSV se všemi studenty (číslo, jméno, třída, pohlaví, věk, potřeby, sponzoři) |
+| Sponzoři | `sponsors/page.tsx` | CSV se sponzory (jméno, email, telefon, počet studentů, celkem plateb) |
+| Platby | `payments/page.tsx` | CSV s platbami aktivního tabu (sponzorské nebo stravenky) |
+| Předpisy | `tuition/page.tsx` | CSV s předpisy (číslo, jméno, třída, částka, zaplaceno, zbývá, stav, sponzor, typ, poznámky) |
+
+**Funkce `downloadCSV(headers, rows, filename)`:**
+- BOM prefix pro správné kódování v Excelu (UTF-8)
+- Escapování uvozovek a čárek v hodnotách
+
 ### Předpisy školného (Tuition Charges)
 
 Soubory:
@@ -117,15 +328,77 @@ Soubory:
 - Prisma model: `TuitionCharge` (studentId, period, amount, currency, status)
 - Sazby: `TuitionRate` (annualFee, gradeFrom, gradeTo, currency)
 
+**Souhrnné karty (3 bubliny):**
+
+| Karta | Hlavní hodnota | Pod-text |
+|-------|---------------|----------|
+| Celkem předepsáno | Částka v CZK | Počet předpisů + roční/půlroční breakdown |
+| Celkem zaplaceno | Částka v CZK (zelená) | Počet zaplacených / celkem |
+| Celkem zbývá | Částka v CZK (červená) | Počet nezaplacených |
+
+- **Roční** = period je jen rok (`"2026"`), **půlroční** = period obsahuje `-H` (`"2026-H1"`)
+- Počty se zobrazují jako drobný text pod hlavní částkou
+
 **Generování předpisů:**
 - Panel s výběrem studentů (checkboxy, filtr tříd, hledání)
 - Sazba se určí automaticky podle třídy studenta a `TuitionRate` číselníku
 - Duplikáty se přeskakují (student + období)
-- **Roční** = period je jen rok (`"2026"`), **půlroční** = period obsahuje `-H` (`"2026-H1"`)
+
+**Tabulka předpisů:**
+
+| Sloupec | Tříditelný | Popis |
+|---------|-----------|-------|
+| Student | ano | Jméno + číslo (odkaz na detail) |
+| Třída | ano | Třída studenta |
+| Částka | ano | Předepsaná částka |
+| Zaplaceno | ano | Součet plateb typu školné pro studenta v daném roce |
+| Zbývá | ano | Předepsáno − zaplaceno |
+| Stav | ano | UNPAID / PARTIAL / PAID (barevný badge) |
+| Sponzor | ne | Klikatelní sponzoři z plateb |
+| Typ platby | ne | Typy plateb z přiřazených SponsorPayment |
+| Poznámky | ne | Volitelné poznámky |
 
 **Výpočet zaplacené částky:**
 - Na serveru se sčítají `SponsorPayment` s typem obsahujícím "školné"/"tuition"/"karo"
 - Filtrováno podle studenta, roku z periody a měny předpisu
+
+### Cross-page navigace a klikatelné odkazy
+
+**Klikatelní sponzoři v seznamu studentů:**
+- Soubor: `students/page.tsx`
+- Ve sloupci sponzorů jsou jména klikatelná → odkaz na stránku Sponzoři s hledáním (`/sponsors?search=...`)
+
+**Zachování stavu hledání:**
+- Stránka Sponzoři čte `?search=` z URL a předvyplní vyhledávací pole
+- Při navigaci zpět z detailu studenta se stav hledání zachová
+
+**Zachování aktivní záložky v dashboardu:**
+- Soubor: `dashboard/page.tsx`
+- Všechny odkazy z dashboardu kódují aktivní záložku v `from=` parametru: `from=/dashboard?tab=sponsors`
+- Pomocná funkce `dashFrom()` generuje zakódovaný `from` URL s `tab` (a `paymentSubTab` pro platby)
+- Při návratu dashboard čte `tab` a `paymentSubTab` z URL parametrů a obnoví správnou záložku
+- Flow: Dashboard (záložka Sponzoři) → detail sponzora → zpět → Dashboard (záložka Sponzoři)
+
+**Řetězová zpětná navigace (detail studenta):**
+- Soubor: `students/[id]/page.tsx`
+- Tlačítko zpět si pamatuje cestu: Studenti → Sponzoři → Detail → zpět na Sponzoře → zpět na Studenty
+- Implementováno přes `document.referrer` a URL parametry
+
+**Filtr sponzorů ve formuláři platby:**
+- Soubor: `payments/page.tsx`
+- Dropdown sponzorů ve formuláři platby se filtruje podle vybraného studenta (zobrazí jen sponzory přiřazené k danému studentovi)
+
+### Filtrování a vyhledávání na stránce Platby
+
+Soubor: `src/app/payments/page.tsx`
+
+- Dvě záložky: Sponzorské platby / Stravenky
+- **Vyhledávání** (textové pole) — filtruje podle jména studenta, sponzora, poznámek
+- **Filtr Sponzor** — dropdown s unikátními sponzory z aktuálních dat
+- **Filtr Typ** — dropdown s typy plateb (jen u sponzorských plateb)
+- Filtry se kombinují (AND logika)
+- Tlačítko **Zrušit** ve formulářích (sponzorské platby i stravenky) resetuje všechna pole do výchozích hodnot
+- Auto-přepočet počtu stravenek: při zadání částky nebo změně měny se count přepočítá podle sazby z `VoucherRate` číselníku
 
 ## Uživatelské role
 
@@ -152,15 +425,6 @@ Soubory:
 |--------|-------|
 | `data/students-real.json` | 148 studentů — kompletní strukturovaná data (DOB, třída, škola, sponzoři, zdravotní stav, rodinná situace, 30 sourozeneckých skupin, přijaté předměty, zubní prohlídky) |
 | `data/config-real.json` | Číselníky — třídy (PP1–Grade 12), typy plateb, školné, typy zdravotních prohlídek, měsíční sponzoři ordinace, sazby stravenek |
-| `data/test-bank-import.csv` | Testovací bankovní výpis pro import plateb |
-| `data/fio-vypisek-vzor.pdf` | Vzorový PDF výpis z Fio banky |
-
-### Dokumentace
-
-| Soubor | Obsah |
-|--------|-------|
-| `docs/UI_GUIDE.md` | UI/frontend konvence (layout, tabulky, hooky, komponenty, dark mode, formuláře) |
-| `docs/SPEC-payment-import.md` | Specifikace importu bankovních výpisů (formát CSV, párovací logika, split flow) |
 
 ### Co je v záloze (dev.db.primary) vs. co je v seedu
 
@@ -277,7 +541,7 @@ git pull origin <aktuální-branch> && npm run dev
 1. **Přečti CLAUDE.md** a pochop strukturu projektu
 2. **Analyzuj** současný stav relevantních souborů — VŽDY číst z disku, ne z paměti
 3. **Pokud ti něco není jasné — ZEPTEJ SE**, nedomýšlej si
-4. **Ukaž strukturovaný plán** (co budeš měnit, které soubory, jak)
+4. **Ukaž strukturovaný plán** přes update_plan tool (co budeš měnit, které soubory, jak)
 5. **POČKEJ NA SCHVÁLENÍ** — neimplementuj dokud uživatel neschválí plán
 6. **Implementuj** po schválení
 7. **Ověř** že existující funkce stále fungují (spusť `npm run dev`, otestuj dotčené stránky)
