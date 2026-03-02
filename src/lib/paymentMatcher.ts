@@ -324,7 +324,7 @@ function matchRow(
 /**
  * Normalize name: remove diacritics, lowercase, remove titles
  */
-function normalizeName(name: string): string {
+export function normalizeName(name: string): string {
   return name
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '') // remove diacritics
@@ -339,7 +339,7 @@ function normalizeName(name: string): string {
  * Try to find a student name in the message text.
  * Matches firstName + lastName of any student.
  */
-function findStudentInMessage(
+export function findStudentInMessage(
   message: string,
   students: { id: string; firstName: string; lastName: string }[],
 ): { id: string; firstName: string; lastName: string } | null {
