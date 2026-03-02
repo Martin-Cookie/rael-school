@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -22,6 +22,8 @@ export default function Sidebar({ user }: SidebarProps) {
   const { locale, t } = useLocale()
   const [showLang, setShowLang] = useState(false)
   const [isDark, setIsDark] = useState(false)
+  const langRef = useRef<HTMLDivElement>(null)
+  const langBtnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'))
@@ -33,6 +35,30 @@ export default function Sidebar({ user }: SidebarProps) {
     document.documentElement.classList.toggle('dark', next)
     localStorage.setItem('rael-theme', next ? 'dark' : 'light')
   }
+
+  // Close language dropdown on Escape or outside click
+  useEffect(() => {
+    if (!showLang) return
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') { setShowLang(false); langBtnRef.current?.focus() }
+    }
+    function handleClick(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setShowLang(false)
+    }
+    document.addEventListener('keydown', handleKey)
+    document.addEventListener('mousedown', handleClick)
+    return () => { document.removeEventListener('keydown', handleKey); document.removeEventListener('mousedown', handleClick) }
+  }, [showLang])
+
+  const handleLangKeyDown = useCallback((e: React.KeyboardEvent, items: Locale[]) => {
+    const focused = document.activeElement as HTMLElement
+    const parent = focused?.parentElement
+    if (!parent) return
+    const buttons = Array.from(parent.querySelectorAll('button')) as HTMLElement[]
+    const idx = buttons.indexOf(focused)
+    if (e.key === 'ArrowDown') { e.preventDefault(); buttons[(idx + 1) % buttons.length]?.focus() }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); buttons[(idx - 1 + buttons.length) % buttons.length]?.focus() }
+  }, [])
 
   function changeLocale(l: Locale) {
     localStorage.setItem('rael-locale', l)
@@ -122,20 +148,26 @@ export default function Sidebar({ user }: SidebarProps) {
 
           {/* Language switcher */}
           <div className="px-2 py-2 border-t border-gray-100 dark:border-gray-700">
-            <div className="relative">
+            <div className="relative" ref={langRef}>
               <button
+                ref={langBtnRef}
                 onClick={() => setShowLang(!showLang)}
+                aria-expanded={showLang}
+                aria-haspopup="listbox"
                 className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 <Globe className="w-3.5 h-3.5" />
                 {localeNames[locale]}
               </button>
               {showLang && (
-                <div className="absolute bottom-full left-0 mb-1 w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
+                <div role="listbox" className="absolute bottom-full left-0 mb-1 w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
                   {(['cs', 'en', 'sw'] as Locale[]).map((l) => (
                     <button
                       key={l}
+                      role="option"
+                      aria-selected={locale === l}
                       onClick={() => changeLocale(l)}
+                      onKeyDown={(e) => handleLangKeyDown(e, ['cs', 'en', 'sw'])}
                       className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 ${locale === l ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-medium' : 'text-gray-700 dark:text-gray-300'}`}
                     >
                       {localeNames[l]}
