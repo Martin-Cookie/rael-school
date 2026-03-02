@@ -13,6 +13,13 @@ npm run dev
 
 Otevřete **http://localhost:3000**
 
+### Testy
+
+```bash
+npm test          # jednorázové spuštění
+npm run test:watch # watch mode
+```
+
 ## Přihlašovací údaje
 
 | Role | Email | Heslo |
@@ -29,6 +36,7 @@ Otevřete **http://localhost:3000**
 - **CSS:** Tailwind CSS (včetně dark mode)
 - **Autentizace:** JWT (httpOnly cookies) + bcrypt
 - **Ikony:** lucide-react
+- **Testy:** Vitest
 - **Lokalizace:** Vlastní i18n (čeština, angličtina, svahilština)
 
 ## Funkce
@@ -126,9 +134,14 @@ src/
 │   ├── reports/            # Reporty + návštěvní karty
 │   ├── admin/              # Administrace číselníků a sazeb
 │   └── api/                # REST API endpointy
+├── __tests__/              # Vitest testy
+│   ├── format.test.ts      # Testy formátovacích funkcí
+│   └── rateLimit.test.ts   # Testy rate limiteru
 ├── components/
 │   ├── layout/
 │   │   └── Sidebar.tsx     # Navigační sidebar + dark mode toggle
+│   ├── admin/              # Komponenty administrace (CodelistSection, VoucherRate, TuitionRate, Backup)
+│   ├── student-detail/     # Záložky detailu studenta (10 tab komponent + FormFields)
 │   ├── SortHeader.tsx      # Tříditelná hlavička tabulky
 │   ├── Toast.tsx           # Toast notifikace
 │   └── Pagination.tsx
@@ -137,7 +150,7 @@ src/
 │   ├── useSorting.ts       # Třídění tabulek
 │   ├── useStickyTop.ts     # Dynamická výška sticky hlavičky
 │   └── useToast.ts         # Toast notifikace
-├── lib/                    # Auth, DB, i18n, formátování, CSV, parser, tuition, imageUtils, paymentMatcher
+├── lib/                    # Auth, DB, i18n, formátování, CSV, parser, tuition, imageUtils, paymentMatcher, rateLimit, constants
 └── messages/               # Překlady (cs.json, en.json, sw.json)
 prisma/
 ├── schema.prisma           # Datový model

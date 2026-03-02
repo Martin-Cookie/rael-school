@@ -185,9 +185,27 @@ dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
 
 ## 8. Detail studenta — záložky
 
-Soubor: `src/app/students/[id]/page.tsx`
+Soubory:
+- Hlavní stránka: `src/app/students/[id]/page.tsx` (599 řádků)
+- Záložky: `src/components/student-detail/` (10 tab komponent + FormFields)
 
-10 záložek v tomto pořadí:
+### Lazy-load dat per záložka
+
+Data se nenačítají všechna najednou. Na mount se fetchne pouze student + user role. Číselníky pro konkrétní záložku se načítají při prvním kliknutí:
+
+| Záložka | Fetchuje |
+|---------|----------|
+| personal | classrooms |
+| equipment | classrooms, equipmentTypes |
+| needs | needTypes |
+| wishes | wishTypes |
+| vouchers | voucherRates |
+| sponsorPayments | paymentTypes |
+| tuition | tuitionCharges |
+| health | healthTypes |
+| sponsors, photos | — (data jsou v student objektu) |
+
+### 10 záložek v tomto pořadí:
 
 | # | Záložka | Klíč | Barva | Ikona |
 |---|---------|------|-------|-------|
@@ -266,7 +284,9 @@ Dvoustránkový A4 formulář (výška `calc(297mm - 16mm)`):
 
 ## 12. Administrace číselníků
 
-Soubor: `src/app/admin/page.tsx`
+Soubory:
+- Hlavní stránka: `src/app/admin/page.tsx` (434 řádků)
+- Komponenty: `src/components/admin/` (CodelistSection, VoucherRateSection, TuitionRateSection, BackupSection, types)
 
 ### Přidání nové položky s překladem
 1. Admin zadá český název

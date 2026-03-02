@@ -37,6 +37,7 @@
 - **CSS:** Tailwind CSS
 - **Autentizace:** JWT (httpOnly cookies) + bcrypt
 - **Ikony:** lucide-react
+- **Testy:** Vitest (`npm test` / `npm run test:watch`)
 - **Lokalizace:** Vlastní i18n (cs/en/sw)
 - **Dark mode:** Tailwind `dark:` třídy + CSS proměnné, přepínání v sidebaru (Moon/Sun ikona)
 
@@ -49,8 +50,12 @@
 - Měna za číslem: `fmtCurrency(1500, 'KES')` → `1 500 KES` (import z `@/lib/format`)
 - Stravenky (VoucherPurchase) mohou být v libovolné měně (default CZK), sponzorské platby (SponsorPayment) mají default KES
 - Sazba stravenek (cena za 1 stravenku) je konfigurovatelná per měna v administraci (`VoucherRate` model), výchozí 80 CZK
-- Konstanty `CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']` — předdefinované měny používané v dropdownech
+- Konstanty `CURRENCIES = ['CZK', 'EUR', 'USD', 'KES']` — předdefinované měny používané v dropdownech (import z `@/lib/constants`)
 - Každý nový text v UI musí mít klíč ve **všech třech** jazycích (cs, en, sw)
+- Rate limiting na login: `checkRateLimit()` z `@/lib/rateLimit` (5 pokusů / 15 min per IP)
+- API error handling: `isNotFoundError()` z `@/lib/db` — v catch bloku před 500 vrátí 404 pro Prisma P2025
+- Obrázky: používat `<Image>` z `next/image`, ne `<img>`
+- Detail studenta: lazy-load dat per záložka (číselníky se fetchují při prvním kliknutí na záložku)
 
 ## UI vzory
 
