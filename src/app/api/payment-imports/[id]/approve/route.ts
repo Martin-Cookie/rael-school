@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
 import { recalcTuitionStatus } from '@/lib/tuition'
+import { getVoucherTypeIds, getTuitionTypeIds } from '@/lib/paymentTypes'
+import { DEFAULT_VOUCHER_RATE_FALLBACK } from '@/lib/constants'
 
 // POST /api/payment-imports/[id]/approve — bulk approve rows
 export async function POST(
@@ -49,9 +51,7 @@ export async function POST(
 
     // Load payment types to determine which are vouchers
     const allPaymentTypes = await prisma.paymentType.findMany()
-    const voucherTypeIds = allPaymentTypes
-      .filter(pt => pt.name.toLowerCase().includes('stravenk') || pt.name.toLowerCase().includes('voucher'))
-      .map(pt => pt.id)
+    const voucherTypeIds = getVoucherTypeIds(allPaymentTypes)
 
     // Pre-load sponsor names for donorName on VoucherPurchase
     const sponsorIds = [...new Set(rows.map(r => r.sponsorId).filter(Boolean))] as string[]
@@ -74,8 +74,8 @@ export async function POST(
 
         if (isVoucher) {
           // Create VoucherPurchase — use manually set count, fallback to calculation from rate
-          const rate = rateMap.get(row.currency) || 80
-          const voucherCount = row.voucherCount || Math.floor(row.amount / rate)
+          const rate = rateMap.get(row.currency) || DEFAULT_VOUCHER_RATE_FALLBACK
+          const voucherCount = row.voucherCount ?? Math.floor(row.amount / rate)
           const vp = await tx.voucherPurchase.create({
             data: {
               studentId: row.studentId!,
@@ -138,9 +138,7 @@ export async function POST(
     })
 
     // Přepočítat stav předpisů pro studenty se školnými platbami
-    const tuitionTypeIds = allPaymentTypes
-      .filter(pt => /školné|tuition|karo/i.test(pt.name + (pt.nameEn || '') + (pt.nameSw || '')))
-      .map(pt => pt.id)
+    const tuitionTypeIds = getTuitionTypeIds(allPaymentTypes)
     const tuitionStudentIds = [...new Set(
       rows.filter(r => r.paymentTypeId && tuitionTypeIds.includes(r.paymentTypeId) && r.studentId)
         .map(r => r.studentId!)

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
 import { recalcTuitionStatus } from '@/lib/tuition'
+import { getVoucherTypeIds, getTuitionTypeIds } from '@/lib/paymentTypes'
+import { DEFAULT_VOUCHER_RATE_FALLBACK, AMOUNT_TOLERANCE } from '@/lib/constants'
 
 interface SplitPart {
   amount: number
@@ -42,7 +44,7 @@ export async function POST(
     // Validate: sum of parts must equal original amount
     const sum = parts.reduce((s, p) => s + (p.amount || 0), 0)
     const diff = Math.abs(sum - row.amount)
-    if (diff > 0.01) {
+    if (diff > AMOUNT_TOLERANCE) {
       return NextResponse.json({
         error: 'Sum of parts must equal original amount',
         expected: row.amount,
@@ -57,9 +59,7 @@ export async function POST(
 
     // Load payment types for auto-approve (voucher detection)
     const allPaymentTypes = await prisma.paymentType.findMany()
-    const voucherTypeIds = allPaymentTypes
-      .filter(pt => pt.name.toLowerCase().includes('stravenk') || pt.name.toLowerCase().includes('voucher'))
-      .map(pt => pt.id)
+    const voucherTypeIds = getVoucherTypeIds(allPaymentTypes)
 
     // Look up user in DB for approvedById
     const dbUser = await prisma.user.findUnique({ where: { email: user.email } })
@@ -135,7 +135,7 @@ export async function POST(
           let resultPaymentId: string
 
           if (isVoucher) {
-            const rate = rateMap.get(row.currency) || 80
+            const rate = rateMap.get(row.currency) || DEFAULT_VOUCHER_RATE_FALLBACK
             const voucherCount = part.count && part.count > 0 ? part.count : Math.floor(part.amount / rate)
             const vp = await tx.voucherPurchase.create({
               data: {
@@ -203,9 +203,7 @@ export async function POST(
 
     // Přepočítat stav předpisů pro studenty se školnými platbami
     if (approvedCount > 0) {
-      const tuitionTypeIds = allPaymentTypes
-        .filter(pt => /školné|tuition|karo/i.test(pt.name + (pt.nameEn || '') + (pt.nameSw || '')))
-        .map(pt => pt.id)
+      const tuitionTypeIds = getTuitionTypeIds(allPaymentTypes)
       const tuitionStudentIds = [...new Set(
         parts.filter(p => p.studentId && p.paymentTypeId && tuitionTypeIds.includes(p.paymentTypeId))
           .map(p => p.studentId!)
