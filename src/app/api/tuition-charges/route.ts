@@ -63,17 +63,23 @@ export async function GET(request: NextRequest) {
       },
     }) : []
 
+    // Pre-index platby do Map pro O(1) lookup místo O(n²) filter
+    const paymentIndex = new Map<string, typeof allTuitionPayments>()
+    for (const p of allTuitionPayments) {
+      const key = `${p.studentId}_${p.currency}`
+      if (!paymentIndex.has(key)) paymentIndex.set(key, [])
+      paymentIndex.get(key)!.push(p)
+    }
+
     const chargesWithPaid = charges.map((charge) => {
       const year = charge.period.split('-')[0]
       const startDate = new Date(`${year}-01-01T00:00:00Z`)
       const endDate = new Date(`${parseInt(year) + 1}-01-01T00:00:00Z`)
 
-      // Filtrovat platby pro tento konkrétní předpis
-      const payments = allTuitionPayments.filter(p =>
-        p.studentId === charge.studentId &&
-        p.currency === charge.currency &&
-        p.paymentDate >= startDate &&
-        p.paymentDate < endDate
+      // O(1) lookup + filtr jen na rok (malá podmnožina)
+      const key = `${charge.studentId}_${charge.currency}`
+      const payments = (paymentIndex.get(key) || []).filter(p =>
+        p.paymentDate >= startDate && p.paymentDate < endDate
       )
 
       const paidAmount = payments.reduce((sum, p) => sum + p.amount, 0)

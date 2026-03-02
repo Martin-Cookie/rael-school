@@ -49,24 +49,30 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        sponsorPayments: {
-          select: {
-            amount: true,
-            currency: true,
-          }
-        }
       },
       orderBy: { lastName: 'asc' },
     })
 
-    // Calculate total payments by currency for each sponsor
+    // Aggregate payments per sponsor+currency using groupBy (DB-level, no N+1)
+    const sponsorIds = sponsors.map(s => s.id)
+    const paymentAggs = sponsorIds.length > 0
+      ? await prisma.sponsorPayment.groupBy({
+          by: ['sponsorId', 'currency'],
+          _sum: { amount: true },
+          where: { sponsorId: { in: sponsorIds } },
+        })
+      : []
+
+    const paymentMap = new Map<string, Record<string, number>>()
+    for (const agg of paymentAggs) {
+      if (!agg.sponsorId) continue
+      if (!paymentMap.has(agg.sponsorId)) paymentMap.set(agg.sponsorId, {})
+      paymentMap.get(agg.sponsorId)![agg.currency] = agg._sum.amount || 0
+    }
+
     const sponsorsWithTotals = sponsors.map(s => {
-      const paymentsByCurrency: Record<string, number> = {}
-      s.sponsorPayments.forEach(p => {
-        paymentsByCurrency[p.currency] = (paymentsByCurrency[p.currency] || 0) + p.amount
-      })
-      const { sponsorPayments, password, ...rest } = s as any
-      return { ...rest, paymentsByCurrency }
+      const { password, ...rest } = s as any
+      return { ...rest, paymentsByCurrency: paymentMap.get(s.id) || {} }
     })
 
     return NextResponse.json({ sponsors: sponsorsWithTotals })
