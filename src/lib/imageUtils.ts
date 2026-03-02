@@ -6,6 +6,7 @@
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const MAX_RAW_SIZE = 10 * 1024 * 1024 // 10 MB before compression
 
+/** Validuje typ a velikost obrázku. Vrací chybový klíč (`'invalidType'` | `'tooLarge'`) nebo `null` pokud je OK. */
 export function validateImageFile(file: File): string | null {
   if (!ALLOWED_TYPES.includes(file.type)) {
     return 'invalidType'
@@ -16,6 +17,7 @@ export function validateImageFile(file: File): string | null {
   return null
 }
 
+/** Komprimuje obrázek na JPEG přes Canvas API. GIFy vrací beze změny (zachování animace). */
 export async function compressImage(
   file: File,
   maxWidth: number = 1600,

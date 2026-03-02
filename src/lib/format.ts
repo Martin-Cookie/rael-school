@@ -1,19 +1,24 @@
-// Format number with thousands separator
+/** Formátuje číslo s oddělovačem tisíců (mezera). Např. `1000` → `"1 000"` */
 export function formatNumber(num: number): string {
   return num.toLocaleString('cs-CZ')
 }
 
-// Format currency (KES - Kenyan Shillings)
+/** Formátuje částku v KES. Např. `1500` → `"1 500 KES"` */
 export function formatCurrency(amount: number): string {
   return `${formatNumber(amount)} KES`
 }
 
-// Format amount with any currency
+/** Formátuje částku s libovolnou měnou. Např. `fmtCurrency(1500, 'CZK')` → `"1 500 CZK"` */
 export function fmtCurrency(amount: number, currency: string): string {
   return `${formatNumber(amount)} ${currency}`
 }
 
-// Format date to locale string
+/**
+ * Formátuje datum do lokalizovaného řetězce (DD.MM.YYYY).
+ * @param date - Date objekt, ISO string, nebo null
+ * @param locale - `'cs'` | `'en'` | `'sw'` (default `'cs'`)
+ * @returns Formátovaný datum nebo `'-'` pro neplatné/null vstupy
+ */
 export function formatDate(date: Date | string | null | undefined, locale: string = 'cs'): string {
   if (!date) return '-'
   const d = new Date(date)
@@ -34,7 +39,7 @@ export function formatDate(date: Date | string | null | undefined, locale: strin
   return d.toLocaleDateString(localeMap[locale] || 'cs-CZ', options)
 }
 
-// Format date for input fields (YYYY-MM-DD)
+/** Formátuje datum pro HTML `<input type="date">` (YYYY-MM-DD). Vrací `''` pro null. */
 export function formatDateForInput(date: Date | string | null | undefined): string {
   if (!date) return ''
   const d = new Date(date)
@@ -42,7 +47,7 @@ export function formatDateForInput(date: Date | string | null | undefined): stri
   return d.toISOString().split('T')[0]
 }
 
-// Calculate age from date of birth
+/** Vypočítá věk z data narození. Vrací `null` pro neplatné/null vstupy. */
 export function calculateAge(dateOfBirth: Date | string | null | undefined): number | null {
   if (!dateOfBirth) return null
   const dob = new Date(dateOfBirth)
