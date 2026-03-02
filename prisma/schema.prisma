@@ -144,6 +144,7 @@ model VoucherPurchase {
 
   @@index([studentId])
   @@index([purchaseDate])
+  @@index([sponsorId])
 }
 
 model VoucherUsage {
@@ -383,6 +384,7 @@ model TuitionCharge {
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
+  @@index([period])
 }
 
 // ============ PAYMENT IMPORTS ============
@@ -448,4 +450,5 @@ model PaymentImportRow {
 
   @@index([importId])
   @@index([status])
+  @@index([sponsorId])
 }
