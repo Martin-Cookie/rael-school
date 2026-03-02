@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 
 // GET /api/sponsors — list all sponsors (Users with role SPONSOR)
 export async function GET(request: NextRequest) {
@@ -111,7 +112,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email already exists' }, { status: 409 })
     }
 
-    const hashedPassword = await bcrypt.hash('sponsor123', 10)
+    const randomPassword = crypto.randomBytes(16).toString('hex')
+    const hashedPassword = await bcrypt.hash(randomPassword, 10)
 
     const sponsor = await prisma.user.create({
       data: {

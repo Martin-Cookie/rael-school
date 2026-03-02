@@ -28,6 +28,8 @@ export async function GET() {
         orderBy: { sortOrder: 'asc' },
       }),
       prisma.sponsorPayment.findMany({
+        take: 5000,
+        orderBy: { paymentDate: 'desc' },
         select: {
           studentId: true,
           sponsorId: true,
@@ -38,6 +40,8 @@ export async function GET() {
         },
       }),
       prisma.voucherPurchase.findMany({
+        take: 5000,
+        orderBy: { purchaseDate: 'desc' },
         select: {
           purchaseDate: true,
           amount: true,
@@ -45,6 +49,8 @@ export async function GET() {
         },
       }),
       prisma.voucherUsage.findMany({
+        take: 5000,
+        orderBy: { usageDate: 'desc' },
         select: {
           usageDate: true,
           count: true,

@@ -60,6 +60,7 @@ export async function GET() {
         orderBy: { lastName: 'asc' },
       }),
       prisma.sponsorPayment.findMany({
+        take: 1000,
         orderBy: { paymentDate: 'desc' },
         include: {
           student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
@@ -67,6 +68,7 @@ export async function GET() {
         },
       }),
       prisma.voucherPurchase.findMany({
+        take: 1000,
         orderBy: { purchaseDate: 'desc' },
         include: {
           student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
@@ -74,6 +76,7 @@ export async function GET() {
         },
       }),
       prisma.tuitionCharge.findMany({
+        take: 1000,
         include: {
           student: { select: { id: true, studentNo: true, firstName: true, lastName: true, className: true } },
         },

@@ -102,7 +102,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {statCards.map(card => (
             <button key={card.key} onClick={() => { setActiveTab(card.key); prevTabRef.current = null; setSortCol(''); setSelectedClass(null) }} className={`bg-white dark:bg-gray-800 rounded-xl border-2 p-5 card-hover text-left transition-all ${activeTab === card.key ? card.borderColor : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}`}>
-              <div className="flex items-start justify-between"><div><p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900 dark:text-gray-100">{card.value}</p>{'subtitle' in card && card.subtitle && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{card.subtitle}</p>}</div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
+              <div className="flex items-start justify-between"><div><p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{card.label}</p><p className="text-xl font-bold text-gray-900 dark:text-gray-100">{card.value}</p>{'subtitle' in card && card.subtitle && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{card.subtitle}</p>}</div><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}><card.icon className="w-5 h-5" /></div></div>
             </button>
           ))}
         </div>
@@ -124,7 +124,7 @@ export default function DashboardPage() {
           </tr></thead><tbody>
             {sortData(students, sortCol).map((s: any) => (
               <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{s.studentNo}</td>
+                <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">{s.studentNo}</td>
                 <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=${dashFrom()}`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                 <td className="py-3 px-3 text-sm"><Link href={`/students/${s.id}?from=${dashFrom()}`} className="text-primary-600 hover:underline">{s.firstName}</Link></td>
                 <td className="py-3 px-3 text-sm">{s.className ? <button onClick={() => { prevTabRef.current = activeTab; setActiveTab('classes'); setSelectedClass(s.className); setSortCol('') }} className="text-primary-600 hover:underline">{s.className}</button> : '-'}</td>
@@ -145,7 +145,7 @@ export default function DashboardPage() {
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
             <SH col="email" className="text-left">{t('sponsors.email')}</SH>
             <SH col="phone" className="text-left">{t('sponsors.phone')}</SH>
-            <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('nav.students')}</th>
+            <th className="text-left py-2 px-3 text-sm font-medium text-gray-600 dark:text-gray-400">{t('nav.students')}</th>
           </tr></thead><tbody>
             {sortData(sponsors, sortCol).map((sp: any) => (
               <tr key={sp.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -195,8 +195,8 @@ export default function DashboardPage() {
                   <SH col="paymentDate" className="text-left">{t('payments.paymentDate')}</SH>
                   <SH col="paymentType" className="text-left">{t('sponsorPayments.paymentType')}</SH>
                   <SH col="amount" className="text-left">{t('payments.amount')}</SH>
-                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('nav.students')}</th>
-                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('sponsors.title')}</th>
+                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-600 dark:text-gray-400">{t('nav.students')}</th>
+                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-600 dark:text-gray-400">{t('sponsors.title')}</th>
                   <SH col="notes" className="text-left">{t('payments.notes')}</SH>
                 </tr></thead><tbody>
                   {sortData(sponsorPayments, sortCol).map((p: any) => (
@@ -206,10 +206,10 @@ export default function DashboardPage() {
                       <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
                       <td className="py-3 px-3 text-sm">{p.student ? <Link href={`/students/${p.student.id}?from=${dashFrom()}`} className="text-primary-600 hover:underline">{p.student.firstName} {p.student.lastName}</Link> : '-'}</td>
                       <td className="py-3 px-3 text-sm">{p.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=${dashFrom()}`} className="text-primary-600 hover:underline">{p.sponsor.firstName} {p.sponsor.lastName}</Link> : '-'}</td>
-                      <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{p.notes || '-'}</td>
+                      <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">{p.notes || '-'}</td>
                     </tr>
                   ))}
-                  {sponsorPayments.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+                  {sponsorPayments.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-600 text-sm">{t('app.noData')}</td></tr>}
                 </tbody></table>
               </>
             )}
@@ -230,7 +230,7 @@ export default function DashboardPage() {
                   <SH col="purchaseDate" className="text-left">{t('vouchers.purchaseDate')}</SH>
                   <SH col="amount" className="text-left">{t('vouchers.amount')}</SH>
                   <SH col="count" className="text-left">{t('vouchers.count')}</SH>
-                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('nav.students')}</th>
+                  <th className="text-left py-2 px-3 text-sm font-medium text-gray-600 dark:text-gray-400">{t('nav.students')}</th>
                   <SH col="donorName" className="text-left">{t('vouchers.donorName')}</SH>
                   <SH col="notes" className="text-left">{t('payments.notes')}</SH>
                 </tr></thead><tbody>
@@ -241,10 +241,10 @@ export default function DashboardPage() {
                       <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{formatNumber(v.count)}</td>
                       <td className="py-3 px-3 text-sm">{v.student ? <Link href={`/students/${v.student.id}?from=${dashFrom()}`} className="text-primary-600 hover:underline">{v.student.firstName} {v.student.lastName}</Link> : '-'}</td>
                       <td className="py-3 px-3 text-sm text-gray-700 dark:text-gray-300">{v.donorName || '-'}</td>
-                      <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{v.notes || '-'}</td>
+                      <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">{v.notes || '-'}</td>
                     </tr>
                   ))}
-                  {voucherPurchases.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
+                  {voucherPurchases.length === 0 && <tr><td colSpan={6} className="py-4 text-center text-gray-600 text-sm">{t('app.noData')}</td></tr>}
                 </tbody></table>
               </>
             )}
@@ -259,11 +259,11 @@ export default function DashboardPage() {
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
             <SH col="className" className="text-left">{t('student.className')}</SH>
-            <th className="text-left py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('needs.title')}</th>
+            <th className="text-left py-2 px-3 text-sm font-medium text-gray-600 dark:text-gray-400">{t('needs.title')}</th>
           </tr></thead><tbody>
             {sortData(studentsWithNeeds, sortCol).map((s: any) => (
               <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{s.studentNo}</td>
+                <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">{s.studentNo}</td>
                 <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=${dashFrom()}`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                 <td className="py-3 px-3 text-sm"><Link href={`/students/${s.id}?from=${dashFrom()}`} className="text-primary-600 hover:underline">{s.firstName}</Link></td>
                 <td className="py-3 px-3 text-sm">{s.className ? <button onClick={() => { prevTabRef.current = activeTab; setActiveTab('classes'); setSelectedClass(s.className); setSortCol('') }} className="text-primary-600 hover:underline">{s.className}</button> : '-'}</td>
@@ -317,7 +317,7 @@ export default function DashboardPage() {
                   </td>
                 </tr>
               ))}
-              {tuitionCharges.length === 0 && <tr><td colSpan={5} className="py-4 text-center text-gray-500 text-sm">{t('tuition.noCharges')}</td></tr>}
+              {tuitionCharges.length === 0 && <tr><td colSpan={5} className="py-4 text-center text-gray-600 text-sm">{t('tuition.noCharges')}</td></tr>}
             </tbody></table>
           </div>
         )}
@@ -333,11 +333,11 @@ export default function DashboardPage() {
                   return (
                     <button key={cn} onClick={() => { setSelectedClass(cn) }} className="bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 text-left transition-colors">
                       <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{cn}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{count} {locale === 'cs' ? 'studentů' : locale === 'sw' ? 'wanafunzi' : 'students'}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{count} {locale === 'cs' ? 'studentů' : locale === 'sw' ? 'wanafunzi' : 'students'}</p>
                     </button>
                   )
                 })}
-                {classNames.length === 0 && <p className="text-gray-500 text-sm col-span-full text-center py-8">{t('app.noData')}</p>}
+                {classNames.length === 0 && <p className="text-gray-600 text-sm col-span-full text-center py-8">{t('app.noData')}</p>}
               </div>
             ) : (
               <div>
@@ -352,7 +352,7 @@ export default function DashboardPage() {
                 </tr></thead><tbody>
                   {sortData(students.filter((s: any) => s.className === selectedClass), sortCol).map((s: any) => (
                     <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                      <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{s.studentNo}</td>
+                      <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">{s.studentNo}</td>
                       <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=${dashFrom()}`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                       <td className="py-3 px-3 text-sm"><Link href={`/students/${s.id}?from=${dashFrom()}`} className="text-primary-600 hover:underline">{s.firstName}</Link></td>
                       <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{s.gender === 'M' ? t('student.male') : s.gender === 'F' ? t('student.female') : '-'}</td>

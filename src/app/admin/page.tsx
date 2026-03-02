@@ -82,7 +82,7 @@ function CodelistSection({
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 text-sm leading-tight" title={title}>{title}</h3>
-          <p className="text-sm text-gray-500">{items.length} {items.length === 1 ? 'položka' : items.length >= 2 && items.length <= 4 ? 'položky' : 'položek'}</p>
+          <p className="text-sm text-gray-600">{items.length} {items.length === 1 ? 'položka' : items.length >= 2 && items.length <= 4 ? 'položky' : 'položek'}</p>
         </div>
         <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -343,7 +343,7 @@ function CodelistSection({
           ) : (
             <div className="text-center py-6">
               <Icon className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-              <p className="text-gray-500 text-sm">{t('app.noData')}</p>
+              <p className="text-gray-600 text-sm">{t('app.noData')}</p>
             </div>
           )}
         </div>
@@ -388,7 +388,7 @@ function VoucherRateSection({
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight">{t('admin.voucherRates')}</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{t('admin.voucherRatesDesc')}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('admin.voucherRatesDesc')}</p>
         </div>
         <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -484,7 +484,7 @@ function VoucherRateSection({
           ) : (
             <div className="text-center py-6">
               <Ticket className="w-10 h-10 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
-              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('app.noData')}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">{t('app.noData')}</p>
             </div>
           )}
         </div>
@@ -519,7 +519,7 @@ function TuitionRateSection({
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight">{t('tuition.rates')}</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{t('tuition.ratesDesc')}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('tuition.ratesDesc')}</p>
         </div>
         <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -583,7 +583,7 @@ function TuitionRateSection({
           ) : (
             <div className="text-center py-6">
               <GraduationCap className="w-10 h-10 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
-              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('tuition.noRates')}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">{t('tuition.noRates')}</p>
             </div>
           )}
         </div>
@@ -677,7 +677,7 @@ function BackupSection({ t, showMsg }: { t: (key: string) => string; showMsg: (t
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 text-sm leading-tight" title={t('admin.backup')}>{t('admin.backup')}</h3>
-          <p className="text-sm text-gray-500">{t('admin.backupDesc')}</p>
+          <p className="text-sm text-gray-600">{t('admin.backupDesc')}</p>
         </div>
         <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -695,7 +695,7 @@ function BackupSection({ t, showMsg }: { t: (key: string) => string; showMsg: (t
               <btn.icon className="w-5 h-5 text-emerald-500 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <span className="text-sm font-medium text-gray-900 block">{btn.label}</span>
-                <span className="text-xs text-gray-500">{btn.desc}</span>
+                <span className="text-xs text-gray-600">{btn.desc}</span>
               </div>
               {downloading === btn.key ? (
                 <div className="w-5 h-5 border-2 border-emerald-200 border-t-emerald-600 rounded-full animate-spin flex-shrink-0" />
@@ -711,7 +711,7 @@ function BackupSection({ t, showMsg }: { t: (key: string) => string; showMsg: (t
               <Upload className="w-5 h-5 text-amber-500" />
               <h4 className="text-sm font-semibold text-gray-900">{t('admin.restoreBackup')}</h4>
             </div>
-            <p className="text-xs text-gray-500 mb-3">{t('admin.restoreDesc')}</p>
+            <p className="text-xs text-gray-600 mb-3">{t('admin.restoreDesc')}</p>
 
             <div className="flex gap-2">
               <input
@@ -753,7 +753,7 @@ function BackupSection({ t, showMsg }: { t: (key: string) => string; showMsg: (t
                 </div>
                 <p className="text-sm text-gray-600 mb-2">{t('admin.restoreWarning')}</p>
                 {selectedFile && (
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-gray-600 mb-4">
                     {selectedFile.name} ({(selectedFile.size / 1024).toFixed(0)} KB)
                   </p>
                 )}

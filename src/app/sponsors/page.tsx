@@ -205,7 +205,7 @@ export default function SponsorsPage() {
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
             )}
-            <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-500">({filtered.length})</span></h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-600">({filtered.length})</span></h1>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={exportSponsors} className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
@@ -292,8 +292,8 @@ export default function SponsorsPage() {
                     <SH col="email" className="text-left">{t('sponsors.email')}</SH>
                     <SH col="phone" className="text-left">{t('sponsors.phone')}</SH>
                     <SH col="_sponsorshipCount" className="text-left">{t('nav.students')}</SH>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">{t('payments.title')}</th>
-                    {(canEdit || canDeactivate) && <th className="py-2 px-3 text-sm font-medium text-gray-500 w-20"></th>}
+                    <th className="text-left py-2 px-3 text-sm font-medium text-gray-600">{t('payments.title')}</th>
+                    {(canEdit || canDeactivate) && <th className="py-2 px-3 text-sm font-medium text-gray-600 w-20"></th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -385,7 +385,7 @@ export default function SponsorsPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-sm">{search ? t('sponsorPage.noResults') : t('sponsors.noSponsors')}</p>
+          <p className="text-gray-600 text-sm">{search ? t('sponsorPage.noResults') : t('sponsors.noSponsors')}</p>
         </div>
       )}
     </div>
