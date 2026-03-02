@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
 
 // PUT /api/payment-imports/[id]/rows/[rowId] — edit row (sponsor, student, paymentType)
@@ -66,6 +66,9 @@ export async function PUT(
 
     return NextResponse.json({ row: updated })
   } catch (error) {
+    if (isNotFoundError(error)) {
+      return NextResponse.json({ error: 'Row not found' }, { status: 404 })
+    }
     console.error('PUT /api/payment-imports/[id]/rows/[rowId] error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }

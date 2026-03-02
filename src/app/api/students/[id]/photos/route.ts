@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 import { writeFile, mkdir, unlink } from 'fs/promises'
 import path from 'path'
@@ -92,6 +92,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (isNotFoundError(error)) {
+      return NextResponse.json({ error: 'Photo not found' }, { status: 404 })
+    }
     console.error('Error deleting photo:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

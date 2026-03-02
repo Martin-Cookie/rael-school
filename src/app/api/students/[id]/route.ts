@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit, isAdmin, isSponsor } from '@/lib/auth'
 
 export async function GET(
@@ -96,6 +96,9 @@ export async function PUT(
 
     return NextResponse.json({ student })
   } catch (error) {
+    if (isNotFoundError(error)) {
+      return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+    }
     console.error('Error updating student:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -120,6 +123,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (isNotFoundError(error)) {
+      return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+    }
     console.error('Error deleting student:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
