@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser, isAdmin } from '@/lib/auth'
-import { readFile, writeFile, copyFile } from 'fs/promises'
+import { writeFile, copyFile } from 'fs/promises'
 import path from 'path'
 import { execSync } from 'child_process'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 // Validate that the uploaded file is a valid SQLite database with expected tables
 function validateSqliteFile(buffer: Buffer): { valid: boolean; error?: string } {
@@ -24,6 +25,12 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !isAdmin(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit: max 3 restores per hour per user
+    const rl = checkRateLimit(`restore:${user.id}`, 3, 60 * 60 * 1000)
+    if (!rl.success) {
+      return NextResponse.json({ error: `Too many restore attempts. Retry after ${rl.retryAfter}s.` }, { status: 429 })
     }
 
     const formData = await request.formData()

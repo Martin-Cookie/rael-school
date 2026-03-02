@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser, isAdmin } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 function escapeCsv(value: any): string {
   if (value === null || value === undefined) return ''
@@ -22,6 +23,12 @@ export async function GET(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !isAdmin(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit: max 10 CSV exports per hour per user
+    const rl = checkRateLimit(`csv-export:${user.id}`, 10, 60 * 60 * 1000)
+    if (!rl.success) {
+      return NextResponse.json({ error: `Too many export attempts. Retry after ${rl.retryAfter}s.` }, { status: 429 })
     }
 
     const { searchParams } = new URL(request.url)
