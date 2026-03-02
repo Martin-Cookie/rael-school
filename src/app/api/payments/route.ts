@@ -73,12 +73,16 @@ export async function POST(request: NextRequest) {
       if (!studentId || !paymentDate || !amount || !paymentType) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
       }
+      const parsedAmount = parseFloat(amount)
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        return NextResponse.json({ error: 'Invalid amount' }, { status: 400 })
+      }
       const payment = await prisma.sponsorPayment.create({
         data: {
           studentId,
           sponsorId: sponsorId || null,
           paymentDate: new Date(paymentDate),
-          amount: parseFloat(amount),
+          amount: parsedAmount,
           currency: currency || 'KES',
           paymentType,
           notes: notes || null,
@@ -96,13 +100,21 @@ export async function POST(request: NextRequest) {
       if (!studentId || !purchaseDate || !amount || !count) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
       }
+      const parsedAmount = parseFloat(amount)
+      const parsedCount = parseInt(count)
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        return NextResponse.json({ error: 'Invalid amount' }, { status: 400 })
+      }
+      if (isNaN(parsedCount) || parsedCount <= 0) {
+        return NextResponse.json({ error: 'Invalid count' }, { status: 400 })
+      }
       const voucher = await prisma.voucherPurchase.create({
         data: {
           studentId,
           purchaseDate: new Date(purchaseDate),
-          amount: parseFloat(amount),
+          amount: parsedAmount,
           currency: currency || 'KES',
-          count: parseInt(count),
+          count: parsedCount,
           donorName: donorName || null,
           sponsorId: sponsorId || null,
           notes: notes || null,
@@ -137,6 +149,12 @@ export async function PUT(request: NextRequest) {
       // Načíst starou platbu pro recalc (může se měnit student/typ)
       const oldPayment = await prisma.sponsorPayment.findUnique({ where: { id } })
       const { studentId, sponsorId, paymentDate, amount, currency, paymentType, notes } = body
+      if (amount !== undefined) {
+        const parsed = parseFloat(amount)
+        if (isNaN(parsed) || parsed <= 0) {
+          return NextResponse.json({ error: 'Invalid amount' }, { status: 400 })
+        }
+      }
       const payment = await prisma.sponsorPayment.update({
         where: { id },
         data: {
@@ -161,6 +179,18 @@ export async function PUT(request: NextRequest) {
 
     if (type === 'voucher') {
       const { studentId, purchaseDate, amount, currency, count, donorName, sponsorId, notes } = body
+      if (amount !== undefined) {
+        const parsed = parseFloat(amount)
+        if (isNaN(parsed) || parsed <= 0) {
+          return NextResponse.json({ error: 'Invalid amount' }, { status: 400 })
+        }
+      }
+      if (count !== undefined) {
+        const parsed = parseInt(count)
+        if (isNaN(parsed) || parsed <= 0) {
+          return NextResponse.json({ error: 'Invalid count' }, { status: 400 })
+        }
+      }
       const voucher = await prisma.voucherPurchase.update({
         where: { id },
         data: {
