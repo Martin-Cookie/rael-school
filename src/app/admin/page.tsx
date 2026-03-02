@@ -2,23 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Plus, Trash2, GraduationCap, Settings, ChevronUp, ChevronDown, Stethoscope, CreditCard, Heart, Package, Star, Pencil, Database, Download, Upload, FileJson, FileSpreadsheet, AlertTriangle, Globe, Ticket } from 'lucide-react'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
+import { useLocale } from '@/hooks/useLocale'
+import { getLocaleName, type Locale } from '@/lib/i18n'
 import { CURRENCIES } from '@/lib/constants'
-
-
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { formatNumber } from '@/lib/format'
 
 type CodelistItem = { id: string; name: string; nameEn?: string | null; nameSw?: string | null; sortOrder: number; isActive: boolean; price?: number | null }
 type VoucherRateItem = { id: string; currency: string; rate: number; isActive: boolean }
 type TuitionRateItem = { id: string; name: string; nameEn?: string | null; nameSw?: string | null; gradeFrom: number; gradeTo: number; annualFee: number; currency: string; isActive: boolean }
-
-function formatNumber(n: number) {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-}
 
 function CodelistSection({
   title,
@@ -806,19 +797,9 @@ export default function AdminPage() {
   const [newWishTypeName, setNewWishTypeName] = useState('')
   const [newWishTypePrice, setNewWishTypePrice] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [locale, setLocale] = useState<Locale>('cs')
+  const { locale, t } = useLocale()
   const [translations, setTranslations] = useState<Record<string, { en: string; sw: string }>>({})
   const [translating, setTranslating] = useState<string | null>(null)
-
-  const t = createTranslator(msgs[locale])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
 
   useEffect(() => { fetchAll() }, [])
 

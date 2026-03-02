@@ -82,12 +82,28 @@ export async function runMatching(prisma: PrismaClient, importId: string): Promi
     paymentTypeByName.set(pt.name, pt.id)
   }
 
+  // Pre-load existing payments/vouchers for duplicate detection (batch instead of N+1)
+  const dates = rows.map(r => r.transactionDate.getTime())
+  const dayMs = 24 * 60 * 60 * 1000
+  const dateFrom = new Date(Math.min(...dates) - dayMs)
+  const dateTo = new Date(Math.max(...dates) + dayMs)
+
+  const existingPayments = await prisma.sponsorPayment.findMany({
+    where: { paymentDate: { gte: dateFrom, lte: dateTo } },
+    select: { id: true, paymentDate: true, amount: true, currency: true },
+  })
+  const existingVouchers = await prisma.voucherPurchase.findMany({
+    where: { purchaseDate: { gte: dateFrom, lte: dateTo } },
+    select: { id: true, purchaseDate: true, amount: true },
+  })
+
   let matchedCount = 0
 
   for (const row of rows) {
-    const result = await matchRow(
-      prisma, row, sponsors, students,
+    const result = matchRow(
+      row, sponsors, students,
       vsByUser, accountByUser, paymentTypeByName,
+      existingPayments, existingVouchers,
     )
 
     await prisma.paymentImportRow.update({
@@ -115,15 +131,16 @@ export async function runMatching(prisma: PrismaClient, importId: string): Promi
   return matchedCount
 }
 
-async function matchRow(
-  prisma: PrismaClient,
+function matchRow(
   row: RowData,
   sponsors: { id: string; firstName: string; lastName: string; variableSymbol: string | null; bankAccount: string | null; sponsorships: { studentId: string }[] }[],
   students: { id: string; firstName: string; lastName: string }[],
   vsByUser: Map<string, typeof sponsors[0]>,
   accountByUser: Map<string, typeof sponsors[0]>,
   paymentTypeByName: Map<string, string>,
-): Promise<MatchResult> {
+  existingPayments: { id: string; paymentDate: Date; amount: number; currency: string }[],
+  existingVouchers: { id: string; purchaseDate: Date; amount: number }[],
+): MatchResult {
   const notes: string[] = []
   let sponsorId: string | null = null
   let studentId: string | null = null
@@ -131,22 +148,17 @@ async function matchRow(
   let confidence: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' = 'NONE'
   let duplicateOfId: string | null = null
 
-  // === KROK 1: Detekce duplikátů ===
+  // === KROK 1: Detekce duplikátů (in-memory z batch-loaded dat) ===
   const dayMs = 24 * 60 * 60 * 1000
-  const dateFrom = new Date(row.transactionDate.getTime() - dayMs)
-  const dateTo = new Date(row.transactionDate.getTime() + dayMs)
+  const dateFrom = row.transactionDate.getTime() - dayMs
+  const dateTo = row.transactionDate.getTime() + dayMs
 
-  const existingPayment = await prisma.sponsorPayment.findFirst({
-    where: {
-      paymentDate: { gte: dateFrom, lte: dateTo },
-      amount: row.amount,
-      currency: row.currency,
-    },
-    select: { id: true },
-  })
+  const existingPayment = existingPayments.find(p =>
+    p.paymentDate.getTime() >= dateFrom && p.paymentDate.getTime() <= dateTo &&
+    p.amount === row.amount && p.currency === row.currency
+  )
 
   if (existingPayment) {
-    // Also check voucher purchases
     notes.push(`Možný duplikát: SponsorPayment ${existingPayment.id}`)
     return {
       status: 'DUPLICATE',
@@ -159,13 +171,10 @@ async function matchRow(
     }
   }
 
-  const existingVoucher = await prisma.voucherPurchase.findFirst({
-    where: {
-      purchaseDate: { gte: dateFrom, lte: dateTo },
-      amount: row.amount,
-    },
-    select: { id: true },
-  })
+  const existingVoucher = existingVouchers.find(v =>
+    v.purchaseDate.getTime() >= dateFrom && v.purchaseDate.getTime() <= dateTo &&
+    v.amount === row.amount
+  )
 
   if (existingVoucher) {
     notes.push(`Možný duplikát: VoucherPurchase ${existingVoucher.id}`)

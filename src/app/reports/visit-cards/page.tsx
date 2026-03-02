@@ -5,19 +5,14 @@ import Link from 'next/link'
 import { Upload, Printer, CheckSquare, Square, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, Search, X } from 'lucide-react'
 import Pagination from '@/components/Pagination'
 import { formatNumber } from '@/lib/format'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { useLocale } from '@/hooks/useLocale'
 
 type SortDir = 'asc' | 'desc'
 
 export default function VisitCardsPage() {
   const [students, setStudents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [locale, setLocale] = useState<Locale>('cs')
+  const { locale, t } = useLocale()
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [classFilter, setClassFilter] = useState<string>('')
   const [sortCol, setSortCol] = useState<string>('')
@@ -29,16 +24,6 @@ export default function VisitCardsPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
   const PAGE_SIZE = 12
-
-  const t = createTranslator(msgs[locale])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
 
   useEffect(() => {
     fetch('/api/reports/visit-cards')

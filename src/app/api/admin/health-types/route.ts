@@ -62,7 +62,10 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
     console.error('Error updating health types:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -76,7 +79,10 @@ export async function DELETE(request: NextRequest) {
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
     await prisma.healthCheckType.update({ where: { id }, data: { isActive: false } })
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
     console.error('Error deleting health type:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

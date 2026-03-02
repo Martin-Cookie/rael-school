@@ -8,12 +8,8 @@ import {
   LogOut, Menu, X, Globe, Settings, GraduationCap, Moon, Sun, FileText
 } from 'lucide-react'
 
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale, localeNames } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { useLocale } from '@/hooks/useLocale'
+import { type Locale, localeNames } from '@/lib/i18n'
 
 interface SidebarProps {
   user: { id: string; firstName: string; lastName: string; role: string; email: string }
@@ -23,15 +19,11 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
-  const [locale, setLocale] = useState<Locale>('cs')
+  const { locale, t } = useLocale()
   const [showLang, setShowLang] = useState(false)
   const [isDark, setIsDark] = useState(false)
 
-  const t = createTranslator(msgs[locale])
-
   useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved && ['cs', 'en', 'sw'].includes(saved)) setLocale(saved)
     setIsDark(document.documentElement.classList.contains('dark'))
   }, [])
 
@@ -43,7 +35,6 @@ export default function Sidebar({ user }: SidebarProps) {
   }
 
   function changeLocale(l: Locale) {
-    setLocale(l)
     localStorage.setItem('rael-locale', l)
     setShowLang(false)
     window.dispatchEvent(new CustomEvent('locale-change', { detail: l }))

@@ -3,33 +3,18 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save } from 'lucide-react'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { useLocale } from '@/hooks/useLocale'
 
 export default function NewStudentPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
-  const [locale, setLocale] = useState<Locale>('cs')
+  const { t } = useLocale()
   const [classrooms, setClassrooms] = useState<any[]>([])
   const [form, setForm] = useState({
     firstName: '', lastName: '', dateOfBirth: '', gender: '',
     className: '', healthStatus: '', motherName: '', motherAlive: '',
     fatherName: '', fatherAlive: '', siblings: '', notes: '',
   })
-
-  const t = createTranslator(msgs[locale])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
 
   useEffect(() => {
     fetch('/api/admin/classrooms').then(r => r.json()).then(d => setClassrooms(d.classrooms || [])).catch(() => {})

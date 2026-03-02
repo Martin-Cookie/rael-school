@@ -90,7 +90,10 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
     console.error('Error updating classrooms:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -114,7 +117,10 @@ export async function DELETE(request: NextRequest) {
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
     console.error('Error deleting classroom:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

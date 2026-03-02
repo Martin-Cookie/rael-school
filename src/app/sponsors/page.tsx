@@ -13,6 +13,7 @@ import { useStickyTop } from '@/hooks/useStickyTop'
 import { useToast } from '@/hooks/useToast'
 import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
+import { formatNumber } from '@/lib/format'
 
 interface Sponsor {
   id: string
@@ -146,9 +147,7 @@ export default function SponsorsPage() {
     setEditForm({ firstName: s.firstName, lastName: s.lastName, email: s.email, phone: s.phone || '' })
   }
 
-  function formatCurrency(amount: number) {
-    return amount.toLocaleString('cs-CZ').replace(/,/g, ' ')
-  }
+
 
   function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
     return <SortHeader col={col} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} className={className}>{children}</SortHeader>
@@ -355,7 +354,7 @@ export default function SponsorsPage() {
                               Object.entries(s.paymentsByCurrency).map(([currency, amount], i) => (
                                 <span key={currency}>
                                   {i > 0 && ' | '}
-                                  <span className="font-medium">{formatCurrency(amount)} {currency}</span>
+                                  <span className="font-medium">{formatNumber(amount)} {currency}</span>
                                 </span>
                               ))
                             ) : <span className="text-gray-400">-</span>}

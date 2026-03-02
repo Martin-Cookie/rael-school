@@ -61,7 +61,10 @@ export async function PUT(request: NextRequest) {
       await prisma.tuitionRate.update({ where: { id: body.id }, data })
     }
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
     console.error('Error updating tuition rate:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -75,7 +78,10 @@ export async function DELETE(request: NextRequest) {
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
     await prisma.tuitionRate.update({ where: { id }, data: { isActive: false } })
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
     console.error('Error deleting tuition rate:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

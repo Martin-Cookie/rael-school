@@ -3,12 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Printer, X } from 'lucide-react'
 import { formatNumber, formatDate, calculateAge } from '@/lib/format'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, getLocaleName, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { useLocale } from '@/hooks/useLocale'
+import { getLocaleName } from '@/lib/i18n'
 
 interface StudentData {
   id: string
@@ -46,10 +42,8 @@ export default function VisitCardsPrintPage() {
   const [equipmentTypes, setEquipmentTypes] = useState<LookupType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [locale, setLocale] = useState<Locale>('cs')
+  const { locale, t } = useLocale()
   const printContentRef = useRef<HTMLDivElement>(null)
-
-  const t = createTranslator(msgs[locale])
 
   // Iframe-based print: creates isolated HTML snapshot unaffected by React lifecycle
   const handlePrint = useCallback(() => {
@@ -143,10 +137,6 @@ ${parentStyles}
     }
   }, [locale, students])
 
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-  }, [])
 
   // Add body class for print styles (defined in globals.css)
   useEffect(() => {

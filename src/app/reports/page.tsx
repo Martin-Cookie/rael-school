@@ -3,13 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { BarChart3, ChevronDown, ChevronUp, ArrowUpDown, UtensilsCrossed, Search, CreditCard, Users, Heart, Calendar, TrendingUp, ClipboardList } from 'lucide-react'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
+import { useLocale } from '@/hooks/useLocale'
 import { formatNumber, formatCurrency } from '@/lib/format'
-
-const msgs: Record<string, any> = { cs, en, sw }
 
 type SortDir = 'asc' | 'desc'
 
@@ -69,7 +64,7 @@ interface SponsorStat {
 }
 
 export default function ReportsPage() {
-  const [locale, setLocale] = useState<Locale>('cs')
+  const { t } = useLocale()
   const [loading, setLoading] = useState(true)
   const [voucherStats, setVoucherStats] = useState<VoucherStat[]>([])
   const [sponsorPaymentStats, setSponsorPaymentStats] = useState<SponsorPaymentStat[]>([])
@@ -99,22 +94,12 @@ export default function ReportsPage() {
   const [soSortDir, setSoSortDir] = useState<SortDir>('asc')
   const [soSearch, setSoSearch] = useState('')
 
-  const t = createTranslator(msgs[locale])
-
   const monthNames = [
     t('statistics.january'), t('statistics.february'), t('statistics.march'),
     t('statistics.april'), t('statistics.may'), t('statistics.june'),
     t('statistics.july'), t('statistics.august'), t('statistics.september'),
     t('statistics.october'), t('statistics.november'), t('statistics.december'),
   ]
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
 
   useEffect(() => {
     fetch('/api/statistics')

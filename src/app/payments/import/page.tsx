@@ -5,12 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Upload, FileText, ArrowLeft, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/format'
-import cs from '@/messages/cs.json'
-import en from '@/messages/en.json'
-import sw from '@/messages/sw.json'
-import { createTranslator, type Locale } from '@/lib/i18n'
-
-const msgs: Record<string, any> = { cs, en, sw }
+import { useLocale } from '@/hooks/useLocale'
 
 interface PaymentImportItem {
   id: string
@@ -37,19 +32,9 @@ export default function PaymentImportPage() {
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
-  const [locale, setLocale] = useState<Locale>('cs')
+  const { locale, t } = useLocale()
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const t = createTranslator(msgs[locale])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('rael-locale') as Locale
-    if (saved) setLocale(saved)
-    const handler = (e: Event) => setLocale((e as CustomEvent).detail)
-    window.addEventListener('locale-change', handler)
-    return () => window.removeEventListener('locale-change', handler)
-  }, [])
 
   useEffect(() => {
     fetchImports()
