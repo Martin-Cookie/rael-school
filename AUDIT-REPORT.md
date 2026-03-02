@@ -7,10 +7,10 @@
 
 - **CRITICAL: 12** (10 vyřešeno ✅, 2 otevřeno)
 - **HIGH: 16** (15 vyřešeno ✅, 1 otevřeno)
-- **MEDIUM: 22** (8 vyřešeno ✅, 14 otevřeno)
+- **MEDIUM: 22** (14 vyřešeno ✅, 8 otevřeno)
 - **LOW: 10**
 
-**Celkem: 60 nálezů (33 vyřešeno ve Fázích 1–3)**
+**Celkem: 60 nálezů (39 vyřešeno ve Fázích 1–4)**
 
 ### Fáze 1 — vyřešené CRITICAL nálezy (2026-03-02)
 
@@ -47,6 +47,18 @@
 | `34a854f` | Statistics bez take:5000 + Dashboard server-side groupBy/aggregate |
 | `0b24f3c` | Rate limit na backup restore, JSON/CSV/DB export |
 
+### Fáze 4 — vyřešené MEDIUM + infrastruktura (2026-03-02)
+
+| Commit | Popis |
+|--------|-------|
+| `e1ec508` | JWT secret auto-generace + detekce slabého hesla |
+| `ce6b276` | Zod schema validace na student API (POST + PUT) |
+| `480143e` | Sjednocení auth checks: isAdmin/isManager/canEdit (11 souborů) |
+| `a7c4247` | Generický useFetchList hook — deduplikace 8 fetch funkcí |
+| `28d3988` | Dark mode focus ring + zvětšení icon buttonů (14 souborů) |
+| `8d74d84` | Prisma select na student/sponsor API, password nikdy z DB |
+| `42b26c8` | Dokumentace paymentMatcher algoritmu |
+
 ---
 
 ## Souhrnná tabulka
@@ -54,7 +66,7 @@
 | # | Oblast | Soubor | Severity | Problém | Doporučení |
 |---|--------|--------|----------|---------|------------|
 | 1 | Bezpečnost | `next.config.js:4-8` | ✅ CRITICAL | Wildcard `hostname: '**'` v Image Optimizer — SSRF/DoS | Odstraněno (`c0df120`) |
-| 2 | Bezpečnost | `.env:2` | CRITICAL | Slabý, predikovatelný JWT secret | `openssl rand -base64 32` |
+| 2 | Bezpečnost | `.env:2` | ✅ CRITICAL | Slabý, predikovatelný JWT secret | Auto-generace + detekce (`e1ec508`) |
 | 3 | Bezpečnost | `api/auth/login/route.ts:55` | ✅ CRITICAL | Cookie `secure` jen v produkci + JWT 7d | secure=true, JWT 24h (`c0df120`) |
 | 4 | Bezpečnost | Celý projekt | CRITICAL | Žádný audit log (kdo co kdy změnil) | Implementovat audit trail |
 | 5 | Bezpečnost | `package.json` | CRITICAL | Next.js 14.2.18 — známé CVE (GHSA-9g9p, GHSA-h25m) | Upgrade na nejnovější patch |
@@ -85,17 +97,17 @@
 | 30 | Testy | `lib/csvParser.ts` | ✅ HIGH | CSV parsing bez testů | 14 testů (`5f61220`) |
 | 31 | Testy | `lib/auth.ts` | ✅ HIGH | Auth funkce bez testů | 9 testů (`5f61220`) |
 | 32 | Bezpečnost | Všechny POST endpointy | MEDIUM | Žádná CSRF ochrana | Přidat CSRF tokeny |
-| 33 | Bezpečnost | `api/students/route.ts:82-90` | MEDIUM | Validace jen délky, ne obsahu | Použít `zod` schema |
+| 33 | Bezpečnost | `api/students/route.ts:82-90` | ✅ MEDIUM | Validace jen délky, ne obsahu | Zod schema (`ce6b276`) |
 | 34 | Bezpečnost | Všechny odpovědi | ✅ MEDIUM | Chybí security headers (CSP, HSTS) | Přidáno v next.config.js (`3b10bcf`) |
-| 35 | Bezpečnost | Více endpointů | MEDIUM | Nekonzistentní auth checks | Centralizovat helpers |
+| 35 | Bezpečnost | Více endpointů | ✅ MEDIUM | Nekonzistentní auth checks | Centralizováno (`480143e`) |
 | 36 | Bezpečnost | `prisma/dev.db.primary` | MEDIUM | DB zálohy s citlivými daty v git historii | Přesunout mimo repo |
 | 37 | Bezpečnost | Více endpointů | ✅ MEDIUM | Rate limiting jen na login | Přidáno na restore+export (`0b24f3c`) |
 | 38 | Kód | `payments/import/[id]/page.tsx` | MEDIUM | 839 řádků — těžko testovatelný | Rozdělit na komponenty |
 | 39 | Kód | `reports/page.tsx` | MEDIUM | 705 řádků | Extrahovat sekce |
 | 40 | Kód | `students/[id]/page.tsx:31-77` | MEDIUM | 52 useState hooků | Seskupit do custom hooků |
-| 41 | Kód | `students/[id]/page.tsx:116-150` | MEDIUM | 10+ identických fetch funkcí | Vytvořit `fetchList<T>()` |
+| 41 | Kód | `students/[id]/page.tsx:116-150` | ✅ MEDIUM | 10+ identických fetch funkcí | useFetchList hook (`a7c4247`) |
 | 42 | Kód | Více souborů | ✅ MEDIUM | `0.01` tolerance hardcoded | `AMOUNT_TOLERANCE` v `constants.ts` (`b6f660a`) |
-| 43 | Dokument | CLAUDE.md | MEDIUM | Chybí popis paymentMatcher algoritmu | Vytvořit docs/PAYMENT-MATCHING.md |
+| 43 | Dokument | CLAUDE.md | ✅ MEDIUM | Chybí popis paymentMatcher algoritmu | docs/PAYMENT-MATCHING.md (`42b26c8`) |
 | 44 | Dokument | `src/lib/*.ts` | MEDIUM | Utility funkce bez JSDoc | Přidat JSDoc |
 | 45 | UI | Více stránek | MEDIUM | Nekonzistentní button padding | Definovat size systém |
 | 46 | UI | Více tab komponent | MEDIUM | Některé inputy chybí `dark:bg-gray-700` | Sjednotit |
@@ -103,8 +115,8 @@
 | 48 | UI | `Sidebar.tsx:126-145` | ✅ MEDIUM | Dropdown bez Escape a arrow navigace | Escape + šipky (`024fa2a`) |
 | 49 | UI | Formuláře plateb | MEDIUM | Chybí focus trap v panelech | Implementovat focus trap |
 | 50 | UI | `Pagination.tsx:58-68` | ✅ MEDIUM | Tlačítka bez `aria-label`, `aria-current` | Přidáno (`2351d5f`) |
-| 51 | UI | Více komponent | MEDIUM | Focus ring v dark mode špatně viditelný | `dark:focus:ring-primary-400` |
-| 52 | Výkon | Více API endpointů | MEDIUM | Odpovědi bez `select:` — zbytečná data | Přidat `select: {}` |
+| 51 | UI | Více komponent | ✅ MEDIUM | Focus ring v dark mode špatně viditelný | dark:focus:ring-primary-400 (`28d3988`) |
+| 52 | Výkon | Více API endpointů | ✅ MEDIUM | Odpovědi bez `select:` — zbytečná data | Prisma select (`8d74d84`) |
 | 53 | Error | `api/payments/route.ts:81,105` | ✅ MEDIUM | `parseFloat()` bez NaN kontroly | NaN validace (`d3e1fa9`) |
 | 54 | Error | `api/.../approve/route.ts:78` | ✅ MEDIUM | `\|\|` místo `??` — 0 je falsy | Opraveno na `??` (`b6f660a`) |
 | 55 | Git | `.gitignore` | ✅ MEDIUM | Chybí `.vscode/`, `.idea/`, `coverage/` | Doplněno (`b2093cd`) |
