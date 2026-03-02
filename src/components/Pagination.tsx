@@ -38,7 +38,7 @@ export default function Pagination({ currentPage, totalItems, pageSize, onPageCh
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-2 pt-2 border-t border-gray-100">
+    <nav aria-label="Pagination" className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-2 pt-2 border-t border-gray-100">
       <p className="text-sm text-gray-500">
         {labels.showing} {from}–{to} {labels.of} {totalItems}
       </p>
@@ -58,6 +58,8 @@ export default function Pagination({ currentPage, totalItems, pageSize, onPageCh
             <button
               key={p}
               onClick={() => onPageChange(p)}
+              aria-label={`Strana ${p}`}
+              aria-current={p === currentPage ? 'page' : undefined}
               className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-colors ${
                 p === currentPage
                   ? 'bg-primary-600 text-white shadow-sm'
@@ -77,6 +79,6 @@ export default function Pagination({ currentPage, totalItems, pageSize, onPageCh
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
-    </div>
+    </nav>
   )
 }

@@ -17,6 +17,10 @@ export function SortHeader({ col, sortCol, sortDir, onSort, children, className 
     <th
       className={`py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-200 select-none ${className}`}
       onClick={() => onSort(col)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSort(col) } }}
+      tabIndex={0}
+      role="columnheader"
+      aria-sort={isActive ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
     >
       <div className="flex items-center gap-1">
         {children}
