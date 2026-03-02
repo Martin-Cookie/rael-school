@@ -60,7 +60,7 @@ export async function GET() {
         orderBy: { lastName: 'asc' },
       }),
       prisma.sponsorPayment.findMany({
-        take: 1000,
+        take: 100,
         orderBy: { paymentDate: 'desc' },
         include: {
           student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
@@ -68,7 +68,7 @@ export async function GET() {
         },
       }),
       prisma.voucherPurchase.findMany({
-        take: 1000,
+        take: 100,
         orderBy: { purchaseDate: 'desc' },
         include: {
           student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
@@ -76,7 +76,7 @@ export async function GET() {
         },
       }),
       prisma.tuitionCharge.findMany({
-        take: 1000,
+        take: 100,
         include: {
           student: { select: { id: true, studentNo: true, firstName: true, lastName: true, className: true } },
         },
@@ -84,21 +84,34 @@ export async function GET() {
       }),
     ])
 
-    // Aggregate sponsor payments by currency
+    // Server-side aggregation using groupBy/aggregate (not loading all records)
+    const [spAgg, vpAgg, tcAgg] = await Promise.all([
+      prisma.sponsorPayment.groupBy({
+        by: ['currency'],
+        _sum: { amount: true },
+      }),
+      prisma.voucherPurchase.aggregate({
+        _sum: { amount: true },
+      }),
+      prisma.tuitionCharge.groupBy({
+        by: ['status'],
+        _sum: { amount: true },
+        _count: true,
+      }),
+    ])
+
     const sponsorPaymentsByCurrency: Record<string, number> = {}
-    sponsorPayments.forEach((p: any) => {
-      const cur = p.currency || 'KES'
-      sponsorPaymentsByCurrency[cur] = (sponsorPaymentsByCurrency[cur] || 0) + p.amount
-    })
+    for (const g of spAgg) {
+      sponsorPaymentsByCurrency[g.currency] = g._sum.amount || 0
+    }
 
-    // Aggregate voucher purchases by currency (vouchers don't have currency field, use KES as default)
-    const voucherTotalAmount = voucherPurchases.reduce((sum: number, v: any) => sum + v.amount, 0)
+    const voucherTotalAmount = vpAgg._sum.amount || 0
 
-    // Tuition summary
-    const tuitionTotalCharged = tuitionCharges.reduce((sum: number, c: any) => sum + c.amount, 0)
-    const tuitionPaidCount = tuitionCharges.filter((c: any) => c.status === 'PAID').length
-    const tuitionPartialCount = tuitionCharges.filter((c: any) => c.status === 'PARTIAL').length
-    const tuitionUnpaidCount = tuitionCharges.filter((c: any) => c.status === 'UNPAID').length
+    const tuitionTotalCharged = tcAgg.reduce((s, g) => s + (g._sum.amount || 0), 0)
+    const tuitionPaidCount = tcAgg.find(g => g.status === 'PAID')?._count || 0
+    const tuitionPartialCount = tcAgg.find(g => g.status === 'PARTIAL')?._count || 0
+    const tuitionUnpaidCount = tcAgg.find(g => g.status === 'UNPAID')?._count || 0
+    const tuitionTotalCharges = tcAgg.reduce((s, g) => s + g._count, 0)
 
     return NextResponse.json({
       stats: {
@@ -110,7 +123,7 @@ export async function GET() {
         sponsorPaymentsByCurrency,
         voucherTotalAmount,
         tuitionTotalCharged,
-        tuitionTotalCharges: tuitionCharges.length,
+        tuitionTotalCharges,
         tuitionPaidCount,
         tuitionPartialCount,
         tuitionUnpaidCount,
