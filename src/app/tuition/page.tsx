@@ -231,8 +231,9 @@ export default function TuitionPage() {
         {/* Period filter + search */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('tuition.period')}:</label>
+            <label htmlFor="filterPeriod" className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('tuition.period')}:</label>
             <select
+              id="filterPeriod"
               value={filterPeriod}
               onChange={(e) => setFilterPeriod(e.target.value)}
               className="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 outline-none"
@@ -261,8 +262,9 @@ export default function TuitionPage() {
             <div className="flex flex-wrap items-center gap-3">
               {/* Period */}
               <div className="flex items-center gap-2">
-                <label className="text-sm text-gray-600 dark:text-gray-400">{t('tuition.period')}:</label>
+                <label htmlFor="genPeriod" className="text-sm text-gray-600 dark:text-gray-400">{t('tuition.period')}:</label>
                 <select
+                  id="genPeriod"
                   value={genPeriod}
                   onChange={(e) => setGenPeriod(e.target.value)}
                   className="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
@@ -301,10 +303,10 @@ export default function TuitionPage() {
               </div>
 
               {/* Select/Deselect */}
-              <button onClick={genSelectAll} className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+              <button onClick={genSelectAll} className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600">
                 {t('visitCards.selectAll')}
               </button>
-              <button onClick={genDeselectAll} className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+              <button onClick={genDeselectAll} className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600">
                 {t('visitCards.deselectAll')}
               </button>
 

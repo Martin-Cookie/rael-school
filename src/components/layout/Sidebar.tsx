@@ -70,7 +70,7 @@ export default function Sidebar({ user }: SidebarProps) {
     <>
       {/* Mobile header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-lg hover:bg-gray-100">
+        <button aria-label="Menu" onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-lg hover:bg-gray-100">
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
         <span className="font-bold text-primary-700">{t('app.title')}</span>

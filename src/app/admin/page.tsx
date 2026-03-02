@@ -98,7 +98,7 @@ function CodelistSection({
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder={placeholder}
-                className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                 onKeyDown={(e) => e.key === 'Enter' && onAdd()}
               />
               <button
@@ -129,7 +129,7 @@ function CodelistSection({
                 value={newPrice || ''}
                 onChange={(e) => setNewPrice(e.target.value)}
                 placeholder={t('admin.priceCZK')}
-                className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                 onKeyDown={(e) => e.key === 'Enter' && onAdd()}
               />
             )}
@@ -184,6 +184,7 @@ function CodelistSection({
                   <div className="flex items-center gap-3 px-4 py-3">
                     <div className="flex flex-col gap-0.5">
                       <button
+                        aria-label="Posunout nahoru"
                         onClick={() => onMove(item.id, 'up')}
                         disabled={idx === 0}
                         className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
@@ -191,6 +192,7 @@ function CodelistSection({
                         <ChevronUp className="w-4 h-4" />
                       </button>
                       <button
+                        aria-label="Posunout dolů"
                         onClick={() => onMove(item.id, 'down')}
                         disabled={idx === items.length - 1}
                         className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
@@ -279,6 +281,7 @@ function CodelistSection({
                       <Globe className="w-4 h-4" />
                     </button>
                     <button
+                      aria-label="Smazat"
                       onClick={() => onDelete(item.id)}
                       className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
@@ -468,6 +471,7 @@ function VoucherRateSection({
                     )}
                     <div className="flex-1" />
                     <button
+                      aria-label="Smazat"
                       onClick={() => onDelete(item.id)}
                       className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
@@ -566,6 +570,7 @@ function TuitionRateSection({
                       </button>
                     )}
                     <button
+                      aria-label="Smazat"
                       onClick={() => onDelete(item.id)}
                       className="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                     >

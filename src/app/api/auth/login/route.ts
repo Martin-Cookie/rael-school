@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyPassword, createToken } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,6 +9,16 @@ export async function POST(request: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 })
+    }
+
+    // Rate limit: max 5 attempts per IP per 15 minutes
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const rl = checkRateLimit(`login:${ip}`)
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: `Too many login attempts. Try again in ${rl.retryAfter} seconds.` },
+        { status: 429 },
+      )
     }
 
     const user = await prisma.user.findUnique({ where: { email } })

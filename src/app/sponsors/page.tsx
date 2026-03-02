@@ -201,7 +201,7 @@ export default function SponsorsPage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             {backUrl && (
-              <button onClick={() => router.push(backUrl)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <button aria-label="Zpět" onClick={() => router.push(backUrl)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
             )}
@@ -230,7 +230,7 @@ export default function SponsorsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('app.search')}
-            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 bg-white"
+            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
           />
         </div>
       </div>
@@ -245,28 +245,28 @@ export default function SponsorsPage() {
               value={newForm.firstName}
               onChange={(e) => setNewForm({ ...newForm, firstName: e.target.value })}
               placeholder={t('student.firstName') + ' *'}
-              className="px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
             />
             <input
               type="text"
               value={newForm.lastName}
               onChange={(e) => setNewForm({ ...newForm, lastName: e.target.value })}
               placeholder={t('student.lastName') + ' *'}
-              className="px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
             />
             <input
               type="email"
               value={newForm.email}
               onChange={(e) => setNewForm({ ...newForm, email: e.target.value })}
               placeholder={t('sponsors.email') + ' *'}
-              className="px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
             />
             <input
               type="text"
               value={newForm.phone}
               onChange={(e) => setNewForm({ ...newForm, phone: e.target.value })}
               placeholder={t('sponsors.phone')}
-              className="px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+              className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
             />
           </div>
           <div className="flex gap-2 mt-4">
@@ -302,22 +302,22 @@ export default function SponsorsPage() {
                       {editingId === s.id ? (
                         <>
                           <td className="py-2 px-3">
-                            <input type="text" value={editForm.lastName} onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+                            <input type="text" value={editForm.lastName} onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
                           </td>
                           <td className="py-2 px-3">
-                            <input type="text" value={editForm.firstName} onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+                            <input type="text" value={editForm.firstName} onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
                           </td>
                           <td className="py-2 px-3">
-                            <input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+                            <input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
                           </td>
                           <td className="py-2 px-3">
-                            <input type="text" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+                            <input type="text" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
                           </td>
                           <td className="py-2 px-3 text-sm text-gray-500" colSpan={2}>-</td>
                           <td className="py-2 px-3">
                             <div className="flex gap-1">
-                              <button onClick={() => saveSponsor(s.id)} className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg"><Check className="w-4 h-4" /></button>
-                              <button onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg"><X className="w-4 h-4" /></button>
+                              <button aria-label="Potvrdit" onClick={() => saveSponsor(s.id)} className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg"><Check className="w-4 h-4" /></button>
+                              <button aria-label="Zrušit" onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg"><X className="w-4 h-4" /></button>
                             </div>
                           </td>
                         </>
@@ -363,12 +363,12 @@ export default function SponsorsPage() {
                             <td className="py-1 px-3">
                               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 {canEdit && (
-                                  <button onClick={() => startEdit(s)} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-gray-100">
+                                  <button aria-label="Upravit" onClick={() => startEdit(s)} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-gray-100">
                                     <Pencil className="w-4 h-4" />
                                   </button>
                                 )}
                                 {canDeactivate && (
-                                  <button onClick={() => toggleActive(s.id, s.isActive)} className="p-1.5 text-gray-400 hover:text-amber-600 rounded-lg hover:bg-gray-100" title={s.isActive ? t('sponsorPage.deactivate') : t('sponsorPage.reactivate')}>
+                                  <button aria-label={s.isActive ? 'Deaktivovat' : 'Aktivovat'} onClick={() => toggleActive(s.id, s.isActive)} className="p-1.5 text-gray-400 hover:text-amber-600 rounded-lg hover:bg-gray-100" title={s.isActive ? t('sponsorPage.deactivate') : t('sponsorPage.reactivate')}>
                                     {s.isActive ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                                   </button>
                                 )}

@@ -212,10 +212,10 @@ export default function VisitCardsPage() {
         </div>
 
         {/* Select all / deselect */}
-        <button onClick={selectAll} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
+        <button onClick={selectAll} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
           {t('visitCards.selectAll')}
         </button>
-        <button onClick={deselectAll} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
+        <button onClick={deselectAll} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
           {t('visitCards.deselectAll')}
         </button>
 

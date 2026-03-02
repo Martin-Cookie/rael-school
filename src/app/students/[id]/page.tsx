@@ -399,7 +399,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             <p className="text-gray-600 mb-6">{t('app.confirmSave')}</p>
             <div className="flex gap-3">
               <button onClick={() => setShowConfirm(false)} className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">{t('app.cancel')}</button>
-              <button onClick={handleSave} className="flex-1 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 font-medium">{t('app.save')}</button>
+              <button onClick={handleSave} className="flex-1 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 font-medium">{t('app.save')}</button>
             </div>
           </div>
         </div>
@@ -409,12 +409,12 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
       {/* ===== HERO HEADER ===== */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 shadow-sm">
         <div className="flex items-start gap-5">
-          <button onClick={() => router.push(backUrl)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 mt-1 flex-shrink-0">
+          <button aria-label="Zpět" onClick={() => router.push(backUrl)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 mt-1 flex-shrink-0">
             <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
           <div className="relative group flex-shrink-0">
             {student.profilePhoto ? (
-              <img src={student.profilePhoto} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-gray-100 shadow-sm" />
+              <img src={student.profilePhoto} alt={`${student.firstName} ${student.lastName}`} className="w-20 h-20 rounded-2xl object-cover border-2 border-gray-100 shadow-sm" />
             ) : (
               <div className="w-20 h-20 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/40 dark:to-primary-800/40 rounded-2xl flex items-center justify-center border-2 border-primary-100 dark:border-primary-700">
                 <User className="w-10 h-10 text-primary-400 dark:text-primary-300" />
@@ -529,7 +529,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg"><Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" /></div>
               <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('student.notes')}</h3>
             </div>
-            {editMode ? <textarea value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={4} className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none resize-none" /> : <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{student.notes || '-'}</p>}
+            {editMode ? <textarea value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={4} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none resize-none" /> : <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{student.notes || '-'}</p>}
           </div>
         </div>
       )}
@@ -551,8 +551,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   <option value="">{t('equipment.selectType')}</option>
                   {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}{et.price ? ` (${formatNumber(et.price)} CZK)` : ''}</option>)}
                 </select>
-                <button onClick={addSingleEquipment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
-                <button onClick={() => { setShowAddEquipment(false); setNewEquipmentType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
+                <button onClick={addSingleEquipment} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                <button aria-label="Zavřít" onClick={() => { setShowAddEquipment(false); setNewEquipmentType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
               </div>
             </div>
           )}
@@ -578,7 +578,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   <option value="">{t('equipment.selectType')}</option>
                   {equipmentTypes.map((et: any) => <option key={et.id} value={et.name}>{eqLabel(et.name)}{et.price ? ` (${formatNumber(et.price)} CZK)` : ''}</option>)}
                 </select>
-                <button onClick={() => { const sel = document.getElementById('addEquipmentSelect') as HTMLSelectElement; if (sel.value) { addEquipmentItem(sel.value); sel.value = '' } }} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>
+                <button onClick={() => { const sel = document.getElementById('addEquipmentSelect') as HTMLSelectElement; if (sel.value) { addEquipmentItem(sel.value); sel.value = '' } }} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>
               </div>
             </div>
           ) : student.equipment?.length > 0 ? (
@@ -594,7 +594,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   </div>
                   <div className="flex items-center gap-2">
                     {condBadge(eq.condition)}
-                    {canEditData && <button onClick={() => deleteSingleEquipment(eq.id)} className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>}
+                    {canEditData && <button aria-label="Smazat" onClick={() => deleteSingleEquipment(eq.id)} className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>}
                   </div>
                 </div>
               ))}
@@ -624,8 +624,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 {selectedNeedType === '__custom__' && (
                   <input type="text" value={newNeed} onChange={(e) => setNewNeed(e.target.value)} placeholder={t('needs.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addNeed()} />
                 )}
-                <button onClick={addNeed} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
-                <button onClick={() => { setShowAddNeed(false); setNewNeed(''); setSelectedNeedType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
+                <button onClick={addNeed} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                <button aria-label="Zavřít" onClick={() => { setShowAddNeed(false); setNewNeed(''); setSelectedNeedType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
               </div>
             </div>
           )}
@@ -640,7 +640,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 </div>
                 <div className="flex items-center gap-2">
                   {need.isFulfilled && <span className="text-xs text-gray-500">{formatDate(need.fulfilledAt, locale)}</span>}
-                  {canEditData && <button onClick={() => deleteNeed(need.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>}
+                  {canEditData && <button aria-label="Smazat" onClick={() => deleteNeed(need.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </div>
             ))}
@@ -670,8 +670,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 {selectedWishType === '__custom__' && (
                   <input type="text" value={newWish} onChange={(e) => setNewWish(e.target.value)} placeholder={t('wishes.description')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" onKeyDown={(e) => e.key === 'Enter' && addWish()} />
                 )}
-                <button onClick={addWish} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
-                <button onClick={() => { setShowAddWish(false); setNewWish(''); setSelectedWishType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
+                <button onClick={addWish} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                <button aria-label="Zavřít" onClick={() => { setShowAddWish(false); setNewWish(''); setSelectedWishType('') }} className="px-3 py-2 text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /></button>
               </div>
             </div>
           )}
@@ -687,7 +687,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 </div>
                 <div className="flex items-center gap-2">
                   {wish.isFulfilled && <span className="text-xs text-gray-500">{formatDate(wish.fulfilledAt, locale)}</span>}
-                  {canEditData && <button onClick={() => deleteWish(wish.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>}
+                  {canEditData && <button aria-label="Smazat" onClick={() => deleteWish(wish.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </div>
             ))}
@@ -756,8 +756,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   <input type="number" value={newVoucher.count} onChange={(e) => setNewVoucher({ ...newVoucher, count: e.target.value })} placeholder={t('vouchers.count')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                   {newVoucher.type === 'purchase' && (
                     <div className="sm:col-span-2">
-                      <label className="block text-xs text-gray-500 mb-1">{t('vouchers.donorName')}</label>
-                      <select value={newVoucher.sponsorId} onChange={(e) => {
+                      <label htmlFor="newVoucherSponsor" className="block text-xs text-gray-500 mb-1">{t('vouchers.donorName')}</label>
+                      <select id="newVoucherSponsor" value={newVoucher.sponsorId} onChange={(e) => {
                         const sp = allSponsors.find((s: any) => s.id === e.target.value)
                         if (sp) {
                           setNewVoucher({ ...newVoucher, sponsorId: sp.id, donorName: `${sp.firstName} ${sp.lastName}` })
@@ -773,7 +773,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 </div>
                 <input type="text" value={newVoucher.notes} onChange={(e) => setNewVoucher({ ...newVoucher, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none mb-3" />
                 <div className="flex gap-2">
-                  <button onClick={addVoucher} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
+                  <button onClick={addVoucher} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button>
                   <button onClick={() => setShowAddVoucher(false)} className="px-3 py-2 text-gray-500 hover:text-gray-700 text-sm">{t('app.cancel')}</button>
                 </div>
               </div>
@@ -795,7 +795,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
                     <td className="py-3 px-2 text-sm text-gray-700">{v.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(v.sponsor.lastName)}&from=${encodeURIComponent(`/students/${student.id}?tab=vouchers`)}`} className="text-accent-600 dark:text-accent-400 hover:underline">{v.sponsor.firstName} {v.sponsor.lastName}</Link> : (v.donorName || '-')}</td>
                     <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
-                    {canEditData && <td className="py-3 px-1 text-right"><button onClick={() => deleteVoucher(v.id, 'purchase')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+                    {canEditData && <td className="py-3 px-1 text-right"><button aria-label="Smazat" onClick={() => deleteVoucher(v.id, 'purchase')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                   </tr>
                 ))}
                 {(!student.vouchers || student.vouchers.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
@@ -818,7 +818,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     <td className="py-3 px-2 text-sm text-gray-900">{formatNumber(v.count)}</td>
                     <td className="py-3 px-2"></td>
                     <td className="py-3 px-2 text-sm text-gray-500">{v.notes || '-'}</td>
-                    {canEditData && <td className="py-3 px-1 text-right"><button onClick={() => deleteVoucher(v.id, 'usage')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+                    {canEditData && <td className="py-3 px-1 text-right"><button aria-label="Smazat" onClick={() => deleteVoucher(v.id, 'usage')} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                   </tr>
                 ))}
                 {(!student.voucherUsages || student.voucherUsages.length === 0) && <tr><td colSpan={canEditData ? 6 : 5} className="py-4 text-center text-gray-500 text-sm">{t('app.noData')}</td></tr>}
@@ -838,26 +838,26 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             </div>
             <div className="flex items-center gap-2">
               <div className="flex gap-1 bg-gray-100 rounded-lg p-1">{[{ key:'all',label:t('photos.filterAll') },{ key:'visit',label:t('photos.visit') },{ key:'handover',label:t('photos.handover') },{ key:'voucher',label:t('photos.voucher') }].map(f => <button key={f.key} onClick={() => setPhotoFilter(f.key)} className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${photoFilter === f.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{f.label}</button>)}</div>
-              {canEditData && <button onClick={() => setShowAddPhoto(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"><Upload className="w-4 h-4" /> {t('photos.upload')}</button>}
+              {canEditData && <button onClick={() => setShowAddPhoto(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700"><Upload className="w-4 h-4" /> {t('photos.upload')}</button>}
             </div>
           </div>
           {showAddPhoto && (
             <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-                <select value={newPhoto.category} onChange={(e) => setNewPhoto({ ...newPhoto, category: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="visit">{t('photos.visit')}</option><option value="handover">{t('photos.handover')}</option><option value="voucher">{t('photos.voucher')}</option></select>
-                <input type="date" value={newPhoto.takenAt} onChange={(e) => setNewPhoto({ ...newPhoto, takenAt: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <input type="text" value={newPhoto.description} onChange={(e) => setNewPhoto({ ...newPhoto, description: e.target.value })} placeholder={t('photos.description')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <input type="file" accept="image/*" onChange={(e) => setNewPhoto({ ...newPhoto, file: e.target.files?.[0] || null })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <select value={newPhoto.category} onChange={(e) => setNewPhoto({ ...newPhoto, category: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"><option value="visit">{t('photos.visit')}</option><option value="handover">{t('photos.handover')}</option><option value="voucher">{t('photos.voucher')}</option></select>
+                <input type="date" value={newPhoto.takenAt} onChange={(e) => setNewPhoto({ ...newPhoto, takenAt: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <input type="text" value={newPhoto.description} onChange={(e) => setNewPhoto({ ...newPhoto, description: e.target.value })} placeholder={t('photos.description')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <input type="file" accept="image/*" onChange={(e) => setNewPhoto({ ...newPhoto, file: e.target.files?.[0] || null })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
               </div>
-              <div className="flex gap-2"><button onClick={addPhoto} disabled={!newPhoto.file || uploading} className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">{uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('app.loading')}</> : t('photos.upload')}</button><button onClick={() => setShowAddPhoto(false)} disabled={uploading} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+              <div className="flex gap-2"><button onClick={addPhoto} disabled={!newPhoto.file || uploading} className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50">{uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('app.loading')}</> : t('photos.upload')}</button><button onClick={() => setShowAddPhoto(false)} disabled={uploading} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
             </div>
           )}
           {filteredPhotos.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{filteredPhotos.map((photo: any) => (
               <div key={photo.id} className="bg-gray-50 dark:bg-gray-700 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
-                {photo.filePath ? <img src={photo.filePath} alt={photo.description || ''} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-200 dark:bg-gray-600 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400 dark:text-gray-500" /></div>}
+                {photo.filePath ? <img src={photo.filePath} alt={photo.description || `${student.firstName} ${student.lastName}`} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-200 dark:bg-gray-600 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400 dark:text-gray-500" /></div>}
                 <div className="p-3">
-                  <div className="flex items-start justify-between"><p className="text-sm font-medium text-gray-900 dark:text-gray-100">{photo.description || '-'}</p>{canEditData && <button onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}</div>
+                  <div className="flex items-start justify-between"><p className="text-sm font-medium text-gray-900 dark:text-gray-100">{photo.description || '-'}</p>{canEditData && <button aria-label="Smazat" onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}</div>
                   <div className="flex items-center justify-between mt-2"><span className="text-xs text-gray-500">{formatDate(photo.takenAt, locale)}</span><span className={`badge ${photo.category === 'visit' ? 'badge-green' : photo.category === 'handover' ? 'badge-yellow' : 'badge-red'}`}>{photo.category === 'visit' ? t('photos.visit') : photo.category === 'handover' ? t('photos.handover') : t('photos.voucher')}</span></div>
                 </div>
               </div>
@@ -892,7 +892,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                     value={sponsorSearch}
                     onChange={(e) => searchSponsors(e.target.value)}
                     placeholder={t('sponsorPage.searchByName')}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                   />
                   {sponsorResults.length > 0 && (
                     <div className="absolute z-10 w-full mt-1 bg-white rounded-xl shadow-lg border border-gray-200 max-h-48 overflow-y-auto">
@@ -916,14 +916,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
             <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <p className="text-xs text-gray-500 mb-3">Vyplňte údaje sponzora. Pokud v systému neexistuje, bude vytvořen.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                <input type="text" value={newSponsor.firstName} onChange={(e) => setNewSponsor({ ...newSponsor, firstName: e.target.value })} placeholder={t('student.firstName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <input type="text" value={newSponsor.lastName} onChange={(e) => setNewSponsor({ ...newSponsor, lastName: e.target.value })} placeholder={t('student.lastName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <input type="email" value={newSponsor.email} onChange={(e) => setNewSponsor({ ...newSponsor, email: e.target.value })} placeholder={t('sponsors.email') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <input type="text" value={newSponsor.phone} onChange={(e) => setNewSponsor({ ...newSponsor, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <input type="date" value={newSponsor.startDate} onChange={(e) => setNewSponsor({ ...newSponsor, startDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <input type="text" value={newSponsor.notes} onChange={(e) => setNewSponsor({ ...newSponsor, notes: e.target.value })} placeholder={t('sponsors.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="text" value={newSponsor.firstName} onChange={(e) => setNewSponsor({ ...newSponsor, firstName: e.target.value })} placeholder={t('student.firstName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <input type="text" value={newSponsor.lastName} onChange={(e) => setNewSponsor({ ...newSponsor, lastName: e.target.value })} placeholder={t('student.lastName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <input type="email" value={newSponsor.email} onChange={(e) => setNewSponsor({ ...newSponsor, email: e.target.value })} placeholder={t('sponsors.email') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <input type="text" value={newSponsor.phone} onChange={(e) => setNewSponsor({ ...newSponsor, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <input type="date" value={newSponsor.startDate} onChange={(e) => setNewSponsor({ ...newSponsor, startDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <input type="text" value={newSponsor.notes} onChange={(e) => setNewSponsor({ ...newSponsor, notes: e.target.value })} placeholder={t('sponsors.notes')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
               </div>
-              <div className="flex gap-2"><button onClick={addSponsor} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddSponsor(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+              <div className="flex gap-2"><button onClick={addSponsor} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddSponsor(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
             </div>
           )}
           {student.sponsorships?.length > 0 ? (
@@ -932,13 +932,13 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                 {editingSponsor === sp.id ? (
                   <div className="space-y-3">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <input type="text" value={editSponsorData.firstName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, firstName: e.target.value })} placeholder={t('student.firstName')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                      <input type="text" value={editSponsorData.lastName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, lastName: e.target.value })} placeholder={t('student.lastName')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                      <input type="text" value={editSponsorData.firstName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, firstName: e.target.value })} placeholder={t('student.firstName')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                      <input type="text" value={editSponsorData.lastName || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, lastName: e.target.value })} placeholder={t('student.lastName')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
                       <input type="email" value={editSponsorData.email || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, email: e.target.value })} placeholder={t('sponsors.email')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
-                      <input type="text" value={editSponsorData.phone || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                      <div className="sm:col-span-2"><input type="text" value={editSponsorData.notes || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, notes: e.target.value })} placeholder={t('sponsors.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" /></div>
+                      <input type="text" value={editSponsorData.phone || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, phone: e.target.value })} placeholder={t('sponsors.phone')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                      <div className="sm:col-span-2"><input type="text" value={editSponsorData.notes || ''} onChange={(e) => setEditSponsorData({ ...editSponsorData, notes: e.target.value })} placeholder={t('sponsors.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" /></div>
                     </div>
-                    <div className="flex gap-2"><button onClick={() => saveSponsorEdit(sp.id, sp.sponsor.id)} className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.save')}</button><button onClick={() => setEditingSponsor(null)} className="px-3 py-1.5 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+                    <div className="flex gap-2"><button onClick={() => saveSponsorEdit(sp.id, sp.sponsor.id)} className="px-3 py-1.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.save')}</button><button onClick={() => setEditingSponsor(null)} className="px-3 py-1.5 text-gray-500 text-sm">{t('app.cancel')}</button></div>
                   </div>
                 ) : (
                   <div className="flex items-start gap-4">
@@ -952,7 +952,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                       {sp.notes && <p className="text-sm text-gray-700 mt-2 italic">{sp.notes}</p>}
                       <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full font-medium ${sp.isActive ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600'}`}>{sp.isActive ? '● Active' : '○ Inactive'}</span>
                     </div>
-                    {canEditData && <button onClick={() => { setEditingSponsor(sp.id); setEditSponsorData({ firstName: sp.sponsor.firstName, lastName: sp.sponsor.lastName, email: sp.sponsor.email, phone: sp.sponsor.phone || '', notes: sp.notes || '' }) }} className="p-2 text-gray-400 hover:text-gray-600"><Pencil className="w-4 h-4" /></button>}
+                    {canEditData && <button aria-label="Upravit" onClick={() => { setEditingSponsor(sp.id); setEditSponsorData({ firstName: sp.sponsor.firstName, lastName: sp.sponsor.lastName, email: sp.sponsor.email, phone: sp.sponsor.phone || '', notes: sp.notes || '' }) }} className="p-2 text-gray-400 hover:text-gray-600"><Pencil className="w-4 h-4" /></button>}
                   </div>
                 )}
               </div>
@@ -974,21 +974,21 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           {showAddPayment && (
             <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
-                <input type="date" value={newPayment.paymentDate} onChange={(e) => setNewPayment({ ...newPayment, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <select value={newPayment.paymentType} onChange={(e) => setNewPayment({ ...newPayment, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                <input type="date" value={newPayment.paymentDate} onChange={(e) => setNewPayment({ ...newPayment, paymentDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <select value={newPayment.paymentType} onChange={(e) => setNewPayment({ ...newPayment, paymentType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
                   <option value="">{t('sponsorPayments.selectType')}</option>{paymentTypes.map((pt: any) => <option key={pt.id} value={pt.name}>{getLocaleName(pt, locale)}</option>)}
                 </select>
                 <div className="flex gap-2">
-                  <input type="number" value={newPayment.amount} onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                  <input type="number" value={newPayment.amount} onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })} placeholder={t('vouchers.amount')} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
                   <select value={newPayment.currency} onChange={(e) => setNewPayment({ ...newPayment, currency: e.target.value })} className="px-2 py-2 rounded-lg border border-gray-300 text-sm w-20">{CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
                 </div>
-                <select value={newPayment.sponsorId} onChange={(e) => setNewPayment({ ...newPayment, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                <select value={newPayment.sponsorId} onChange={(e) => setNewPayment({ ...newPayment, sponsorId: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm">
                   <option value="">{t('sponsorPayments.selectSponsor')}</option>
                   {allSponsors.map((s: any) => <option key={s.id} value={s.id}>{s.lastName} {s.firstName}</option>)}
                 </select>
-                <div className="sm:col-span-2 lg:col-span-2"><input type="text" value={newPayment.notes} onChange={(e) => setNewPayment({ ...newPayment, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" /></div>
+                <div className="sm:col-span-2 lg:col-span-2"><input type="text" value={newPayment.notes} onChange={(e) => setNewPayment({ ...newPayment, notes: e.target.value })} placeholder={t('student.notes')} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" /></div>
               </div>
-              <div className="flex gap-2"><button onClick={addSponsorPayment} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddPayment(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+              <div className="flex gap-2"><button onClick={addSponsorPayment} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddPayment(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
             </div>
           )}
           {student.sponsorPayments?.length > 0 ? (
@@ -1007,7 +1007,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100 font-medium">{fmtCurrency(p.amount, p.currency)}</td>
                   <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{p.sponsor ? <Link href={`/sponsors?search=${encodeURIComponent(p.sponsor.lastName)}&from=${encodeURIComponent(`/students/${student.id}?tab=sponsorPayments`)}`} className="text-accent-600 dark:text-accent-400 hover:underline">{p.sponsor.firstName} {p.sponsor.lastName}</Link> : '-'}</td>
                   <td className="py-3 px-2 text-sm text-gray-500 dark:text-gray-400">{p.notes || '-'}</td>
-                  {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteSponsorPayment(p.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+                  {canEditData && <td className="py-3 px-2 text-right"><button aria-label="Smazat" onClick={() => deleteSponsorPayment(p.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                 </tr>
               ))}
             </tbody></table></div>
@@ -1139,11 +1139,11 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           {showAddHealth && (
             <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-                <input type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
-                <select value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 text-sm"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{getLocaleName(ht, locale)}</option>)}</select>
-                <input type="text" value={newHealth.notes} onChange={(e) => setNewHealth({ ...newHealth, notes: e.target.value })} placeholder={t('health.notes')} className="px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                <input type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
+                <select value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{getLocaleName(ht, locale)}</option>)}</select>
+                <input type="text" value={newHealth.notes} onChange={(e) => setNewHealth({ ...newHealth, notes: e.target.value })} placeholder={t('health.notes')} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />
               </div>
-              <div className="flex gap-2"><button onClick={addHealthCheck} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddHealth(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
+              <div className="flex gap-2"><button onClick={addHealthCheck} className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">{t('app.add')}</button><button onClick={() => setShowAddHealth(false)} className="px-3 py-2 text-gray-500 text-sm">{t('app.cancel')}</button></div>
             </div>
           )}
           {student.healthChecks?.length > 0 ? (
@@ -1158,7 +1158,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{formatDate(hc.checkDate, locale)}</td>
                   <td className="py-3 px-2 text-sm"><span className={`badge ${hc.checkType === 'urgent' ? 'badge-red' : hc.checkType === 'dentist' ? 'badge-yellow' : 'badge-green'}`}>{htLabel(hc.checkType)}</span></td>
                   <td className="py-3 px-2 text-sm text-gray-700 dark:text-gray-300">{hc.notes || '-'}</td>
-                  {canEditData && <td className="py-3 px-2 text-right"><button onClick={() => deleteHealthCheck(hc.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
+                  {canEditData && <td className="py-3 px-2 text-right"><button aria-label="Smazat" onClick={() => deleteHealthCheck(hc.id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button></td>}
                 </tr>
               ))}
             </tbody></table></div>

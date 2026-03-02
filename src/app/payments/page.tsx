@@ -448,7 +448,7 @@ export default function PaymentsPage() {
             <td className="py-1.5 px-3"></td>
             {canEdit && <td className="py-1.5 px-3">
               {(filterType || filterSponsor) && (
-                <button onClick={() => { setFilterType(''); setFilterSponsor('') }} className="text-xs text-red-500 hover:text-red-700 dark:text-red-400">
+                <button aria-label="Zrušit" onClick={() => { setFilterType(''); setFilterSponsor('') }} className="text-xs text-red-500 hover:text-red-700 dark:text-red-400">
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
@@ -507,8 +507,8 @@ export default function PaymentsPage() {
                 <td className="py-2 px-3"><input type="text" value={editData.notes || ''} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm w-full" /></td>
                 <td className="py-2 px-3 text-right">
                   <div className="flex gap-1 justify-end">
-                    <button onClick={() => saveEdit(p.id)} className="p-1.5 text-primary-600 hover:text-primary-800"><Check className="w-4 h-4" /></button>
-                    <button onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
+                    <button aria-label="Potvrdit" onClick={() => saveEdit(p.id)} className="p-1.5 text-primary-600 hover:text-primary-800"><Check className="w-4 h-4" /></button>
+                    <button aria-label="Zrušit" onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
                   </div>
                 </td>
               </tr>
@@ -530,8 +530,8 @@ export default function PaymentsPage() {
                 {canEdit && (
                   <td className="py-3 px-3 text-right">
                     <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => startEdit(p)} className="p-1.5 text-gray-400 hover:text-primary-600"><Pencil className="w-4 h-4" /></button>
-                      <button onClick={() => deletePayment(p.id, p._type)} className="p-1.5 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                      <button aria-label="Upravit" onClick={() => startEdit(p)} className="p-1.5 text-gray-400 hover:text-primary-600"><Pencil className="w-4 h-4" /></button>
+                      <button aria-label="Smazat" onClick={() => deletePayment(p.id, p._type)} className="p-1.5 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 )}

@@ -424,7 +424,7 @@ export default function ImportDetailPage() {
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/payments/import" className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
+        <Link aria-label="Zpět" href="/payments/import" className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div className="flex-1">
@@ -664,6 +664,7 @@ export default function ImportDetailPage() {
                       <div className="flex items-center gap-1">
                         {editable && (
                           <button
+                            aria-label="Rozdělit"
                             onClick={() => openSplitModal(row)}
                             className="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 rounded"
                             title={t('paymentImport.split')}
@@ -674,6 +675,7 @@ export default function ImportDetailPage() {
                         {row.matchNotes && (
                           <div className="relative">
                             <button
+                              aria-label="Podrobnosti"
                               onClick={() => setTooltipRow(tooltipRow === row.id ? null : row.id)}
                               className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded"
                             >
@@ -719,7 +721,7 @@ export default function ImportDetailPage() {
           <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-6">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('paymentImport.splitPayment')}</h3>
-              <button onClick={() => setSplitRow(null)} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded">
+              <button aria-label="Zavřít" onClick={() => setSplitRow(null)} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -747,7 +749,7 @@ export default function ImportDetailPage() {
                     <span className="text-sm text-gray-400">{splitRow?.currency}</span>
                     <div className="flex-1" />
                     {splitParts.length > 2 && (
-                      <button onClick={() => removeSplitPart(i)} className="p-1 text-gray-400 hover:text-red-500">
+                      <button aria-label="Zavřít" onClick={() => removeSplitPart(i)} className="p-1 text-gray-400 hover:text-red-500">
                         <X className="w-4 h-4" />
                       </button>
                     )}
