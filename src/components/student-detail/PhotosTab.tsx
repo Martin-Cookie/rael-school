@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Camera, Upload, Loader2, Trash2 } from 'lucide-react'
 import { formatDate } from '@/lib/format'
 
@@ -49,7 +50,7 @@ export function PhotosTab({
       {filteredPhotos.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{filteredPhotos.map((photo: any) => (
           <div key={photo.id} className="bg-gray-50 dark:bg-gray-700 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
-            {photo.filePath ? <img src={photo.filePath} alt={photo.description || `${student.firstName} ${student.lastName}`} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-200 dark:bg-gray-600 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400 dark:text-gray-500" /></div>}
+            {photo.filePath ? <div className="relative w-full h-48"><Image src={photo.filePath} alt={photo.description || `${student.firstName} ${student.lastName}`} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" /></div> : <div className="w-full h-48 bg-gray-200 dark:bg-gray-600 flex items-center justify-center"><Camera className="w-12 h-12 text-gray-400 dark:text-gray-500" /></div>}
             <div className="p-3">
               <div className="flex items-start justify-between"><p className="text-sm font-medium text-gray-900 dark:text-gray-100">{photo.description || '-'}</p>{canEditData && <button aria-label="Smazat" onClick={() => deletePhoto(photo.id)} className="p-1 text-gray-400 hover:text-red-500 -mt-1 -mr-1"><Trash2 className="w-4 h-4" /></button>}</div>
               <div className="flex items-center justify-between mt-2"><span className="text-xs text-gray-500">{formatDate(photo.takenAt, locale)}</span><span className={`badge ${photo.category === 'visit' ? 'badge-green' : photo.category === 'handover' ? 'badge-yellow' : 'badge-red'}`}>{photo.category === 'visit' ? t('photos.visit') : photo.category === 'handover' ? t('photos.handover') : t('photos.voucher')}</span></div>

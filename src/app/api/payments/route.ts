@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 import { recalcTuitionStatus, isTuitionType } from '@/lib/tuition'
 
@@ -179,6 +179,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
     console.error('PUT /api/payments error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
@@ -217,6 +218,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
     console.error('DELETE /api/payments error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }

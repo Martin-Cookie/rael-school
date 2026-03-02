@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit, hashPassword } from '@/lib/auth'
 
 export async function POST(
@@ -104,6 +104,7 @@ export async function PUT(
 
     return NextResponse.json({ sponsorship })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Sponsorship not found' }, { status: 404 })
     console.error('Error updating sponsorship:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -133,6 +134,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Sponsorship not found' }, { status: 404 })
     console.error('Error removing sponsorship:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

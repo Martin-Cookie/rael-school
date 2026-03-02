@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth'
 
 // GET — seznam předpisů (s filtrováním podle období)
@@ -205,6 +205,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Tuition charge not found' }, { status: 404 })
     console.error('Error updating tuition charge:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -223,6 +224,7 @@ export async function DELETE(request: NextRequest) {
     await prisma.tuitionCharge.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Tuition charge not found' }, { status: 404 })
     console.error('Error deleting tuition charge:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

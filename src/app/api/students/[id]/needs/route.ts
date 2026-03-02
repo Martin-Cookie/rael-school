@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 
 export async function POST(
@@ -57,6 +57,7 @@ export async function PUT(
 
     return NextResponse.json({ need })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Need not found' }, { status: 404 })
     console.error('Error updating need:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -78,6 +79,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Need not found' }, { status: 404 })
     console.error('Error deleting need:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

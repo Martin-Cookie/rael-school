@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 
 export async function POST(
@@ -51,6 +51,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (isNotFoundError(error)) return NextResponse.json({ error: 'Health check not found' }, { status: 404 })
     console.error('Error deleting health check:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

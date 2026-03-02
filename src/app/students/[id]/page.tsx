@@ -6,6 +6,7 @@ import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
   HandHeart, Stethoscope, Package, Heart, CreditCard, Loader2, Star, FileText
 } from 'lucide-react'
+import Image from 'next/image'
 import { calculateAge } from '@/lib/format'
 import { validateImageFile, compressImage } from '@/lib/imageUtils'
 import { useLocale } from '@/hooks/useLocale'
@@ -430,7 +431,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
           </button>
           <div className="relative group flex-shrink-0">
             {student.profilePhoto ? (
-              <img src={student.profilePhoto} alt={`${student.firstName} ${student.lastName}`} className="w-20 h-20 rounded-2xl object-cover border-2 border-gray-100 shadow-sm" />
+              <Image src={student.profilePhoto} alt={`${student.firstName} ${student.lastName}`} width={80} height={80} className="w-20 h-20 rounded-2xl object-cover border-2 border-gray-100 shadow-sm" />
             ) : (
               <div className="w-20 h-20 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/40 dark:to-primary-800/40 rounded-2xl flex items-center justify-center border-2 border-primary-100 dark:border-primary-700">
                 <User className="w-10 h-10 text-primary-400 dark:text-primary-300" />
