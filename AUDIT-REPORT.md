@@ -6,11 +6,11 @@
 ## Souhrn
 
 - **CRITICAL: 12** (8 vyřešeno ✅, 4 otevřeno)
-- **HIGH: 16**
-- **MEDIUM: 22**
+- **HIGH: 16** (13 vyřešeno ✅, 3 otevřeno)
+- **MEDIUM: 22** (2 vyřešeno ✅, 20 otevřeno)
 - **LOW: 10**
 
-**Celkem: 60 nálezů (8 vyřešeno v Fázi 1)**
+**Celkem: 60 nálezů (23 vyřešeno ve Fázích 1–2)**
 
 ### Fáze 1 — vyřešené CRITICAL nálezy (2026-03-02)
 
@@ -22,6 +22,18 @@
 | `956a549` | Přístupnost: 40 aria-label + Toast role="alert" |
 | `332a7a9` | DB indexy: sponsorId na VoucherPurchase/PaymentImportRow, period na TuitionCharge |
 | `2b8bbc4` | Error handling: tiché .catch() nahrazeno console.error logováním |
+
+### Fáze 2 — vyřešené HIGH nálezy (2026-03-02)
+
+| Commit | Popis |
+|--------|-------|
+| `b6f660a` | Extrakce duplicit: paymentTypes.ts, konstanty, `??` místo `\|\|` |
+| `d24c0b9` | CLAUDE.md: oprava 9→10 záložek, stravenky v libovolné měně |
+| `89fe94c` | isNotFoundError 404 handling v PUT/DELETE (3 soubory) |
+| `c98500c` | Výkon: sponzoři groupBy, školné Map lookup |
+| `5c86dad` | Bezpečnost: magic bytes validace při uploadu fotek |
+| `f8328ed` | Validace povinných polí (firstName, lastName) na student API |
+| `5f61220` | Testy: csvParser (14), paymentMatcher (15), auth (9) — celkem 64 testů |
 
 ---
 
@@ -42,24 +54,24 @@
 | 11 | Výkon | `prisma/schema.prisma` | ✅ CRITICAL | Chybí indexy: VoucherPurchase.sponsorId, PaymentImportRow.sponsorId, TuitionCharge.period | Přidáno (`332a7a9`) |
 | 12 | Error | 10+ stránek | ✅ CRITICAL | `.catch(() => {})` — tiché selhání fetch volání | console.error logování (`2b8bbc4`) |
 | 13 | Bezpečnost | `lib/auth.ts:29` | HIGH | JWT expirace 7 dní — příliš dlouhá | Snížit na 1–2 hodiny + refresh token |
-| 14 | Bezpečnost | `api/students/[id]/photos/route.ts:29-36` | HIGH | File upload validuje jen MIME type, ne obsah | Validovat magic bytes (`file-type`) |
+| 14 | Bezpečnost | `api/students/[id]/photos/route.ts:29-36` | ✅ HIGH | File upload validuje jen MIME type, ne obsah | Magic bytes validace (`5c86dad`) |
 | 15 | Bezpečnost | `api/admin/backup/restore/route.ts` | HIGH | DB restore bez rate limitu a potvrzení | Přidat approval workflow |
 | 16 | Bezpečnost | `api/admin/backup/json/route.ts` | HIGH | Bulk export bez rate limitu a audit logu | Přidat rate limit + logování |
-| 17 | Kód | Split + Approve routes | HIGH | Duplicitní logika detekce voucher typů | Extrahovat do utility |
-| 18 | Kód | Více souborů | HIGH | Hardcoded fallback `80` pro voucher rate | Přesunout do `constants.ts` |
-| 19 | Kód | Více souborů | HIGH | Nekonzistentní default měny (CZK vs KES) | Centralizovat konstanty |
-| 20 | Dokument | `CLAUDE.md:151-163` | HIGH | Dokumentuje 9 záložek, ve skutečnosti 10 (chybí Školné) | Aktualizovat |
-| 21 | Dokument | `CLAUDE.md:50` | HIGH | „Stravenky jsou vždy v KES" — nepravda | Opravit |
+| 17 | Kód | Split + Approve routes | ✅ HIGH | Duplicitní logika detekce voucher typů | Extrahováno do `paymentTypes.ts` (`b6f660a`) |
+| 18 | Kód | Více souborů | ✅ HIGH | Hardcoded fallback `80` pro voucher rate | `constants.ts` (`b6f660a`) |
+| 19 | Kód | Více souborů | ✅ HIGH | Nekonzistentní default měny (CZK vs KES) | Centralizováno (`b6f660a`) |
+| 20 | Dokument | `CLAUDE.md:151-163` | ✅ HIGH | Dokumentuje 9 záložek, ve skutečnosti 10 (chybí Školné) | Opraveno (`d24c0b9`) |
+| 21 | Dokument | `CLAUDE.md:50` | ✅ HIGH | „Stravenky jsou vždy v KES" — nepravda | Opraveno (`d24c0b9`) |
 | 22 | Dokument | CLAUDE.md | HIGH | 45 API endpointů bez dokumentace | Vytvořit API Reference |
-| 23 | UI | `components/Toast.tsx` | HIGH | Chybí `aria-live` a `role="alert"` | Přidat pro screen readery |
-| 24 | UI | `Sidebar.tsx:72` | HIGH | Mobilní header bez dark mode | Přidat dark varianty |
-| 25 | UI | `students/new/page.tsx:64-130` | HIGH | Formulář bez validačních zpráv | Přidat error feedback |
-| 26 | Výkon | `api/sponsors/route.ts:62-70` | HIGH | Agregace plateb v JS místo SQL | Použít `prisma.groupBy()` |
-| 27 | Výkon | `api/tuition-charges/route.ts:48-95` | HIGH | O(n²) filtrování plateb ke školnému | Pre-organizovat do Map |
-| 28 | Error | `api/students/[id]/route.ts:98-122` | HIGH | PUT/DELETE nepoužívá `isNotFoundError()` | Přidat 404 handling |
-| 29 | Testy | `lib/paymentMatcher.ts` | HIGH | 368 řádků business logiky bez testů | Napsat test suite |
-| 30 | Testy | `lib/csvParser.ts` | HIGH | CSV parsing bez testů | Napsat testy |
-| 31 | Testy | `lib/auth.ts` | HIGH | Auth funkce bez testů | Napsat unit testy |
+| 23 | UI | `components/Toast.tsx` | ✅ HIGH | Chybí `aria-live` a `role="alert"` | Přidáno (`956a549`) |
+| 24 | UI | `Sidebar.tsx:72` | ✅ HIGH | Mobilní header bez dark mode | Opraveno (`9940b25`) |
+| 25 | UI | `students/new/page.tsx:64-130` | ✅ HIGH | Formulář bez validačních zpráv | Validace povinných polí (`f8328ed`) |
+| 26 | Výkon | `api/sponsors/route.ts:62-70` | ✅ HIGH | Agregace plateb v JS místo SQL | `prisma.groupBy()` (`c98500c`) |
+| 27 | Výkon | `api/tuition-charges/route.ts:48-95` | ✅ HIGH | O(n²) filtrování plateb ke školnému | Map lookup (`c98500c`) |
+| 28 | Error | `api/students/[id]/route.ts:98-122` | ✅ HIGH | PUT/DELETE nepoužívá `isNotFoundError()` | Přidáno (`89fe94c`) |
+| 29 | Testy | `lib/paymentMatcher.ts` | ✅ HIGH | 368 řádků business logiky bez testů | 15 testů (`5f61220`) |
+| 30 | Testy | `lib/csvParser.ts` | ✅ HIGH | CSV parsing bez testů | 14 testů (`5f61220`) |
+| 31 | Testy | `lib/auth.ts` | ✅ HIGH | Auth funkce bez testů | 9 testů (`5f61220`) |
 | 32 | Bezpečnost | Všechny POST endpointy | MEDIUM | Žádná CSRF ochrana | Přidat CSRF tokeny |
 | 33 | Bezpečnost | `api/students/route.ts:82-90` | MEDIUM | Validace jen délky, ne obsahu | Použít `zod` schema |
 | 34 | Bezpečnost | Všechny odpovědi | MEDIUM | Chybí security headers (CSP, HSTS) | Přidat v `headers()` |
@@ -70,7 +82,7 @@
 | 39 | Kód | `reports/page.tsx` | MEDIUM | 705 řádků | Extrahovat sekce |
 | 40 | Kód | `students/[id]/page.tsx:31-77` | MEDIUM | 52 useState hooků | Seskupit do custom hooků |
 | 41 | Kód | `students/[id]/page.tsx:116-150` | MEDIUM | 10+ identických fetch funkcí | Vytvořit `fetchList<T>()` |
-| 42 | Kód | Více souborů | MEDIUM | `0.01` tolerance hardcoded | Extrahovat `AMOUNT_TOLERANCE` |
+| 42 | Kód | Více souborů | ✅ MEDIUM | `0.01` tolerance hardcoded | `AMOUNT_TOLERANCE` v `constants.ts` (`b6f660a`) |
 | 43 | Dokument | CLAUDE.md | MEDIUM | Chybí popis paymentMatcher algoritmu | Vytvořit docs/PAYMENT-MATCHING.md |
 | 44 | Dokument | `src/lib/*.ts` | MEDIUM | Utility funkce bez JSDoc | Přidat JSDoc |
 | 45 | UI | Více stránek | MEDIUM | Nekonzistentní button padding | Definovat size systém |
@@ -82,7 +94,7 @@
 | 51 | UI | Více komponent | MEDIUM | Focus ring v dark mode špatně viditelný | `dark:focus:ring-primary-400` |
 | 52 | Výkon | Více API endpointů | MEDIUM | Odpovědi bez `select:` — zbytečná data | Přidat `select: {}` |
 | 53 | Error | `api/payments/route.ts:81,105` | MEDIUM | `parseFloat()` bez NaN kontroly | Validovat před uložením |
-| 54 | Error | `api/.../approve/route.ts:78` | MEDIUM | `\|\|` místo `??` — 0 je falsy | Použít nullish coalescing |
+| 54 | Error | `api/.../approve/route.ts:78` | ✅ MEDIUM | `\|\|` místo `??` — 0 je falsy | Opraveno na `??` (`b6f660a`) |
 | 55 | Git | `.gitignore` | MEDIUM | Chybí `.vscode/`, `.idea/`, `coverage/` | Doplnit |
 | 56 | Kód | Více stránek | LOW | Přímý localStorage bez encapsulace | Vytvořit `useLocalStorage` hook |
 | 57 | Kód | `import/[id]/page.tsx:654` | LOW | Komplexní IIFE v JSX | Extrahovat do helper funkce |
