@@ -11,6 +11,7 @@ import { calculateAge } from '@/lib/format'
 import { validateImageFile, compressImage } from '@/lib/imageUtils'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/hooks/useToast'
+import { useFetchList } from '@/hooks/useFetchList'
 import { Toast } from '@/components/Toast'
 import { PersonalTab } from '@/components/student-detail/PersonalTab'
 import { EquipmentTab } from '@/components/student-detail/EquipmentTab'
@@ -39,17 +40,16 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [showConfirm, setShowConfirm] = useState(false)
   const [userRole, setUserRole] = useState<string>('')
   const [currency, setCurrency] = useState('KES')
-  const [classrooms, setClassrooms] = useState<any[]>([])
-  const [healthTypes, setHealthTypes] = useState<any[]>([])
-  const [paymentTypes, setPaymentTypes] = useState<any[]>([])
-  const [needTypes, setNeedTypes] = useState<any[]>([])
-  const [equipmentTypes, setEquipmentTypes] = useState<any[]>([])
-  const [allSponsors, setAllSponsors] = useState<any[]>([])
-  useEffect(() => { fetch('/api/sponsors/names').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(e => console.error('Failed to load sponsors:', e)) }, [])
-
-  const [wishTypes, setWishTypes] = useState<any[]>([])
-  const [voucherRates, setVoucherRates] = useState<any[]>([])
-  const [tuitionCharges, setTuitionCharges] = useState<any[]>([])
+  const [classrooms, fetchClassrooms] = useFetchList('/api/admin/classrooms', 'classrooms')
+  const [healthTypes, fetchHealthTypes] = useFetchList('/api/admin/health-types', 'healthTypes')
+  const [paymentTypes, fetchPaymentTypes] = useFetchList('/api/admin/payment-types', 'paymentTypes')
+  const [needTypes, fetchNeedTypes] = useFetchList('/api/admin/need-types', 'needTypes')
+  const [equipmentTypes, fetchEquipmentTypes] = useFetchList('/api/admin/equipment-types', 'equipmentTypes')
+  const [wishTypes, fetchWishTypes] = useFetchList('/api/admin/wish-types', 'wishTypes')
+  const [voucherRates, fetchVoucherRates] = useFetchList('/api/voucher-rates', 'voucherRates')
+  const [tuitionCharges, fetchTuitionCharges] = useFetchList(`/api/tuition-charges?studentId=${id}`, 'charges')
+  const [allSponsors, fetchAllSponsors] = useFetchList('/api/sponsors/names', 'sponsors')
+  useEffect(() => { fetchAllSponsors() }, [])
   const [newWish, setNewWish] = useState('')
   const [selectedWishType, setSelectedWishType] = useState('')
   const [showAddWish, setShowAddWish] = useState(false)
@@ -117,37 +117,6 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     try { const res = await fetch('/api/auth/me'); const d = await res.json(); if (d.user) setUserRole(d.user.role) } catch {}
   }
 
-  async function fetchHealthTypes() {
-    try { const res = await fetch("/api/admin/health-types"); const d = await res.json(); setHealthTypes(d.healthTypes || []) } catch {}
-  }
-
-  async function fetchClassrooms() {
-    try { const res = await fetch('/api/admin/classrooms'); const d = await res.json(); setClassrooms(d.classrooms || []) } catch {}
-  }
-
-  async function fetchPaymentTypes() {
-    try { const res = await fetch('/api/admin/payment-types'); const d = await res.json(); setPaymentTypes(d.paymentTypes || []) } catch {}
-  }
-
-  async function fetchNeedTypes() {
-    try { const res = await fetch('/api/admin/need-types'); const d = await res.json(); setNeedTypes(d.needTypes || []) } catch {}
-  }
-
-  async function fetchEquipmentTypes() {
-    try { const res = await fetch('/api/admin/equipment-types'); const d = await res.json(); setEquipmentTypes(d.equipmentTypes || []) } catch {}
-  }
-
-  async function fetchWishTypes() {
-    try { const res = await fetch('/api/admin/wish-types'); const d = await res.json(); setWishTypes(d.wishTypes || []) } catch {}
-  }
-
-  async function fetchVoucherRates() {
-    try { const res = await fetch('/api/voucher-rates'); const d = await res.json(); setVoucherRates(d.voucherRates || []) } catch {}
-  }
-
-  async function fetchTuitionCharges() {
-    try { const res = await fetch(`/api/tuition-charges?studentId=${id}`); const d = await res.json(); setTuitionCharges(d.charges || []) } catch {}
-  }
 
   function getVoucherRate(cur: string): number | null {
     const rate = voucherRates.find((r: any) => r.currency === cur)
