@@ -48,7 +48,15 @@ export async function GET(request: NextRequest) {
 
     const students = await prisma.student.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        studentNo: true,
+        firstName: true,
+        lastName: true,
+        className: true,
+        gender: true,
+        dateOfBirth: true,
+        isActive: true,
         sponsorships: {
           where: { isActive: true },
           include: { sponsor: { select: { firstName: true, lastName: true } } },

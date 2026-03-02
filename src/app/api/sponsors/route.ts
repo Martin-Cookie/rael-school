@@ -33,7 +33,14 @@ export async function GET(request: NextRequest) {
 
     const sponsors = await prisma.user.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        isActive: true,
+        role: true,
         sponsorships: {
           where: { isActive: true },
           include: {
@@ -71,8 +78,7 @@ export async function GET(request: NextRequest) {
     }
 
     const sponsorsWithTotals = sponsors.map(s => {
-      const { password, ...rest } = s as any
-      return { ...rest, paymentsByCurrency: paymentMap.get(s.id) || {} }
+      return { ...s, paymentsByCurrency: paymentMap.get(s.id) || {} }
     })
 
     return NextResponse.json({ sponsors: sponsorsWithTotals })
@@ -121,9 +127,9 @@ export async function POST(request: NextRequest) {
             phone: phone || null,
             isActive: true,
           },
+          select: { id: true, firstName: true, lastName: true, email: true, phone: true, role: true, isActive: true },
         })
-        const { password, ...safe } = reactivated as any
-        return NextResponse.json({ sponsor: safe, reactivated: true })
+        return NextResponse.json({ sponsor: reactivated, reactivated: true })
       }
       return NextResponse.json({ error: 'Email already exists' }, { status: 409 })
     }
@@ -141,10 +147,10 @@ export async function POST(request: NextRequest) {
         role: 'SPONSOR',
         isActive: true,
       },
+      select: { id: true, firstName: true, lastName: true, email: true, phone: true, role: true, isActive: true },
     })
 
-    const { password, ...safe } = sponsor as any
-    return NextResponse.json({ sponsor: safe }, { status: 201 })
+    return NextResponse.json({ sponsor }, { status: 201 })
   } catch (error) {
     console.error('POST /api/sponsors error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })

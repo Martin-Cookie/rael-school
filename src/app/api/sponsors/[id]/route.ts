@@ -13,7 +13,14 @@ export async function GET(
 
     const sponsor = await prisma.user.findUnique({
       where: { id: params.id },
-      include: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        role: true,
+        isActive: true,
         sponsorships: {
           include: {
             student: {
@@ -43,8 +50,7 @@ export async function GET(
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 
-    const { password, ...safe } = sponsor as any
-    return NextResponse.json({ sponsor: safe })
+    return NextResponse.json({ sponsor })
   } catch (error) {
     console.error('GET /api/sponsors/[id] error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
@@ -81,10 +87,10 @@ export async function PUT(
     const updated = await prisma.user.update({
       where: { id: params.id },
       data: { firstName, lastName, email, phone: phone || null },
+      select: { id: true, firstName: true, lastName: true, email: true, phone: true, role: true, isActive: true },
     })
 
-    const { password, ...safe } = updated as any
-    return NextResponse.json({ sponsor: safe })
+    return NextResponse.json({ sponsor: updated })
   } catch (error) {
     console.error('PUT /api/sponsors/[id] error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
@@ -103,7 +109,10 @@ export async function PATCH(
       return NextResponse.json({ error: 'Only ADMIN/MANAGER can deactivate' }, { status: 403 })
     }
 
-    const sponsor = await prisma.user.findUnique({ where: { id: params.id } })
+    const sponsor = await prisma.user.findUnique({
+      where: { id: params.id },
+      select: { id: true, role: true, isActive: true },
+    })
     if (!sponsor || sponsor.role !== 'SPONSOR') {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
@@ -111,6 +120,7 @@ export async function PATCH(
     const updated = await prisma.user.update({
       where: { id: params.id },
       data: { isActive: !sponsor.isActive },
+      select: { id: true, firstName: true, lastName: true, email: true, phone: true, role: true, isActive: true },
     })
 
     // If deactivating, also deactivate all their sponsorships
@@ -121,8 +131,7 @@ export async function PATCH(
       })
     }
 
-    const { password, ...safe } = updated as any
-    return NextResponse.json({ sponsor: safe })
+    return NextResponse.json({ sponsor: updated })
   } catch (error) {
     console.error('PATCH /api/sponsors/[id] error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
