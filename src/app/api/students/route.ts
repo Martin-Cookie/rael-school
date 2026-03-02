@@ -79,6 +79,16 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json()
 
+    // Validate string lengths
+    const MAX_NAME = 100
+    const MAX_TEXT = 500
+    if (data.firstName?.length > MAX_NAME || data.lastName?.length > MAX_NAME) {
+      return NextResponse.json({ error: 'Name too long (max 100 chars)' }, { status: 400 })
+    }
+    if (data.notes?.length > MAX_TEXT || data.healthStatus?.length > MAX_TEXT) {
+      return NextResponse.json({ error: 'Text too long (max 500 chars)' }, { status: 400 })
+    }
+
     // Generate unique student number
     const lastStudent = await prisma.student.findFirst({
       orderBy: { studentNo: 'desc' },

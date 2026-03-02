@@ -92,6 +92,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Validate string lengths
+    const MAX_NAME = 100
+    const MAX_EMAIL = 200
+    if (firstName.length > MAX_NAME || lastName.length > MAX_NAME) {
+      return NextResponse.json({ error: 'Name too long (max 100 chars)' }, { status: 400 })
+    }
+    if (email.length > MAX_EMAIL) {
+      return NextResponse.json({ error: 'Email too long (max 200 chars)' }, { status: 400 })
+    }
+
     // Check if email already exists
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) {
