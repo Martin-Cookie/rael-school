@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { getCurrentUser } from '@/lib/auth'
+import { getCurrentUser, canEdit, isManager } from '@/lib/auth'
 
 // GET /api/sponsors/[id] — sponsor detail
 export async function GET(
@@ -59,7 +59,7 @@ export async function PUT(
   try {
     const user = await getCurrentUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    if (!['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)) {
+    if (!canEdit(user.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -99,7 +99,7 @@ export async function PATCH(
   try {
     const user = await getCurrentUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    if (!['ADMIN', 'MANAGER'].includes(user.role)) {
+    if (!isManager(user.role)) {
       return NextResponse.json({ error: 'Only ADMIN/MANAGER can deactivate' }, { status: 403 })
     }
 

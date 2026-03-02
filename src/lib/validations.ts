@@ -19,6 +19,6 @@ export const studentSchema = z.object({
 export type StudentInput = z.infer<typeof studentSchema>
 
 /** Formátuje Zod chyby do čitelné zprávy */
-export function formatZodErrors(error: z.ZodError): string {
-  return error.errors.map(e => e.message).join(', ')
+export function formatZodErrors(error: z.ZodError<unknown>): string {
+  return error.issues.map((e) => e.message).join(', ')
 }

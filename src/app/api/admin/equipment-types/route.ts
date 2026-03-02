@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { getCurrentUser } from '@/lib/auth'
+import { getCurrentUser, isAdmin } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -20,7 +20,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user || user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { name, nameEn, nameSw, sortOrder, price } = await request.json()
     if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     const existing = await prisma.equipmentType.findUnique({ where: { name: name.trim() } })
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user || user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const body = await request.json()
     if (body.orders && Array.isArray(body.orders)) {
       for (const item of body.orders) {
@@ -73,7 +73,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user || user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { id } = await request.json()
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
     await prisma.equipmentType.update({ where: { id }, data: { isActive: false } })

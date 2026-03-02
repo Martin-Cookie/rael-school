@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { getCurrentUser } from '@/lib/auth'
+import { getCurrentUser, canEdit } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    if (!['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)) {
+    if (!canEdit(user.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    if (!['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(user.role)) {
+    if (!canEdit(user.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

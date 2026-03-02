@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
-import { getCurrentUser } from '@/lib/auth'
+import { getCurrentUser, isAdmin, isManager } from '@/lib/auth'
 
 // GET — seznam předpisů (s filtrováním podle období)
 export async function GET(request: NextRequest) {
@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user || (user.role !== 'ADMIN' && user.role !== 'MANAGER'))
+    if (!user || !isManager(user.role))
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { period, studentIds } = await request.json()
@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user || (user.role !== 'ADMIN' && user.role !== 'MANAGER'))
+    if (!user || !isManager(user.role))
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
@@ -221,7 +221,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user || user.role !== 'ADMIN')
+    if (!user || !isAdmin(user.role))
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { id } = await request.json()
