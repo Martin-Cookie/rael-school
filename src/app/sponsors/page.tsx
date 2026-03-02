@@ -70,7 +70,7 @@ export default function SponsorsPage() {
   }, [])
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.json()).then(d => setUser(d.user)).catch(() => {})
+    fetch('/api/auth/me').then(r => r.json()).then(d => setUser(d.user)).catch(e => console.error('Failed to load user:', e))
     fetchSponsors()
   }, [])
 

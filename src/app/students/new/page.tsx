@@ -17,7 +17,7 @@ export default function NewStudentPage() {
   })
 
   useEffect(() => {
-    fetch('/api/admin/classrooms').then(r => r.json()).then(d => setClassrooms(d.classrooms || [])).catch(() => {})
+    fetch('/api/admin/classrooms').then(r => r.json()).then(d => setClassrooms(d.classrooms || [])).catch(e => console.error('Failed to load classrooms:', e))
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {

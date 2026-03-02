@@ -45,7 +45,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [needTypes, setNeedTypes] = useState<any[]>([])
   const [equipmentTypes, setEquipmentTypes] = useState<any[]>([])
   const [allSponsors, setAllSponsors] = useState<any[]>([])
-  useEffect(() => { fetch('/api/sponsors/names').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(() => {}) }, [])
+  useEffect(() => { fetch('/api/sponsors/names').then(r => r.json()).then(d => setAllSponsors(d.sponsors || [])).catch(e => console.error('Failed to load sponsors:', e)) }, [])
 
   const [wishTypes, setWishTypes] = useState<any[]>([])
   const [voucherRates, setVoucherRates] = useState<any[]>([])

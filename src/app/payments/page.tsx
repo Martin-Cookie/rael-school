@@ -69,9 +69,9 @@ export default function PaymentsPage() {
 
   useEffect(() => {
     fetchData()
-    fetch('/api/auth/me').then(r => r.json()).then(d => setUserRole(d.user?.role || '')).catch(() => {})
-    fetch('/api/admin/payment-types').then(r => r.json()).then(d => setPaymentTypes(d.paymentTypes || [])).catch(() => {})
-    fetch('/api/voucher-rates').then(r => r.json()).then(d => setVoucherRates(d.voucherRates || [])).catch(() => {})
+    fetch('/api/auth/me').then(r => r.json()).then(d => setUserRole(d.user?.role || '')).catch(e => console.error('Failed to load user:', e))
+    fetch('/api/admin/payment-types').then(r => r.json()).then(d => setPaymentTypes(d.paymentTypes || [])).catch(e => console.error('Failed to load payment types:', e))
+    fetch('/api/voucher-rates').then(r => r.json()).then(d => setVoucherRates(d.voucherRates || [])).catch(e => console.error('Failed to load voucher rates:', e))
   }, [])
 
   async function fetchData() {

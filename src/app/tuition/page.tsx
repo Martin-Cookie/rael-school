@@ -68,7 +68,7 @@ export default function TuitionPage() {
   }
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.json()).then(d => setUserRole(d.user?.role || '')).catch(() => {})
+    fetch('/api/auth/me').then(r => r.json()).then(d => setUserRole(d.user?.role || '')).catch(e => console.error('Failed to load user:', e))
   }, [])
 
   useEffect(() => {
