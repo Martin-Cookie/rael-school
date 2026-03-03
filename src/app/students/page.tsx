@@ -54,7 +54,7 @@ export default function StudentsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{t('student.list')} <span className="text-sm font-normal text-gray-500">({students.length})</span></h1>
           <div className="flex items-center gap-2">
-            <button onClick={exportStudents} className="inline-flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+            <button onClick={exportStudents} className="inline-flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary-500">
               <Download className="w-4 h-4" /> {t('app.exportCSV')}
             </button>
             <Link href="/students/new" className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
@@ -89,10 +89,10 @@ export default function StudentsPage() {
                 </thead>
                 <tbody>
                   {sorted.map((s: any) => (
-                    <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                       <td className="py-3 px-3 text-sm font-medium">
-                        <Link href={`/students/${s.id}?from=/students`} className="text-primary-600 hover:underline">{s.lastName}</Link>
+                        <Link href={`/students/${s.id}?from=/students`} className="text-primary-600 hover:underline focus-visible:ring-2 focus-visible:ring-primary-500 rounded">{s.lastName}</Link>
                       </td>
                       <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
                       <td className="py-3 px-3 text-sm">{s.className ? <Link href={`/classes?class=${encodeURIComponent(s.className)}&from=/students`} className="text-primary-600 hover:underline">{s.className}</Link> : '-'}</td>

@@ -718,12 +718,12 @@ export default function ImportDetailPage() {
 
       {/* Split modal */}
       {splitRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" ref={splitModalRef} onKeyDown={(e) => e.key === 'Escape' && setSplitRow(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="split-dialog-title" ref={splitModalRef} onKeyDown={(e) => e.key === 'Escape' && setSplitRow(null)}>
           <div className="fixed inset-0 bg-black/50" onClick={() => setSplitRow(null)} />
           <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-6">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('paymentImport.splitPayment')}</h3>
-              <button aria-label="Zavřít" onClick={() => setSplitRow(null)} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded">
+              <h3 id="split-dialog-title" className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('paymentImport.splitPayment')}</h3>
+              <button aria-label="Zavřít" onClick={() => setSplitRow(null)} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded focus-visible:ring-2 focus-visible:ring-primary-500">
                 <X className="w-5 h-5" />
               </button>
             </div>

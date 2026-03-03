@@ -381,13 +381,13 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     <div>
       {/* Confirm dialog */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" ref={confirmRef} onKeyDown={(e) => e.key === 'Escape' && setShowConfirm(false)}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title" ref={confirmRef} onKeyDown={(e) => e.key === 'Escape' && setShowConfirm(false)}>
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('app.confirm')}</h3>
+            <h3 id="confirm-dialog-title" className="text-lg font-semibold text-gray-900 mb-2">{t('app.confirm')}</h3>
             <p className="text-gray-600 mb-6">{t('app.confirmSave')}</p>
             <div className="flex gap-3">
-              <button onClick={() => setShowConfirm(false)} className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">{t('app.cancel')}</button>
-              <button onClick={handleSave} className="flex-1 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 font-medium">{t('app.save')}</button>
+              <button onClick={() => setShowConfirm(false)} className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium focus-visible:ring-2 focus-visible:ring-primary-500">{t('app.cancel')}</button>
+              <button onClick={handleSave} className="flex-1 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 font-medium focus-visible:ring-2 focus-visible:ring-primary-500">{t('app.save')}</button>
             </div>
           </div>
         </div>

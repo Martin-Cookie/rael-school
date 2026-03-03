@@ -392,7 +392,7 @@ export default function ReportsPage() {
                 </thead>
                 <tbody>
                   {filteredMonthly.map(m => (
-                    <tr key={`${m.year}-${m.month}`} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr key={`${m.year}-${m.month}`} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="py-3 px-3 text-sm font-medium text-gray-900">
                         {!selectedYear && <span className="text-gray-400">{m.year} </span>}
                         {monthNames[m.month - 1]}
@@ -486,7 +486,7 @@ export default function ReportsPage() {
                 </thead>
                 <tbody>
                   {soSorted.map(s => (
-                    <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="py-3 px-3 text-sm font-medium">
                         <Link href={`/sponsors?search=${encodeURIComponent(s.lastName)}&from=/reports`} className="text-primary-600 hover:underline">{s.lastName} {s.firstName}</Link>
                       </td>
@@ -567,7 +567,7 @@ export default function ReportsPage() {
                   {vSorted.map(s => {
                     const available = s.purchased - s.used
                     return (
-                      <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
+                      <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                         <td className="py-3 px-3 text-sm font-medium">
                           <Link href={`/students/${s.id}?from=/reports`} className="text-primary-600 hover:underline">{s.lastName}</Link>
                         </td>
@@ -663,7 +663,7 @@ export default function ReportsPage() {
                 </thead>
                 <tbody>
                   {spSorted.map(s => (
-                    <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="py-3 px-3 text-sm font-medium">
                         <Link href={`/students/${s.id}?from=/reports`} className="text-primary-600 hover:underline">{s.lastName}</Link>
                       </td>

@@ -115,7 +115,7 @@ export default function ClassesPage() {
               <SH col="_count.sponsorships" className="text-right">{t('sponsors.title')}</SH>
             </tr></thead><tbody>
               {sortData(filteredStudentsInClass, sortCol).map((s: any) => (
-                <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
+                <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="py-3 px-3 text-sm text-gray-500">{s.studentNo}</td>
                   <td className="py-3 px-3 text-sm font-medium"><Link href={`/students/${s.id}?from=${encodeURIComponent('/classes?class=' + (selectedClass || ''))}`} className="text-primary-600 hover:underline">{s.lastName}</Link></td>
                   <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>

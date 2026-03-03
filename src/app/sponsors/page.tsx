@@ -298,7 +298,7 @@ export default function SponsorsPage() {
                 </thead>
                 <tbody>
                   {sorted.map((s) => (
-                    <tr key={s.id} className={`border-b border-gray-50 hover:bg-gray-50 group ${!s.isActive ? 'bg-red-50/50' : ''}`}>
+                    <tr key={s.id} className={`border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 group ${!s.isActive ? 'bg-red-50/50' : ''}`}>
                       {editingId === s.id ? (
                         <>
                           <td className="py-2 px-3">
