@@ -8,10 +8,10 @@
 
 - **CRITICAL: 0** ~~3~~ (všechny vyřešeny ✅)
 - **HIGH: 1** ~~12~~ (11 vyřešeno ✅)
-- **MEDIUM: 1** ~~18~~ (17 vyřešeno ✅)
-- **LOW: 1** ~~12~~ (11 vyřešeno ✅)
+- **MEDIUM: 0** ~~18~~ (všechny vyřešeny ✅)
+- **LOW: 0** ~~12~~ (všechny vyřešeny ✅)
 
-**Celkem: 45 nálezů — 42 vyřešeno ✅, 3 otevřené**
+**Celkem: 45 nálezů — 44 vyřešeno ✅, 1 otevřený**
 
 ---
 
@@ -34,7 +34,7 @@
 | 13 | Error | 7 stránek | HIGH | Tichý fail bez zpětné vazby | ✅ Opraveno dříve — console.error + toast |
 | 14 | Testy | Import split/approve | HIGH | 0 integračních testů | ⚠️ **Otevřený** |
 | 15 | Testy | Celý projekt | HIGH | Žádné E2E testy | ✅ Batch 8 — Playwright, 5 testových souborů |
-| 16 | Bezpečnost | `prisma/dev.db.primary` | MEDIUM | DB zálohy v git historii | ⚠️ **Otevřený** (infrastrukturní) |
+| 16 | Bezpečnost | `prisma/dev.db.primary` | MEDIUM | DB zálohy v git historii | ✅ .gitignore + netrackováno v HEAD (historie: mitigace dokumentována) |
 | 17 | Bezpečnost | JSON export | MEDIUM | Password hashe v exportu | ✅ Již vyřešeno — select vylučuje password |
 | 18 | Bezpečnost | DB restore | MEDIUM | Žádná integrity validace | ✅ Opraveno dříve — PRAGMA integrity_check |
 | 19 | Kód | `import/[id]/page.tsx` | MEDIUM | 841 řádků | ✅ Batch 5 — SplitModal extrakce (→756 ř.) |
@@ -52,7 +52,7 @@
 | 31 | UI | Import split modal | MEDIUM | `dark:bg-gray-600` nekonzistentní | ✅ Opraveno dříve |
 | 32 | UI | Inline formuláře | MEDIUM | Chybí focus trap | ✅ Batch 1 — useFocusTrap na 8 tab komponent |
 | 33 | Výkon | `prisma/schema.prisma` | MEDIUM | Chybí @@index([paymentDate]) | ✅ Batch 1 — index přidán |
-| 34 | Kód | `lib/imageUtils.ts` | LOW | Hardcoded bez JSDoc | ⚠️ **Otevřený** |
+| 34 | Kód | `lib/imageUtils.ts` | LOW | Hardcoded bez JSDoc | ✅ JSDoc + IMAGE_MAX_WIDTH/IMAGE_QUALITY konstanty |
 | 35 | Kód | `.gitignore` | LOW | uploads/ chybí | ✅ Již vyřešeno — public/uploads/ v .gitignore |
 | 36 | Kód | Více stránek | LOW | localStorage bez encapsulace | ✅ Batch 9 — rael- prefix konzistentní |
 | 37 | Kód | `import/[id]/page.tsx` | LOW | IIFE v JSX | ✅ Batch 1 — helper funkce extrahované |
@@ -67,13 +67,25 @@
 
 ---
 
-## Otevřené nálezy (3)
+## Otevřené nálezy (1)
 
 | # | Severity | Problém | Poznámka |
 |---|----------|---------|----------|
 | 14 | HIGH | Import split/approve integrační testy | Komplexní testování transakčního workflow |
-| 16 | MEDIUM | DB zálohy v git historii | Infrastrukturní — vyžaduje šifrované zálohy mimo repo |
-| 34 | LOW | imageUtils hardcoded hodnoty | Přidat JSDoc nebo konstanty |
+
+### Mitigace #16 — DB zálohy v git historii
+
+DB soubory (`prisma/dev.db*`) jsou:
+- ✅ V `.gitignore` — nové soubory se netrackují
+- ✅ Odstraněny z HEAD — `git ls-files` nevrací žádné DB soubory
+- ⚠️ Přítomny v git historii (9+ commitů) — úplné odstranění vyžaduje `git filter-repo`
+
+Pro úplné vyčištění historie (destruktivní operace, přepíše hashe všech commitů):
+```bash
+pip install git-filter-repo
+git filter-repo --invert-paths --path prisma/dev.db --path prisma/dev.db.backup --path prisma/dev.db.primary
+git push origin --force --all
+```
 
 ---
 

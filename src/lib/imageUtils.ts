@@ -5,6 +5,8 @@
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const MAX_RAW_SIZE = 10 * 1024 * 1024 // 10 MB before compression
+const IMAGE_MAX_WIDTH = 1600 // px — maximální šířka po kompresi
+const IMAGE_QUALITY = 0.8 // JPEG kvalita 0–1
 
 /** Validuje typ a velikost obrázku. Vrací chybový klíč (`'invalidType'` | `'tooLarge'`) nebo `null` pokud je OK. */
 export function validateImageFile(file: File): string | null {
@@ -20,14 +22,14 @@ export function validateImageFile(file: File): string | null {
 /**
  * Komprimuje obrázek na JPEG přes Canvas API. GIFy vrací beze změny (zachování animace).
  * @param file - Vstupní File objekt (JPEG, PNG, WebP, GIF)
- * @param maxWidth - Maximální šířka v px (výška se přepočítá proporčně). Default 1600.
- * @param quality - JPEG kvalita 0–1. Default 0.8.
+ * @param maxWidth - Maximální šířka v px (výška se přepočítá proporčně). Default {@link IMAGE_MAX_WIDTH}.
+ * @param quality - JPEG kvalita 0–1. Default {@link IMAGE_QUALITY}.
  * @returns Komprimovaný File (JPEG) nebo originál (GIF / chyba)
  */
 export async function compressImage(
   file: File,
-  maxWidth: number = 1600,
-  quality: number = 0.8
+  maxWidth: number = IMAGE_MAX_WIDTH,
+  quality: number = IMAGE_QUALITY
 ): Promise<File> {
   // GIFs can't be compressed via canvas without losing animation
   if (file.type === 'image/gif') return file
