@@ -111,6 +111,7 @@ Testové soubory v `src/__tests__/`: auth, auth-endpoint, format, rateLimit, csv
 - Formátování čísel s oddělovačem tisíců (mezera): `1 500 KES`
 - Sticky hlavičky a sticky thead v tabulkách
 - Cross-page navigace s řetězovým zpětným odkazem
+- Bezpečnostní hlavičky (CSP, HSTS) + rate limiting na CRUD endpointech
 
 ## Uživatelské role
 
@@ -136,9 +137,14 @@ src/
 │   ├── reports/            # Reporty + návštěvní karty
 │   ├── admin/              # Administrace číselníků a sazeb
 │   └── api/                # REST API endpointy
-├── __tests__/              # Vitest testy
-│   ├── format.test.ts      # Testy formátovacích funkcí
-│   └── rateLimit.test.ts   # Testy rate limiteru
+├── __tests__/              # Vitest testy (77 testů)
+│   ├── auth.test.ts        # Auth funkce (hash, token, verify)
+│   ├── auth-endpoint.test.ts # Login endpoint
+│   ├── csvParser.test.ts   # CSV parser
+│   ├── format.test.ts      # Formátovací funkce
+│   ├── paymentImport.test.ts # Import plateb (split, approve)
+│   ├── paymentMatcher.test.ts # Párování plateb
+│   └── rateLimit.test.ts   # Rate limiter
 ├── components/
 │   ├── layout/
 │   │   └── Sidebar.tsx     # Navigační sidebar + dark mode toggle
@@ -148,11 +154,13 @@ src/
 │   ├── Toast.tsx           # Toast notifikace
 │   └── Pagination.tsx
 ├── hooks/                  # Sdílené React hooky
+│   ├── useFetchList.ts     # Generický fetch hook
+│   ├── useFocusTrap.ts     # Focus trap pro dialogy
 │   ├── useLocale.ts        # Locale stav + translator
 │   ├── useSorting.ts       # Třídění tabulek
 │   ├── useStickyTop.ts     # Dynamická výška sticky hlavičky
 │   └── useToast.ts         # Toast notifikace
-├── lib/                    # Auth, DB, i18n, formátování, CSV, parser, tuition, imageUtils, paymentMatcher, rateLimit, constants
+├── lib/                    # Auth, DB, i18n, formátování, CSV, parser, tuition, imageUtils, paymentMatcher, rateLimit, constants, codelistRoute, validations
 └── messages/               # Překlady (cs.json, en.json, sw.json)
 prisma/
 ├── schema.prisma           # Datový model

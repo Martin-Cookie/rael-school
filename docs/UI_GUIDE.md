@@ -17,6 +17,9 @@ Tento soubor je **jediný zdroj pravdy** pro UI/frontend vzory a konvence. Stack
 | `<SortHeader>` | `src/components/SortHeader.tsx` | Tříditelná hlavička `<th>` se šipkami (ChevronUp/ChevronDown/ArrowUpDown) |
 | `<Toast>` | `src/components/Toast.tsx` | Toast notifikace — `<Toast message={message} />` |
 | `fmtCurrency()` | `src/lib/format.ts` | Formátování částky s měnou — `fmtCurrency(1500, 'KES')` → `1 500 KES` |
+| `useFocusTrap(active)` | `src/hooks/useFocusTrap.ts` | Focus trap pro modální dialogy — vrací `ref` |
+| `useFetchList(url, key)` | `src/hooks/useFetchList.ts` | Generický hook pro fetch seznamu z API |
+| `<Pagination>` | `src/components/Pagination.tsx` | Stránkování s touch-friendly tlačítky |
 
 ### Použití hooků na stránkách
 
@@ -58,7 +61,7 @@ sticky top-16 lg:top-0 z-30 bg-[#fafaf8] pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8
 ```tsx
 const { stickyRef, theadTop } = useStickyTop([loading])
 // ...
-<tr className="... bg-white sticky z-20" style={{ top: theadTop }}>
+<tr className="... bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
 ```
 - `theadTop` = dynamicky měřená výška sticky hlavičky + mobilní offset
 - Hook `useStickyTop` interně používá `ResizeObserver` + `window resize` listener
@@ -97,6 +100,9 @@ Stránky s tříděním:
 - Hover efekty konzistentní s barvou akce
 - Vždy `title` atribut pro tooltip
 
+### Dark mode hover na řádcích
+- Všechny tabulkové `<tr>` s daty: `hover:bg-gray-50 dark:hover:bg-gray-700/50`
+
 ---
 
 ## 4. Formuláře
@@ -116,6 +122,12 @@ border border-gray-300 rounded-lg text-sm px-3 py-2 outline-none
 focus:ring-2 focus:ring-primary-500 focus:border-primary-500
 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
 ```
+
+### Focus-visible na interaktivních prvcích
+```
+focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 focus-visible:outline-none
+```
+Přidat na všechny `<button>`, `<a>` a custom interactive prvky (ne na `<input>` — ty mají `focus:ring`).
 
 ---
 
@@ -151,7 +163,7 @@ dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
 | Ikony text | `text-*-600` | `dark:text-*-400` |
 | Inputy | `border-gray-300` | `dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100` |
 | Sticky hlavičky stránek | `bg-[#fafaf8]` | `dark:bg-gray-900` |
-| Sticky thead | `bg-white` | `dark:bg-gray-800` |
+| Sticky thead | `bg-gray-50` | `dark:bg-gray-800` |
 | Tabulkové řádky border | `border-gray-50` | `dark:border-gray-700` |
 
 ### Pravidlo pro nové komponenty
@@ -186,7 +198,7 @@ dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
 ## 8. Detail studenta — záložky
 
 Soubory:
-- Hlavní stránka: `src/app/students/[id]/page.tsx` (619 řádků)
+- Hlavní stránka: `src/app/students/[id]/page.tsx`
 - Záložky: `src/components/student-detail/` (10 tab komponent + FormFields)
 
 ### Lazy-load dat per záložka
@@ -408,7 +420,14 @@ Konzistentní zpráva přes lokalizační klíč:
 
 ---
 
-## 19. Potvrzení destruktivních akcí
+## 19. Potvrzení destruktivních akcí a dialogy
 
-- Standardní: `window.confirm('Opravdu smazat?')` před API voláním
+### Modální dialogy (a11y)
+- `role="dialog"` + `aria-labelledby="<id>"`
+- Nadpis: `<h3 id="<id>">`
+- Focus trap: `useFocusTrap(isOpen)` → `ref` na kontejner
+- Příklady: split modal, confirm dialog, restore dialog
+
+### Potvrzení
+- Standardní: `window.confirm(...)` před API voláním
 - Kritické: textový input s klíčovým slovem + disabled tlačítko
