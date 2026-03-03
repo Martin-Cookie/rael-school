@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyPassword, createToken } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { logAudit } from '@/lib/auditLog'
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
 
     const valid = await verifyPassword(password, user.password)
     if (!valid) {
+      await logAudit({ userEmail: email, action: 'LOGIN_FAILED', resource: 'User', detail: 'Invalid password' })
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
 
@@ -56,6 +58,8 @@ export async function POST(request: NextRequest) {
       sameSite: 'strict',
       maxAge: 60 * 60 * 24, // 24 hours
     })
+
+    await logAudit({ userId: user.id, userEmail: user.email, action: 'LOGIN', resource: 'User', resourceId: user.id, detail: 'Successful login' })
 
     return response
   } catch (error) {

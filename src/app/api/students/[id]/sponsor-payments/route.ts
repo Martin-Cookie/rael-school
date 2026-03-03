@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { logAudit } from '@/lib/auditLog'
 
 export async function POST(
   request: NextRequest,
@@ -29,6 +30,8 @@ export async function POST(
         notes: data.notes || null,
       },
     })
+
+    await logAudit({ userId: user.id, userEmail: user.email, action: 'CREATE', resource: 'SponsorPayment', resourceId: payment.id, detail: `Payment ${data.amount} ${data.currency}` })
 
     return NextResponse.json({ payment }, { status: 201 })
   } catch (error) {

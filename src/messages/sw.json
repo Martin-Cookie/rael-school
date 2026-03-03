@@ -25,7 +25,8 @@
     "viewMode": "Hali ya kuangalia",
     "darkMode": "Hali ya giza",
     "lightMode": "Hali ya mwanga",
-    "exportCSV": "Hamisha CSV"
+    "exportCSV": "Hamisha CSV",
+    "refresh": "Onyesha upya"
   },
   "nav": {
     "dashboard": "Dashibodi",
@@ -254,7 +255,13 @@
     "translating": "Inatafsiri...",
     "nameEn": "Kiingereza",
     "nameSw": "Kiswahili",
-    "editTranslations": "Hariri tafsiri"
+    "editTranslations": "Hariri tafsiri",
+    "auditLog": "Kumbukumbu za ukaguzi",
+    "auditTime": "Wakati",
+    "auditUser": "Mtumiaji",
+    "auditAction": "Kitendo",
+    "auditResource": "Rasilimali",
+    "auditDetail": "Maelezo"
   },
   "wishes": {
     "title": "Matakwa",

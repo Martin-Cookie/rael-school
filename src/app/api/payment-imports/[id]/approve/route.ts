@@ -5,6 +5,7 @@ import { recalcTuitionStatus } from '@/lib/tuition'
 import { getVoucherTypeIds, getTuitionTypeIds } from '@/lib/paymentTypes'
 import { DEFAULT_VOUCHER_RATE_FALLBACK } from '@/lib/constants'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { logAudit } from '@/lib/auditLog'
 
 // POST /api/payment-imports/[id]/approve — bulk approve rows
 export async function POST(
@@ -153,6 +154,8 @@ export async function POST(
     for (const sid of tuitionStudentIds) {
       await recalcTuitionStatus(sid)
     }
+
+    await logAudit({ userId: user.id, userEmail: user.email, action: 'APPROVE', resource: 'PaymentImport', resourceId: params.id, detail: `Approved ${approvedCount} rows` })
 
     return NextResponse.json({ approved: approvedCount })
   } catch (error) {

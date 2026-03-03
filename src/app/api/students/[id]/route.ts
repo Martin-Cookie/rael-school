@@ -3,6 +3,7 @@ import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit, isAdmin, isSponsor } from '@/lib/auth'
 import { studentSchema, formatZodErrors } from '@/lib/validations'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { logAudit } from '@/lib/auditLog'
 
 export async function GET(
   request: NextRequest,
@@ -103,6 +104,8 @@ export async function PUT(
       },
     })
 
+    await logAudit({ userId: user.id, userEmail: user.email, action: 'UPDATE', resource: 'Student', resourceId: params.id, detail: 'Updated student' })
+
     return NextResponse.json({ student })
   } catch (error) {
     if (isNotFoundError(error)) {
@@ -131,6 +134,8 @@ export async function DELETE(
       where: { id },
       data: { isActive: false },
     })
+
+    await logAudit({ userId: user.id, userEmail: user.email, action: 'DELETE', resource: 'Student', resourceId: params.id, detail: 'Deleted student' })
 
     return NextResponse.json({ success: true })
   } catch (error) {

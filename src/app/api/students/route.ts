@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { getCurrentUser, canEdit, isSponsor } from '@/lib/auth'
 import { studentSchema, formatZodErrors } from '@/lib/validations'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { logAudit } from '@/lib/auditLog'
 
 export async function GET(request: NextRequest) {
   try {
@@ -124,6 +125,8 @@ export async function POST(request: NextRequest) {
         notes: data.notes || null,
       },
     })
+
+    await logAudit({ userId: user.id, userEmail: user.email, action: 'CREATE', resource: 'Student', resourceId: student.id, detail: `Created student ${data.firstName} ${data.lastName}` })
 
     return NextResponse.json({ student }, { status: 201 })
   } catch (error) {

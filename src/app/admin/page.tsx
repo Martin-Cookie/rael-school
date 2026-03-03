@@ -7,6 +7,7 @@ import { CodelistSection } from '@/components/admin/CodelistSection'
 import { VoucherRateSection } from '@/components/admin/VoucherRateSection'
 import { TuitionRateSection } from '@/components/admin/TuitionRateSection'
 import { BackupSection } from '@/components/admin/BackupSection'
+import { AuditLogSection } from '@/components/admin/AuditLogSection'
 import type { CodelistItem, VoucherRateItem, TuitionRateItem } from '@/components/admin/types'
 
 export default function AdminPage() {
@@ -428,6 +429,11 @@ export default function AdminPage() {
       {/* Backup & Export */}
       <div className="mt-6">
         <BackupSection t={t} showMsg={showMsg} />
+      </div>
+
+      {/* Audit Log */}
+      <div className="mt-6">
+        <AuditLogSection t={t} />
       </div>
     </div>
   )

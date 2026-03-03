@@ -5,6 +5,7 @@ import { checkRateLimit } from '@/lib/rateLimit'
 import { recalcTuitionStatus } from '@/lib/tuition'
 import { getVoucherTypeIds, getTuitionTypeIds } from '@/lib/paymentTypes'
 import { DEFAULT_VOUCHER_RATE_FALLBACK, AMOUNT_TOLERANCE } from '@/lib/constants'
+import { logAudit } from '@/lib/auditLog'
 
 interface SplitPart {
   amount: number
@@ -215,6 +216,8 @@ export async function POST(
         await recalcTuitionStatus(sid)
       }
     }
+
+    await logAudit({ userId: user.id, userEmail: user.email, action: 'SPLIT', resource: 'PaymentImportRow', resourceId: params.rowId, detail: `Split into ${parts.length} parts` })
 
     return NextResponse.json({ success: true, parts: parts.length, approved: approvedCount })
   } catch (error) {

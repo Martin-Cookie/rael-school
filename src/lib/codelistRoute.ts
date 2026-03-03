@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser, isAdmin } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { logAudit } from '@/lib/auditLog'
 
 interface CodelistConfig {
   delegate: {
@@ -54,6 +55,7 @@ export function createCodelistHandlers(config: CodelistConfig) {
       const data: Record<string, any> = { name: name.trim(), nameEn: nameEn || null, nameSw: nameSw || null, sortOrder: sortOrder ?? 0 }
       if (hasPrice) data.price = price ?? null
       const item = await delegate.create({ data })
+      await logAudit({ userId: user.id, userEmail: user.email, action: 'CREATE', resource: label, detail: `Created ${name.trim()}` })
       return NextResponse.json({ [singularKey]: item }, { status: 201 })
     } catch (error) {
       console.error(`Error creating ${label}:`, error)
@@ -101,6 +103,7 @@ export function createCodelistHandlers(config: CodelistConfig) {
       const { id } = await request.json()
       if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
       await delegate.update({ where: { id }, data: { isActive: false } })
+      await logAudit({ userId: user.id, userEmail: user.email, action: 'DELETE', resource: label, resourceId: id, detail: 'Soft-deleted' })
       return NextResponse.json({ success: true })
     } catch (error: any) {
       if (error?.code === 'P2025') return NextResponse.json({ error: 'Not found' }, { status: 404 })

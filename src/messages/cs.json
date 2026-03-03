@@ -25,7 +25,8 @@
     "viewMode": "Režim zobrazení",
     "darkMode": "Tmavý režim",
     "lightMode": "Světlý režim",
-    "exportCSV": "Export CSV"
+    "exportCSV": "Export CSV",
+    "refresh": "Obnovit"
   },
   "nav": {
     "dashboard": "Přehled",
@@ -254,7 +255,13 @@
     "translating": "Překládám...",
     "nameEn": "Anglicky",
     "nameSw": "Svahilsky",
-    "editTranslations": "Upravit překlady"
+    "editTranslations": "Upravit překlady",
+    "auditLog": "Audit log",
+    "auditTime": "Čas",
+    "auditUser": "Uživatel",
+    "auditAction": "Akce",
+    "auditResource": "Zdroj",
+    "auditDetail": "Detail"
   },
   "wishes": {
     "title": "Přání",

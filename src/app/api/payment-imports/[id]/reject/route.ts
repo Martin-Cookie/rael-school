@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { logAudit } from '@/lib/auditLog'
 
 // POST /api/payment-imports/[id]/reject — bulk reject rows
 export async function POST(
@@ -54,6 +55,8 @@ export async function POST(
         data: { status: 'COMPLETED' },
       })
     }
+
+    await logAudit({ userId: user.id, userEmail: user.email, action: 'REJECT', resource: 'PaymentImport', resourceId: params.id })
 
     return NextResponse.json({ rejected: result.count })
   } catch (error) {

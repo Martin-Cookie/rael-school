@@ -25,7 +25,8 @@
     "viewMode": "View mode",
     "darkMode": "Dark mode",
     "lightMode": "Light mode",
-    "exportCSV": "Export CSV"
+    "exportCSV": "Export CSV",
+    "refresh": "Refresh"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -254,7 +255,13 @@
     "translating": "Translating...",
     "nameEn": "English",
     "nameSw": "Swahili",
-    "editTranslations": "Edit translations"
+    "editTranslations": "Edit translations",
+    "auditLog": "Audit log",
+    "auditTime": "Time",
+    "auditUser": "User",
+    "auditAction": "Action",
+    "auditResource": "Resource",
+    "auditDetail": "Detail"
   },
   "wishes": {
     "title": "Wishes",

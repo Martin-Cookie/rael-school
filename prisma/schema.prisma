@@ -455,3 +455,21 @@ model PaymentImportRow {
   @@index([status])
   @@index([sponsorId])
 }
+
+// ============ AUDIT LOG ============
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  userEmail  String?
+  action     String   // CREATE, UPDATE, DELETE, LOGIN, EXPORT, RESTORE, APPROVE, REJECT, SPLIT
+  resource   String   // Student, Payment, User, Import, Backup...
+  resourceId String?
+  detail     String?  // stručný popis změny
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([resource])
+}
