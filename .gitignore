@@ -7,6 +7,9 @@ prisma/dev.db*
 *.tsbuildinfo
 .DS_Store
 
+# Uploaded files (photos, profile images)
+public/uploads/
+
 # IDE
 .vscode/
 .idea/

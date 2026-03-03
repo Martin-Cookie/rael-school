@@ -46,7 +46,7 @@ export default function SponsorsPage() {
   const [backUrl, setBackUrl] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ role: string } | null>(null)
 
   const { locale, t } = useLocale()
   const { message, showMsg } = useToast()

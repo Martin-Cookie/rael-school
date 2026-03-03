@@ -11,15 +11,58 @@ import { SortHeader } from '@/components/SortHeader'
 
 type DashTab = 'students' | 'sponsors' | 'payments' | 'needs' | 'classes' | 'tuition'
 
+interface DashStats {
+  totalStudents: number
+  maleCount: number
+  femaleCount: number
+  totalSponsors: number
+  activeSponsors: number
+  totalPayments: number
+  totalNeeds: number
+  unfulfilledNeeds: number
+  totalClasses: number
+  sponsorPaymentsByCurrency: Record<string, number>
+  voucherTotalAmount: number
+  tuitionTotalCharges: number
+  tuitionTotalCharged: number
+  tuitionPaidCount: number
+  tuitionPartialCount: number
+  tuitionUnpaidCount: number
+}
+
+interface DashStudent {
+  id: string; studentNo: string; firstName: string; lastName: string
+  className: string | null; gender: string | null; dateOfBirth: string | null
+  _count: { needs: number; sponsorships: number }
+}
+
+interface DashSponsor {
+  id: string; firstName: string; lastName: string; email: string
+  _count: { sponsorships: number }; _totalPayments: number
+}
+
+interface DashPayment {
+  id: string; amount: number; currency?: string; paymentDate?: string; purchaseDate?: string
+  student?: { firstName: string; lastName: string } | null
+  sponsor?: { firstName: string; lastName: string } | null
+  donorName?: string | null; paymentType?: string
+}
+
+interface DashTuition {
+  id: string; studentId: string; period: string; amount: number; currency: string; status: string
+  student: { firstName: string; lastName: string; studentNo: string; className: string | null }
+  _paidAmount: number
+}
+
 export default function DashboardPage() {
-  const [stats, setStats] = useState<any>(null)
-  const [recentPayments, setRecentPayments] = useState<any[]>([])
-  const [sponsorPayments, setSponsorPayments] = useState<any[]>([])
-  const [voucherPurchases, setVoucherPurchases] = useState<any[]>([])
-  const [students, setStudents] = useState<any[]>([])
-  const [sponsors, setSponsors] = useState<any[]>([])
-  const [studentsWithNeeds, setStudentsWithNeeds] = useState<any[]>([])
-  const [tuitionCharges, setTuitionCharges] = useState<any[]>([])
+  const [stats, setStats] = useState<DashStats | null>(null)
+  const [recentPayments, setRecentPayments] = useState<DashPayment[]>([])
+  const [sponsorPayments, setSponsorPayments] = useState<DashPayment[]>([])
+  const [voucherPurchases, setVoucherPurchases] = useState<DashPayment[]>([])
+  const [students, setStudents] = useState<DashStudent[]>([])
+  const [sponsors, setSponsors] = useState<DashSponsor[]>([])
+  const [studentsWithNeeds, setStudentsWithNeeds] = useState<DashStudent[]>([])
+  const [tuitionCharges, setTuitionCharges] = useState<DashTuition[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<DashTab>('students')
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
