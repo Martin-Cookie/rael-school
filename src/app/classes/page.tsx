@@ -87,7 +87,7 @@ export default function ClassesPage() {
               const males = classStudents.filter((s: any) => s.gender === 'M').length
               const females = classStudents.filter((s: any) => s.gender === 'F').length
               return (
-                <button key={cn} onClick={() => { setSelectedClass(cn); setSearch(''); setSortCol('') }} className="bg-white hover:bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-gray-300 text-left transition-colors">
+                <button key={cn} onClick={() => { setSelectedClass(cn); setSearch(''); setSortCol('') }} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-left transition-colors">
                   <p className="text-lg font-bold text-gray-900">{cn}</p>
                   <p className="text-sm text-gray-500">{count} {locale === 'cs' ? 'studentů' : locale === 'sw' ? 'wanafunzi' : 'students'}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{males} {t('student.male')} / {females} {t('student.female')}</p>

@@ -439,7 +439,7 @@ export default function TuitionPage() {
       ) : (
         <table className="w-full">
           <thead>
-            <tr className="text-left bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+            <tr className="text-left bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
               <SH col="_studentName">{t('tuition.student')}</SH>
               <SH col="_className">{t('tuition.class')}</SH>
               <SH col="amount">{t('tuition.amount')}</SH>

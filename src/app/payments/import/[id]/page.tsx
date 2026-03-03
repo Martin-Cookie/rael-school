@@ -745,7 +745,7 @@ export default function ImportDetailPage() {
                       value={part.amount}
                       onChange={(e) => updateSplitPart(i, 'amount', e.target.value)}
                       placeholder={t('paymentImport.amount')}
-                      className="w-28 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 text-sm"
+                      className="w-28 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
                       step="0.01"
                     />
                     <span className="text-sm text-gray-400">{splitRow?.currency}</span>
@@ -760,7 +760,7 @@ export default function ImportDetailPage() {
                     <select
                       value={part.studentId}
                       onChange={(e) => updateSplitPart(i, 'studentId', e.target.value)}
-                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 text-sm"
+                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
                     >
                       <option value="">{t('paymentImport.selectStudent')}</option>
                       {students.map((s: any) => (
@@ -770,7 +770,7 @@ export default function ImportDetailPage() {
                     <select
                       value={part.paymentTypeId}
                       onChange={(e) => updateSplitPart(i, 'paymentTypeId', e.target.value)}
-                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 text-sm"
+                      className="flex-1 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
                     >
                       <option value="">{t('paymentImport.selectPaymentType')}</option>
                       {paymentTypes.map((pt: any) => (
@@ -785,7 +785,7 @@ export default function ImportDetailPage() {
                         type="number"
                         value={part.count}
                         onChange={(e) => updateSplitPart(i, 'count', e.target.value)}
-                        className="w-24 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 text-sm"
+                        className="w-24 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
                         min="1"
                       />
                       <span className="text-xs text-gray-400">ks{(() => { const r = getVoucherRate(splitRow?.currency || 'CZK'); return r ? ` (1 = ${r} ${splitRow?.currency || 'CZK'})` : '' })()}</span>

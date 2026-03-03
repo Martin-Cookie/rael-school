@@ -148,9 +148,9 @@ export default function LoginPage() {
         </form>
 
         {/* Demo credentials */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-xs font-medium text-gray-500 mb-2">Demo přístupy / Demo logins:</p>
-          <div className="space-y-1 text-xs text-gray-600">
+        <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Demo přístupy / Demo logins:</p>
+          <div className="space-y-1 text-xs text-gray-600 dark:text-gray-300">
             <p><strong>Admin:</strong> admin@rael.school / admin123</p>
             <p><strong>Manager:</strong> manager@rael.school / manager123</p>
             <p><strong>Sponsor:</strong> sponsor@example.com / sponsor123</p>

@@ -113,7 +113,7 @@ export default function DashboardPage() {
         {/* Students */}
         {activeTab === 'students' && (
           <div><h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('student.list')} ({students.length})</h2>
-          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
             <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
@@ -140,7 +140,7 @@ export default function DashboardPage() {
         {/* Sponsors */}
         {activeTab === 'sponsors' && (
           <div><h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('sponsors.title')} ({sponsors.length})</h2>
-          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
             <SH col="email" className="text-left">{t('sponsors.email')}</SH>
@@ -191,7 +191,7 @@ export default function DashboardPage() {
                   ))}
                   {Object.keys(spByCur).length === 0 && <p className="text-gray-400 text-sm">{t('app.noData')}</p>}
                 </div>
-                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
                   <SH col="paymentDate" className="text-left">{t('payments.paymentDate')}</SH>
                   <SH col="paymentType" className="text-left">{t('sponsorPayments.paymentType')}</SH>
                   <SH col="amount" className="text-left">{t('payments.amount')}</SH>
@@ -226,7 +226,7 @@ export default function DashboardPage() {
                     <p className="text-lg font-bold text-primary-900 dark:text-primary-100">{formatNumber(voucherPurchases.reduce((s: number, v: any) => s + v.count, 0))}</p>
                   </div>
                 </div>
-                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
                   <SH col="purchaseDate" className="text-left">{t('vouchers.purchaseDate')}</SH>
                   <SH col="amount" className="text-left">{t('vouchers.amount')}</SH>
                   <SH col="count" className="text-left">{t('vouchers.count')}</SH>
@@ -254,7 +254,7 @@ export default function DashboardPage() {
         {/* Needs */}
         {activeTab === 'needs' && (
           <div><h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('dashboard.studentsNeedingAttention')} ({studentsWithNeeds.length})</h2>
-          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+          <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
             <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
             <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
             <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
@@ -297,7 +297,7 @@ export default function DashboardPage() {
                 <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{fmtCurrency(stats?.tuitionTotalCharged || 0, 'CZK')}</p>
               </div>
             </div>
-            <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+            <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
               <SH col="student.lastName" className="text-left">{t('tuition.student')}</SH>
               <SH col="student.className" className="text-left">{t('tuition.class')}</SH>
               <SH col="period" className="text-left">{t('tuition.period')}</SH>
@@ -343,7 +343,7 @@ export default function DashboardPage() {
               <div>
                 <button onClick={() => { if (prevTabRef.current) { const tab = prevTabRef.current; prevTabRef.current = null; setSelectedClass(null); setSortCol(''); setActiveTab(tab) } else { setSelectedClass(null) } }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {prevTabRef.current ? t('app.back') : t('dashboard.classOverview')}</button>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
-                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+                <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
                   <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
                   <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
                   <SH col="firstName" className="text-left">{t('student.firstName')}</SH>

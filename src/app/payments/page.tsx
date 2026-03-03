@@ -413,7 +413,7 @@ export default function PaymentsPage() {
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <table className="w-full"><thead>
           {/* Sort headers */}
-          <tr className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
+          <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
             <SH col="_date" className="text-left">{t('payments.paymentDate')}</SH>
             <SH col="paymentType" className="text-left">{t('sponsorPayments.paymentType')}</SH>
             <SH col="amount" className="text-left">{t('payments.amount')}</SH>
