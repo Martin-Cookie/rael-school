@@ -1,12 +1,12 @@
-import crypto from 'crypto'
-
 const CSRF_COOKIE = 'csrf-token'
 const CSRF_HEADER = 'x-csrf-token'
 const TOKEN_LENGTH = 32
 
-/** Generuje náhodný CSRF token (hex string). */
+/** Generuje náhodný CSRF token (hex string). Kompatibilní s Edge Runtime. */
 export function generateCsrfToken(): string {
-  return crypto.randomBytes(TOKEN_LENGTH).toString('hex')
+  const bytes = new Uint8Array(TOKEN_LENGTH)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
 }
 
 /** Vrací název CSRF cookie. */
