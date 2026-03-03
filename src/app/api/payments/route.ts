@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 import { recalcTuitionStatus, isTuitionType } from '@/lib/tuition'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 // GET /api/payments — list all payments with students and sponsors
 export async function GET() {
@@ -63,6 +64,12 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit: max 30 writes per minute per user
+    const rl = checkRateLimit(`payments:write:${user.id}`, 30, 60 * 1000)
+    if (!rl.success) {
+      return NextResponse.json({ error: `Too many requests. Retry after ${rl.retryAfter}s.` }, { status: 429 })
     }
 
     const body = await request.json()
@@ -136,6 +143,12 @@ export async function PUT(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit: max 30 writes per minute per user
+    const rl = checkRateLimit(`payments:write:${user.id}`, 30, 60 * 1000)
+    if (!rl.success) {
+      return NextResponse.json({ error: `Too many requests. Retry after ${rl.retryAfter}s.` }, { status: 429 })
     }
 
     const body = await request.json()
@@ -221,6 +234,12 @@ export async function DELETE(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit: max 30 writes per minute per user
+    const rl = checkRateLimit(`payments:write:${user.id}`, 30, 60 * 1000)
+    if (!rl.success) {
+      return NextResponse.json({ error: `Too many requests. Retry after ${rl.retryAfter}s.` }, { status: 429 })
     }
 
     const body = await request.json()

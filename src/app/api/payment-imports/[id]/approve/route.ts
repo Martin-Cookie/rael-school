@@ -4,6 +4,7 @@ import { getCurrentUser, isManager } from '@/lib/auth'
 import { recalcTuitionStatus } from '@/lib/tuition'
 import { getVoucherTypeIds, getTuitionTypeIds } from '@/lib/paymentTypes'
 import { DEFAULT_VOUCHER_RATE_FALLBACK } from '@/lib/constants'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 // POST /api/payment-imports/[id]/approve — bulk approve rows
 export async function POST(
@@ -20,6 +21,12 @@ export async function POST(
     const user = await prisma.user.findUnique({ where: { email: jwtUser.email } })
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 })
+    }
+
+    // Rate limit: max 10 approvals per minute per user
+    const rl = checkRateLimit(`import:approve:${user.id}`, 10, 60 * 1000)
+    if (!rl.success) {
+      return NextResponse.json({ error: `Too many requests. Retry after ${rl.retryAfter}s.` }, { status: 429 })
     }
 
     const { rowIds } = await request.json()

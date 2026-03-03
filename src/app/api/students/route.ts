@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, canEdit, isSponsor } from '@/lib/auth'
 import { studentSchema, formatZodErrors } from '@/lib/validations'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export async function GET(request: NextRequest) {
   try {
@@ -84,6 +85,12 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit: max 20 creates per minute per user
+    const rl = checkRateLimit(`students:create:${user.id}`, 20, 60 * 1000)
+    if (!rl.success) {
+      return NextResponse.json({ error: `Too many requests. Retry after ${rl.retryAfter}s.` }, { status: 429 })
     }
 
     const raw = await request.json()

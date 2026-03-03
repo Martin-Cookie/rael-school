@@ -42,6 +42,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Translation error:', error)
-    return NextResponse.json({ en: null, sw: null })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -93,6 +93,21 @@ export async function POST(request: NextRequest) {
     const { unlink } = await import('fs/promises')
     await unlink(tempPath).catch(() => {})
 
+    // Post-restore integrity check
+    try {
+      const { execFileSync } = await import('child_process')
+      const integrity = execFileSync('sqlite3', [dbPath, 'PRAGMA integrity_check'], { encoding: 'utf-8' }).trim()
+      if (integrity !== 'ok') {
+        // Restore previous database from backup
+        await copyFile(backupPath, dbPath)
+        return NextResponse.json({
+          error: `Database integrity check failed: ${integrity}. Previous database has been restored.`,
+        }, { status: 400 })
+      }
+    } catch {
+      // If sqlite3 is not available, skip integrity check
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Database restored successfully. Previous database saved as dev.db.before-restore.',
