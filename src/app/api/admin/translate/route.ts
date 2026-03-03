@@ -39,10 +39,15 @@ export async function POST(request: NextRequest) {
       translateText(text.trim(), 'sw'),
     ])
 
-    return NextResponse.json({
-      en: enResult.status === 'fulfilled' ? enResult.value : null,
-      sw: swResult.status === 'fulfilled' ? swResult.value : null,
-    })
+    const en = enResult.status === 'fulfilled' ? enResult.value : null
+    const sw = swResult.status === 'fulfilled' ? swResult.value : null
+
+    // Pokud oba překlady selhaly, vrátit 502
+    if (en === null && sw === null && enResult.status === 'rejected' && swResult.status === 'rejected') {
+      return NextResponse.json({ error: 'Translation service unavailable' }, { status: 502 })
+    }
+
+    return NextResponse.json({ en, sw })
   } catch (error) {
     console.error('Translation error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

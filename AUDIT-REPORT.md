@@ -8,10 +8,10 @@
 
 - **CRITICAL: 0** ~~3~~ (všechny vyřešeny ✅)
 - **HIGH: 1** ~~12~~ (11 vyřešeno ✅)
-- **MEDIUM: 3** ~~18~~ (15 vyřešeno ✅)
-- **LOW: 3** ~~12~~ (9 vyřešeno ✅)
+- **MEDIUM: 1** ~~18~~ (17 vyřešeno ✅)
+- **LOW: 1** ~~12~~ (11 vyřešeno ✅)
 
-**Celkem: 45 nálezů — 38 vyřešeno ✅, 7 otevřených**
+**Celkem: 45 nálezů — 42 vyřešeno ✅, 3 otevřené**
 
 ---
 
@@ -43,7 +43,7 @@
 | 22 | Kód | `lib/auth.ts` | MEDIUM | `canAccess()` mrtvý kód | ✅ Batch 1 — funkce již odstraněna |
 | 23 | Kód | API routes | MEDIUM | Hardcoded limity | ✅ Opraveno dříve — API_LIMITS konstanty |
 | 24 | Kód | 6 admin codelist API | MEDIUM | Nekonzistentní error messages | ✅ Již vyřešeno — konzistentní 'Internal server error' |
-| 25 | Kód | `translate/route.ts` | MEDIUM | Vrací 200 při chybě | ⚠️ **Otevřený** |
+| 25 | Kód | `translate/route.ts` | MEDIUM | Vrací 200 při chybě | ✅ Vrací 502 při selhání obou překladů |
 | 26 | Dokument | `docs/API-REFERENCE.md` | MEDIUM | Chybí JSON příklady | ✅ Opraveno dříve |
 | 27 | Dokument | `lib/paymentMatcher.ts` | MEDIUM | Bez JSDoc | ✅ Opraveno dříve |
 | 28 | Dokument | `lib/i18n.ts` | MEDIUM | Žádná dokumentace | ✅ Opraveno dříve |
@@ -58,26 +58,22 @@
 | 37 | Kód | `import/[id]/page.tsx` | LOW | IIFE v JSX | ✅ Batch 1 — helper funkce extrahované |
 | 38 | Dokument | `README.md` | LOW | Chybí npm test | ✅ Již vyřešeno |
 | 39 | Dokument | `docs/` | LOW | Chybí index | ✅ Již vyřešeno — docs/INDEX.md |
-| 40 | UI | Více stránek | LOW | Nekonzistentní icon sizes | ⚠️ **Otevřený** (minor, w-3 u sort šipek záměrné) |
-| 41 | UI | `Pagination.tsx` | LOW | Touch targets pod WCAG | ⚠️ **Otevřený** |
+| 40 | UI | Více stránek | LOW | Nekonzistentní icon sizes | ✅ Sort šipky sjednoceny na w-3.5 |
+| 41 | UI | `Pagination.tsx` | LOW | Touch targets pod WCAG | ✅ min-w 44px, h-11 (44px) |
 | 42 | UI | Dashboard | LOW | Heading hierarchy | ✅ Batch 9 — h3 text-base místo text-lg |
-| 43 | UI | Thead backgrounds | LOW | Nekonzistentní bg-gray-50/bg-white | ⚠️ **Otevřený** (minor) |
+| 43 | UI | Thead backgrounds | LOW | Nekonzistentní bg-gray-50/bg-white | ✅ Již konzistentní bg-gray-50 dark:bg-gray-800 |
 | 44 | Testy | `auth.test.ts` | LOW | `canAccess` test pro mrtvý kód | ✅ Batch 1 — canAccess odstraněn |
 | 45 | Testy | `auth.test.ts` | LOW | JWT_SECRET izolace | ✅ Již vyřešeno — beforeAll + beforeEach |
 
 ---
 
-## Otevřené nálezy (7)
+## Otevřené nálezy (3)
 
 | # | Severity | Problém | Poznámka |
 |---|----------|---------|----------|
 | 14 | HIGH | Import split/approve integrační testy | Komplexní testování transakčního workflow |
 | 16 | MEDIUM | DB zálohy v git historii | Infrastrukturní — vyžaduje šifrované zálohy mimo repo |
-| 25 | MEDIUM | Translate endpoint vrací 200 při chybě | Minor — MyMemory API fallback |
 | 34 | LOW | imageUtils hardcoded hodnoty | Přidat JSDoc nebo konstanty |
-| 40 | LOW | Icon sizes nekonzistentní | Sort šipky w-3 záměrné, jinak konzistentní |
-| 41 | LOW | Pagination touch targets | Zvětšit na min 44×44px |
-| 43 | LOW | Thead background inconsistency | Minor vizuální rozdíl |
 
 ---
 

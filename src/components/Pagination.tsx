@@ -46,7 +46,7 @@ export default function Pagination({ currentPage, totalItems, pageSize, onPageCh
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="p-2 min-w-[36px] h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 focus-visible:outline-none"
+          className="p-2 min-w-[44px] h-11 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 focus-visible:outline-none"
           aria-label={labels.prev}
         >
           <ChevronLeft className="w-4 h-4" />
@@ -60,7 +60,7 @@ export default function Pagination({ currentPage, totalItems, pageSize, onPageCh
               onClick={() => onPageChange(p)}
               aria-label={`Strana ${p}`}
               aria-current={p === currentPage ? 'page' : undefined}
-              className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 focus-visible:outline-none ${
+              className={`min-w-[44px] h-11 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 focus-visible:outline-none ${
                 p === currentPage
                   ? 'bg-primary-600 text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -73,7 +73,7 @@ export default function Pagination({ currentPage, totalItems, pageSize, onPageCh
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="p-2 min-w-[36px] h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 focus-visible:outline-none"
+          className="p-2 min-w-[44px] h-11 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 focus-visible:outline-none"
           aria-label={labels.next}
         >
           <ChevronRight className="w-4 h-4" />

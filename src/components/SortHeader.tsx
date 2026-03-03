@@ -25,8 +25,8 @@ export function SortHeader({ col, sortCol, sortDir, onSort, children, className 
       <div className="flex items-center gap-1">
         {children}
         {isActive
-          ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)
-          : <ArrowUpDown className="w-3 h-3 opacity-30" />
+          ? (sortDir === 'asc' ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />)
+          : <ArrowUpDown className="w-3.5 h-3.5 opacity-30" />
         }
       </div>
     </th>

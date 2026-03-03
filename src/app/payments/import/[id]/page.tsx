@@ -378,7 +378,7 @@ export default function ImportDetailPage() {
       <th className={`py-2.5 px-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:text-gray-700 dark:hover:text-gray-200 select-none whitespace-nowrap ${className}`} onClick={() => handleSort(col)}>
         <div className="flex items-center gap-1">
           {children}
-          {isA ? (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+          {isA ? (sortDir === 'asc' ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />) : <ArrowUpDown className="w-3.5 h-3.5 opacity-30" />}
         </div>
       </th>
     )
