@@ -6,7 +6,7 @@ import Sidebar from '@/components/layout/Sidebar'
 
 export default function SponsorsLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ id: string; firstName: string; lastName: string; role: string; email: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

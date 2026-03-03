@@ -31,16 +31,50 @@ type UnifiedPayment = {
   [key: string]: any
 }
 
+interface PaymentStudent {
+  id: string
+  firstName: string
+  lastName: string
+  studentNo: string
+  className: string | null
+}
+
+interface PaymentSponsor {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  sponsorships?: { student?: { id: string } }[]
+}
+
+interface CodelistItem {
+  id: string
+  name: string
+  nameEn: string | null
+  nameSw: string | null
+}
+
+interface EditPaymentData {
+  date: string
+  amount: string
+  currency: string
+  paymentType?: string
+  sponsorId: string
+  studentId: string
+  count?: string
+  notes: string
+}
+
 export default function PaymentsPage() {
-  const [sponsorPayments, setSponsorPayments] = useState<any[]>([])
-  const [voucherPurchases, setVoucherPurchases] = useState<any[]>([])
+  const [sponsorPayments, setSponsorPayments] = useState<UnifiedPayment[]>([])
+  const [voucherPurchases, setVoucherPurchases] = useState<UnifiedPayment[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
 
   // Students & sponsors for dropdowns
-  const [students, setStudents] = useState<any[]>([])
-  const [sponsors, setSponsors] = useState<any[]>([])
-  const [paymentTypes, setPaymentTypes] = useState<any[]>([])
+  const [students, setStudents] = useState<PaymentStudent[]>([])
+  const [sponsors, setSponsors] = useState<PaymentSponsor[]>([])
+  const [paymentTypes, setPaymentTypes] = useState<CodelistItem[]>([])
   const [userRole, setUserRole] = useState('')
 
   // Add form
@@ -51,7 +85,7 @@ export default function PaymentsPage() {
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editType, setEditType] = useState<'sponsor' | 'voucher'>('sponsor')
-  const [editData, setEditData] = useState<any>({})
+  const [editData, setEditData] = useState<EditPaymentData>({ date: '', amount: '', currency: '', paymentType: '', sponsorId: '', studentId: '', count: '', notes: '' })
 
   // Filters
   const [filterType, setFilterType] = useState('')

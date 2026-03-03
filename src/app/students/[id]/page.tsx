@@ -27,16 +27,71 @@ import { HealthTab } from '@/components/student-detail/HealthTab'
 
 type Tab = 'personal' | 'equipment' | 'needs' | 'wishes' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments' | 'tuition'
 
+interface StudentDetail {
+  id: string
+  studentNo: string
+  firstName: string
+  lastName: string
+  dateOfBirth: string | null
+  gender: string | null
+  className: string | null
+  school: string | null
+  orphanStatus: string | null
+  healthStatus: string | null
+  profilePhoto: string | null
+  motherName: string | null
+  motherAlive: boolean | null
+  fatherName: string | null
+  fatherAlive: boolean | null
+  siblings: string | null
+  isActive: boolean
+  notes: string | null
+  equipment: { id: string; type: string; condition: string; acquiredAt: string | null; notes: string | null }[]
+  needs: { id: string; description: string; isFulfilled: boolean; fulfilledAt: string | null; notes: string | null }[]
+  photos: { id: string; category: string; fileName: string; filePath: string; description: string | null; takenAt: string }[]
+  vouchers: { id: string; purchaseDate: string; amount: number; currency: string; count: number; donorName: string | null; notes: string | null; sponsor: { id: string; firstName: string; lastName: string } | null }[]
+  voucherUsages: { id: string; usageDate: string; count: number; notes: string | null }[]
+  sponsorships: { id: string; startDate: string; endDate: string | null; notes: string | null; isActive: boolean; sponsor: { id: string; firstName: string; lastName: string; email: string; phone: string | null } }[]
+  healthChecks: { id: string; checkDate: string; checkType: string; notes: string | null }[]
+  wishes: { id: string; description: string; isFulfilled: boolean; fulfilledAt: string | null; notes: string | null; wishType: { id: string; name: string; nameEn: string | null; nameSw: string | null; price: number | null } | null }[]
+  payments: { id: string; paymentDate: string; amount: number; notes: string | null }[]
+  sponsorPayments: { id: string; paymentDate: string; amount: number; currency: string; paymentType: string; notes: string | null; sponsor: { id: string; firstName: string; lastName: string } | null }[]
+}
+
+interface EquipmentItem {
+  id?: string
+  type: string
+  condition: string
+  acquiredAt: string | null
+  notes: string | null
+}
+
+interface SponsorSearchResult {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string | null
+}
+
+interface EditSponsorData {
+  startDate: string
+  endDate: string
+  notes: string
+  isActive: boolean
+}
+
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
   const id = params.id
   const router = useRouter()
   const [backUrl, setBackUrl] = useState('/students')
+  // StudentDetail interface defined above for reference; kept as any due to extensive nested access after early-return guard
   const [student, setStudent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('personal')
   const [editMode, setEditMode] = useState(false)
-  const [editData, setEditData] = useState<any>({})
-  const [editEquipment, setEditEquipment] = useState<any[]>([])
+  const [editData, setEditData] = useState<any>(null)
+  const [editEquipment, setEditEquipment] = useState<EquipmentItem[]>([])
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const confirmRef = useFocusTrap(showConfirm)
@@ -66,11 +121,11 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [newEquipmentType, setNewEquipmentType] = useState('')
   const [showAddSponsor, setShowAddSponsor] = useState(false)
   const [sponsorSearch, setSponsorSearch] = useState('')
-  const [sponsorResults, setSponsorResults] = useState<any[]>([])
+  const [sponsorResults, setSponsorResults] = useState<SponsorSearchResult[]>([])
   const [showSponsorSearch, setShowSponsorSearch] = useState(false)
   const [newSponsor, setNewSponsor] = useState({ firstName: '', lastName: '', email: '', phone: '', startDate: '', notes: '' })
   const [editingSponsor, setEditingSponsor] = useState<string | null>(null)
-  const [editSponsorData, setEditSponsorData] = useState<any>({})
+  const [editSponsorData, setEditSponsorData] = useState<EditSponsorData>({ startDate: '', endDate: '', notes: '', isActive: true })
   const [photoFilter, setPhotoFilter] = useState('all')
   const [showAddPhoto, setShowAddPhoto] = useState(false)
   const [newPhoto, setNewPhoto] = useState({ category: 'visit', description: '', takenAt: '', file: null as File | null })
@@ -149,7 +204,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     setSaving(false)
   }
 
-  function cancelEdit() { setEditData(student); setEditEquipment(student.equipment?.map((eq: any) => ({ ...eq })) || []); setEditMode(false) }
+  function cancelEdit() { setEditData(student); setEditEquipment(student?.equipment?.map((eq: any) => ({ ...eq })) || []); setEditMode(false) }
   function changeCurrency(c: string) { setCurrency(c); localStorage.setItem('rael-currency', c) }
 
   const sponsorNames = student?.sponsorships?.filter((s: any) => s.isActive).map((s: any) => `${s.sponsor.firstName} ${s.sponsor.lastName}`) || []
