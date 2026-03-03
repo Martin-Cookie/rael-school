@@ -1,8 +1,15 @@
-import { describe, it, expect, beforeAll } from 'vitest'
+import { describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest'
 
-// Set JWT_SECRET before importing auth module
+const TEST_JWT_SECRET = 'test-secret-for-vitest-isolation-32chars!!'
+
+// Set JWT_SECRET before all tests (needed for module init)
 beforeAll(() => {
-  process.env.JWT_SECRET = 'test-secret-for-vitest-only'
+  process.env.JWT_SECRET = TEST_JWT_SECRET
+})
+
+// Reset to known value before each test (isolation)
+beforeEach(() => {
+  process.env.JWT_SECRET = TEST_JWT_SECRET
 })
 
 describe('auth role helpers', () => {
