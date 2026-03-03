@@ -16,11 +16,13 @@ Otevřete **http://localhost:3000**
 ### Testy
 
 ```bash
-npm test          # jednorázové spuštění
+npm test          # unit testy (Vitest) — 97 testů
 npm run test:watch # watch mode
+npm run test:e2e  # E2E testy (Playwright) — 5 spec souborů
 ```
 
-Testové soubory v `src/__tests__/`: auth, auth-endpoint, format, rateLimit, csvParser, paymentMatcher, paymentImport.
+Unit testy v `src/__tests__/`: auth, auth-endpoint, format, rateLimit, csvParser, paymentMatcher, paymentImport.
+E2E testy v `tests/`: login, dashboard, students, payments, admin.
 
 ## Přihlašovací údaje
 
@@ -38,7 +40,7 @@ Testové soubory v `src/__tests__/`: auth, auth-endpoint, format, rateLimit, csv
 - **CSS:** Tailwind CSS (včetně dark mode)
 - **Autentizace:** JWT (httpOnly cookies) + bcrypt
 - **Ikony:** lucide-react
-- **Testy:** Vitest
+- **Testy:** Vitest (unit) + Playwright (E2E)
 - **Lokalizace:** Vlastní i18n (čeština, angličtina, svahilština)
 
 ## Funkce
@@ -111,7 +113,7 @@ Testové soubory v `src/__tests__/`: auth, auth-endpoint, format, rateLimit, csv
 - Formátování čísel s oddělovačem tisíců (mezera): `1 500 KES`
 - Sticky hlavičky a sticky thead v tabulkách
 - Cross-page navigace s řetězovým zpětným odkazem
-- Bezpečnostní hlavičky (CSP, HSTS) + rate limiting na CRUD endpointech
+- Bezpečnostní hlavičky (CSP, HSTS) + rate limiting + CSRF ochrana + audit trail
 
 ## Uživatelské role
 
@@ -137,12 +139,12 @@ src/
 │   ├── reports/            # Reporty + návštěvní karty
 │   ├── admin/              # Administrace číselníků a sazeb
 │   └── api/                # REST API endpointy
-├── __tests__/              # Vitest testy (77 testů)
+├── __tests__/              # Vitest testy (97 testů)
 │   ├── auth.test.ts        # Auth funkce (hash, token, verify)
 │   ├── auth-endpoint.test.ts # Login endpoint
 │   ├── csvParser.test.ts   # CSV parser
 │   ├── format.test.ts      # Formátovací funkce
-│   ├── paymentImport.test.ts # Import plateb (split, approve)
+│   ├── paymentImport.test.ts # Import plateb — approve, split, reject endpointy (28 testů)
 │   ├── paymentMatcher.test.ts # Párování plateb
 │   └── rateLimit.test.ts   # Rate limiter
 ├── components/
@@ -160,7 +162,7 @@ src/
 │   ├── useSorting.ts       # Třídění tabulek
 │   ├── useStickyTop.ts     # Dynamická výška sticky hlavičky
 │   └── useToast.ts         # Toast notifikace
-├── lib/                    # Auth, DB, i18n, formátování, CSV, parser, tuition, imageUtils, paymentMatcher, rateLimit, constants, codelistRoute, validations
+├── lib/                    # Auth, DB, i18n, formátování, CSV, parser, tuition, imageUtils, paymentMatcher, paymentTypes, rateLimit, constants, codelistRoute, validations, csrf, fetchWithCsrf, auditLog
 └── messages/               # Překlady (cs.json, en.json, sw.json)
 prisma/
 ├── schema.prisma           # Datový model
@@ -173,6 +175,13 @@ data/
 ├── config-real.json        # Číselníky (třídy, typy, sazby)
 ├── test-bank-import.csv    # Testovací bankovní výpis
 └── fio-vypisek-vzor.pdf    # Vzorový PDF výpis z Fio
+tests/                        # E2E testy (Playwright)
+├── helpers.ts              # Login helper
+├── 01-login.spec.ts        # Přihlášení
+├── 02-dashboard.spec.ts    # Dashboard
+├── 03-students.spec.ts     # Studenti
+├── 04-payments.spec.ts     # Platby
+└── 05-admin.spec.ts        # Administrace
 docs/
 ├── INDEX.md                # Navigace mezi dokumenty
 ├── UI_GUIDE.md             # UI/frontend konvence

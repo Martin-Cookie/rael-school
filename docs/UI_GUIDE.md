@@ -19,7 +19,7 @@ Tento soubor je **jediný zdroj pravdy** pro UI/frontend vzory a konvence. Stack
 | `fmtCurrency()` | `src/lib/format.ts` | Formátování částky s měnou — `fmtCurrency(1500, 'KES')` → `1 500 KES` |
 | `useFocusTrap(active)` | `src/hooks/useFocusTrap.ts` | Focus trap pro modální dialogy — vrací `ref` |
 | `useFetchList(url, key)` | `src/hooks/useFetchList.ts` | Generický hook pro fetch seznamu z API |
-| `<Pagination>` | `src/components/Pagination.tsx` | Stránkování s touch-friendly tlačítky |
+| `<Pagination>` | `src/components/Pagination.tsx` | Stránkování s touch-friendly tlačítky (min 44×44px, WCAG AA) |
 
 ### Použití hooků na stránkách
 
@@ -70,7 +70,7 @@ const { stickyRef, theadTop } = useStickyTop([loading])
 **Důležité:**
 - Tabulky NESMÍ být obaleny v `overflow-hidden` ani `overflow-x-auto` — ruší `position: sticky`
 - Pozadí thead musí být neprůhledné (`bg-white` nebo `bg-gray-50`, ne `bg-gray-50/50`)
-- Bez stránkování — všechny záznamy se zobrazují najednou
+- Platby používají cursor-based stránkování (`Načíst další`), ostatní seznamy zobrazují vše najednou
 
 ---
 
@@ -297,8 +297,8 @@ Dvoustránkový A4 formulář (výška `calc(297mm - 16mm)`):
 ## 12. Administrace číselníků
 
 Soubory:
-- Hlavní stránka: `src/app/admin/page.tsx` (434 řádků)
-- Komponenty: `src/components/admin/` (CodelistSection, VoucherRateSection, TuitionRateSection, BackupSection, types)
+- Hlavní stránka: `src/app/admin/page.tsx`
+- Komponenty: `src/components/admin/` (CodelistSection, VoucherRateSection, TuitionRateSection, BackupSection, AuditLogSection, types)
 
 ### Přidání nové položky s překladem
 1. Admin zadá český název
