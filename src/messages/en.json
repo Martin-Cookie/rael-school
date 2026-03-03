@@ -191,7 +191,9 @@
     "importPayments": "Import payments",
     "totalPayments": "Total payments",
     "noPayments": "No payments",
-    "fillRequired": "Please fill in all required fields"
+    "fillRequired": "Please fill in all required fields",
+    "loadMoreSponsor": "Load more sponsor payments",
+    "loadMoreVoucher": "Load more vouchers"
   },
   "roles": {
     "ADMIN": "Administrator",

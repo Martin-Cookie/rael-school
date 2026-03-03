@@ -191,7 +191,9 @@
     "importPayments": "Ingiza malipo",
     "totalPayments": "Malipo jumla",
     "noPayments": "Hakuna malipo",
-    "fillRequired": "Tafadhali jaza sehemu zote zinazohitajika"
+    "fillRequired": "Tafadhali jaza sehemu zote zinazohitajika",
+    "loadMoreSponsor": "Pakia malipo zaidi ya wadhamini",
+    "loadMoreVoucher": "Pakia vocha zaidi"
   },
   "roles": {
     "ADMIN": "Msimamizi",

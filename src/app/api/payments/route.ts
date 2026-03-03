@@ -5,31 +5,48 @@ import { recalcTuitionStatus, isTuitionType } from '@/lib/tuition'
 import { checkRateLimit } from '@/lib/rateLimit'
 import { API_LIMITS } from '@/lib/constants'
 
-// GET /api/payments — list all payments with students and sponsors
-export async function GET() {
+// GET /api/payments — list payments with cursor-based pagination
+export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const [sponsorPayments, voucherPurchases, students, sponsors] = await Promise.all([
-      prisma.sponsorPayment.findMany({
-        take: API_LIMITS.PAYMENTS,
-        orderBy: { paymentDate: 'desc' },
-        include: {
-          student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
-          sponsor: { select: { id: true, firstName: true, lastName: true } },
-        },
-      }),
-      prisma.voucherPurchase.findMany({
-        take: API_LIMITS.PAYMENTS,
-        orderBy: { purchaseDate: 'desc' },
-        include: {
-          student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
-          sponsor: { select: { id: true, firstName: true, lastName: true } },
-        },
-      }),
+    const { searchParams } = new URL(request.url)
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50') || 50, 200)
+    const spCursor = searchParams.get('spCursor') || undefined
+    const vpCursor = searchParams.get('vpCursor') || undefined
+
+    const spQuery: any = {
+      take: limit + 1,
+      orderBy: { paymentDate: 'desc' },
+      include: {
+        student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
+        sponsor: { select: { id: true, firstName: true, lastName: true } },
+      },
+    }
+    if (spCursor) {
+      spQuery.cursor = { id: spCursor }
+      spQuery.skip = 1
+    }
+
+    const vpQuery: any = {
+      take: limit + 1,
+      orderBy: { purchaseDate: 'desc' },
+      include: {
+        student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
+        sponsor: { select: { id: true, firstName: true, lastName: true } },
+      },
+    }
+    if (vpCursor) {
+      vpQuery.cursor = { id: vpCursor }
+      vpQuery.skip = 1
+    }
+
+    const [spResults, vpResults, students, sponsors] = await Promise.all([
+      prisma.sponsorPayment.findMany(spQuery),
+      prisma.voucherPurchase.findMany(vpQuery),
       prisma.student.findMany({
         where: { isActive: true },
         select: {
@@ -52,7 +69,19 @@ export async function GET() {
       }),
     ])
 
-    return NextResponse.json({ sponsorPayments, voucherPurchases, students, sponsors })
+    const hasMoreSP = spResults.length > limit
+    const hasMoreVP = vpResults.length > limit
+    const sponsorPayments = hasMoreSP ? spResults.slice(0, limit) : spResults
+    const voucherPurchases = hasMoreVP ? vpResults.slice(0, limit) : vpResults
+
+    return NextResponse.json({
+      sponsorPayments,
+      voucherPurchases,
+      students,
+      sponsors,
+      nextSpCursor: hasMoreSP ? sponsorPayments[sponsorPayments.length - 1].id : null,
+      nextVpCursor: hasMoreVP ? voucherPurchases[voucherPurchases.length - 1].id : null,
+    })
   } catch (error) {
     console.error('GET /api/payments error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

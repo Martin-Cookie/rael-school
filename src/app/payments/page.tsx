@@ -87,6 +87,11 @@ export default function PaymentsPage() {
   const [editType, setEditType] = useState<'sponsor' | 'voucher'>('sponsor')
   const [editData, setEditData] = useState<EditPaymentData>({ date: '', amount: '', currency: '', paymentType: '', sponsorId: '', studentId: '', count: '', notes: '' })
 
+  // Pagination cursors
+  const [nextSpCursor, setNextSpCursor] = useState<string | null>(null)
+  const [nextVpCursor, setNextVpCursor] = useState<string | null>(null)
+  const [loadingMore, setLoadingMore] = useState(false)
+
   // Filters
   const [filterType, setFilterType] = useState('')
   const [filterSponsor, setFilterSponsor] = useState('')
@@ -116,8 +121,29 @@ export default function PaymentsPage() {
       setVoucherPurchases(data.voucherPurchases || [])
       setStudents(data.students || [])
       setSponsors(data.sponsors || [])
+      setNextSpCursor(data.nextSpCursor || null)
+      setNextVpCursor(data.nextVpCursor || null)
       setLoading(false)
     } catch (e) { console.error('Failed to load payments:', e); setLoading(false) }
+  }
+
+  async function loadMore(type: 'sponsor' | 'voucher') {
+    const cursor = type === 'sponsor' ? nextSpCursor : nextVpCursor
+    if (!cursor) return
+    setLoadingMore(true)
+    try {
+      const param = type === 'sponsor' ? `spCursor=${cursor}` : `vpCursor=${cursor}`
+      const res = await fetch(`/api/payments?${param}`)
+      const data = await res.json()
+      if (type === 'sponsor') {
+        setSponsorPayments(prev => [...prev, ...(data.sponsorPayments || [])])
+        setNextSpCursor(data.nextSpCursor || null)
+      } else {
+        setVoucherPurchases(prev => [...prev, ...(data.voucherPurchases || [])])
+        setNextVpCursor(data.nextVpCursor || null)
+      }
+    } catch (e) { console.error('Failed to load more:', e) }
+    setLoadingMore(false)
   }
 
   const canEdit = userRole && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(userRole)
@@ -575,6 +601,22 @@ export default function PaymentsPage() {
           {sorted.length === 0 && <tr><td colSpan={canEdit ? 8 : 7} className="py-8 text-center text-gray-500 dark:text-gray-400 text-sm">{t('app.noData')}</td></tr>}
         </tbody></table>
       </div>
+
+      {/* Load more */}
+      {(nextSpCursor || nextVpCursor) && (
+        <div className="flex justify-center gap-3 mt-4">
+          {nextSpCursor && (
+            <button onClick={() => loadMore('sponsor')} disabled={loadingMore} className="px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-700 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20 disabled:opacity-50">
+              {loadingMore ? t('app.loading') : t('payments.loadMoreSponsor')}
+            </button>
+          )}
+          {nextVpCursor && (
+            <button onClick={() => loadMore('voucher')} disabled={loadingMore} className="px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-700 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20 disabled:opacity-50">
+              {loadingMore ? t('app.loading') : t('payments.loadMoreVoucher')}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -191,7 +191,9 @@
     "importPayments": "Importovat platby",
     "totalPayments": "Celkem plateb",
     "noPayments": "Žádné platby",
-    "fillRequired": "Vyplňte všechna povinná pole"
+    "fillRequired": "Vyplňte všechna povinná pole",
+    "loadMoreSponsor": "Načíst další sponzorské platby",
+    "loadMoreVoucher": "Načíst další stravenky"
   },
   "roles": {
     "ADMIN": "Administrátor",
