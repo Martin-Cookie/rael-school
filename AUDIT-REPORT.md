@@ -7,11 +7,11 @@
 ## Souhrn
 
 - **CRITICAL: 0** ~~3~~ (všechny vyřešeny ✅)
-- **HIGH: 1** ~~12~~ (11 vyřešeno ✅)
+- **HIGH: 0** ~~12~~ (všechny vyřešeny ✅)
 - **MEDIUM: 0** ~~18~~ (všechny vyřešeny ✅)
 - **LOW: 0** ~~12~~ (všechny vyřešeny ✅)
 
-**Celkem: 45 nálezů — 44 vyřešeno ✅, 1 otevřený**
+**Celkem: 45 nálezů — 45 vyřešeno ✅**
 
 ---
 
@@ -32,7 +32,7 @@
 | 11 | Kód | `paymentTypes.ts` + `tuition.ts` | HIGH | Duplicitní regex | ✅ Již vyřešeno — isTuitionPaymentType() |
 | 12 | Výkon | `api/payments/route.ts` | HIGH | Bez paginace | ✅ Batch 6 — cursor-based pagination |
 | 13 | Error | 7 stránek | HIGH | Tichý fail bez zpětné vazby | ✅ Opraveno dříve — console.error + toast |
-| 14 | Testy | Import split/approve | HIGH | 0 integračních testů | ⚠️ **Otevřený** |
+| 14 | Testy | Import split/approve | HIGH | 0 integračních testů | ✅ 20 testů — approve/split/reject endpointy |
 | 15 | Testy | Celý projekt | HIGH | Žádné E2E testy | ✅ Batch 8 — Playwright, 5 testových souborů |
 | 16 | Bezpečnost | `prisma/dev.db.primary` | MEDIUM | DB zálohy v git historii | ✅ .gitignore + netrackováno v HEAD (historie: mitigace dokumentována) |
 | 17 | Bezpečnost | JSON export | MEDIUM | Password hashe v exportu | ✅ Již vyřešeno — select vylučuje password |
@@ -67,11 +67,9 @@
 
 ---
 
-## Otevřené nálezy (1)
+## Otevřené nálezy (0)
 
-| # | Severity | Problém | Poznámka |
-|---|----------|---------|----------|
-| 14 | HIGH | Import split/approve integrační testy | Komplexní testování transakčního workflow |
+Všechny nálezy byly vyřešeny.
 
 ### Mitigace #16 — DB zálohy v git historii
 
@@ -108,7 +106,7 @@ git push origin --force --all
 
 ## Statistiky testů
 
-### Unit testy (Vitest) — 7 souborů, 77 testů ✅
+### Unit testy (Vitest) — 7 souborů, 97 testů ✅
 
 | Soubor | Testů | Pokrytí |
 |--------|:-----:|---------|
@@ -118,7 +116,7 @@ git push origin --force --all
 | `auth.test.ts` | 8 | Role helpers, token, hashing |
 | `auth-endpoint.test.ts` | 6 | Login flow, rate limiting, cookies |
 | `rateLimit.test.ts` | 5 | Rate limiter, retryAfter |
-| `import-split.test.ts` | 8 | Split validation, endpoint |
+| `paymentImport.test.ts` | 28 | Payment types, approve/split/reject endpointy, transakce |
 
 ### E2E testy (Playwright) — 5 souborů
 
