@@ -20,6 +20,8 @@ npm test          # jednorázové spuštění
 npm run test:watch # watch mode
 ```
 
+Testové soubory v `src/__tests__/`: auth, auth-endpoint, format, rateLimit, csvParser, paymentMatcher, paymentImport.
+
 ## Přihlašovací údaje
 
 | Role | Email | Heslo |
@@ -164,7 +166,10 @@ data/
 ├── test-bank-import.csv    # Testovací bankovní výpis
 └── fio-vypisek-vzor.pdf    # Vzorový PDF výpis z Fio
 docs/
+├── INDEX.md                # Navigace mezi dokumenty
 ├── UI_GUIDE.md             # UI/frontend konvence
+├── API-REFERENCE.md        # REST API reference (45+ endpointů)
+├── PAYMENT-MATCHING.md     # Algoritmus párování plateb
 └── SPEC-payment-import.md  # Specifikace importu plateb
 ```
 

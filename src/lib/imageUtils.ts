@@ -17,7 +17,13 @@ export function validateImageFile(file: File): string | null {
   return null
 }
 
-/** Komprimuje obrázek na JPEG přes Canvas API. GIFy vrací beze změny (zachování animace). */
+/**
+ * Komprimuje obrázek na JPEG přes Canvas API. GIFy vrací beze změny (zachování animace).
+ * @param file - Vstupní File objekt (JPEG, PNG, WebP, GIF)
+ * @param maxWidth - Maximální šířka v px (výška se přepočítá proporčně). Default 1600.
+ * @param quality - JPEG kvalita 0–1. Default 0.8.
+ * @returns Komprimovaný File (JPEG) nebo originál (GIF / chyba)
+ */
 export async function compressImage(
   file: File,
   maxWidth: number = 1600,

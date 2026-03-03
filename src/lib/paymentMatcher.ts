@@ -33,8 +33,13 @@ const PAYMENT_TYPE_KEYWORDS: { keywords: string[]; typeName: string }[] = [
 ]
 
 /**
- * Run automatic matching on all rows of an import.
- * Updates rows in-place in the database and returns match count.
+ * Run automatic matching on all rows of a bank import.
+ * Matches each row to a sponsor (by variable symbol / bank account / name),
+ * a student (from message text or single sponsorship), and a payment type (by keywords).
+ * Detects duplicates against existing payments. Updates rows in DB.
+ * @param prisma - Prisma client instance
+ * @param importId - ID of the PaymentImport to process
+ * @returns Number of rows that were matched (status changed from NEW)
  */
 export async function runMatching(prisma: PrismaClient, importId: string): Promise<number> {
   // Load all rows for this import
@@ -131,6 +136,12 @@ export async function runMatching(prisma: PrismaClient, importId: string): Promi
   return matchedCount
 }
 
+/**
+ * Match a single import row to sponsor, student, and payment type.
+ * Strategy: 1) variable symbol → sponsor, 2) bank account → sponsor,
+ * 3) sender name → sponsor, 4) message keywords → payment type,
+ * 5) message text → student name, 6) single sponsorship → student.
+ */
 function matchRow(
   row: RowData,
   sponsors: { id: string; firstName: string; lastName: string; variableSymbol: string | null; bankAccount: string | null; sponsorships: { studentId: string }[] }[],
@@ -322,7 +333,10 @@ function matchRow(
 }
 
 /**
- * Normalize name: remove diacritics, lowercase, remove titles
+ * Normalize a Czech name for fuzzy matching.
+ * Removes diacritics, lowercases, strips academic titles (Ing., Mgr., etc.).
+ * @param name - Raw name string (e.g. "Ing. Jan Novák")
+ * @returns Normalized string (e.g. "jan novak")
  */
 export function normalizeName(name: string): string {
   return name
@@ -336,8 +350,11 @@ export function normalizeName(name: string): string {
 }
 
 /**
- * Try to find a student name in the message text.
- * Matches firstName + lastName of any student.
+ * Try to find a student name in the payment message text.
+ * Matches both firstName + lastName (in any order) after normalizing.
+ * @param message - Raw message from bank statement
+ * @param students - Array of students to match against
+ * @returns Matched student or null
  */
 export function findStudentInMessage(
   message: string,

@@ -3,6 +3,17 @@
 > **Base URL:** `/api`
 > **Auth:** Všechny endpointy vyžadují JWT token v httpOnly cookie `auth-token` (kromě `/api/auth/login`).
 
+### Chybové kódy
+
+| Status | Význam |
+|--------|--------|
+| 400 | Chybný požadavek (chybějící pole, neplatná data) |
+| 401 | Nepřihlášen nebo nedostatečná oprávnění |
+| 404 | Záznam nenalezen |
+| 409 | Konflikt (duplicita) |
+| 429 | Příliš mnoho požadavků (rate limit) |
+| 500 | Interní chyba serveru |
+
 ---
 
 ## Autentizace
@@ -12,6 +23,18 @@
 | POST | `/auth/login` | Přihlášení (email + heslo), vrací cookie | public |
 | POST | `/auth/logout` | Odhlášení, smaže cookie | * |
 | GET | `/auth/me` | Profil přihlášeného uživatele | * |
+
+**Příklad — POST `/auth/login`:**
+```json
+// Request
+{ "email": "admin@rael.school", "password": "admin123" }
+
+// Response 200
+{ "user": { "id": "...", "email": "admin@rael.school", "firstName": "Admin", "lastName": "RAEL", "role": "ADMIN" } }
+
+// Response 401
+{ "error": "Invalid credentials" }
+```
 
 ---
 
