@@ -36,7 +36,7 @@ export default function ClassesPage() {
     fetch('/api/dashboard').then(r => r.json()).then(data => {
       setStudents(data.students || [])
       setLoading(false)
-    }).catch(() => setLoading(false))
+    }).catch((e) => { console.error('Failed to load classes:', e); setLoading(false) })
   }, [])
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>

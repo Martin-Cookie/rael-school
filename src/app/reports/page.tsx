@@ -115,7 +115,7 @@ export default function ReportsPage() {
         if (data.years?.length > 0) setSelectedYear(data.years[0])
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch((e) => { console.error('Failed to load statistics:', e); setLoading(false) })
   }, [])
 
   // Generic sortable header

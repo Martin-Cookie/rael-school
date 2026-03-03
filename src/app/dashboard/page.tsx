@@ -58,7 +58,7 @@ export default function DashboardPage() {
       setStudentsWithNeeds(data.studentsWithNeeds || [])
       setTuitionCharges(data.tuitionCharges || [])
       setLoading(false)
-    }).catch(() => setLoading(false))
+    }).catch((e) => { console.error('Failed to load dashboard:', e); setLoading(false) })
   }, [])
 
   // Build encoded "from" URL that includes current tab info

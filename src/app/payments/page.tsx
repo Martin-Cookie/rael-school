@@ -83,7 +83,7 @@ export default function PaymentsPage() {
       setStudents(data.students || [])
       setSponsors(data.sponsors || [])
       setLoading(false)
-    } catch { setLoading(false) }
+    } catch (e) { console.error('Failed to load payments:', e); setLoading(false) }
   }
 
   const canEdit = userRole && ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(userRole)

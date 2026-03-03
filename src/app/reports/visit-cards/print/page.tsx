@@ -182,7 +182,8 @@ ${parentStyles}
         setEquipmentTypes(data.equipmentTypes || [])
         setLoading(false)
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error('Failed to load visit cards:', e)
         setLoading(false)
         setError(true)
       })

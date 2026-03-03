@@ -82,7 +82,7 @@ export default function TuitionPage() {
       const data = await res.json()
       setCharges(data.charges || [])
       setSummary(data.summary || { totalCharged: 0, totalPaid: 0, totalRemaining: 0 })
-    } catch { /* ignore */ }
+    } catch (e) { console.error('Failed to load tuition charges:', e) }
     setLoading(false)
   }
 
@@ -100,7 +100,7 @@ export default function TuitionPage() {
       const res = await fetch('/api/students')
       const data = await res.json()
       setGenStudents(data.students || data || [])
-    } catch { setGenStudents([]) }
+    } catch (e) { console.error('Failed to load students:', e); setGenStudents([]) }
     setGenLoading(false)
   }
 

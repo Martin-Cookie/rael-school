@@ -3,6 +3,7 @@ import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 import { recalcTuitionStatus, isTuitionType } from '@/lib/tuition'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { API_LIMITS } from '@/lib/constants'
 
 // GET /api/payments — list all payments with students and sponsors
 export async function GET() {
@@ -14,7 +15,7 @@ export async function GET() {
 
     const [sponsorPayments, voucherPurchases, students, sponsors] = await Promise.all([
       prisma.sponsorPayment.findMany({
-        take: 1000,
+        take: API_LIMITS.PAYMENTS,
         orderBy: { paymentDate: 'desc' },
         include: {
           student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },
@@ -22,7 +23,7 @@ export async function GET() {
         },
       }),
       prisma.voucherPurchase.findMany({
-        take: 1000,
+        take: API_LIMITS.PAYMENTS,
         orderBy: { purchaseDate: 'desc' },
         include: {
           student: { select: { id: true, firstName: true, lastName: true, studentNo: true } },

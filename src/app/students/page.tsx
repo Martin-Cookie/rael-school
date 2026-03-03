@@ -22,7 +22,7 @@ export default function StudentsPage() {
     const timer = setTimeout(() => {
       fetch(`/api/students?search=${encodeURIComponent(search)}`)
         .then(r => r.json()).then(data => { setStudents(data.students || []); setLoading(false) })
-        .catch(() => setLoading(false))
+        .catch((e) => { console.error('Failed to load students:', e); setLoading(false) })
     }, 300)
     return () => clearTimeout(timer)
   }, [search])

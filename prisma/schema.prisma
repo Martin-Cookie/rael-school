@@ -208,6 +208,8 @@ model Payment {
   createdAt   DateTime @default(now())
 
   student Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@index([studentId])
 }
 
 // ============ SPONSOR PAYMENTS ============

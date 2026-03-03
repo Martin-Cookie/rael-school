@@ -10,3 +10,9 @@ export const DEFAULT_VOUCHER_RATE_FALLBACK = 80
 
 // Tolerance pro porovnání částek (floating point)
 export const AMOUNT_TOLERANCE = 0.01
+
+// API limity pro dotazy (default take)
+export const API_LIMITS = {
+  PAYMENTS: 1000,
+  DASHBOARD_RECENT: 10,
+} as const
