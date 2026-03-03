@@ -1,5 +1,6 @@
 import { HandHeart, Plus, Trash2, Pencil } from 'lucide-react'
 import { formatDate } from '@/lib/format'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface SponsorsTabProps {
   student: any
@@ -32,6 +33,7 @@ export function SponsorsTab({
   addSponsor, removeSponsor, editingSponsor, setEditingSponsor,
   editSponsorData, setEditSponsorData, saveSponsorEdit, locale, t
 }: SponsorsTabProps) {
+  const formRef = useFocusTrap(showAddSponsor)
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
       <div className="flex items-center justify-between mb-5">
@@ -79,7 +81,7 @@ export function SponsorsTab({
         </div>
       )}
       {showAddSponsor && (
-        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+        <div ref={formRef} className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Vyplnte udaje sponzora. Pokud v systemu neexistuje, bude vytvoren.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
             <input aria-label="Jmeno sponzora" type="text" value={newSponsor.firstName} onChange={(e) => setNewSponsor({ ...newSponsor, firstName: e.target.value })} placeholder={t('student.firstName') + ' *'} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />

@@ -1,6 +1,7 @@
 import { Stethoscope, Plus, Trash2 } from 'lucide-react'
 import { formatDate } from '@/lib/format'
 import { getLocaleName, Locale } from '@/lib/i18n'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface HealthTabProps {
   student: any
@@ -20,6 +21,7 @@ export function HealthTab({
   student, canEditData, healthTypes, showAddHealth, setShowAddHealth,
   newHealth, setNewHealth, addHealthCheck, deleteHealthCheck, locale, t
 }: HealthTabProps) {
+  const formRef = useFocusTrap(showAddHealth)
 
   const htLabel = (type: string) => {
     const found = healthTypes.find((ht: any) => ht.name === type)
@@ -36,7 +38,7 @@ export function HealthTab({
         {canEditData && <button onClick={() => setShowAddHealth(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('health.addCheck')}</button>}
       </div>
       {showAddHealth && (
-        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+        <div ref={formRef} className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
             <input aria-label="Datum prohlidky" type="date" value={newHealth.checkDate} onChange={(e) => setNewHealth({ ...newHealth, checkDate: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
             <select aria-label="Typ prohlidky" value={newHealth.checkType} onChange={(e) => setNewHealth({ ...newHealth, checkType: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none"><option value="">{t('health.selectType')}</option>{healthTypes.map((ht: any) => <option key={ht.id} value={ht.name}>{getLocaleName(ht, locale)}</option>)}</select>

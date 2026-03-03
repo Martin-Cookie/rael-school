@@ -420,6 +420,17 @@ export default function ImportDetailPage() {
   const splitSum = splitParts.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0)
   const splitValid = splitRow ? Math.abs(splitSum - splitRow.amount) < 0.01 && splitParts.every(p => parseFloat(p.amount) > 0) : false
 
+  // Helpers extracted from JSX IIFE
+  function getPaymentTypeName(row: ImportRow, pts: any[], loc: Parameters<typeof getLocaleName>[1]) {
+    const pt = pts.find((p: any) => p.id === row.paymentTypeId)
+    return pt ? getLocaleName(pt, loc) : '-'
+  }
+
+  function getVoucherRateLabel(currency: string) {
+    const r = getVoucherRate(currency)
+    return r ? ` (1 = ${r} ${currency})` : ''
+  }
+
   return (
     <div>
       <Toast message={message} />
@@ -653,7 +664,7 @@ export default function ImportDetailPage() {
                         </>
                       ) : (
                         <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                          {(() => { const pt = paymentTypes.find((pt: any) => pt.id === row.paymentTypeId); return pt ? getLocaleName(pt, locale) : '-' })()}
+                          {getPaymentTypeName(row, paymentTypes, locale)}
                           {row.paymentTypeId && isVoucherType(row.paymentTypeId) && row.voucherCount && (
                             <span className="text-xs text-gray-400 ml-1">({row.voucherCount} ks)</span>
                           )}
@@ -788,7 +799,7 @@ export default function ImportDetailPage() {
                         className="w-24 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
                         min="1"
                       />
-                      <span className="text-xs text-gray-400">ks{(() => { const r = getVoucherRate(splitRow?.currency || 'CZK'); return r ? ` (1 = ${r} ${splitRow?.currency || 'CZK'})` : '' })()}</span>
+                      <span className="text-xs text-gray-400">ks{getVoucherRateLabel(splitRow?.currency || 'CZK')}</span>
                     </div>
                   )}
                 </div>

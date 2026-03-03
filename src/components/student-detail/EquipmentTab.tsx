@@ -1,6 +1,7 @@
 import { Package, Plus, X, Trash2 } from 'lucide-react'
 import { formatDate, formatDateForInput, formatNumber } from '@/lib/format'
 import { getLocaleName, Locale } from '@/lib/i18n'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface EquipmentTabProps {
   student: any
@@ -27,6 +28,7 @@ export function EquipmentTab({
   addSingleEquipment, deleteSingleEquipment, updateEquipment, addEquipmentItem,
   removeEquipmentItem, locale, t
 }: EquipmentTabProps) {
+  const formRef = useFocusTrap(showAddEquipment && !editMode)
 
   const condBadge = (c: string) => {
     const m: Record<string,string> = { new:'badge-green', satisfactory:'badge-yellow', poor:'badge-red' }
@@ -51,7 +53,7 @@ export function EquipmentTab({
         {canEditData && !editMode && <button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('equipment.addEquipment')}</button>}
       </div>
       {showAddEquipment && !editMode && (
-        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+        <div ref={formRef} className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="flex flex-col sm:flex-row gap-2">
             <select aria-label="Typ vybaveni" value={newEquipmentType} onChange={(e) => setNewEquipmentType(e.target.value)} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none">
               <option value="">{t('equipment.selectType')}</option>

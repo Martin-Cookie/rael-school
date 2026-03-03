@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { Camera, Upload, Loader2, Trash2 } from 'lucide-react'
 import { formatDate } from '@/lib/format'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface PhotosTabProps {
   student: any
@@ -24,6 +25,7 @@ export function PhotosTab({
   showAddPhoto, setShowAddPhoto, newPhoto, setNewPhoto,
   addPhoto, deletePhoto, uploading, locale, t
 }: PhotosTabProps) {
+  const formRef = useFocusTrap(showAddPhoto)
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
@@ -37,7 +39,7 @@ export function PhotosTab({
         </div>
       </div>
       {showAddPhoto && (
-        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+        <div ref={formRef} className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
             <select aria-label="Kategorie fotografie" value={newPhoto.category} onChange={(e) => setNewPhoto({ ...newPhoto, category: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"><option value="visit">{t('photos.visit')}</option><option value="handover">{t('photos.handover')}</option><option value="voucher">{t('photos.voucher')}</option></select>
             <input aria-label="Datum porizeni fotografie" type="date" value={newPhoto.takenAt} onChange={(e) => setNewPhoto({ ...newPhoto, takenAt: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm" />

@@ -210,6 +210,7 @@ model Payment {
   student Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
 
   @@index([studentId])
+  @@index([paymentDate])
 }
 
 // ============ SPONSOR PAYMENTS ============

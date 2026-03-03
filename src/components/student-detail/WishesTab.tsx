@@ -1,6 +1,7 @@
 import { Star, Plus, X, Check, Trash2 } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/format'
 import { getLocaleName, Locale } from '@/lib/i18n'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface WishesTabProps {
   student: any
@@ -24,6 +25,7 @@ export function WishesTab({
   selectedWishType, setSelectedWishType, newWish, setNewWish,
   addWish, toggleWishFulfilled, deleteWish, locale, t
 }: WishesTabProps) {
+  const formRef = useFocusTrap(showAddWish)
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
       <div className="flex items-center justify-between mb-5">
@@ -34,7 +36,7 @@ export function WishesTab({
         {canEditData && <button onClick={() => setShowAddWish(true)} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('wishes.addWish')}</button>}
       </div>
       {showAddWish && (
-        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+        <div ref={formRef} className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
           <div className="flex flex-col sm:flex-row gap-2">
             <select aria-label="Typ prani" value={selectedWishType} onChange={(e) => { setSelectedWishType(e.target.value); if (e.target.value !== '__custom__') setNewWish('') }} className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none">
               <option value="">{t('wishes.selectType')}</option>

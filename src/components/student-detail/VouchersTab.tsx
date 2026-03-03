@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Ticket, Plus, Trash2 } from 'lucide-react'
 import { formatDate, formatNumber, fmtCurrency } from '@/lib/format'
 import { CURRENCIES } from '@/lib/constants'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface VouchersTabProps {
   student: any
@@ -29,6 +30,7 @@ export function VouchersTab({
   newVoucher, setNewVoucher, defaultDonor, addVoucher, deleteVoucher,
   getVoucherRate, locale, t
 }: VouchersTabProps) {
+  const formRef = useFocusTrap(showAddVoucher)
   return (
     <div className="space-y-6">
       {/* Stats row */}
@@ -63,7 +65,7 @@ export function VouchersTab({
           {canEditData && <button onClick={() => { setNewVoucher({ ...newVoucher, donorName: defaultDonor, sponsorId: '' }); setShowAddVoucher(true) }} className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"><Plus className="w-4 h-4" /> {t('app.add')}</button>}
         </div>
         {showAddVoucher && (
-          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+          <div ref={formRef} className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <select aria-label="Typ stravenky" value={newVoucher.type} onChange={(e) => setNewVoucher({ ...newVoucher, type: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none"><option value="purchase">{t('vouchers.addPurchase')}</option><option value="usage">{t('vouchers.addUsage')}</option></select>
               <input aria-label="Datum" type="date" value={newVoucher.date} onChange={(e) => setNewVoucher({ ...newVoucher, date: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none" />
