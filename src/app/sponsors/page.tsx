@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/useToast'
 import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
 import { formatNumber } from '@/lib/format'
+import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
 
 interface Sponsor {
   id: string
@@ -89,7 +90,7 @@ export default function SponsorsPage() {
       return
     }
     try {
-      const res = await fetch('/api/sponsors', {
+      const res = await fetchWithCsrf('/api/sponsors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newForm),
@@ -112,7 +113,7 @@ export default function SponsorsPage() {
       return
     }
     try {
-      const res = await fetch(`/api/sponsors/${id}`, {
+      const res = await fetchWithCsrf(`/api/sponsors/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm),
@@ -132,7 +133,7 @@ export default function SponsorsPage() {
     const msg = currentActive ? t('sponsorPage.confirmDeactivate') : t('sponsorPage.confirmReactivate')
     if (!confirm(msg)) return
     try {
-      const res = await fetch(`/api/sponsors/${id}`, { method: 'PATCH' })
+      const res = await fetchWithCsrf(`/api/sponsors/${id}`, { method: 'PATCH' })
       if (res.ok) {
         await fetchSponsors()
         showMsg('success', t('app.savedSuccess'))

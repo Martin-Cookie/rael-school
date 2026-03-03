@@ -9,6 +9,7 @@ import { TuitionRateSection } from '@/components/admin/TuitionRateSection'
 import { BackupSection } from '@/components/admin/BackupSection'
 import { AuditLogSection } from '@/components/admin/AuditLogSection'
 import type { CodelistItem, VoucherRateItem, TuitionRateItem } from '@/components/admin/types'
+import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
 
 export default function AdminPage() {
   const [classrooms, setClassrooms] = useState<CodelistItem[]>([])
@@ -78,7 +79,7 @@ export default function AdminPage() {
     if (!text.trim()) return
     setTranslating(key)
     try {
-      const res = await fetch('/api/admin/translate', {
+      const res = await fetchWithCsrf('/api/admin/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text.trim() }),
@@ -101,7 +102,7 @@ export default function AdminPage() {
         if (nameEn?.trim()) body.nameEn = nameEn.trim()
         if (nameSw?.trim()) body.nameSw = nameSw.trim()
         try {
-          const res = await fetch(endpoint, {
+          const res = await fetchWithCsrf(endpoint, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
           })
@@ -112,7 +113,7 @@ export default function AdminPage() {
       del: async (id: string) => {
         if (!confirm(t('app.confirmDelete'))) return
         try {
-          await fetch(endpoint, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+          await fetchWithCsrf(endpoint, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
           await fetchAll(); showMsg('success', t('app.deleteSuccess'))
         } catch { showMsg('error', t('app.error')) }
       },
@@ -125,13 +126,13 @@ export default function AdminPage() {
         ;[updated[idx], updated[swapIdx]] = [updated[swapIdx], updated[idx]]
         const orders = updated.map((c, i) => ({ id: c.id, sortOrder: i }))
         try {
-          await fetch(endpoint, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orders }) })
+          await fetchWithCsrf(endpoint, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orders }) })
           await fetchAll()
         } catch { showMsg('error', t('app.error')) }
       },
       updatePrice: async (id: string, price: number | null) => {
         try {
-          await fetch(endpoint, {
+          await fetchWithCsrf(endpoint, {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, price }),
           })
@@ -140,7 +141,7 @@ export default function AdminPage() {
       },
       updateTranslations: async (id: string, nameEn: string | null, nameSw: string | null) => {
         try {
-          await fetch(endpoint, {
+          await fetchWithCsrf(endpoint, {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, nameEn, nameSw }),
           })
@@ -150,7 +151,7 @@ export default function AdminPage() {
       updateName: async (id: string, name: string) => {
         if (!name.trim()) return
         try {
-          const res = await fetch(endpoint, {
+          const res = await fetchWithCsrf(endpoint, {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, name: name.trim() }),
           })
@@ -374,7 +375,7 @@ export default function AdminPage() {
           onAdd={async () => {
             if (!newVRCurrency.trim() || !newVRRate || parseFloat(newVRRate) <= 0) return
             try {
-              const res = await fetch('/api/admin/voucher-rates', {
+              const res = await fetchWithCsrf('/api/admin/voucher-rates', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ currency: newVRCurrency.trim(), rate: parseFloat(newVRRate) }),
               })
@@ -385,13 +386,13 @@ export default function AdminPage() {
           onDelete={async (id) => {
             if (!confirm(t('app.confirmDelete'))) return
             try {
-              await fetch('/api/admin/voucher-rates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+              await fetchWithCsrf('/api/admin/voucher-rates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
               await fetchAll(); showMsg('success', t('app.deleteSuccess'))
             } catch { showMsg('error', t('app.error')) }
           }}
           onUpdate={async (id, rate) => {
             try {
-              await fetch('/api/admin/voucher-rates', {
+              await fetchWithCsrf('/api/admin/voucher-rates', {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, rate }),
               })
@@ -408,7 +409,7 @@ export default function AdminPage() {
           items={tuitionRates}
           onUpdate={async (id, annualFee) => {
             try {
-              await fetch('/api/admin/tuition-rates', {
+              await fetchWithCsrf('/api/admin/tuition-rates', {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, annualFee }),
               })
@@ -418,7 +419,7 @@ export default function AdminPage() {
           onDelete={async (id) => {
             if (!confirm(t('app.confirmDelete'))) return
             try {
-              await fetch('/api/admin/tuition-rates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+              await fetchWithCsrf('/api/admin/tuition-rates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
               await fetchAll(); showMsg('success', t('app.deleteSuccess'))
             } catch { showMsg('error', t('app.error')) }
           }}

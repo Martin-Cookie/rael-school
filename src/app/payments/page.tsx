@@ -13,6 +13,7 @@ import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
 import { getLocaleName } from '@/lib/i18n'
 import { CURRENCIES } from '@/lib/constants'
+import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
 
 type UnifiedPayment = {
   id: string
@@ -190,7 +191,7 @@ export default function PaymentsPage() {
     try {
       let res
       if (isVoucher) {
-        res = await fetch('/api/payments', {
+        res = await fetchWithCsrf('/api/payments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -205,7 +206,7 @@ export default function PaymentsPage() {
           }),
         })
       } else {
-        res = await fetch('/api/payments', {
+        res = await fetchWithCsrf('/api/payments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -240,7 +241,7 @@ export default function PaymentsPage() {
       } else {
         body = { type: 'sponsor', id, studentId: editData.studentId, sponsorId: editData.sponsorId, paymentDate: editData.date, amount: editData.amount, currency: editData.currency, paymentType: editData.paymentType, notes: editData.notes }
       }
-      const res = await fetch('/api/payments', {
+      const res = await fetchWithCsrf('/api/payments', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -258,7 +259,7 @@ export default function PaymentsPage() {
   async function deletePayment(id: string, type: 'sponsor' | 'voucher') {
     if (!confirm(t('app.confirmDelete'))) return
     try {
-      const res = await fetch('/api/payments', {
+      const res = await fetchWithCsrf('/api/payments', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, id }),

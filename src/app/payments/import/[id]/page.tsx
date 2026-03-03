@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/useToast'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { Toast } from '@/components/Toast'
 import { SplitModal } from '@/components/import/SplitModal'
+import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
 
 interface ImportRow {
   id: string
@@ -170,7 +171,7 @@ export default function ImportDetailPage() {
           data.voucherCount = calcVoucherCount(row.amount.toString(), row.currency || 'CZK')
         }
       }
-      const res = await fetch(`/api/payment-imports/${id}/rows/${rowId}`, {
+      const res = await fetchWithCsrf(`/api/payment-imports/${id}/rows/${rowId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -218,7 +219,7 @@ export default function ImportDetailPage() {
     if (selectedRows.size === 0) return
     setActionLoading(true)
     try {
-      const res = await fetch(`/api/payment-imports/${id}/approve`, {
+      const res = await fetchWithCsrf(`/api/payment-imports/${id}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rowIds: Array.from(selectedRows) }),
@@ -242,7 +243,7 @@ export default function ImportDetailPage() {
     if (selectedRows.size === 0) return
     setActionLoading(true)
     try {
-      const res = await fetch(`/api/payment-imports/${id}/reject`, {
+      const res = await fetchWithCsrf(`/api/payment-imports/${id}/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rowIds: Array.from(selectedRows) }),
@@ -328,7 +329,7 @@ export default function ImportDetailPage() {
         count: p.count ? parseInt(p.count) : undefined,
       }))
 
-      const res = await fetch(`/api/payment-imports/${id}/rows/${splitRow.id}/split`, {
+      const res = await fetchWithCsrf(`/api/payment-imports/${id}/rows/${splitRow.id}/split`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ parts }),

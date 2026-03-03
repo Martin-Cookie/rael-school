@@ -11,6 +11,7 @@ import { useStickyTop } from '@/hooks/useStickyTop'
 import { useToast } from '@/hooks/useToast'
 import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
+import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
 
 type ChargePayment = {
   amount: number
@@ -140,7 +141,7 @@ export default function TuitionPage() {
     if (!genPeriod.trim() || genSelected.size === 0) return
     setGenerating(true)
     try {
-      const res = await fetch('/api/tuition-charges', {
+      const res = await fetchWithCsrf('/api/tuition-charges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ period: genPeriod.trim(), studentIds: [...genSelected] }),

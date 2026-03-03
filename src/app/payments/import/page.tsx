@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Upload, FileText, ArrowLeft, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/format'
 import { useLocale } from '@/hooks/useLocale'
+import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
 
 interface PaymentImportItem {
   id: string
@@ -76,7 +77,7 @@ export default function PaymentImportPage() {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await fetch('/api/payment-imports', {
+      const res = await fetchWithCsrf('/api/payment-imports', {
         method: 'POST',
         body: formData,
       })

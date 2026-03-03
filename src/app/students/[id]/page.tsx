@@ -24,6 +24,7 @@ import { SponsorsTab } from '@/components/student-detail/SponsorsTab'
 import { SponsorPaymentsTab } from '@/components/student-detail/SponsorPaymentsTab'
 import { TuitionTab } from '@/components/student-detail/TuitionTab'
 import { HealthTab } from '@/components/student-detail/HealthTab'
+import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
 
 type Tab = 'personal' | 'equipment' | 'needs' | 'wishes' | 'vouchers' | 'photos' | 'sponsors' | 'health' | 'sponsorPayments' | 'tuition'
 
@@ -196,8 +197,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   async function handleSave() {
     setShowConfirm(false); setSaving(true)
     try {
-      const res = await fetch(`/api/students/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editData) })
-      await fetch(`/api/students/${id}/equipment`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ equipment: editEquipment }) })
+      const res = await fetchWithCsrf(`/api/students/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editData) })
+      await fetchWithCsrf(`/api/students/${id}/equipment`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ equipment: editEquipment }) })
       if (res.ok) { await fetchStudent(); setEditMode(false); showMsg('success', t('app.savedSuccess')) }
       else showMsg('error', t('app.error'))
     } catch { showMsg('error', t('app.error')) }
@@ -215,20 +216,20 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     const description = selectedNeedType === '__custom__' ? newNeed.trim() : selectedNeedType
     if (!description) return
     try {
-      const res = await fetch(`/api/students/${id}/needs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description }) })
+      const res = await fetchWithCsrf(`/api/students/${id}/needs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description }) })
       if (res.ok) { setNewNeed(''); setSelectedNeedType(''); setShowAddNeed(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function toggleNeedFulfilled(needId: string, current: boolean) {
     try {
       const need = student.needs.find((n: any) => n.id === needId)
-      await fetch(`/api/students/${id}/needs`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId, description: need.description, isFulfilled: !current }) })
+      await fetchWithCsrf(`/api/students/${id}/needs`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId, description: need.description, isFulfilled: !current }) })
       await fetchStudent()
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteNeed(needId: string) {
     if (!confirm(t('app.confirmDelete'))) return
-    try { await fetch(`/api/students/${id}/needs`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+    try { await fetchWithCsrf(`/api/students/${id}/needs`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addWish() {
     const isCustom = selectedWishType === '__custom__'
@@ -236,44 +237,44 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     if (!description) return
     const wishType = !isCustom ? wishTypes.find((wt: any) => wt.name === description) : null
     try {
-      const res = await fetch(`/api/students/${id}/wishes`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description, wishTypeId: wishType?.id || null }) })
+      const res = await fetchWithCsrf(`/api/students/${id}/wishes`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ description, wishTypeId: wishType?.id || null }) })
       if (res.ok) { setNewWish(''); setSelectedWishType(''); setShowAddWish(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function toggleWishFulfilled(wishId: string, current: boolean) {
     try {
       const wish = student.wishes.find((w: any) => w.id === wishId)
-      await fetch(`/api/students/${id}/wishes`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wishId, description: wish.description, isFulfilled: !current }) })
+      await fetchWithCsrf(`/api/students/${id}/wishes`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wishId, description: wish.description, isFulfilled: !current }) })
       await fetchStudent()
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteWish(wishId: string) {
     if (!confirm(t('app.confirmDelete'))) return
-    try { await fetch(`/api/students/${id}/wishes`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wishId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+    try { await fetchWithCsrf(`/api/students/${id}/wishes`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wishId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addSingleEquipment() {
     if (!newEquipmentType) return
     try {
-      const res = await fetch(`/api/students/${id}/equipment`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: newEquipmentType, condition: 'new' }) })
+      const res = await fetchWithCsrf(`/api/students/${id}/equipment`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: newEquipmentType, condition: 'new' }) })
       if (res.ok) { setNewEquipmentType(''); setShowAddEquipment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteSingleEquipment(equipmentId: string) {
     if (!confirm(t('app.confirmDelete'))) return
-    try { await fetch(`/api/students/${id}/equipment`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ equipmentId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+    try { await fetchWithCsrf(`/api/students/${id}/equipment`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ equipmentId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addVoucher() {
     if (!newVoucher.date || !newVoucher.count) return
     try {
       const payload = { ...newVoucher, donorName: newVoucher.donorName || defaultDonor }
-      const res = await fetch(`/api/students/${id}/vouchers`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      const res = await fetchWithCsrf(`/api/students/${id}/vouchers`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       if (res.ok) { setNewVoucher({ type: 'purchase', date: '', amount: '', currency: 'CZK', count: '', donorName: '', sponsorId: '', notes: '' }); setShowAddVoucher(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteVoucher(voucherId: string, type: 'purchase' | 'usage') {
     if (!confirm(t('app.confirmDelete'))) return
     try {
-      const res = await fetch(`/api/students/${id}/vouchers`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ voucherId, type }) })
+      const res = await fetchWithCsrf(`/api/students/${id}/vouchers`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ voucherId, type }) })
       if (res.ok) { await fetchStudent(); showMsg('success', t('app.deleteSuccess')) }
       else showMsg('error', t('app.error'))
     } catch { showMsg('error', t('app.error')) }
@@ -281,13 +282,13 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   async function addHealthCheck() {
     if (!newHealth.checkDate || !newHealth.checkType) return
     try {
-      const res = await fetch(`/api/students/${id}/health`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newHealth) })
+      const res = await fetchWithCsrf(`/api/students/${id}/health`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newHealth) })
       if (res.ok) { setNewHealth({ checkDate: '', checkType: '', notes: '' }); setShowAddHealth(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteHealthCheck(checkId: string) {
     if (!confirm(t('app.confirmDelete'))) return
-    try { await fetch(`/api/students/${id}/health`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ checkId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+    try { await fetchWithCsrf(`/api/students/${id}/health`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ checkId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addPhoto() {
     if (!newPhoto.file) return
@@ -297,14 +298,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     try {
       const compressed = await compressImage(newPhoto.file, 1600, 0.8)
       const fd = new FormData(); fd.append('file', compressed); fd.append('category', newPhoto.category); fd.append('description', newPhoto.description); if (newPhoto.takenAt) fd.append('takenAt', newPhoto.takenAt)
-      const res = await fetch(`/api/students/${id}/photos`, { method: 'POST', body: fd })
+      const res = await fetchWithCsrf(`/api/students/${id}/photos`, { method: 'POST', body: fd })
       if (res.ok) { setNewPhoto({ category: 'visit', description: '', takenAt: '', file: null }); setShowAddPhoto(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
     setUploading(false)
   }
   async function deletePhoto(photoId: string) {
     if (!confirm(t('app.confirmDelete'))) return
-    try { await fetch(`/api/students/${id}/photos`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photoId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+    try { await fetchWithCsrf(`/api/students/${id}/photos`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photoId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
 
   async function searchSponsors(query: string) {
@@ -320,7 +321,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   async function removeSponsor(sponsorshipId: string) {
     if (!confirm(t('app.confirmDelete'))) return
     try {
-      const res = await fetch(`/api/students/${id}/sponsors`, {
+      const res = await fetchWithCsrf(`/api/students/${id}/sponsors`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sponsorshipId }),
@@ -338,7 +339,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     try {
       const sponsor = sponsorResults.find((s: any) => s.id === sponsorUserId)
       if (!sponsor) return
-      const res = await fetch(`/api/students/${id}/sponsors`, {
+      const res = await fetchWithCsrf(`/api/students/${id}/sponsors`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -365,14 +366,14 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   async function addSponsor() {
     if (!newSponsor.firstName || !newSponsor.lastName || !newSponsor.email) { showMsg('error', 'Vyplnte jmeno, prijmeni a email'); return }
     try {
-      const res = await fetch(`/api/students/${id}/sponsors`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newSponsor) })
+      const res = await fetchWithCsrf(`/api/students/${id}/sponsors`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newSponsor) })
       if (res.ok) { setNewSponsor({ firstName: '', lastName: '', email: '', phone: '', startDate: '', notes: '' }); setShowAddSponsor(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
       else { const d = await res.json(); showMsg('error', d.error || t('app.error')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function saveSponsorEdit(sponsorshipId: string, sponsorUserId: string) {
     try {
-      await fetch(`/api/students/${id}/sponsors`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sponsorshipId, sponsorUserId, ...editSponsorData }) })
+      await fetchWithCsrf(`/api/students/${id}/sponsors`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sponsorshipId, sponsorUserId, ...editSponsorData }) })
       setEditingSponsor(null); await fetchStudent(); showMsg('success', t('app.savedSuccess'))
     } catch { showMsg('error', t('app.error')) }
   }
@@ -383,7 +384,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     try {
       const compressed = await compressImage(file, 400, 0.8)
       const fd = new FormData(); fd.append('file', compressed)
-      const res = await fetch(`/api/students/${id}/profile-photo`, { method: 'POST', body: fd })
+      const res = await fetchWithCsrf(`/api/students/${id}/profile-photo`, { method: 'POST', body: fd })
       if (res.ok) { await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
     setUploading(false)
@@ -391,13 +392,13 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   async function addSponsorPayment() {
     if (!newPayment.paymentDate || !newPayment.amount || !newPayment.paymentType) return
     try {
-      const res = await fetch(`/api/students/${id}/sponsor-payments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newPayment) })
+      const res = await fetchWithCsrf(`/api/students/${id}/sponsor-payments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newPayment) })
       if (res.ok) { setNewPayment({ paymentDate: '', amount: '', currency: 'CZK', paymentType: '', sponsorId: '', notes: '' }); setShowAddPayment(false); await fetchStudent(); showMsg('success', t('app.savedSuccess')) }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteSponsorPayment(paymentId: string) {
     if (!confirm(t('app.confirmDelete'))) return
-    try { await fetch(`/api/students/${id}/sponsor-payments`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
+    try { await fetchWithCsrf(`/api/students/${id}/sponsor-payments`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
 
   function updateEquipment(idx: number, field: string, value: string) { const u = [...editEquipment]; u[idx] = { ...u[idx], [field]: value }; setEditEquipment(u) }

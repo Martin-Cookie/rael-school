@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save } from 'lucide-react'
 import { useLocale } from '@/hooks/useLocale'
+import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
 
 export default function NewStudentPage() {
   const router = useRouter()
@@ -26,7 +27,7 @@ export default function NewStudentPage() {
     setSaving(true)
 
     try {
-      const res = await fetch('/api/students', {
+      const res = await fetchWithCsrf('/api/students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
