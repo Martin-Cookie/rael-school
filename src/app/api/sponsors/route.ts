@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ sponsors: sponsorsWithTotals })
   } catch (error) {
     console.error('GET /api/sponsors error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -153,6 +153,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ sponsor }, { status: 201 })
   } catch (error) {
     console.error('POST /api/sponsors error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

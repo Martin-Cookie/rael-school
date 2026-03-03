@@ -70,6 +70,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Row not found' }, { status: 404 })
     }
     console.error('PUT /api/payment-imports/[id]/rows/[rowId] error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

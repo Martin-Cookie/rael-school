@@ -216,6 +216,6 @@ export async function POST(
     return NextResponse.json({ success: true, parts: parts.length, approved: approvedCount })
   } catch (error) {
     console.error('POST /api/payment-imports/[id]/rows/[rowId]/split error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

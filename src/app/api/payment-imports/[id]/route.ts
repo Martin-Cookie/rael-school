@@ -49,7 +49,7 @@ export async function GET(
     return NextResponse.json({ import: paymentImport, stats })
   } catch (error) {
     console.error('GET /api/payment-imports/[id] error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -91,6 +91,6 @@ export async function DELETE(
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('DELETE /api/payment-imports/[id] error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

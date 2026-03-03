@@ -53,7 +53,7 @@ export async function GET(
     return NextResponse.json({ sponsor })
   } catch (error) {
     console.error('GET /api/sponsors/[id] error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -93,7 +93,7 @@ export async function PUT(
     return NextResponse.json({ sponsor: updated })
   } catch (error) {
     console.error('PUT /api/sponsors/[id] error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -134,6 +134,6 @@ export async function PATCH(
     return NextResponse.json({ sponsor: updated })
   } catch (error) {
     console.error('PATCH /api/sponsors/[id] error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

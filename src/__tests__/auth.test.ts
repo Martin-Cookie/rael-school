@@ -11,15 +11,12 @@ describe('auth role helpers', () => {
   let isManager: (role: string) => boolean
   let canEdit: (role: string) => boolean
   let isSponsor: (role: string) => boolean
-  let canAccess: (userRole: string, requiredRoles: string[]) => boolean
-
   beforeAll(async () => {
     const auth = await import('@/lib/auth')
     isAdmin = auth.isAdmin
     isManager = auth.isManager
     canEdit = auth.canEdit
     isSponsor = auth.isSponsor
-    canAccess = auth.canAccess
   })
 
   it('isAdmin returns true only for ADMIN', () => {
@@ -48,10 +45,6 @@ describe('auth role helpers', () => {
     expect(isSponsor('ADMIN')).toBe(false)
   })
 
-  it('canAccess checks role against required roles', () => {
-    expect(canAccess('ADMIN', ['ADMIN', 'MANAGER'])).toBe(true)
-    expect(canAccess('SPONSOR', ['ADMIN', 'MANAGER'])).toBe(false)
-  })
 })
 
 describe('auth token functions', () => {

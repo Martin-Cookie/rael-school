@@ -157,6 +157,6 @@ export async function POST(
     return NextResponse.json({ approved: approvedCount })
   } catch (error) {
     console.error('POST /api/payment-imports/[id]/approve error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -54,7 +54,7 @@ export async function GET() {
     return NextResponse.json({ sponsorPayments, voucherPurchases, students, sponsors })
   } catch (error) {
     console.error('GET /api/payments error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 })
   } catch (error) {
     console.error('POST /api/payments error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -224,7 +224,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     if (isNotFoundError(error)) return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
     console.error('PUT /api/payments error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -269,6 +269,6 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     if (isNotFoundError(error)) return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
     console.error('DELETE /api/payments error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,4 +1,5 @@
 import { prisma } from './db'
+import { isTuitionPaymentType } from './paymentTypes'
 
 /**
  * Přepočítá stav předpisu školného (TuitionCharge) pro daného studenta.
@@ -15,7 +16,7 @@ export async function recalcTuitionStatus(studentId: string) {
   // Načíst typy plateb → filtrovat "školné/tuition"
   const paymentTypes = await prisma.paymentType.findMany({ where: { isActive: true } })
   const tuitionTypeNames = paymentTypes
-    .filter(pt => /školné|tuition|karo/i.test(pt.name + (pt.nameEn || '') + (pt.nameSw || '')))
+    .filter(isTuitionPaymentType)
     .map(pt => pt.name)
 
   // Batch-load: všechny platby školného pro studenta jedním dotazem
@@ -55,8 +56,9 @@ export async function recalcTuitionStatus(studentId: string) {
 }
 
 /**
- * Zjistí, zda je daný paymentType typu školné.
+ * Zjistí, zda je daný paymentType typu školné (podle názvu).
+ * Deleguje na isTuitionPaymentType z paymentTypes.ts.
  */
 export function isTuitionType(paymentTypeName: string): boolean {
-  return /školné|tuition|karo/i.test(paymentTypeName)
+  return isTuitionPaymentType({ id: '', name: paymentTypeName })
 }

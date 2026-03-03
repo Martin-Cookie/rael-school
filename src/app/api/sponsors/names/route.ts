@@ -19,6 +19,6 @@ export async function GET() {
     return NextResponse.json({ sponsors })
   } catch (error) {
     console.error('GET /api/sponsors/names error:', error)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

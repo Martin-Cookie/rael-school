@@ -59,11 +59,6 @@ export async function getCurrentUser(): Promise<UserPayload | null> {
   return verifyToken(token)
 }
 
-/** Ověří, zda role uživatele je v seznamu povolených rolí. */
-export function canAccess(userRole: string, requiredRoles: string[]): boolean {
-  return requiredRoles.includes(userRole)
-}
-
 /** `true` pokud role je ADMIN. */
 export function isAdmin(role: string): boolean {
   return role === 'ADMIN'

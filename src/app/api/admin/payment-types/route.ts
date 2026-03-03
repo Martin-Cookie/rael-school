@@ -1,89 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { getCurrentUser, isAdmin } from '@/lib/auth'
+import { createCodelistHandlers } from '@/lib/codelistRoute'
 
-export async function GET() {
-  try {
-    const user = await getCurrentUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const paymentTypes = await prisma.paymentType.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: 'asc' },
-    })
-    return NextResponse.json({ paymentTypes })
-  } catch (error) {
-    console.error('Error fetching payment types:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const user = await getCurrentUser()
-    if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const { name, nameEn, nameSw, sortOrder } = await request.json()
-    if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
-    const existing = await prisma.paymentType.findUnique({ where: { name: name.trim() } })
-    if (existing) {
-      if (!existing.isActive) {
-        const reactivated = await prisma.paymentType.update({
-          where: { id: existing.id }, data: { isActive: true, sortOrder: sortOrder ?? 0, nameEn: nameEn || null, nameSw: nameSw || null },
-        })
-        return NextResponse.json({ paymentType: reactivated }, { status: 201 })
-      }
-      return NextResponse.json({ error: 'Already exists' }, { status: 409 })
-    }
-    const paymentType = await prisma.paymentType.create({ data: { name: name.trim(), nameEn: nameEn || null, nameSw: nameSw || null, sortOrder: sortOrder ?? 0 } })
-    return NextResponse.json({ paymentType }, { status: 201 })
-  } catch (error) {
-    console.error('Error creating payment type:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-export async function PUT(request: NextRequest) {
-  try {
-    const user = await getCurrentUser()
-    if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const body = await request.json()
-    if (body.orders && Array.isArray(body.orders)) {
-      for (const item of body.orders) {
-        await prisma.paymentType.update({ where: { id: item.id }, data: { sortOrder: item.sortOrder } })
-      }
-    } else if (body.id) {
-      const data: Record<string, any> = {}
-      if (body.name !== undefined && body.name.trim()) data.name = body.name.trim()
-      if (body.nameEn !== undefined) data.nameEn = body.nameEn || null
-      if (body.nameSw !== undefined) data.nameSw = body.nameSw || null
-      if (Object.keys(data).length > 0) {
-        await prisma.paymentType.update({ where: { id: body.id }, data })
-      }
-    } else {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
-    }
-    return NextResponse.json({ success: true })
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    }
-    console.error('Error updating payment types:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  try {
-    const user = await getCurrentUser()
-    if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const { id } = await request.json()
-    if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
-    await prisma.paymentType.update({ where: { id }, data: { isActive: false } })
-    return NextResponse.json({ success: true })
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    }
-    console.error('Error deleting payment type:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
+export const { GET, POST, PUT, DELETE } = createCodelistHandlers({
+  delegate: prisma.paymentType,
+  pluralKey: 'paymentTypes',
+  singularKey: 'paymentType',
+  label: 'payment type',
+})
