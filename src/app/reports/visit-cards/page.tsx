@@ -164,7 +164,7 @@ export default function VisitCardsPage() {
   function handleGenerate() {
     if (selected.size === 0) return
     // Store selected IDs in localStorage (shared across tabs, unlike sessionStorage which Safari doesn't share)
-    localStorage.setItem('visitCardIds', JSON.stringify([...selected]))
+    localStorage.setItem('rael-visitCardIds', JSON.stringify([...selected]))
     window.open('/reports/visit-cards/print', '_blank')
   }
 

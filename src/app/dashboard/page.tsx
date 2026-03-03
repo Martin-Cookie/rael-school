@@ -385,7 +385,7 @@ export default function DashboardPage() {
             ) : (
               <div>
                 <button onClick={() => { if (prevTabRef.current) { const tab = prevTabRef.current; prevTabRef.current = null; setSelectedClass(null); setSortCol(''); setActiveTab(tab) } else { setSelectedClass(null) } }} className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-4">← {prevTabRef.current ? t('app.back') : t('dashboard.classOverview')}</button>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">{selectedClass} ({students.filter((s: any) => s.className === selectedClass).length})</h3>
                 <table className="w-full"><thead><tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
                   <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
                   <SH col="lastName" className="text-left">{t('student.lastName')}</SH>
