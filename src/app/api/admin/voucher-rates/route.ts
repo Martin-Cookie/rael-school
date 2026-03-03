@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isAdmin } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export async function GET() {
   try {
@@ -21,6 +22,8 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const rl = checkRateLimit(`voucher-rates:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
     const { currency, rate } = await request.json()
     if (!currency?.trim()) return NextResponse.json({ error: 'Currency is required' }, { status: 400 })
     if (!rate || rate <= 0) return NextResponse.json({ error: 'Rate must be positive' }, { status: 400 })
@@ -48,6 +51,8 @@ export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const rl = checkRateLimit(`voucher-rates:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
     const body = await request.json()
     if (!body.id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
     const data: Record<string, any> = {}
@@ -70,6 +75,8 @@ export async function DELETE(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const rl = checkRateLimit(`voucher-rates:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
     const { id } = await request.json()
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
     await prisma.voucherRate.update({ where: { id }, data: { isActive: false } })

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 // POST /api/payment-imports/[id]/reject — bulk reject rows
 export async function POST(
@@ -12,6 +13,8 @@ export async function POST(
     if (!jwtUser || !isManager(jwtUser.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`import-ops:${jwtUser.id}`, 10, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     // Look up user in DB by email (JWT may have stale id after re-seed)
     const user = await prisma.user.findUnique({ where: { email: jwtUser.email } })

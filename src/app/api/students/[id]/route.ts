@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit, isAdmin, isSponsor } from '@/lib/auth'
 import { studentSchema, formatZodErrors } from '@/lib/validations'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export async function GET(
   request: NextRequest,
@@ -73,6 +74,8 @@ export async function PUT(
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`student-write:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const { id } = params
     const raw = await request.json()
@@ -119,6 +122,8 @@ export async function DELETE(
     if (!user || !isAdmin(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`student-write:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const { id } = params
 

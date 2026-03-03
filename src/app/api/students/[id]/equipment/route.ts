@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export async function POST(
   request: NextRequest,
@@ -11,6 +12,8 @@ export async function POST(
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`student-detail-write:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
     const { id: studentId } = params
     const { type, condition, acquiredAt, notes } = await request.json()
     if (!type) return NextResponse.json({ error: 'Type is required' }, { status: 400 })

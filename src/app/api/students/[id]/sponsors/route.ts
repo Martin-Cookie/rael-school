@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit, hashPassword } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export async function POST(
   request: NextRequest,
@@ -11,6 +12,8 @@ export async function POST(
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`student-detail-write:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const { id: studentId } = params
     const data = await request.json()
@@ -73,6 +76,8 @@ export async function PUT(
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`student-detail-write:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const data = await request.json()
     const { sponsorshipId, notes, isActive } = data
@@ -119,6 +124,8 @@ export async function DELETE(
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`student-detail-write:${user.id}`, 30, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const data = await request.json()
     const { sponsorshipId } = data

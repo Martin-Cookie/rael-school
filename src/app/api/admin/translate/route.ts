@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 async function translateText(text: string, targetLang: string): Promise<string | null> {
   const controller = new AbortController()
@@ -27,6 +28,8 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const rl = checkRateLimit(`translate:${user.id}`, 20, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const { text } = await request.json()
     if (!text?.trim()) return NextResponse.json({ error: 'Text is required' }, { status: 400 })

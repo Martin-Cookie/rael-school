@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, isAdmin, isManager } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 // GET — seznam předpisů (s filtrováním podle období)
 export async function GET(request: NextRequest) {
@@ -120,6 +121,8 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !isManager(user.role))
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const rl = checkRateLimit(`tuition-charges:${user.id}`, 20, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const { period, studentIds } = await request.json()
     if (!period?.trim()) return NextResponse.json({ error: 'Period is required' }, { status: 400 })
@@ -196,6 +199,8 @@ export async function PUT(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !isManager(user.role))
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const rl = checkRateLimit(`tuition-charges:${user.id}`, 20, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const body = await request.json()
     if (!body.id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
@@ -223,6 +228,8 @@ export async function DELETE(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user || !isAdmin(user.role))
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const rl = checkRateLimit(`tuition-charges:${user.id}`, 20, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const { id } = await request.json()
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })

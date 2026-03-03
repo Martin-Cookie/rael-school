@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 
@@ -96,6 +97,8 @@ export async function POST(request: NextRequest) {
     if (!canEdit(user.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
+    const rl = checkRateLimit(`sponsors-write:${user.id}`, 20, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const body = await request.json()
     const { firstName, lastName, email, phone, notes } = body

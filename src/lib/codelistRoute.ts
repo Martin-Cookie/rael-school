@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser, isAdmin } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 interface CodelistConfig {
   delegate: {
@@ -36,6 +37,8 @@ export function createCodelistHandlers(config: CodelistConfig) {
     try {
       const user = await getCurrentUser()
       if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      const rl = checkRateLimit(`codelist-write:${user.id}`, 30, 60_000)
+      if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
       const { name, nameEn, nameSw, sortOrder, price } = await request.json()
       if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
       const existing = await delegate.findUnique({ where: { name: name.trim() } })
@@ -62,6 +65,8 @@ export function createCodelistHandlers(config: CodelistConfig) {
     try {
       const user = await getCurrentUser()
       if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      const rl = checkRateLimit(`codelist-write:${user.id}`, 30, 60_000)
+      if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
       const body = await request.json()
       if (body.orders && Array.isArray(body.orders)) {
         for (const item of body.orders) {
@@ -91,6 +96,8 @@ export function createCodelistHandlers(config: CodelistConfig) {
     try {
       const user = await getCurrentUser()
       if (!user || !isAdmin(user.role)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      const rl = checkRateLimit(`codelist-write:${user.id}`, 30, 60_000)
+      if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
       const { id } = await request.json()
       if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
       await delegate.update({ where: { id }, data: { isActive: false } })

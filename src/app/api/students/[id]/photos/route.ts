@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 import { writeFile, mkdir, unlink } from 'fs/promises'
 import path from 'path'
 
@@ -13,10 +14,12 @@ export async function POST(
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`student-photos:${user.id}`, 10, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const { id: studentId } = params
     const formData = await request.formData()
-    
+
     const file = formData.get('file') as File | null
     const category = formData.get('category') as string || 'visit'
     const description = formData.get('description') as string || ''
@@ -98,6 +101,8 @@ export async function DELETE(
     if (!user || !canEdit(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`student-photos:${user.id}`, 10, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const { photoId } = await request.json()
 

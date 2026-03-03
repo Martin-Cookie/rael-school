@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, isManager } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rateLimit'
 import { recalcTuitionStatus } from '@/lib/tuition'
 import { getVoucherTypeIds, getTuitionTypeIds } from '@/lib/paymentTypes'
 import { DEFAULT_VOUCHER_RATE_FALLBACK, AMOUNT_TOLERANCE } from '@/lib/constants'
@@ -22,6 +23,8 @@ export async function POST(
     if (!user || !isManager(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rl = checkRateLimit(`import-ops:${user.id}`, 10, 60_000)
+    if (!rl.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
 
     const row = await prisma.paymentImportRow.findFirst({
       where: { id: params.rowId, importId: params.id },
