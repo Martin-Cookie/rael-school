@@ -479,6 +479,8 @@
     "statusPaid": "Zaplaceno",
     "generate": "Generovat předpisy",
     "generateDesc": "Vygenerovat předpisy školného pro vybrané období",
+    "generatePreviewClean": "Vytvořit předpis pro všech {total} vybraných studentů?",
+    "generatePreviewWithDuplicates": "Z {total} vybraných studentů {duplicates} už má předpis pro toto období (budou přeskočeni). Vytvořit {toCreate} nových?",
     "annualFee": "Roční školné",
     "gradeRange": "Rozsah tříd",
     "gradeFrom": "Od třídy",

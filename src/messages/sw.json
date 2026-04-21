@@ -479,6 +479,8 @@
     "statusPaid": "Imelipwa",
     "generate": "Tengeneza madai",
     "generateDesc": "Tengeneza madai ya karo kwa kipindi kilichochaguliwa",
+    "generatePreviewClean": "Tengeneza madai kwa wanafunzi wote {total} waliochaguliwa?",
+    "generatePreviewWithDuplicates": "{duplicates} kati ya {total} wanafunzi waliochaguliwa tayari wana madai ya kipindi hiki (wataachwa). Tengeneza mapya {toCreate}?",
     "annualFee": "Karo ya mwaka",
     "gradeRange": "Upeo wa madarasa",
     "gradeFrom": "Kuanzia darasa",

@@ -479,6 +479,8 @@
     "statusPaid": "Paid",
     "generate": "Generate charges",
     "generateDesc": "Generate tuition charges for selected period",
+    "generatePreviewClean": "Create tuition charge for all {total} selected students?",
+    "generatePreviewWithDuplicates": "{duplicates} of {total} selected students already have a charge for this period (will be skipped). Create {toCreate} new?",
     "annualFee": "Annual fee",
     "gradeRange": "Grade range",
     "gradeFrom": "From grade",

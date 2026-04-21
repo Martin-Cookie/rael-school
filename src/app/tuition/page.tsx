@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/useToast'
 import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
 import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
+import { useConfirmDialog } from '@/hooks/useConfirmDialog'
 import type { StudentListItem } from '@/types/api'
 
 type ChargePayment = {
@@ -58,6 +59,7 @@ export default function TuitionPage() {
 
   const { locale, t } = useLocale()
   const { message, showMsg } = useToast()
+  const { confirm: askConfirm, dialog: confirmDialogEl } = useConfirmDialog()
   const { sortCol, sortDir, handleSort, sortData } = useSorting((item: any, col: string) => {
     if (col === '_studentName') return `${item.student.lastName} ${item.student.firstName}`
     if (col === '_className') return item.student.className || ''
@@ -140,12 +142,43 @@ export default function TuitionPage() {
   // Generate charges
   async function handleGenerate() {
     if (!genPeriod.trim() || genSelected.size === 0) return
+
+    // Preview duplicit — fetch existing charges for period
+    const selectedArr = [...genSelected]
+    let duplicates = 0
+    try {
+      const existingRes = await fetch(`/api/tuition-charges?period=${encodeURIComponent(genPeriod.trim())}`)
+      if (existingRes.ok) {
+        const existingData = await existingRes.json()
+        const existingIds = new Set((existingData.charges || []).map((c: { studentId: string }) => c.studentId))
+        duplicates = selectedArr.filter(id => existingIds.has(id)).length
+      }
+    } catch {
+      // Preview selhal — pokračujeme bez něj, server-side deduplikace zafunguje
+    }
+
+    const toCreate = selectedArr.length - duplicates
+    const previewMessage = duplicates > 0
+      ? t('tuition.generatePreviewWithDuplicates')
+          .replace('{total}', String(selectedArr.length))
+          .replace('{duplicates}', String(duplicates))
+          .replace('{toCreate}', String(toCreate))
+      : t('tuition.generatePreviewClean').replace('{total}', String(selectedArr.length))
+
+    const ok = await askConfirm({
+      title: t('tuition.generate'),
+      message: previewMessage,
+      variant: 'info',
+      confirmLabel: t('tuition.generate'),
+    })
+    if (!ok) return
+
     setGenerating(true)
     try {
       const res = await fetchWithCsrf('/api/tuition-charges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ period: genPeriod.trim(), studentIds: [...genSelected] }),
+        body: JSON.stringify({ period: genPeriod.trim(), studentIds: selectedArr }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -213,6 +246,7 @@ export default function TuitionPage() {
   return (
     <div>
       <Toast message={message} />
+      {confirmDialogEl}
 
       {/* Sticky header */}
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] dark:bg-gray-900 pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
