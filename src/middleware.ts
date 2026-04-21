@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateCsrfToken, getCsrfCookieName, getCsrfHeaderName } from '@/lib/csrf'
+import { generateCsrfToken, CSRF_COOKIE, CSRF_HEADER } from '@/lib/csrf'
 
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'DELETE', 'PATCH'])
 
@@ -17,8 +17,8 @@ export function middleware(request: NextRequest) {
 
   // Ověřit CSRF token pro mutující metody
   if (MUTATING_METHODS.has(method) && !CSRF_EXEMPT.has(path)) {
-    const cookieToken = request.cookies.get(getCsrfCookieName())?.value
-    const headerToken = request.headers.get(getCsrfHeaderName())
+    const cookieToken = request.cookies.get(CSRF_COOKIE)?.value
+    const headerToken = request.headers.get(CSRF_HEADER)
 
     if (!cookieToken || !headerToken || cookieToken !== headerToken) {
       return NextResponse.json({ error: 'CSRF token mismatch' }, { status: 403 })
@@ -30,10 +30,10 @@ export function middleware(request: NextRequest) {
 
 /** Přidá CSRF cookie do response pokud chybí v requestu. */
 function addCsrfCookie(request: NextRequest, response: NextResponse): NextResponse {
-  const existing = request.cookies.get(getCsrfCookieName())?.value
+  const existing = request.cookies.get(CSRF_COOKIE)?.value
   if (!existing) {
     const token = generateCsrfToken()
-    response.cookies.set(getCsrfCookieName(), token, {
+    response.cookies.set(CSRF_COOKIE, token, {
       httpOnly: false, // Frontend musí číst cookie
       secure: true,
       sameSite: 'strict',
