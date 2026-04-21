@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GraduationCap, Settings, Stethoscope, CreditCard, Heart, Package, Star } from 'lucide-react'
 import { useLocale } from '@/hooks/useLocale'
+import { useConfirmDialog } from '@/hooks/useConfirmDialog'
 import { CodelistSection } from '@/components/admin/CodelistSection'
 import { VoucherRateSection } from '@/components/admin/VoucherRateSection'
 import { TuitionRateSection } from '@/components/admin/TuitionRateSection'
@@ -34,6 +35,7 @@ export default function AdminPage() {
   const [newWishTypePrice, setNewWishTypePrice] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const { locale, t } = useLocale()
+  const { confirm: askConfirm, dialog: confirmDialogEl } = useConfirmDialog()
   const [translations, setTranslations] = useState<Record<string, { en: string; sw: string }>>({})
   const [translating, setTranslating] = useState<string | null>(null)
 
@@ -111,7 +113,7 @@ export default function AdminPage() {
         } catch { showMsg('error', t('app.error')) }
       },
       del: async (id: string) => {
-        if (!confirm(t('app.confirmDelete'))) return
+        if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
         try {
           await fetchWithCsrf(endpoint, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
           await fetchAll(); showMsg('success', t('app.deleteSuccess'))
@@ -173,6 +175,7 @@ export default function AdminPage() {
 
   return (
     <div>
+      {confirmDialogEl}
       {message && <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg font-medium ${message.type === 'success' ? 'bg-primary-600 text-white' : 'bg-red-600 text-white'}`}>{message.text}</div>}
 
       <div className="flex items-center gap-3 mb-6">
@@ -384,7 +387,7 @@ export default function AdminPage() {
             } catch { showMsg('error', t('app.error')) }
           }}
           onDelete={async (id) => {
-            if (!confirm(t('app.confirmDelete'))) return
+            if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
             try {
               await fetchWithCsrf('/api/admin/voucher-rates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
               await fetchAll(); showMsg('success', t('app.deleteSuccess'))
@@ -417,7 +420,7 @@ export default function AdminPage() {
             } catch { showMsg('error', t('app.error')) }
           }}
           onDelete={async (id) => {
-            if (!confirm(t('app.confirmDelete'))) return
+            if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
             try {
               await fetchWithCsrf('/api/admin/tuition-rates', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
               await fetchAll(); showMsg('success', t('app.deleteSuccess'))

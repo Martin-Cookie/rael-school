@@ -11,6 +11,7 @@ import { useLocale } from '@/hooks/useLocale'
 import { useSorting } from '@/hooks/useSorting'
 import { useStickyTop } from '@/hooks/useStickyTop'
 import { useToast } from '@/hooks/useToast'
+import { useConfirmDialog } from '@/hooks/useConfirmDialog'
 import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
 import { formatNumber } from '@/lib/format'
@@ -51,6 +52,7 @@ export default function SponsorsPage() {
 
   const { locale, t } = useLocale()
   const { message, showMsg } = useToast()
+  const { confirm: askConfirm, dialog: confirmDialogEl } = useConfirmDialog()
   const { sortCol, sortDir, handleSort, sortData } = useSorting((item: any, col: string) => {
     if (col === '_sponsorshipCount') return item.sponsorships?.length ?? 0
     return item[col]
@@ -131,7 +133,11 @@ export default function SponsorsPage() {
 
   async function toggleActive(id: string, currentActive: boolean) {
     const msg = currentActive ? t('sponsorPage.confirmDeactivate') : t('sponsorPage.confirmReactivate')
-    if (!confirm(msg)) return
+    if (!(await askConfirm({
+      title: currentActive ? t('sponsorPage.deactivate') : t('sponsorPage.reactivate'),
+      message: msg,
+      variant: currentActive ? 'danger' : 'info',
+    }))) return
     try {
       const res = await fetchWithCsrf(`/api/sponsors/${id}`, { method: 'PATCH' })
       if (res.ok) {
@@ -196,6 +202,7 @@ export default function SponsorsPage() {
   return (
     <div>
       <Toast message={message} />
+      {confirmDialogEl}
 
       {/* Sticky header + search */}
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] dark:bg-gray-900 pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">

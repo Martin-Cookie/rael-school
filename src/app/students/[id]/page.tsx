@@ -12,6 +12,7 @@ import { validateImageFile, compressImage } from '@/lib/imageUtils'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/hooks/useToast'
 import { useFetchList } from '@/hooks/useFetchList'
+import { useConfirmDialog } from '@/hooks/useConfirmDialog'
 import { Toast } from '@/components/Toast'
 import { PersonalTab } from '@/components/student-detail/PersonalTab'
 import { EquipmentTab } from '@/components/student-detail/EquipmentTab'
@@ -132,6 +133,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   const { locale, t } = useLocale()
   const { message, showMsg } = useToast()
+  const { confirm: askConfirm, dialog: confirmDialogEl } = useConfirmDialog()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -226,7 +228,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteNeed(needId: string) {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try { await fetchWithCsrf(`/api/students/${id}/needs`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addWish() {
@@ -249,7 +251,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteWish(wishId: string) {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try { await fetchWithCsrf(`/api/students/${id}/wishes`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wishId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addSingleEquipment() {
@@ -260,7 +262,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteSingleEquipment(equipmentId: string) {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try { await fetchWithCsrf(`/api/students/${id}/equipment`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ equipmentId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addVoucher() {
@@ -272,7 +274,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteVoucher(voucherId: string, type: 'purchase' | 'usage') {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try {
       const res = await fetchWithCsrf(`/api/students/${id}/vouchers`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ voucherId, type }) })
       if (res.ok) { await fetchStudent(); showMsg('success', t('app.deleteSuccess')) }
@@ -287,7 +289,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteHealthCheck(checkId: string) {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try { await fetchWithCsrf(`/api/students/${id}/health`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ checkId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
   async function addPhoto() {
@@ -304,7 +306,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     setUploading(false)
   }
   async function deletePhoto(photoId: string) {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try { await fetchWithCsrf(`/api/students/${id}/photos`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photoId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
 
@@ -319,7 +321,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }
 
   async function removeSponsor(sponsorshipId: string) {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try {
       const res = await fetchWithCsrf(`/api/students/${id}/sponsors`, {
         method: 'DELETE',
@@ -397,7 +399,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function deleteSponsorPayment(paymentId: string) {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try { await fetchWithCsrf(`/api/students/${id}/sponsor-payments`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId }) }); await fetchStudent(); showMsg('success', t('app.deleteSuccess')) } catch { showMsg('error', t('app.error')) }
   }
 
@@ -436,6 +438,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   return (
     <div>
       <Toast message={message} />
+      {confirmDialogEl}
 
       {/* ===== HERO HEADER ===== */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6 shadow-sm">

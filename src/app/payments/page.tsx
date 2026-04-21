@@ -10,6 +10,7 @@ import { useLocale } from '@/hooks/useLocale'
 import { useSorting } from '@/hooks/useSorting'
 import { useStickyTop } from '@/hooks/useStickyTop'
 import { useToast } from '@/hooks/useToast'
+import { useConfirmDialog } from '@/hooks/useConfirmDialog'
 import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
 import { getLocaleName } from '@/lib/i18n'
@@ -103,6 +104,7 @@ export default function PaymentsPage() {
 
   const { locale, t } = useLocale()
   const { message, showMsg } = useToast()
+  const { confirm: askConfirm, dialog: confirmDialogEl } = useConfirmDialog()
   const { sortCol, sortDir, handleSort, sortData } = useSorting((item: any, col: string) => {
     if (col === '_studentName') return item.student ? `${item.student.lastName} ${item.student.firstName}` : ''
     if (col === '_sponsorName') return item.sponsor ? `${item.sponsor.lastName} ${item.sponsor.firstName}` : (item.donorName || '')
@@ -272,7 +274,7 @@ export default function PaymentsPage() {
   }
 
   async function deletePayment(id: string, type: 'sponsor' | 'voucher') {
-    if (!confirm(t('app.confirmDelete'))) return
+    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
     try {
       const res = await fetchWithCsrf('/api/payments', {
         method: 'DELETE',
@@ -397,6 +399,7 @@ export default function PaymentsPage() {
   return (
     <div>
       <Toast message={message} />
+      {confirmDialogEl}
 
       {/* Sticky header */}
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] dark:bg-gray-900 pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
