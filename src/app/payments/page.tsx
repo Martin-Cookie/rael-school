@@ -274,7 +274,36 @@ export default function PaymentsPage() {
   }
 
   async function deletePayment(id: string, type: 'sponsor' | 'voucher') {
-    if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
+    // Najdi platbu ve stavu pro sestavení kontextového confirm dialogu
+    const payment = (type === 'sponsor' ? sponsorPayments : voucherPurchases).find(p => p.id === id)
+    const parts: string[] = []
+    if (payment) {
+      parts.push(fmtCurrency(payment.amount, payment.currency))
+      if (payment.paymentType) parts.push(payment.paymentType)
+      if (payment.student) parts.push(`→ ${payment.student.firstName} ${payment.student.lastName}`)
+      const sponsorName = payment.sponsor
+        ? `${payment.sponsor.firstName} ${payment.sponsor.lastName}`
+        : payment.donorName || null
+      if (sponsorName) parts.push(`od ${sponsorName}`)
+      if (payment._date) parts.push(formatDate(payment._date))
+    }
+    const detailLine = parts.length > 0 ? parts.join(' · ') : undefined
+
+    // Upozornění na důsledky (platby typu školné ovlivní stav předpisu)
+    const isTuition = type === 'sponsor' && payment?.paymentType && /školné|tuition|karo/i.test(payment.paymentType)
+    const consequence = isTuition
+      ? t('payments.deleteTuitionWarning')
+      : t('payments.deleteIrreversible')
+
+    const ok = await askConfirm({
+      title: t('app.delete'),
+      message: detailLine || t('app.confirmDelete'),
+      details: consequence,
+      variant: 'danger',
+      confirmLabel: t('app.delete'),
+    })
+    if (!ok) return
+
     try {
       const res = await fetchWithCsrf('/api/payments', {
         method: 'DELETE',

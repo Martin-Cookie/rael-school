@@ -196,7 +196,9 @@
     "noPayments": "Žádné platby",
     "fillRequired": "Vyplňte všechna povinná pole",
     "loadMoreSponsor": "Načíst další sponzorské platby",
-    "loadMoreVoucher": "Načíst další stravenky"
+    "loadMoreVoucher": "Načíst další stravenky",
+    "deleteTuitionWarning": "Akce je nevratná a přepočítá stav předpisu školného (UNPAID / PARTIAL / PAID).",
+    "deleteIrreversible": "Akce je nevratná a změní součty plateb."
   },
   "roles": {
     "ADMIN": "Administrátor",

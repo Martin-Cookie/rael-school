@@ -196,7 +196,9 @@
     "noPayments": "No payments",
     "fillRequired": "Please fill in all required fields",
     "loadMoreSponsor": "Load more sponsor payments",
-    "loadMoreVoucher": "Load more vouchers"
+    "loadMoreVoucher": "Load more vouchers",
+    "deleteTuitionWarning": "Irreversible action — will recalculate tuition charge status (UNPAID / PARTIAL / PAID).",
+    "deleteIrreversible": "Irreversible action — totals will change."
   },
   "roles": {
     "ADMIN": "Administrator",

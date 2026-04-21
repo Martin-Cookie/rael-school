@@ -196,7 +196,9 @@
     "noPayments": "Hakuna malipo",
     "fillRequired": "Tafadhali jaza sehemu zote zinazohitajika",
     "loadMoreSponsor": "Pakia malipo zaidi ya wadhamini",
-    "loadMoreVoucher": "Pakia vocha zaidi"
+    "loadMoreVoucher": "Pakia vocha zaidi",
+    "deleteTuitionWarning": "Kitendo hakiwezi kurudishwa — kitahesabu upya hali ya madai ya karo (UNPAID / PARTIAL / PAID).",
+    "deleteIrreversible": "Kitendo hakiwezi kurudishwa — jumla zitabadilika."
   },
   "roles": {
     "ADMIN": "Msimamizi",
