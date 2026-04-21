@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Plus, Pencil, Trash2, Check, X, Upload, Search, Download } from 'lucide-react'
 import { formatNumber, formatDate, formatDateForInput, fmtCurrency } from '@/lib/format'
 import { downloadCSV } from '@/lib/csv'
@@ -67,10 +68,13 @@ interface EditPaymentData {
 }
 
 export default function PaymentsPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
   const [sponsorPayments, setSponsorPayments] = useState<UnifiedPayment[]>([])
   const [voucherPurchases, setVoucherPurchases] = useState<UnifiedPayment[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(searchParams.get('search') || '')
 
   // Students & sponsors for dropdowns
   const [students, setStudents] = useState<PaymentStudent[]>([])
@@ -93,9 +97,9 @@ export default function PaymentsPage() {
   const [nextVpCursor, setNextVpCursor] = useState<string | null>(null)
   const [loadingMore, setLoadingMore] = useState(false)
 
-  // Filters
-  const [filterType, setFilterType] = useState('')
-  const [filterSponsor, setFilterSponsor] = useState('')
+  // Filters — initial values z URL, pak při změně URL updatujeme
+  const [filterType, setFilterType] = useState(searchParams.get('type') || '')
+  const [filterSponsor, setFilterSponsor] = useState(searchParams.get('sponsor') || '')
 
   const { locale, t } = useLocale()
   const { message, showMsg } = useToast()
@@ -113,6 +117,17 @@ export default function PaymentsPage() {
     fetch('/api/admin/payment-types').then(r => r.json()).then(d => setPaymentTypes(d.paymentTypes || [])).catch(e => console.error('Failed to load payment types:', e))
     fetch('/api/voucher-rates').then(r => r.json()).then(d => setVoucherRates(d.voucherRates || [])).catch(e => console.error('Failed to load voucher rates:', e))
   }, [])
+
+  // Sync filters → URL (nahradit aktuální query bez přidání do history)
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (search) params.set('search', search)
+    if (filterType) params.set('type', filterType)
+    if (filterSponsor) params.set('sponsor', filterSponsor)
+    const qs = params.toString()
+    const next = qs ? `/payments?${qs}` : '/payments'
+    router.replace(next, { scroll: false })
+  }, [search, filterType, filterSponsor, router])
 
   async function fetchData() {
     try {
