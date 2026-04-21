@@ -2,6 +2,7 @@
 
 > **Base URL:** `/api`
 > **Auth:** Všechny endpointy vyžadují JWT token v httpOnly cookie `auth-token` (kromě `/api/auth/login`).
+> **CSRF:** Mutující metody (POST/PUT/DELETE/PATCH) vyžadují header `x-csrf-token` shodný s cookie `csrf-token` (viz `src/middleware.ts` a `src/lib/fetchWithCsrf.ts`). Výjimka: `/auth/login` (teprve nastavuje cookie).
 
 ### Chybové kódy
 
@@ -9,6 +10,7 @@
 |--------|--------|
 | 400 | Chybný požadavek (chybějící pole, neplatná data) |
 | 401 | Nepřihlášen nebo nedostatečná oprávnění |
+| 403 | CSRF token mismatch nebo nedostatečná role |
 | 404 | Záznam nenalezen |
 | 409 | Konflikt (duplicita) |
 | 429 | Příliš mnoho požadavků (rate limit) |
@@ -18,11 +20,11 @@
 
 ## Autentizace
 
-| Metoda | Endpoint | Popis | Role |
-|--------|----------|-------|------|
-| POST | `/auth/login` | Přihlášení (email + heslo), vrací cookie | public |
-| POST | `/auth/logout` | Odhlášení, smaže cookie | * |
-| GET | `/auth/me` | Profil přihlášeného uživatele | * |
+| Metoda | Endpoint | Popis | Role | Rate limit |
+|--------|----------|-------|------|-----------|
+| POST | `/auth/login` | Přihlášení (email + heslo), vrací cookie | public | 5 / 15 min per IP+email |
+| POST | `/auth/logout` | Odhlášení, smaže cookie | * | — |
+| GET | `/auth/me` | Profil přihlášeného uživatele | * | 120 / min per IP |
 
 **Příklad — POST `/auth/login`:**
 ```json
@@ -78,15 +80,15 @@
 
 ## Sponzoři
 
-| Metoda | Endpoint | Popis | Role |
-|--------|----------|-------|------|
-| GET | `/sponsors` | Seznam sponzorů (query: `search`, `active`) | ADMIN, MANAGER, VOLUNTEER |
-| POST | `/sponsors` | Nový sponzor | ADMIN, MANAGER, VOLUNTEER |
-| GET | `/sponsors/[id]` | Detail sponzora s vazbami | * |
-| PUT | `/sponsors/[id]` | Úprava sponzora | ADMIN, MANAGER, VOLUNTEER |
-| PATCH | `/sponsors/[id]` | Toggle aktivní/neaktivní (kaskáda na sponzorství) | ADMIN, MANAGER |
-| GET | `/sponsors/search` | Autocomplete hledání (top 10) | * |
-| GET | `/sponsors/names` | Lightweight seznam pro dropdowny | * |
+| Metoda | Endpoint | Popis | Role | Rate limit |
+|--------|----------|-------|------|-----------|
+| GET | `/sponsors` | Seznam sponzorů (query: `search`, `active`) | ADMIN, MANAGER, VOLUNTEER | — |
+| POST | `/sponsors` | Nový sponzor (náhodné heslo) | ADMIN, MANAGER, VOLUNTEER | 20 / min per user |
+| GET | `/sponsors/[id]` | Detail sponzora s vazbami | * | — |
+| PUT | `/sponsors/[id]` | Úprava sponzora | ADMIN, MANAGER, VOLUNTEER | — |
+| PATCH | `/sponsors/[id]` | Toggle aktivní/neaktivní (kaskáda na sponzorství) | ADMIN, MANAGER | — |
+| GET | `/sponsors/search` | Autocomplete hledání (top 10, query: `q`) | * | 30 / min per user |
+| GET | `/sponsors/names` | Lightweight seznam pro dropdowny | ADMIN, MANAGER, VOLUNTEER | 60 / min per user |
 
 ---
 
@@ -163,7 +165,19 @@ Každý podporuje: **GET** (seznam), **POST** (nový), **PUT** (úprava), **DELE
 | GET | `/admin/backup/csv` | Export dat jako CSV | 10/hod | ADMIN |
 | GET | `/admin/backup/json` | Export celé DB jako JSON | 5/hod | ADMIN |
 | POST | `/admin/backup/restore` | Upload SQLite zálohy (s validací) | 3/hod | ADMIN |
-| POST | `/admin/translate` | Auto-překlad textu (MyMemory API) | – | ADMIN |
+| POST | `/admin/translate` | Auto-překlad textu (MyMemory API, cs→en/sw) | – | ADMIN |
+
+---
+
+## Audit log
+
+| Metoda | Endpoint | Popis | Role |
+|--------|----------|-------|------|
+| GET | `/admin/audit-log` | Posledních 100 záznamů audit trailu (seřazeno dle `createdAt` desc) | ADMIN |
+
+**Záznamy** obsahují: `userId`, `userEmail`, `action` (CREATE/UPDATE/DELETE/LOGIN/EXPORT/RESTORE/APPROVE/REJECT/SPLIT), `resource`, `resourceId`, `detail`, `ip`, `createdAt`.
+
+**Zapisovatel:** helper `logAudit()` z `src/lib/auditLog.ts` — volán po kritických akcích (login, mazání, import approve/reject/split, backup, restore, ...).
 
 ---
 
@@ -181,15 +195,22 @@ Každý podporuje: **GET** (seznam), **POST** (nový), **PUT** (úprava), **DELE
 
 **Autorizace:** Každý endpoint volá `getCurrentUser()` a kontroluje roli.
 
+**CSRF ochrana:** Middleware (`src/middleware.ts`) ověřuje, že POST/PUT/DELETE/PATCH requesty mají header `x-csrf-token` shodný s cookie `csrf-token`. Klient musí použít `fetchWithCsrf()` z `src/lib/fetchWithCsrf.ts`. Výjimka: `/auth/login` (teprve nastavuje cookie).
+
+**Rate limiting:** In-memory per-key limiter (`src/lib/rateLimit.ts`). Klíč je buď `user.id` (pro autentizované), nebo IP (`x-forwarded-for` / `x-real-ip`). Při překročení 429 + `Retry-After` header.
+
 **Chybové odpovědi:**
 | Kód | Význam |
 |-----|--------|
+| 400 | Neplatná data (Zod validace nebo manuální check) |
 | 401 | Nepřihlášen |
-| 403 | Nedostatečná oprávnění |
+| 403 | CSRF token mismatch nebo nedostatečná role |
 | 404 | Záznam nenalezen |
-| 400 | Neplatná data (Zod validace) |
+| 429 | Rate limit překročen |
 | 500 | Interní chyba serveru |
 
 **Soft delete:** Studenti a sponzoři se nemaží, pouze `isActive = false`.
 
 **Transakce:** Komplexní operace (schvalování plateb, split, generování předpisů) používají `prisma.$transaction`.
+
+**Audit trail:** Kritické akce (login, mazání, import schvalování, zálohy) se logují do modelu `AuditLog` přes helper `logAudit()` z `src/lib/auditLog.ts`.
