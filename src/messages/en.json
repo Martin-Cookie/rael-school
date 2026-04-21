@@ -93,7 +93,17 @@
     },
     "profilePhoto": "Profile photo",
     "filterNoSponsor": "No sponsor",
-    "filterNoSponsorTitle": "Show only students without an active sponsor"
+    "filterNoSponsorTitle": "Show only students without an active sponsor",
+    "validation": {
+      "nameRequired": "Required field",
+      "nameTooLong": "Maximum 100 characters",
+      "dateInvalid": "Invalid date",
+      "dateFuture": "Date of birth cannot be in the future",
+      "dateTooOld": "Date of birth cannot be before {year}",
+      "duplicateTitle": "Possible duplicate",
+      "duplicateExact": "A student with the same name and date of birth already exists. Create anyway?",
+      "duplicateName": "Found {count} students with the same name. Create anyway?"
+    }
   },
   "equipment": {
     "title": "Equipment",

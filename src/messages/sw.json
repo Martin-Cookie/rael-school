@@ -93,7 +93,17 @@
     },
     "profilePhoto": "Picha ya wasifu",
     "filterNoSponsor": "Bila mfadhili",
-    "filterNoSponsorTitle": "Onyesha wanafunzi bila mfadhili wa sasa tu"
+    "filterNoSponsorTitle": "Onyesha wanafunzi bila mfadhili wa sasa tu",
+    "validation": {
+      "nameRequired": "Kipengele kinachohitajika",
+      "nameTooLong": "Kiwango cha juu ni herufi 100",
+      "dateInvalid": "Tarehe si sahihi",
+      "dateFuture": "Tarehe ya kuzaliwa haiwezi kuwa baadaye",
+      "dateTooOld": "Tarehe ya kuzaliwa haiwezi kuwa kabla ya mwaka {year}",
+      "duplicateTitle": "Inawezekana ni marudio",
+      "duplicateExact": "Tayari kuna mwanafunzi mwenye jina na tarehe ya kuzaliwa sawa. Tengeneza?",
+      "duplicateName": "Wamepatikana wanafunzi {count} wenye jina sawa. Tengeneza?"
+    }
   },
   "equipment": {
     "title": "Vifaa",

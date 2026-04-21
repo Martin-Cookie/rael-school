@@ -93,7 +93,17 @@
     },
     "profilePhoto": "Profilová fotka",
     "filterNoSponsor": "Bez sponzora",
-    "filterNoSponsorTitle": "Zobrazit jen studenty bez aktivního sponzora"
+    "filterNoSponsorTitle": "Zobrazit jen studenty bez aktivního sponzora",
+    "validation": {
+      "nameRequired": "Povinné pole",
+      "nameTooLong": "Maximálně 100 znaků",
+      "dateInvalid": "Neplatné datum",
+      "dateFuture": "Datum narození nemůže být v budoucnosti",
+      "dateTooOld": "Datum narození nesmí být před rokem {year}",
+      "duplicateTitle": "Možná duplicita",
+      "duplicateExact": "Student se stejným jménem a datem narození již existuje. Opravdu vytvořit nového?",
+      "duplicateName": "Nalezeno {count} studentů se stejným jménem. Opravdu vytvořit nového?"
+    }
   },
   "equipment": {
     "title": "Vybavení",
