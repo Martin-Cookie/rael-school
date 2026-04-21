@@ -55,6 +55,7 @@ async function main() {
   // ============================================================
   // 2. UŽIVATELÉ (Admin, Manager, Sponzoři, Dobrovolníci)
   // ============================================================
+  // POZOR: Hesla jsou DEV-ONLY pro demo prostředí. Neurčeno pro produkci.
 
   const passwordHash = await bcrypt.hash('admin123', 10)
   const managerHash = await bcrypt.hash('manager123', 10)
