@@ -12,7 +12,6 @@ import { validateImageFile, compressImage } from '@/lib/imageUtils'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/hooks/useToast'
 import { useFetchList } from '@/hooks/useFetchList'
-import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { Toast } from '@/components/Toast'
 import { PersonalTab } from '@/components/student-detail/PersonalTab'
 import { EquipmentTab } from '@/components/student-detail/EquipmentTab'
@@ -93,8 +92,6 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const [editData, setEditData] = useState<Partial<StudentDetail> | null>(null)
   const [editEquipment, setEditEquipment] = useState<EquipmentItem[]>([])
   const [saving, setSaving] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
-  const confirmRef = useFocusTrap(showConfirm)
   const [userRole, setUserRole] = useState<string>('')
   const [currency, setCurrency] = useState('KES')
   const [classrooms, fetchClassrooms] = useFetchList('/api/admin/classrooms', 'classrooms')
@@ -194,7 +191,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const canEditData = ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(userRole)
 
   async function handleSave() {
-    setShowConfirm(false); setSaving(true)
+    setSaving(true)
     try {
       const res = await fetchWithCsrf(`/api/students/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editData) })
       await fetchWithCsrf(`/api/students/${id}/equipment`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ equipment: editEquipment }) })
@@ -438,19 +435,6 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
   return (
     <div>
-      {/* Confirm dialog */}
-      {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title" ref={confirmRef} onKeyDown={(e) => e.key === 'Escape' && setShowConfirm(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
-            <h3 id="confirm-dialog-title" className="text-lg font-semibold text-gray-900 mb-2">{t('app.confirm')}</h3>
-            <p className="text-gray-600 mb-6">{t('app.confirmSave')}</p>
-            <div className="flex gap-3">
-              <button onClick={() => setShowConfirm(false)} className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium focus-visible:ring-2 focus-visible:ring-primary-500">{t('app.cancel')}</button>
-              <button onClick={handleSave} className="flex-1 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 font-medium focus-visible:ring-2 focus-visible:ring-primary-500">{t('app.save')}</button>
-            </div>
-          </div>
-        </div>
-      )}
       <Toast message={message} />
 
       {/* ===== HERO HEADER ===== */}
@@ -490,7 +474,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   {editMode ? (
                     <>
                       <button onClick={cancelEdit} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"><X className="w-4 h-4" /> {t('app.cancel')}</button>
-                      <button onClick={() => setShowConfirm(true)} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium disabled:opacity-50"><Save className="w-4 h-4" /> {saving ? '...' : t('app.save')}</button>
+                      <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium disabled:opacity-50"><Save className="w-4 h-4" /> {saving ? '...' : t('app.save')}</button>
                     </>
                   ) : (
                     <button onClick={() => setEditMode(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"><Edit3 className="w-4 h-4" /> {t('app.edit')}</button>
