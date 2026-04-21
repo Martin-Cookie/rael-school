@@ -95,7 +95,10 @@ export default function AdminPage() {
   }
 
   // Generic CRUD factory
-  function makeHandlers(endpoint: string, items: CodelistItem[]) {
+  // `resource` — slouží k dotazu do /api/admin/codelist-usage před smazáním,
+  // aby admin viděl kolik záznamů na danou položku odkazuje a co se smazáním
+  // stane (reference nejsou FK, jen string matching ve většině případů).
+  function makeHandlers(endpoint: string, items: CodelistItem[], resource: string) {
     return {
       add: async (name: string, resetFn: () => void, price?: string, nameEn?: string, nameSw?: string) => {
         if (!name.trim()) return
@@ -113,7 +116,42 @@ export default function AdminPage() {
         } catch { showMsg('error', t('app.error')) }
       },
       del: async (id: string) => {
-        if (!(await askConfirm({ title: t('app.delete'), message: t('app.confirmDelete'), variant: 'danger', confirmLabel: t('app.delete') }))) return
+        // Usage check — zjisti, kolik záznamů odkazuje na tuto položku
+        const item = items.find(i => i.id === id)
+        let usageCount = 0
+        let usageDetails = ''
+        if (item) {
+          try {
+            const params = new URLSearchParams({ resource, name: item.name })
+            if (resource === 'wishType') params.set('id', id)
+            const usageRes = await fetch(`/api/admin/codelist-usage?${params}`)
+            if (usageRes.ok) {
+              const data = await usageRes.json() as { count: number; tables: { table: string; count: number }[] }
+              usageCount = data.count
+              usageDetails = data.tables.map(tb => `${tb.table}: ${tb.count}`).join(' · ')
+            }
+          } catch {
+            // Při selhání usage checku pokračuj bez něj — DB soft delete záznamy neorofaní
+          }
+        }
+
+        const message = usageCount > 0
+          ? t('admin.codelistDeleteUsed')
+              .replace('{item}', item?.name || '')
+              .replace('{count}', String(usageCount))
+          : t('app.confirmDelete')
+        const details = usageCount > 0
+          ? `${usageDetails} · ${t('admin.codelistDeleteSoft')}`
+          : undefined
+
+        if (!(await askConfirm({
+          title: t('app.delete'),
+          message,
+          details,
+          variant: 'danger',
+          confirmLabel: t('app.delete'),
+        }))) return
+
         try {
           await fetchWithCsrf(endpoint, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
           await fetchAll(); showMsg('success', t('app.deleteSuccess'))
@@ -164,12 +202,12 @@ export default function AdminPage() {
     }
   }
 
-  const classroomH = makeHandlers('/api/admin/classrooms', classrooms)
-  const healthTypeH = makeHandlers('/api/admin/health-types', healthTypes)
-  const paymentTypeH = makeHandlers('/api/admin/payment-types', paymentTypes)
-  const needTypeH = makeHandlers('/api/admin/need-types', needTypes)
-  const equipmentTypeH = makeHandlers('/api/admin/equipment-types', equipmentTypes)
-  const wishTypeH = makeHandlers('/api/admin/wish-types', wishTypes)
+  const classroomH = makeHandlers('/api/admin/classrooms', classrooms, 'classRoom')
+  const healthTypeH = makeHandlers('/api/admin/health-types', healthTypes, 'healthCheckType')
+  const paymentTypeH = makeHandlers('/api/admin/payment-types', paymentTypes, 'paymentType')
+  const needTypeH = makeHandlers('/api/admin/need-types', needTypes, 'needType')
+  const equipmentTypeH = makeHandlers('/api/admin/equipment-types', equipmentTypes, 'equipmentType')
+  const wishTypeH = makeHandlers('/api/admin/wish-types', wishTypes, 'wishType')
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
 

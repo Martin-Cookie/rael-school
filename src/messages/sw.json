@@ -246,6 +246,8 @@
     "noPrice": "hakuna bei",
     "voucherRates": "Viwango vya Vocha",
     "voucherRatesDesc": "Bei ya vocha 1 kwa sarafu",
+    "codelistDeleteUsed": "Kipengele \"{item}\" kinatumika katika rekodi {count}. Futa kweli?",
+    "codelistDeleteSoft": "Ufutaji laini — rekodi zilizopo zitabaki, lakini kipengele hakitaonyeshwa kwa data mpya.",
     "newCurrency": "Sarafu",
     "allCurrenciesAdded": "Sarafu zote zimesanidiwa",
     "ratePerVoucher": "Bei kwa vocha",

@@ -246,6 +246,8 @@
     "noPrice": "no price",
     "voucherRates": "Voucher Rates",
     "voucherRatesDesc": "Price of 1 voucher per currency",
+    "codelistDeleteUsed": "Item \"{item}\" is used in {count} existing records. Really delete?",
+    "codelistDeleteSoft": "Soft delete — existing records remain, but the item will no longer be offered for new data.",
     "newCurrency": "Currency",
     "allCurrenciesAdded": "All currencies are configured",
     "ratePerVoucher": "Price per voucher",

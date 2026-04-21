@@ -246,6 +246,8 @@
     "noPrice": "bez ceny",
     "voucherRates": "Sazby stravenek",
     "voucherRatesDesc": "Cena 1 stravenky v dané měně",
+    "codelistDeleteUsed": "Položka \"{item}\" je použita v {count} existujících záznamech. Opravdu smazat?",
+    "codelistDeleteSoft": "Soft delete — existující záznamy zůstanou, ale nová data už položku nenabídnou.",
     "newCurrency": "Měna",
     "allCurrenciesAdded": "Všechny měny jsou nastaveny",
     "ratePerVoucher": "Cena za 1 stravenku",
