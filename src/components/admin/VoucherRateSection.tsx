@@ -43,6 +43,8 @@ export function VoucherRateSection({
           {(() => {
             const usedCurrencies = new Set(items.map(i => i.currency))
             const available = CURRENCIES.filter(c => !usedCurrencies.has(c))
+            const rateNum = parseFloat(newRate)
+            const isValid = newCurrency.trim().length > 0 && newRate !== '' && !isNaN(rateNum) && rateNum > 0
             return available.length > 0 ? (
               <div className="mb-4 flex gap-2">
                 <select
@@ -59,11 +61,12 @@ export function VoucherRateSection({
                   onChange={(e) => setNewRate(e.target.value)}
                   placeholder={t('admin.ratePerVoucher')}
                   className="w-32 px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none text-sm"
-                  onKeyDown={(e) => e.key === 'Enter' && onAdd()}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && isValid) onAdd() }}
                 />
                 <button
                   onClick={onAdd}
-                  className="px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 flex items-center gap-1.5"
+                  disabled={!isValid}
+                  className="px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-primary-600"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
