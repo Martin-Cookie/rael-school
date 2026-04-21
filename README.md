@@ -6,12 +6,22 @@ Webový informační systém pro správu školy Rael v Keni. Evidence studentů,
 
 ```bash
 npm install
-echo 'DATABASE_URL="file:./dev.db"' > .env
+cp .env.example .env
+# Vygeneruj silný JWT_SECRET a vlož ho do .env:
+openssl rand -base64 32
 npx prisma db push && npm run db:seed
 npm run dev
 ```
 
 Otevřete **http://localhost:3000**
+
+## Správa tajemství (.env)
+
+- `.env.example` — šablona v repozitáři, obsahuje placeholdery
+- `.env` — lokální soubor s reálnými hodnotami, **NIKDY necommitovat** (je v `.gitignore`)
+- **JWT_SECRET:** generovat přes `openssl rand -base64 32`. Slabý secret (kratší než 32 znaků nebo obsahující `rael`/`school`/`secret`/`password`/`test`/`demo`) je detekován za běhu a zalogován warning (`src/lib/auth.ts:17`).
+- **Rotace:** po vygenerování nového JWT_SECRET se všechny existující session invalidují — uživatelé se musí znovu přihlásit.
+- **Produkce:** secret ukládat do secret manageru (Railway/Vercel env vars, AWS Secrets Manager, 1Password, …), ne do pracovního adresáře.
 
 ### Testy
 
