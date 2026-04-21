@@ -247,8 +247,15 @@ export default function VisitCardsPage() {
 
       {/* CSV match result */}
       {csvMatchCount !== null && (
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-sm text-blue-700">
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200 relative">
+          <button
+            onClick={() => { setCsvMatchCount(null); setCsvNotFound([]) }}
+            aria-label={t('app.close')}
+            className="absolute top-2 right-2 p-1 text-blue-400 hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <p className="text-sm text-blue-700 pr-6">
             {t('visitCards.csvMatched')}: <span className="font-bold">{csvMatchCount}</span>
             {csvNotFound.length > 0 && <> | {t('visitCards.csvNotFound')}: <span className="font-bold text-red-600">{csvNotFound.length}</span></>}
           </p>
