@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Save, X, Edit3, User, Camera, Ticket,
@@ -191,6 +191,44 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   }
 
   const canEditData = ['ADMIN', 'MANAGER', 'VOLUNTEER'].includes(userRole)
+
+  // Detekce neuložených změn v edit módu.
+  // Porovnáváme editData proti celému student objektu a editEquipment proti
+  // jeho initial kopii. JSON.stringify je jednoduchý a dostatečně rychlý pro
+  // velikost detailu studenta (desítky polí).
+  const isDirty = useMemo(() => {
+    if (!editMode || !student) return false
+    if (JSON.stringify(editData) !== JSON.stringify(student)) return true
+    const origEquip = JSON.stringify(student.equipment?.map((eq) => ({ ...eq })) || [])
+    const curEquip = JSON.stringify(editEquipment)
+    return origEquip !== curEquip
+  }, [editMode, editData, student, editEquipment])
+
+  // Varování před zavřením taby / refreshem při neuložených změnách.
+  useEffect(() => {
+    if (!isDirty) return
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [isDirty])
+
+  // Přepnutí záložky s kontrolou neuložených změn.
+  async function handleTabChange(newTab: Tab) {
+    if (isDirty) {
+      const ok = await askConfirm({
+        title: t('app.unsavedChanges'),
+        message: t('app.discardChangesConfirm'),
+        variant: 'danger',
+        confirmLabel: t('app.discardChanges'),
+      })
+      if (!ok) return
+      cancelEdit()
+    }
+    setActiveTab(newTab)
+  }
 
   async function handleSave() {
     setSaving(true)
@@ -477,7 +515,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
                   {editMode ? (
                     <>
                       <button onClick={cancelEdit} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"><X className="w-4 h-4" /> {t('app.cancel')}</button>
-                      <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium disabled:opacity-50"><Save className="w-4 h-4" /> {saving ? '...' : t('app.save')}</button>
+                      <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium disabled:opacity-50 relative"><Save className="w-4 h-4" /> {saving ? '...' : t('app.save')}{isDirty && <span aria-hidden="true" className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 border border-white dark:border-gray-800 animate-pulse" />}</button>
                     </>
                   ) : (
                     <button onClick={() => setEditMode(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 text-sm font-medium"><Edit3 className="w-4 h-4" /> {t('app.edit')}</button>
@@ -511,7 +549,7 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
               const count = tabCounts[tab.key]
               const isActive = activeTab === tab.key
               return (
-                <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border ${isActive ? tab.activeColor + ' shadow-sm' : tab.color}`}>
+                <button key={tab.key} onClick={() => handleTabChange(tab.key)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border ${isActive ? tab.activeColor + ' shadow-sm' : tab.color}`}>
                   <tab.icon className="w-3.5 h-3.5" /> {tab.label}
                   {count !== undefined && <span className={`ml-0.5 text-[10px] px-1 py-0 rounded-full ${isActive ? 'bg-white/25' : 'bg-black/5'}`}>{count}</span>}
                 </button>
