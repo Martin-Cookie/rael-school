@@ -1,173 +1,317 @@
-# Cloud Deploy Agent – Nasazení SVJ aplikace do cloudu
+# Cloud Deploy Agent – Příprava cloudového nasazení (Rael School)
 
-> Spusť když budeš chtít přejít z lokálního/USB nasazení na cloudové.
-> Agent analyzuje projekt, navrhne infrastrukturu a připraví nasazení.
+> Spusť, až budeš chtít nasadit aplikaci na internet (sponzoři, dobrovolníci, management mimo lokál).
+> Agent analyzuje stav, doporučí platformu a připraví plán.
+
+---
+
+## Kontext projektu
+
+- **Stack:** Next.js 14 (App Router) + TypeScript + Prisma + SQLite + Tailwind
+- **Autentizace:** JWT v httpOnly cookies
+- **Data:** SQLite file `prisma/dev.db` (~148 studentů, 137 sponzorů)
+- **Nahrávání:** Fotografie studentů, importy bank výpisů (CSV/XLSX)
+- **Lokalizace:** Vlastní i18n (cs/en/sw)
+- **Aktuální způsob provozu:** `npm run dev` lokálně, žádný produkční server
 
 ---
 
 ## Cíl
 
-Připravit SVJ aplikaci pro nasazení do cloudu — aby k ní měli členové SVJ přístup přes internet bez USB.
+Připravit Rael School pro nasazení na cloud tak, aby:
+- Sponzoři měli přístup k detailům svých studentů přes internet
+- Management měl centralizovanou instanci
+- Zálohy běžely automaticky
+- Data byla bezpečná (HTTPS, auth, rate limit)
+
+**NEPRAV ŽÁDNÝ KÓD. ANALYZUJ A DOPORUČ.**
 
 ---
 
-## Instrukce
+## Fáze 1: ANALÝZA PŘIPRAVENOSTI
 
-### Fáze 1: ANALÝZA PŘIPRAVENOSTI
+### 1.1 Konfigurovatelnost
+Co je hardcoded vs přes env:
+- `DATABASE_URL` v `.env`? ✅
+- `JWT_SECRET` přes env? (ověř v `src/lib/auth.ts`)
+- Cesty k souborům (upload dir pro fotografie) — konfigurovatelné?
+- URL aplikace (pro cookie domain)?
+- SMTP (pokud bude email pro reset hesla)?
 
-#### 1.1 Závislosti na lokálním prostředí
-- SQLite databáze — cesta hardcoded nebo konfigurovatelná?
-- Upload soubory — lokální filesystem nebo konfigurovatelné úložiště?
-- LibreOffice — je vyžadován? Pro které funkce?
-- `spustit.command` — macOS specifické věci?
-- Absolutní cesty v kódu?
-- `.env` konfigurace — co vše je konfigurovatelné?
+### 1.2 Bezpečnost pro internet
+| Kontrola | Kde |
+|----------|------|
+| Autentizace | `src/lib/auth.ts` |
+| CSRF ochrana | `src/lib/csrf.ts` |
+| Rate limiting | `src/lib/rateLimit.ts` |
+| CSP, HSTS headers | `next.config.js` |
+| Secure cookies v produkci | `src/lib/auth.ts` — `secure: process.env.NODE_ENV === 'production'` |
+| Debug mode vypnutý | `NODE_ENV=production` |
 
-#### 1.2 Bezpečnost pro internet
-- Autentizace implementovaná? (bez ní NIKDY nevystavovat na internet)
-- HTTPS — aplikace je připravená na proxy (X-Forwarded-For, X-Forwarded-Proto)?
-- CSRF ochrana na formulářích?
-- Rate limiting?
-- Session bezpečnost (secure cookie, httponly, samesite)?
-- Debug mode vypnutý?
-- Citlivá data v kódu?
+### 1.3 Výkon pro víceuživatelský přístup
+- **SQLite:**
+  - WAL mode? (ověř `PRAGMA journal_mode`)
+  - Concurrent reads OK, concurrent writes sekvenční — pro ~30 uživatelů stačí
+- **Session:** JWT v cookie = stateless, OK
+- **File uploads:** Fotografie — kam se ukládají? Persistent volume nutný
 
-#### 1.3 Výkon pro víceuživatelský přístup
-- SQLite zvládne souběžné přístupy? (WAL mode?)
-- Session storage (in-memory vs persistent)?
-- Statické soubory — CDN nebo lokální?
+### 1.4 Next.js specifika
+- **Build output:** Přidat `output: 'standalone'` do `next.config.js` pro Docker
+- **API routes:** Běží na Node runtime (ne edge) kvůli Prisma klientu
+- **Image optimization:** `next/image` vyžaduje runtime (ne static export)
 
-### Fáze 2: DOPORUČENÍ PLATFORMY
+---
 
-Na základě analýzy navrhni nejlepší variantu. Porovnej:
+## Fáze 2: DOPORUČENÍ PLATFORMY
 
-#### Varianta A: VPS (Virtual Private Server)
-- **Kdy:** Plná kontrola, SQLite stačí, nízký provoz
-- **Příklad:** Hetzner, DigitalOcean, Wedos
-- **Cena:** od 100 Kč/měsíc
-- **Stack:** Ubuntu + nginx + gunicorn/uvicorn + systemd + Let's Encrypt
-- **Pro:** Jednoduché, levné, SQLite funguje přímo
-- **Proti:** Ruční správa serveru, zálohy, aktualizace
+Hlavní rozhodnutí: **jak řešit persistent storage pro SQLite + uploads.**
 
-#### Varianta B: PaaS (Platform as a Service)
-- **Kdy:** Nechceš spravovat server, jednoduchý deploy
-- **Příklad:** Railway, Render, Fly.io
-- **Cena:** od 0 Kč (free tier) do 500 Kč/měsíc
-- **Stack:** Dockerfile nebo buildpack, managed HTTPS
-- **Pro:** Automatické deploye, HTTPS, škálování
-- **Proti:** SQLite může být problém (ephemeral filesystem), potřeba persistent volume nebo přechod na PostgreSQL
+### Varianta A: VPS (doporučeno pro jednoduchost)
 
-#### Varianta C: Kontejner (Docker)
-- **Kdy:** Chceš přenositelnost, reproducibilní prostředí
-- **Stack:** Dockerfile + docker-compose + nginx
-- **Pro:** Funguje všude stejně, snadná záloha
-- **Proti:** Potřeba Docker knowledge
+| Atribut | |
+|---------|-|
+| **Kdy** | Plná kontrola, SQLite zůstává, nízký provoz |
+| **Příklady** | Hetzner Cloud (~€5/měs), Contabo, Wedos VPS |
+| **Stack** | Ubuntu 22.04 + Node 20 + systemd + nginx + Let's Encrypt |
+| **Cena** | 100–250 Kč/měs |
+| **Pro** | SQLite funguje přímo, levné |
+| **Proti** | Ruční správa (updates, zálohy, monitoring) |
 
-### Fáze 3: PŘÍPRAVA NASAZENÍ (po schválení varianty)
+### Varianta B: Railway (doporučeno pro minimální ops)
 
-#### 3.1 Společné pro všechny varianty
-1. **Dockerfile:**
-   ```dockerfile
-   FROM python:3.11-slim
-   WORKDIR /app
-   COPY requirements.txt .
-   RUN pip install --no-cache-dir -r requirements.txt
-   COPY . .
-   RUN mkdir -p data data/uploads data/backups
-   EXPOSE 8000
-   CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-   ```
+| Atribut | |
+|---------|-|
+| **Kdy** | Nechceš spravovat server, deploy na git push |
+| **Stack** | Dockerfile / Nixpacks + persistent volume |
+| **Cena** | ~$5/měs base + usage (~150–400 Kč/měs) |
+| **Pro** | Auto HTTPS, persistent volumes |
+| **Proti** | Vendor lock-in, dražší při růstu |
 
-2. **Konfigurace přes environment variables:**
-   - `DATABASE_URL` — cesta k DB
-   - `SECRET_KEY` — pro session
-   - `SMTP_*` — emailové nastavení
-   - `UPLOAD_DIR` — cesta k uploadům
-   - `DEBUG` — false v produkci
+### Varianta C: Fly.io
 
-3. **Healthcheck endpoint:**
-   ```python
-   @app.get("/health")
-   def health():
-       return {"status": "ok"}
-   ```
+| Atribut | |
+|---------|-|
+| **Kdy** | Chceš edge + persistent volume |
+| **Stack** | Dockerfile + Fly volumes |
+| **Cena** | ~$3–10/měs (free tier pro malé app) |
+| **Pro** | Dobrý DX, volumes |
+| **Proti** | Složitější konfigurace |
 
-4. **Produkční nastavení:**
-   - `debug=False`
-   - Secure cookies
-   - HTTPS redirect
-   - Logging do souboru
+### Varianta D: Vercel (NEDOPORUČUJEME)
 
-#### 3.2 VPS specifické
-- `nginx.conf` pro reverse proxy
-- `systemd` service file pro auto-start
-- Let's Encrypt certbot setup
-- Cron pro zálohy
-- Firewall (ufw) konfigurace
+| Atribut | |
+|---------|-|
+| **Problém** | SQLite nefunguje (ephemeral FS) |
+| **Kdy** | Jen při migraci na Postgres / Turso (libSQL) |
+| **Proti** | Migrace DB = kus práce, známé edge cases s Prisma |
 
-#### 3.3 PaaS specifické
-- `Procfile` nebo `railway.toml` / `render.yaml`
-- Persistent volume pro SQLite a uploads
-- Environment variables v dashboard
+### Varianta E: Self-hosted Docker
 
-#### 3.4 Docker specifické
-- `docker-compose.yml`
-- Volume pro data persistence
-- nginx reverse proxy kontejner
+| Atribut | |
+|---------|-|
+| **Kdy** | Vlastní HW (home server, NAS) |
+| **Stack** | docker-compose + traefik/caddy + volumes |
+| **Pro** | Žádné měsíční náklady |
+| **Proti** | Vyžaduje public IP / tunel (Cloudflare Tunnel, Tailscale) |
 
-### Fáze 4: TESTOVÁNÍ
+---
 
-1. Nasaď na staging prostředí
-2. Ověř:
-   - [ ] Login funguje
-   - [ ] Všechny moduly přístupné
-   - [ ] Import Excel/CSV funguje
-   - [ ] Upload souborů funguje
-   - [ ] Odesílání emailů funguje
-   - [ ] Záloha/obnova funguje
-   - [ ] HTTPS funguje
-   - [ ] Výkon je přijatelný
-3. Bezpečnostní kontrola:
-   - [ ] Žádné citlivé soubory přístupné přes web
-   - [ ] Debug mode vypnutý
-   - [ ] HTTP redirectuje na HTTPS
+## Fáze 3: PŘÍPRAVA NASAZENÍ
 
-### Fáze 5: REPORT
+### 3.1 Dockerfile (pro Docker / Railway / Fly)
 
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npx prisma generate
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma/client ./node_modules/@prisma/client
+USER nextjs
+EXPOSE 3000
+ENV PORT=3000 HOSTNAME="0.0.0.0"
+CMD ["node", "server.js"]
 ```
-## Cloud Deploy Report – [datum]
 
-### Analýza připravenosti
-- Autentizace: ✅/❌
-- HTTPS ready: ✅/❌
-- Konfigurovatelnost: ✅/❌
-- Bezpečnost: ✅/❌
+**Předpoklad:** `next.config.js` má `output: 'standalone'`.
 
-### Doporučená platforma
-[varianta] — [důvod]
+### 3.2 Environment variables
 
-### Potřebné změny v kódu
+```bash
+DATABASE_URL=file:/data/rael.db       # persistent volume cesta
+JWT_SECRET=<random 64+ chars>          # openssl rand -base64 64
+NODE_ENV=production
+NEXT_TELEMETRY_DISABLED=1
+# Pokud bude email:
+SMTP_HOST=...
+SMTP_PORT=587
+SMTP_USER=...
+SMTP_PASS=...
+SMTP_FROM=...
+```
+
+### 3.3 Healthcheck endpoint
+
+Přidej `src/app/api/health/route.ts`:
+```typescript
+export async function GET() {
+  return Response.json({ status: 'ok' })
+}
+```
+
+### 3.4 Produkční nastavení
+
+`next.config.js`:
+- `output: 'standalone'`
+- CSP headers
+- `reactStrictMode: true`
+
+`src/lib/auth.ts` (cookie options):
+- `secure: process.env.NODE_ENV === 'production'`
+- `sameSite: 'lax'` (nebo `'strict'` bez cross-site navigace)
+- `httpOnly: true`
+
+### 3.5 Zálohy v cloudu
+
+Týdenní cron (nebo denní), kopíruje SQLite do object storage (S3, Backblaze B2, Cloudflare R2):
+
+```bash
+#!/bin/bash
+# /etc/cron.weekly/rael-backup
+DATE=$(date +%Y%m%d)
+sqlite3 /data/rael.db ".backup /tmp/rael-$DATE.db"
+aws s3 cp /tmp/rael-$DATE.db s3://rael-backups/
+rm /tmp/rael-$DATE.db
+```
+
+Alternativa: **Litestream** pro kontinuální SQLite replikaci.
+
+### 3.6 VPS-specifické
+
+**Nginx** (`/etc/nginx/sites-available/rael`):
+```nginx
+server {
+  listen 443 ssl http2;
+  server_name rael.example.com;
+  ssl_certificate /etc/letsencrypt/live/rael.example.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/rael.example.com/privkey.pem;
+
+  location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+  }
+}
+```
+
+**systemd** (`/etc/systemd/system/rael.service`):
+```ini
+[Unit]
+Description=Rael School
+After=network.target
+
+[Service]
+Type=simple
+User=rael
+WorkingDirectory=/opt/rael
+ExecStart=/usr/bin/node server.js
+Restart=always
+EnvironmentFile=/opt/rael/.env
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Let's Encrypt:** `certbot --nginx -d rael.example.com`
+**Firewall (ufw):** 22 (SSH), 80, 443
+
+---
+
+## Fáze 4: CHECKLIST NASAZENÍ
+
+- [ ] `next.config.js` má `output: 'standalone'`
+- [ ] `/api/health` endpoint existuje
+- [ ] `JWT_SECRET` je náhodný (ne default)
+- [ ] HTTPS funguje
+- [ ] HTTP → HTTPS redirect
+- [ ] Secure cookies v produkci
+- [ ] Rate limiting na login a importech
+- [ ] CSP headers
+- [ ] Persistent volume pro `dev.db` a uploads
+- [ ] Zálohy do object storage (cron nastavený)
+- [ ] Monitoring (aspoň uptime — UptimeRobot zdarma)
+- [ ] Testováno: login (všechny role), CRUD, import, export, tisk, dark mode, lokalizace
+- [ ] DNS směřuje na server
+- [ ] `.env` neobsahuje lokální cesty ani default secrety
+
+---
+
+## Fáze 5: REPORT
+
+Vytvoř `CLOUD-DEPLOY-REPORT.md`:
+
+```markdown
+# Rael School – Cloud Deploy Report – YYYY-MM-DD
+
+## Analýza připravenosti
+| Kontrola | Stav | Poznámka |
+|----------|------|----------|
+| Autentizace | ✅/❌ | ... |
+| HTTPS ready | ✅/❌ | ... |
+| Konfigurovatelnost | ✅/❌ | Co je hardcoded |
+| Bezpečnost | ✅/❌ | ... |
+| Performance | ✅/⚠️/❌ | SQLite limit ~30 current users |
+
+## Doporučená platforma
+**[Varianta X]** — [důvod]
+
+## Potřebné změny v kódu
 | # | Změna | Soubor | Složitost |
 |---|-------|--------|-----------|
-| 1 | ...   | ...    | nízká/střední/vysoká |
+| 1 | Přidat `output: 'standalone'` | `next.config.js` | nízká |
+| 2 | Přidat `/api/health` | `src/app/api/health/route.ts` | nízká |
 
-### Odhad nákladů
-- Hosting: X Kč/měsíc
-- Doména: X Kč/rok (volitelné)
-- SSL: zdarma (Let's Encrypt)
+## Odhad nákladů
+- Hosting: X Kč/měs
+- Doména: X Kč/rok
+- Object storage (zálohy): X Kč/měs
+- SSL: zdarma (Let's Encrypt nebo managed)
+- **Celkem: X Kč/měs**
 
-### Postup nasazení
+## Postup nasazení
 1. [krok]
 2. [krok]
-...
+
+## Rizika
+- [potenciální problémy — např. migrace SQLite→Postgres pokud Vercel]
 ```
 
 ---
 
 ## Spuštění
 
-V Claude Code zadej:
-
 ```
-Přečti soubor CLOUD-DEPLOY.md a analyzuj připravenost projektu pro nasazení do cloudu. Navrhni nejlepší variantu a připrav plán.
+Přečti docs/agents/CLOUD-DEPLOY.md a analyzuj připravenost pro cloud. Doporuč platformu a připrav plán.
 ```

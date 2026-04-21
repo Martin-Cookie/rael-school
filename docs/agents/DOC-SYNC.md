@@ -1,171 +1,170 @@
-# Doc Sync Agent – Synchronizace dokumentace s realitou projektu
+# Doc Sync Agent – Synchronizace dokumentace (Rael School)
 
-> Spouštěj po větším bloku změn, ideálně společně s CODE-GUARDIAN auditem.
-> Agent projde projekt, porovná stav kódu s dokumentací a navrhne opravy.
+> Spouštěj po větším bloku změn, ideálně společně s CODE-GUARDIAN.
+> Agent projde projekt a porovná stav kódu s dokumentací. Před implementací oprav čeká na schválení.
+
+---
+
+## Kontext projektu
+
+- **Stack:** Next.js 14 (App Router), TypeScript, Prisma, SQLite, Tailwind CSS
+- **Dokumentace:** `CLAUDE.md` (backend + konvence), `docs/UI_GUIDE.md` (frontend), `README.md` (instalace + přehled)
+- **Klíčové cesty:** `src/app/**`, `src/lib/**`, `src/hooks/**`, `src/components/**`, `prisma/schema.prisma`
 
 ---
 
 ## Cíl
 
-Zajistit že CLAUDE.md, docs/UI_GUIDE.md a README.md přesně odpovídají aktuálnímu stavu projektu. Zastaralá dokumentace je horší než žádná — vede k chybným rozhodnutím.
+Zajistit, že `CLAUDE.md`, `docs/UI_GUIDE.md` a `README.md` přesně odpovídají aktuálnímu stavu kódu. Zastaralá dokumentace je horší než žádná.
 
 ---
 
-## Instrukce
+## Postup
 
 ### Fáze 1: ANALÝZA (nic neměň)
-
-Projdi celý projekt a porovnej skutečný stav kódu s dokumentací. Vytvoř report rozdílů.
+Projdi projekt a porovnej realitu kódu s dokumentací. Vytvoř report rozdílů.
 
 ### Fáze 2: PLÁN OPRAV
-
-Ukaž strukturovaný plán přes update_plan tool:
-- Co smazat (zastaralé)
-- Co přidat (chybějící)
-- Co upravit (nepřesné)
+Ukaž strukturovaný plán v chatu:
+- **Smazat** (zastaralé)
+- **Přidat** (chybějící)
+- **Upravit** (nepřesné)
 
 ### Fáze 3: IMPLEMENTACE (až po schválení)
-
-Po schválení plánu proveď opravy. Commitni jako: `docs: synchronizace dokumentace s aktuálním stavem projektu`
+Po schválení proveď opravy. Commit: `docs: synchronizace dokumentace s aktuálním stavem projektu`.
 
 ---
 
-## 1. CLAUDE.md — Backend pravidla
+## 1. CLAUDE.md
 
 ### 1.1 Zastaralá pravidla
-- Projdi KAŽDOU sekci CLAUDE.md
-- Pro každé pravidlo/vzor ověř že odpovídající kód stále existuje a funguje tak jak je popsáno
-- Hledej:
-  - Zmínky o smazaných/přejmenovaných souborech, funkcích, modelech, routerech
-  - Vzory kódu které se v projektu už nepoužívají
-  - Konfigurační hodnoty které se změnily
-  - Moduly/endpointy které byly odstraněny nebo přesunuty
-  - Enum hodnoty které se změnily
+Projdi každou sekci a ověř, že odpovídá kódu:
+- **Zmínky o smazaných/přejmenovaných** souborech, funkcích, Prisma modelech, API routes
+- **Vzory kódu** které se už nepoužívají (sdílený hook byl přejmenován, API pattern nahrazen)
+- **Konfigurační hodnoty** které se změnily (výchozí VoucherRate, tuition sazby, role)
+- **Moduly/endpointy** které byly odstraněny nebo přesunuty
+- **Enum hodnoty** nebo statusy, které se změnily (např. TuitionStatus, PaymentImportRow status)
 
 ### 1.2 Chybějící pravidla
-- Projdi VŠECHNY soubory v `app/routers/`, `app/models/`, `app/services/`, `app/templates/`
-- Najdi vzory které se opakují v kódu ale NEJSOU zdokumentované v CLAUDE.md:
-  - Nové helper funkce používané napříč moduly
-  - Nové konvence pojmenování
-  - Nové datové modely nebo sloupce
-  - Nové router vzory nebo middleware
-  - Nové Jinja2 filtry nebo makra
-  - Specifické workaroundy s komentářem `# POZOR` / `# HACK` / `# WORKAROUND`
-- Zkontroluj jestli sekce „Uživatelské role" stále odpovídá plánu
+Projdi:
+- `src/app/api/**/route.ts` (API routes)
+- `prisma/schema.prisma` (modely, indexy, relace)
+- `src/lib/**` (helpery, utility)
+- `src/hooks/**` (sdílené hooky)
+- `src/components/**` (sdílené komponenty)
+
+Hledej vzory opakující se v kódu ale NEJSOU v CLAUDE.md:
+- Nové helper funkce používané napříč moduly
+- Nové konvence pojmenování
+- Nové Prisma modely nebo sloupce
+- Nové API route vzory (middleware, error handlers)
+- Nové sdílené hooky nebo komponenty
+- Specifické workaroundy (`// POZOR`, `// HACK`, `// WORKAROUND`)
+
+Zkontroluj jestli sekce "Uživatelské role" stále odpovídá `src/lib/auth.ts` a middleware.
 
 ### 1.3 Cesty k souborům
-- Každý odkaz na soubor v CLAUDE.md (např. `app/routers/voting.py`, `docs/UI_GUIDE.md`) — existuje?
-- Každý příklad importu (např. `from app.models import ...`) — funguje?
-- Každý odkaz na sekci UI_GUIDE.md (např. `[UI_GUIDE.md § 13]`) — existuje ta sekce?
+Každý odkaz v CLAUDE.md musí existovat:
+- Cesty typu `src/hooks/useLocale.ts`, `src/lib/format.ts`, `src/components/Toast.tsx` — existují?
+- Odkazy na sekce UI_GUIDE.md typu `[UI_GUIDE.md § XY]` — sekce existuje?
 
 ### 1.4 Kódové příklady
-- Jsou code snippety v CLAUDE.md stále platné?
-- Odpovídají aktuálnímu API (SQLAlchemy, FastAPI, Jinja2)?
-- Používají aktuální názvy funkcí a proměnných?
+- Code snippety v CLAUDE.md platné? (např. `const { message, showMsg } = useToast()` — API stále stejné?)
+- Odpovídají aktuálním verzím knihoven (Next.js 14 App Router, Prisma klient)?
 
 ---
 
-## 2. docs/UI_GUIDE.md — Frontend pravidla
+## 2. docs/UI_GUIDE.md
 
 ### 2.1 Zastaralá pravidla
-- Projdi KAŽDOU sekci UI_GUIDE.md
-- Pro každý UI vzor ověř že se v šablonách stále používá tak jak je popsáno
-- Hledej:
-  - CSS třídy které se změnily (Tailwind utility classes)
-  - HTMX atributy které se změnily
-  - Komponenty (tlačítka, tabulky, modaly) jejichž markup se vyvinul jinam
-  - Makra která byla smazána nebo přejmenována
-  - Ikony které se změnily
+- Tailwind třídy které se změnily?
+- React patterns které se posunuly (např. formulář přešel z klienta na server action)?
+- Komponenty (tlačítka, tabulky, modaly) — markup se vyvinul?
+- Sdílené komponenty které byly smazány nebo přejmenovány?
+- Ikony (lucide-react) které se změnily?
 
 ### 2.2 Chybějící vzory
-- Projdi VŠECHNY šablony v `app/templates/`
-- Najdi UI vzory které se opakují ale NEJSOU v UI_GUIDE.md:
-  - Nové typy komponent (karty, stepper, progress bar...)
-  - Nové HTMX interakce
-  - Nové layout vzory
-  - Nové formulářové vzory
-  - Nové způsoby zobrazení dat
+Projdi `src/app/**/page.tsx` a `src/components/**` a najdi vzory které chybí v UI_GUIDE:
+- Nové komponenty (karty, stepper, progress, badge, …)
+- Nové layout vzory (sticky, grid, tabs)
+- Nové formulářové vzory
+- Nové způsoby zobrazení dat (cross-page navigace, filtry)
 
 ### 2.3 Konzistence s CLAUDE.md
-- Pokud CLAUDE.md říká „UI detaily viz UI_GUIDE.md § X" — existuje ta sekce?
-- Pokud oba soubory popisují stejnou věc — říkají totéž?
-- Jsou křížové odkazy obousměrné? (CLAUDE.md → UI_GUIDE.md i zpět)
+- Obousměrné odkazy fungují? (CLAUDE.md → UI_GUIDE.md i zpět)
+- Překrývající se sekce (např. dark mode) — říkají totéž?
 
-### 2.4 Příklady HTML/CSS
-- Jsou HTML snippety v UI_GUIDE.md stále platné?
-- Odpovídají aktuálním šablonám?
-- Používají aktuální Tailwind třídy?
+### 2.4 Příklady JSX/CSS
+- JSX snippety stále platné?
+- Aktuální Tailwind třídy?
+- Správné importy z `@/`?
 
 ---
 
-## 3. README.md — Projektová dokumentace
+## 3. README.md
 
 ### 3.1 Instalace a spuštění
-- Ověř že instalační kroky fungují (správné příkazy, správné pořadí)
-- Je zmíněna správná verze Pythonu?
-- Jsou všechny závislosti v requirements.txt zmíněné?
-- Funguje příkaz pro spuštění?
-- Je zmíněn postup pro USB nasazení?
+- Kroky fungují (správné příkazy, správné pořadí)?
+  - `npm install`
+  - `.env` s `DATABASE_URL="file:./dev.db"`
+  - `npx prisma db push`
+  - `npm run db:seed`
+  - `npm run dev`
+- Zmíněna správná Node verze?
+- Zmíněny scripts z `package.json` (`dev`, `build`, `start`, `test`, `lint`)?
 
 ### 3.2 Seznam modulů
-- Projdi skutečné routery v `app/routers/` a sidebaru v `base.html`
-- Odpovídá seznam modulů v README realitě?
-- Jsou všechny moduly popsané?
-- Jsou popsány správně (název, funkce, cesta)?
+Projdi skutečné stránky v `src/app/**/page.tsx` a sidebar v `src/components/layout/Sidebar.tsx`. Porovnej se seznamem v README:
 - Chybí nové moduly?
 - Jsou tam smazané moduly?
+- Popsané správně (název, cesta, role přístupu)?
 
 ### 3.3 API endpointy
-- Projdi VŠECHNY routery a extrahuj skutečné endpointy
-- Porovnej se seznamem v README.md
-- Chybějící endpointy přidej
-- Smazané endpointy odstraň
+Projdi `src/app/api/**/route.ts` a extrahuj endpointy (GET/POST/PUT/DELETE). Porovnej se seznamem v README (pokud existuje):
+- Chybějící přidej
+- Smazané odstraň
 - Změněné parametry/odpovědi aktualizuj
 
-### 3.4 Screenshoty a ukázky
-- Pokud README obsahuje screenshoty — odpovídají aktuálnímu UI?
-- Pokud odkazuje na ukázkové soubory — existují?
+### 3.4 Přihlašovací údaje
+- Odpovídají reálnému seedu v `prisma/seed.ts`?
 
 ---
 
 ## Formát reportu
 
-Před opravami vytvoř report (vypiš do chatu):
+Před opravami vypíš do chatu:
 
-```
-## Doc Sync Report – [datum]
+```markdown
+## Rael School – Doc Sync Report – YYYY-MM-DD
 
 ### CLAUDE.md
-ZASTARALÉ (smazat/upravit):
+**Zastaralé (smazat/upravit):**
 - ř. XX: [co] — [proč zastaralé]
-- ...
 
-CHYBĚJÍCÍ (přidat):
+**Chybějící (přidat):**
 - [co] — [kde v kódu se to používá]
+
+**Nefunkční odkazy:**
+- ř. XX: [odkaz] — [soubor/sekce neexistuje]
+
+### docs/UI_GUIDE.md
+**Zastaralé:**
 - ...
 
-NEFUNKČNÍ ODKAZY:
-- ř. XX: [odkaz] — [soubor neexistuje / sekce neexistuje]
+**Chybějící:**
 - ...
 
-### UI_GUIDE.md
-ZASTARALÉ:
-- ...
-
-CHYBĚJÍCÍ:
-- ...
-
-ROZPORY S CLAUDE.md:
+**Rozpory s CLAUDE.md:**
 - ...
 
 ### README.md
-ZASTARALÉ:
+**Zastaralé:**
 - ...
 
-CHYBĚJÍCÍ MODULY:
+**Chybějící moduly:**
 - ...
 
-CHYBĚJÍCÍ ENDPOINTY:
+**Chybějící endpointy:**
 - ...
 
 ### Souhrn
@@ -175,14 +174,13 @@ CHYBĚJÍCÍ ENDPOINTY:
 - README.md: X úprav
 ```
 
-Po schválení oprav, commitni s message: `docs: synchronizace dokumentace s aktuálním stavem projektu`
+Po schválení oprav commit:
+`docs: synchronizace dokumentace s aktuálním stavem projektu`
 
 ---
 
 ## Spuštění
 
-V Claude Code zadej:
-
 ```
-Přečti soubor DOC-SYNC.md a proveď synchronizaci dokumentace s aktuálním stavem projektu. Nejdřív analyzuj a ukaž report, pak po schválení oprav dokumenty.
+Přečti docs/agents/DOC-SYNC.md a proveď synchronizaci dokumentace. Nejdřív analyzuj a ukaž report, pak po schválení oprav dokumenty.
 ```
