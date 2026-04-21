@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit, hashPassword } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
@@ -26,12 +27,12 @@ export async function POST(
     let sponsorUser = await prisma.user.findUnique({ where: { email: data.email } })
 
     if (!sponsorUser) {
-      // Create new sponsor user with default password
-      const defaultPassword = await hashPassword('sponsor123')
+      const randomPassword = crypto.randomBytes(16).toString('hex')
+      const hashedPassword = await hashPassword(randomPassword)
       sponsorUser = await prisma.user.create({
         data: {
           email: data.email,
-          password: defaultPassword,
+          password: hashedPassword,
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone || null,
