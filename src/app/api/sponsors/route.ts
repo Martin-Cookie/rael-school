@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || ''
     const includeInactive = searchParams.get('includeInactive') === 'true'
 
-    const where: any = {
+    const where: Prisma.UserWhereInput = {
       role: 'SPONSOR',
       ...(includeInactive ? {} : { isActive: true }),
     }

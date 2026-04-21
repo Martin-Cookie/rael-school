@@ -3,12 +3,30 @@ import { getCurrentUser, isAdmin } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
 import { logAudit } from '@/lib/auditLog'
 
+// Společná podoba všech codelist položek (NeedType, WishType, EquipmentType,
+// HealthCheckType, PaymentType, ClassRoom). Některé mají `price`, některé ne.
+export interface CodelistItemRecord {
+  id: string
+  name: string
+  nameEn: string | null
+  nameSw: string | null
+  sortOrder: number
+  isActive: boolean
+  price?: number | null
+  createdAt: Date
+}
+
+type CodelistInput = Partial<Omit<CodelistItemRecord, 'id' | 'createdAt'>>
+
+// Delegate args zůstávají `any` kvůli factory patternu — každý Prisma delegate
+// (prisma.needType, prisma.wishType, …) má svůj generovaný typ a Prisma jich
+// nenabízí společný interface. Vnitřní data objekty jsou už typované níže.
 interface CodelistConfig {
   delegate: {
-    findMany: (args: any) => Promise<any[]>
-    findUnique: (args: any) => Promise<any>
-    create: (args: any) => Promise<any>
-    update: (args: any) => Promise<any>
+    findMany: (args: any) => Promise<CodelistItemRecord[]>
+    findUnique: (args: any) => Promise<CodelistItemRecord | null>
+    create: (args: any) => Promise<CodelistItemRecord>
+    update: (args: any) => Promise<CodelistItemRecord>
   }
   pluralKey: string    // e.g. 'needTypes'
   singularKey: string  // e.g. 'needType'
@@ -45,14 +63,14 @@ export function createCodelistHandlers(config: CodelistConfig) {
       const existing = await delegate.findUnique({ where: { name: name.trim() } })
       if (existing) {
         if (!existing.isActive) {
-          const data: Record<string, any> = { isActive: true, sortOrder: sortOrder ?? 0, nameEn: nameEn || null, nameSw: nameSw || null }
+          const data: CodelistInput = { isActive: true, sortOrder: sortOrder ?? 0, nameEn: nameEn || null, nameSw: nameSw || null }
           if (hasPrice) data.price = price ?? null
           const reactivated = await delegate.update({ where: { id: existing.id }, data })
           return NextResponse.json({ [singularKey]: reactivated }, { status: 201 })
         }
         return NextResponse.json({ error: 'Already exists' }, { status: 409 })
       }
-      const data: Record<string, any> = { name: name.trim(), nameEn: nameEn || null, nameSw: nameSw || null, sortOrder: sortOrder ?? 0 }
+      const data: CodelistInput = { name: name.trim(), nameEn: nameEn || null, nameSw: nameSw || null, sortOrder: sortOrder ?? 0 }
       if (hasPrice) data.price = price ?? null
       const item = await delegate.create({ data })
       await logAudit({ userId: user.id, userEmail: user.email, action: 'CREATE', resource: label, detail: `Created ${name.trim()}` })
@@ -75,7 +93,7 @@ export function createCodelistHandlers(config: CodelistConfig) {
           await delegate.update({ where: { id: item.id }, data: { sortOrder: item.sortOrder } })
         }
       } else if (body.id) {
-        const data: Record<string, any> = {}
+        const data: CodelistInput = {}
         if (body.name !== undefined && body.name.trim()) data.name = body.name.trim()
         if (body.nameEn !== undefined) data.nameEn = body.nameEn || null
         if (body.nameSw !== undefined) data.nameSw = body.nameSw || null

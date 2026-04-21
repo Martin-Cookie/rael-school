@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, isAdmin, isManager } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     const period = searchParams.get('period')
     const studentId = searchParams.get('studentId')
 
-    const where: Record<string, any> = {}
+    const where: Prisma.TuitionChargeWhereInput = {}
     if (period) where.period = period
     if (studentId) where.studentId = studentId
 
@@ -136,7 +137,7 @@ export async function POST(request: NextRequest) {
     const classNameToSortOrder = new Map(classRooms.map(c => [c.name, c.sortOrder]))
 
     // Načíst aktivní studenty (volitelně jen vybrané)
-    const studentWhere: Record<string, any> = { isActive: true }
+    const studentWhere: Prisma.StudentWhereInput = { isActive: true }
     if (Array.isArray(studentIds) && studentIds.length > 0) {
       studentWhere.id = { in: studentIds }
     }
@@ -205,7 +206,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     if (!body.id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
 
-    const data: Record<string, any> = {}
+    const data: Prisma.TuitionChargeUpdateInput = {}
     if (body.status !== undefined) data.status = body.status
     if (body.notes !== undefined) data.notes = body.notes || null
     if (body.amount !== undefined && body.amount > 0) data.amount = body.amount

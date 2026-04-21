@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, canEdit } from '@/lib/auth'
 import { recalcTuitionStatus, isTuitionType } from '@/lib/tuition'
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
     const spCursor = searchParams.get('spCursor') || undefined
     const vpCursor = searchParams.get('vpCursor') || undefined
 
-    const spQuery: any = {
+    const spQuery: Prisma.SponsorPaymentFindManyArgs = {
       take: limit + 1,
       orderBy: { paymentDate: 'desc' },
       include: {
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
       spQuery.skip = 1
     }
 
-    const vpQuery: any = {
+    const vpQuery: Prisma.VoucherPurchaseFindManyArgs = {
       take: limit + 1,
       orderBy: { purchaseDate: 'desc' },
       include: {
