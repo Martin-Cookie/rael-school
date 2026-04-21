@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 import { prisma, isNotFoundError } from '@/lib/db'
 import { getCurrentUser, isAdmin, isManager } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { isTuitionPaymentType } from '@/lib/paymentTypes'
 
 // GET — seznam předpisů (s filtrováním podle období)
 export async function GET(request: NextRequest) {
@@ -34,12 +35,13 @@ export async function GET(request: NextRequest) {
       orderBy: [{ student: { lastName: 'asc' } }, { student: { firstName: 'asc' } }],
     })
 
-    // Pro každý předpis spočítat zaplaceno z SponsorPayment (typ školné)
+    // Pro každý předpis spočítat zaplaceno z SponsorPayment (typ školné).
+    // SponsorPayment.paymentType je textové pole (ne FK), proto matchujeme podle .name.
     const paymentTypes = await prisma.paymentType.findMany({
       where: { isActive: true },
     })
-    const tuitionTypeIds = paymentTypes
-      .filter(pt => /školné|tuition|karo/i.test(pt.name + (pt.nameEn || '') + (pt.nameSw || '')))
+    const tuitionTypeNames = paymentTypes
+      .filter(isTuitionPaymentType)
       .map(pt => pt.name)
 
     // Načíst sazby a třídy pro určení názvu sazby
@@ -49,10 +51,10 @@ export async function GET(request: NextRequest) {
 
     // Batch-load: všechny platby školného jedním dotazem (místo N+1)
     const uniqueStudentIds = [...new Set(charges.map(c => c.studentId))]
-    const allTuitionPayments = tuitionTypeIds.length > 0 ? await prisma.sponsorPayment.findMany({
+    const allTuitionPayments = tuitionTypeNames.length > 0 ? await prisma.sponsorPayment.findMany({
       where: {
         studentId: { in: uniqueStudentIds },
-        paymentType: { in: tuitionTypeIds },
+        paymentType: { in: tuitionTypeNames },
       },
       select: {
         amount: true,
