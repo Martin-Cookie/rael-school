@@ -6,11 +6,12 @@ import { Upload, Printer, CheckSquare, Square, AlertCircle, ChevronUp, ChevronDo
 import Pagination from '@/components/Pagination'
 import { formatNumber } from '@/lib/format'
 import { useLocale } from '@/hooks/useLocale'
+import type { StudentListItem } from '@/types/api'
 
 type SortDir = 'asc' | 'desc'
 
 export default function VisitCardsPage() {
-  const [students, setStudents] = useState<any[]>([])
+  const [students, setStudents] = useState<StudentListItem[]>([])
   const [loading, setLoading] = useState(true)
   const { locale, t } = useLocale()
   const [selected, setSelected] = useState<Set<string>>(new Set())

@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/useToast'
 import { SortHeader } from '@/components/SortHeader'
 import { Toast } from '@/components/Toast'
 import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
+import type { StudentListItem } from '@/types/api'
 
 type ChargePayment = {
   amount: number
@@ -46,7 +47,7 @@ export default function TuitionPage() {
   const [showGenerate, setShowGenerate] = useState(false)
   const [genPeriod, setGenPeriod] = useState(new Date().getFullYear().toString())
   const [generating, setGenerating] = useState(false)
-  const [genStudents, setGenStudents] = useState<any[]>([])
+  const [genStudents, setGenStudents] = useState<StudentListItem[]>([])
   const [genSelected, setGenSelected] = useState<Set<string>>(new Set())
   const [genClassFilter, setGenClassFilter] = useState('')
   const [genSearch, setGenSearch] = useState('')

@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save } from 'lucide-react'
 import { useLocale } from '@/hooks/useLocale'
 import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
+import type { ClassRoom } from '@/types/api'
 
 export default function NewStudentPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const { t } = useLocale()
-  const [classrooms, setClassrooms] = useState<any[]>([])
+  const [classrooms, setClassrooms] = useState<ClassRoom[]>([])
   const [form, setForm] = useState({
     firstName: '', lastName: '', dateOfBirth: '', gender: '',
     className: '', healthStatus: '', motherName: '', motherAlive: '',

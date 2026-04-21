@@ -86,12 +86,11 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const id = params.id
   const router = useRouter()
   const [backUrl, setBackUrl] = useState('/students')
-  // StudentDetail interface defined above for reference; kept as any due to extensive nested access after early-return guard
-  const [student, setStudent] = useState<any>(null)
+  const [student, setStudent] = useState<StudentDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('personal')
   const [editMode, setEditMode] = useState(false)
-  const [editData, setEditData] = useState<any>(null)
+  const [editData, setEditData] = useState<Partial<StudentDetail> | null>(null)
   const [editEquipment, setEditEquipment] = useState<EquipmentItem[]>([])
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -221,8 +220,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function toggleNeedFulfilled(needId: string, current: boolean) {
+    if (!student) return
     try {
-      const need = student.needs.find((n: any) => n.id === needId)
+      const need = student.needs.find(n => n.id === needId)
+      if (!need) return
       await fetchWithCsrf(`/api/students/${id}/needs`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ needId, description: need.description, isFulfilled: !current }) })
       await fetchStudent()
     } catch { showMsg('error', t('app.error')) }
@@ -242,8 +243,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     } catch { showMsg('error', t('app.error')) }
   }
   async function toggleWishFulfilled(wishId: string, current: boolean) {
+    if (!student) return
     try {
-      const wish = student.wishes.find((w: any) => w.id === wishId)
+      const wish = student.wishes.find(w => w.id === wishId)
+      if (!wish) return
       await fetchWithCsrf(`/api/students/${id}/wishes`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wishId, description: wish.description, isFulfilled: !current }) })
       await fetchStudent()
     } catch { showMsg('error', t('app.error')) }

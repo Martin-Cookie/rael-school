@@ -8,9 +8,10 @@ import { formatNumber } from '@/lib/format'
 import { useLocale } from '@/hooks/useLocale'
 import { useSorting } from '@/hooks/useSorting'
 import { SortHeader } from '@/components/SortHeader'
+import type { StudentListItem } from '@/types/api'
 
 export default function ClassesPage() {
-  const [students, setStudents] = useState<any[]>([])
+  const [students, setStudents] = useState<StudentListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
   const [search, setSearch] = useState('')

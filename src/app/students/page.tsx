@@ -9,9 +9,10 @@ import { useLocale } from '@/hooks/useLocale'
 import { useSorting } from '@/hooks/useSorting'
 import { useStickyTop } from '@/hooks/useStickyTop'
 import { SortHeader } from '@/components/SortHeader'
+import type { StudentListItem } from '@/types/api'
 
 export default function StudentsPage() {
-  const [students, setStudents] = useState<any[]>([])
+  const [students, setStudents] = useState<StudentListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const { locale, t } = useLocale()

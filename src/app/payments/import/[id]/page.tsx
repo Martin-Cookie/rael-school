@@ -13,6 +13,7 @@ import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { Toast } from '@/components/Toast'
 import { SplitModal } from '@/components/import/SplitModal'
 import { fetchWithCsrf } from '@/lib/fetchWithCsrf'
+import type { SponsorListItem, StudentListItem, PaymentType, VoucherRate } from '@/types/api'
 
 interface ImportRow {
   id: string
@@ -93,10 +94,10 @@ export default function ImportDetailPage() {
   const [filter, setFilter] = useState<StatusFilter>('ALL')
 
   // Reference data for dropdowns
-  const [sponsors, setSponsors] = useState<any[]>([])
-  const [students, setStudents] = useState<any[]>([])
-  const [paymentTypes, setPaymentTypes] = useState<any[]>([])
-  const [voucherRates, setVoucherRates] = useState<any[]>([])
+  const [sponsors, setSponsors] = useState<SponsorListItem[]>([])
+  const [students, setStudents] = useState<StudentListItem[]>([])
+  const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([])
+  const [voucherRates, setVoucherRates] = useState<VoucherRate[]>([])
 
   // Tooltip
   const [tooltipRow, setTooltipRow] = useState<string | null>(null)
