@@ -229,6 +229,10 @@ async function main() {
   // ============================================================
   // 3. UŽIVATELÉ — Admin, Manager, Dobrovolníci
   // ============================================================
+  // POZOR: Hesla admin123 / manager123 / sponsor123 / volunteer123 jsou
+  // DEV-ONLY pro lokální vývoj a testy. Při nasazení do produkce MUSÍ být
+  // tento seed nahrazen (nebo sponzoři přestaveni přes /api/sponsors na
+  // crypto.randomBytes, viz src/app/api/sponsors/route.ts:140).
 
   const passwordHash = await bcrypt.hash('admin123', 10)
   const managerHash = await bcrypt.hash('manager123', 10)
