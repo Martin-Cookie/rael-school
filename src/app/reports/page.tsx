@@ -104,7 +104,7 @@ export default function ReportsPage() {
   }) {
     const isA = sortCol === col
     return (
-      <th className={`py-2 px-3 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none ${className}`} onClick={() => onSort(col)}>
+      <th className={`py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-200 select-none ${className}`} onClick={() => onSort(col)}>
         <div className="flex items-center gap-1">
           {children}
           {isA ? (sortDir === 'asc' ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />) : <ArrowUpDown className="w-3.5 h-3.5 opacity-30" />}
@@ -193,63 +193,63 @@ export default function ReportsPage() {
     <div>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
-          <BarChart3 className="w-5 h-5 text-primary-600" />
+        <div className="w-10 h-10 bg-primary-50 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+          <BarChart3 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">{t('statistics.title')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('statistics.title')}</h1>
       </div>
 
       {/* Summary Cards */}
       {summary && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <Users className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <span className="text-sm text-gray-500">{t('statistics.activeStudents')}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('statistics.activeStudents')}</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{formatNumber(summary.totalStudents)}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{formatNumber(summary.totalStudents)}</p>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
-                <Heart className="w-5 h-5 text-pink-600" />
+              <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center">
+                <Heart className="w-5 h-5 text-pink-600 dark:text-pink-400" />
               </div>
-              <span className="text-sm text-gray-500">{t('statistics.activeSponsors')}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('statistics.activeSponsors')}</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{formatNumber(summary.totalSponsors)}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{formatNumber(summary.totalSponsors)}</p>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-green-600 dark:text-green-400" />
               </div>
-              <span className="text-sm text-gray-500">{t('statistics.sponsorPaymentsTotal')}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('statistics.sponsorPaymentsTotal')}</span>
             </div>
-            <p className="text-lg font-bold text-gray-900">
+            <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
               {Object.entries(summary.sponsorPaymentsByCurrency).map(([cur, amt], i) => (
                 <span key={cur}>
-                  {i > 0 && <span className="text-gray-400"> + </span>}
+                  {i > 0 && <span className="text-gray-400 dark:text-gray-500"> + </span>}
                   {formatNumber(Math.round(amt))} {cur}
                 </span>
               ))}
-              {Object.keys(summary.sponsorPaymentsByCurrency).length === 0 && <span className="text-gray-400">-</span>}
+              {Object.keys(summary.sponsorPaymentsByCurrency).length === 0 && <span className="text-gray-400 dark:text-gray-500">-</span>}
             </p>
-            <p className="text-xs text-gray-400 mt-1">{summary.sponsorPaymentCount} {t('statistics.paymentsCount')}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{summary.sponsorPaymentCount} {t('statistics.paymentsCount')}</p>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <UtensilsCrossed className="w-5 h-5 text-orange-600" />
+              <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                <UtensilsCrossed className="w-5 h-5 text-orange-600 dark:text-orange-400" />
               </div>
-              <span className="text-sm text-gray-500">{t('statistics.vouchersTotal')}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('statistics.vouchersTotal')}</span>
             </div>
-            <p className="text-lg font-bold text-gray-900">{formatCurrency(summary.vouchersAmount)}</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatCurrency(summary.vouchersAmount)}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               {formatNumber(summary.vouchersPurchased)} {t('statistics.purchasedCount')} / {formatNumber(summary.vouchersUsed)} {t('statistics.usedCount')}
             </p>
           </div>
@@ -259,38 +259,38 @@ export default function ReportsPage() {
       {/* Visit Cards link */}
       <Link
         href="/reports/visit-cards"
-        className="block bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4 p-5"
+        className="block bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 card-hover overflow-hidden mb-4 p-5"
       >
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <ClipboardList className="w-6 h-6 text-teal-600" />
+          <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+            <ClipboardList className="w-6 h-6 text-teal-600 dark:text-teal-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-gray-900">{t('visitCards.title')}</h2>
-            <p className="text-sm text-gray-500">{t('statistics.visitCardsDesc')}</p>
+            <h2 className="font-semibold text-gray-900 dark:text-gray-100">{t('visitCards.title')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('statistics.visitCardsDesc')}</p>
           </div>
-          <ChevronDown className="w-5 h-5 text-gray-400 -rotate-90" />
+          <ChevronDown className="w-5 h-5 text-gray-400 dark:text-gray-500 -rotate-90" />
         </div>
       </Link>
 
       {/* Section: Monthly Overview */}
-      <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 card-hover overflow-hidden mb-4">
         <button
           onClick={() => setOpenSection(openSection === 'monthly' ? null : 'monthly')}
           className="w-full p-5 flex items-center gap-4 text-left"
         >
-          <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <Calendar className="w-6 h-6 text-purple-600" />
+          <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+            <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-gray-900">{t('statistics.monthlyTitle')}</h2>
-            <p className="text-sm text-gray-500">{t('statistics.monthlyDesc')}</p>
+            <h2 className="font-semibold text-gray-900 dark:text-gray-100">{t('statistics.monthlyTitle')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('statistics.monthlyDesc')}</p>
           </div>
-          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openSection === 'monthly' ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform ${openSection === 'monthly' ? 'rotate-180' : ''}`} />
         </button>
 
         {openSection === 'monthly' && (
-          <div className="px-5 pb-5 border-t border-gray-100 pt-4">
+          <div className="px-5 pb-5 border-t border-gray-100 dark:border-gray-700 pt-4">
             {/* Year selector */}
             <div className="mb-4">
               <select
@@ -308,56 +308,56 @@ export default function ReportsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="py-2 px-3 text-sm font-medium text-gray-500 text-left">{t('statistics.month')}</th>
-                    <th className="py-2 px-3 text-sm font-medium text-gray-500 text-right">{t('statistics.spPayments')}</th>
-                    <th className="py-2 px-3 text-sm font-medium text-gray-500 text-right">{t('statistics.count')}</th>
-                    <th className="py-2 px-3 text-sm font-medium text-gray-500 text-right">{t('statistics.vPurchases')}</th>
-                    <th className="py-2 px-3 text-sm font-medium text-gray-500 text-right">{t('statistics.count')}</th>
-                    <th className="py-2 px-3 text-sm font-medium text-gray-500 text-right">{t('statistics.vUsages')}</th>
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-left">{t('statistics.month')}</th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-right">{t('statistics.spPayments')}</th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-right">{t('statistics.count')}</th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-right">{t('statistics.vPurchases')}</th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-right">{t('statistics.count')}</th>
+                    <th className="py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400 text-right">{t('statistics.vUsages')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredMonthly.map(m => (
                     <tr key={`${m.year}-${m.month}`} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                      <td className="py-3 px-3 text-sm font-medium text-gray-900">
-                        {!selectedYear && <span className="text-gray-400">{m.year} </span>}
+                      <td className="py-3 px-3 text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {!selectedYear && <span className="text-gray-400 dark:text-gray-500">{m.year} </span>}
                         {monthNames[m.month - 1]}
                       </td>
-                      <td className="py-3 px-3 text-sm text-right">
+                      <td className="py-3 px-3 text-sm text-right text-gray-900 dark:text-gray-100">
                         {Object.keys(m.sponsorPaymentsAmount).length > 0
                           ? formatByCurrency(m.sponsorPaymentsAmount)
-                          : <span className="text-gray-400">-</span>
+                          : <span className="text-gray-400 dark:text-gray-500">-</span>
                         }
                       </td>
-                      <td className="py-3 px-3 text-sm text-right text-gray-500">
-                        {m.sponsorPaymentsCount > 0 ? m.sponsorPaymentsCount : <span className="text-gray-400">-</span>}
+                      <td className="py-3 px-3 text-sm text-right text-gray-500 dark:text-gray-400">
+                        {m.sponsorPaymentsCount > 0 ? m.sponsorPaymentsCount : <span className="text-gray-400 dark:text-gray-500">-</span>}
                       </td>
-                      <td className="py-3 px-3 text-sm text-right">
+                      <td className="py-3 px-3 text-sm text-right text-gray-900 dark:text-gray-100">
                         {m.voucherPurchasesAmount > 0
                           ? <span className="font-medium">{formatCurrency(m.voucherPurchasesAmount)}</span>
-                          : <span className="text-gray-400">-</span>
+                          : <span className="text-gray-400 dark:text-gray-500">-</span>
                         }
                       </td>
-                      <td className="py-3 px-3 text-sm text-right text-gray-500">
-                        {m.voucherPurchasesCount > 0 ? formatNumber(m.voucherPurchasesCount) : <span className="text-gray-400">-</span>}
+                      <td className="py-3 px-3 text-sm text-right text-gray-500 dark:text-gray-400">
+                        {m.voucherPurchasesCount > 0 ? formatNumber(m.voucherPurchasesCount) : <span className="text-gray-400 dark:text-gray-500">-</span>}
                       </td>
-                      <td className="py-3 px-3 text-sm text-right">
+                      <td className="py-3 px-3 text-sm text-right text-gray-900 dark:text-gray-100">
                         {m.voucherUsagesCount > 0
                           ? <span className="font-medium">{formatNumber(m.voucherUsagesCount)}</span>
-                          : <span className="text-gray-400">-</span>
+                          : <span className="text-gray-400 dark:text-gray-500">-</span>
                         }
                       </td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t-2 border-gray-200 font-semibold">
+                  <tr className="border-t-2 border-gray-200 dark:border-gray-700 font-semibold text-gray-900 dark:text-gray-100">
                     <td className="py-3 px-3 text-sm">{t('statistics.total')}</td>
                     <td className="py-3 px-3 text-sm text-right">{formatByCurrency(monthlyTotals.spByCurrency)}</td>
-                    <td className="py-3 px-3 text-sm text-right text-gray-500">{monthlyTotals.spCount}</td>
+                    <td className="py-3 px-3 text-sm text-right text-gray-500 dark:text-gray-400">{monthlyTotals.spCount}</td>
                     <td className="py-3 px-3 text-sm text-right">{formatCurrency(monthlyTotals.vpAmount)}</td>
-                    <td className="py-3 px-3 text-sm text-right text-gray-500">{formatNumber(monthlyTotals.vpCount)}</td>
+                    <td className="py-3 px-3 text-sm text-right text-gray-500 dark:text-gray-400">{formatNumber(monthlyTotals.vpCount)}</td>
                     <td className="py-3 px-3 text-sm text-right">{formatNumber(monthlyTotals.vuCount)}</td>
                   </tr>
                 </tfoot>
@@ -365,32 +365,32 @@ export default function ReportsPage() {
             </div>
 
             {filteredMonthly.length === 0 && (
-              <p className="text-center py-8 text-gray-500 text-sm">{t('app.noData')}</p>
+              <p className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">{t('app.noData')}</p>
             )}
           </div>
         )}
       </div>
 
       {/* Section: Sponsor Overview */}
-      <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 card-hover overflow-hidden mb-4">
         <button
           onClick={() => setOpenSection(openSection === 'sponsorOverview' ? null : 'sponsorOverview')}
           className="w-full p-5 flex items-center gap-4 text-left"
         >
-          <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <TrendingUp className="w-6 h-6 text-pink-600" />
+          <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+            <TrendingUp className="w-6 h-6 text-pink-600 dark:text-pink-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-gray-900">{t('statistics.sponsorOverview')}</h2>
-            <p className="text-sm text-gray-500">{t('statistics.sponsorOverviewDesc')}</p>
+            <h2 className="font-semibold text-gray-900 dark:text-gray-100">{t('statistics.sponsorOverview')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('statistics.sponsorOverviewDesc')}</p>
           </div>
-          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openSection === 'sponsorOverview' ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform ${openSection === 'sponsorOverview' ? 'rotate-180' : ''}`} />
         </button>
 
         {openSection === 'sponsorOverview' && (
-          <div className="px-5 pb-5 border-t border-gray-100 pt-4">
+          <div className="px-5 pb-5 border-t border-gray-100 dark:border-gray-700 pt-4">
             <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 value={soSearch}
@@ -403,7 +403,7 @@ export default function ReportsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100">
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
                     <SortHeader col="lastName" sortCol={soSortCol} sortDir={soSortDir} onSort={handleSoSort} className="text-left">{t('statistics.sponsor')}</SortHeader>
                     <SortHeader col="email" sortCol={soSortCol} sortDir={soSortDir} onSort={handleSoSort} className="text-left">{t('statistics.email')}</SortHeader>
                     <SortHeader col="studentsCount" sortCol={soSortCol} sortDir={soSortDir} onSort={handleSoSort} className="text-center">{t('statistics.students')}</SortHeader>
@@ -415,25 +415,25 @@ export default function ReportsPage() {
                   {soSorted.map(s => (
                     <tr key={s.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="py-3 px-3 text-sm font-medium">
-                        <Link href={`/sponsors?search=${encodeURIComponent(s.lastName)}&from=/reports`} className="text-primary-600 hover:underline">{s.lastName} {s.firstName}</Link>
+                        <Link href={`/sponsors?search=${encodeURIComponent(s.lastName)}&from=/reports`} className="text-primary-600 dark:text-primary-400 hover:underline">{s.lastName} {s.firstName}</Link>
                       </td>
-                      <td className="py-3 px-3 text-sm text-gray-500">{s.email}</td>
+                      <td className="py-3 px-3 text-sm text-gray-500 dark:text-gray-400">{s.email}</td>
                       <td className="py-3 px-3 text-sm text-center">
                         {s.studentsCount > 0
                           ? <span className="badge badge-green">{s.studentsCount}</span>
-                          : <span className="text-gray-400">0</span>
+                          : <span className="text-gray-400 dark:text-gray-500">0</span>
                         }
                       </td>
-                      <td className="py-3 px-3 text-sm text-center">
+                      <td className="py-3 px-3 text-sm text-center text-gray-900 dark:text-gray-100">
                         {s.paymentCount > 0
                           ? <span className="font-medium">{s.paymentCount}</span>
-                          : <span className="text-gray-400">0</span>
+                          : <span className="text-gray-400 dark:text-gray-500">0</span>
                         }
                       </td>
-                      <td className="py-3 px-3 text-sm text-right">
+                      <td className="py-3 px-3 text-sm text-right text-gray-900 dark:text-gray-100">
                         {Object.keys(s.byCurrency).length > 0
                           ? <span className="font-medium">{formatByCurrency(s.byCurrency)}</span>
-                          : <span className="text-gray-400">{t('statistics.noPayments')}</span>
+                          : <span className="text-gray-400 dark:text-gray-500">{t('statistics.noPayments')}</span>
                         }
                       </td>
                     </tr>
@@ -443,26 +443,26 @@ export default function ReportsPage() {
             </div>
 
             {soFiltered.length === 0 && (
-              <p className="text-center py-8 text-gray-500 text-sm">{t('app.noData')}</p>
+              <p className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">{t('app.noData')}</p>
             )}
           </div>
         )}
       </div>
 
       {/* Section: Vouchers per student */}
-      <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 card-hover overflow-hidden mb-4">
         <button
           onClick={() => setOpenSection(openSection === 'vouchers' ? null : 'vouchers')}
           className="w-full p-5 flex items-center gap-4 text-left"
         >
-          <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <UtensilsCrossed className="w-6 h-6 text-orange-600" />
+          <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+            <UtensilsCrossed className="w-6 h-6 text-orange-600 dark:text-orange-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-gray-900">{t('statistics.voucherPerStudent')}</h2>
-            <p className="text-sm text-gray-500">{t('statistics.total')}: {totalPurchased} {t('statistics.purchased').toLowerCase()}, {totalUsed} {t('statistics.used').toLowerCase()}</p>
+            <h2 className="font-semibold text-gray-900 dark:text-gray-100">{t('statistics.voucherPerStudent')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('statistics.total')}: {totalPurchased} {t('statistics.purchased').toLowerCase()}, {totalUsed} {t('statistics.used').toLowerCase()}</p>
           </div>
-          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openSection === 'vouchers' ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform ${openSection === 'vouchers' ? 'rotate-180' : ''}`} />
         </button>
 
         {openSection === 'vouchers' && (
@@ -480,19 +480,19 @@ export default function ReportsPage() {
       </div>
 
       {/* Section: Sponsor payments per student */}
-      <div className="bg-white rounded-xl border border-gray-200 card-hover overflow-hidden mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 card-hover overflow-hidden mb-4">
         <button
           onClick={() => setOpenSection(openSection === 'sponsorPayments' ? null : 'sponsorPayments')}
           className="w-full p-5 flex items-center gap-4 text-left"
         >
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <CreditCard className="w-6 h-6 text-blue-600" />
+          <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+            <CreditCard className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-gray-900">{t('statistics.sponsorPayments')}</h2>
-            <p className="text-sm text-gray-500">{spWithPaymentCount} {t('statistics.studentsWithPayment')}, {spWithoutPaymentCount} {t('statistics.studentsWithoutPayment')}</p>
+            <h2 className="font-semibold text-gray-900 dark:text-gray-100">{t('statistics.sponsorPayments')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{spWithPaymentCount} {t('statistics.studentsWithPayment')}, {spWithoutPaymentCount} {t('statistics.studentsWithoutPayment')}</p>
           </div>
-          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openSection === 'sponsorPayments' ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform ${openSection === 'sponsorPayments' ? 'rotate-180' : ''}`} />
         </button>
 
         {openSection === 'sponsorPayments' && (

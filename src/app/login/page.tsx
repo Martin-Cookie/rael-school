@@ -75,14 +75,14 @@ export default function LoginPage() {
       </div>
 
       {/* Login card */}
-      <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+      <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 border border-transparent dark:border-gray-700">
         {/* Logo / Header */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-primary-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <span className="text-3xl font-bold text-white">R</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
-          <p className="text-gray-500 mt-1">{t.subtitle} — {t.kenya} 🇰🇪</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t.title}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t.subtitle} — {t.kenya} 🇰🇪</p>
         </div>
 
         {/* Form */}
@@ -119,7 +119,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -127,7 +127,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm font-medium">
+            <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm font-medium">
               {error}
             </div>
           )}

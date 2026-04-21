@@ -209,14 +209,14 @@ export default function SponsorsPage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             {backUrl && (
-              <button aria-label="Zpět" onClick={() => router.push(backUrl)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <ArrowLeft className="w-5 h-5 text-gray-600" />
+              <button aria-label="Zpět" onClick={() => router.push(backUrl)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
             )}
-            <h1 className="text-2xl font-bold text-gray-900">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-600">({filtered.length})</span></h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('nav.sponsors')} <span className="text-sm font-normal text-gray-600 dark:text-gray-400">({filtered.length})</span></h1>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={exportSponsors} className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+            <button onClick={exportSponsors} className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
               <Download className="w-4 h-4" /> {t('app.exportCSV')}
             </button>
             {canEdit && (
@@ -232,7 +232,7 @@ export default function SponsorsPage() {
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             value={search}
@@ -245,8 +245,8 @@ export default function SponsorsPage() {
 
       {/* Add new sponsor form */}
       {showAdd && (
-        <div className="bg-accent-50 rounded-xl border border-accent-200 p-6 mb-6">
-          <h3 className="font-semibold text-gray-900 mb-4">{t('sponsorPage.addSponsor')}</h3>
+        <div className="bg-accent-50 dark:bg-gray-800 rounded-xl border border-accent-200 dark:border-gray-700 p-6 mb-6">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('sponsorPage.addSponsor')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
@@ -281,7 +281,7 @@ export default function SponsorsPage() {
             <button onClick={addSponsor} className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700">
               <Check className="w-4 h-4" /> {t('app.save')}
             </button>
-            <button onClick={() => { setShowAdd(false); setNewForm({ firstName: '', lastName: '', email: '', phone: '' }) }} className="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-300">
+            <button onClick={() => { setShowAdd(false); setNewForm({ firstName: '', lastName: '', email: '', phone: '' }) }} className="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600">
               {t('app.cancel')}
             </button>
           </div>
@@ -291,7 +291,7 @@ export default function SponsorsPage() {
       {/* Sponsor table */}
       {filtered.length > 0 ? (
         <div>
-          <div className="bg-white rounded-xl border border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky z-20" style={{ top: theadTop }}>
@@ -300,13 +300,13 @@ export default function SponsorsPage() {
                     <SH col="email" className="text-left">{t('sponsors.email')}</SH>
                     <SH col="phone" className="text-left">{t('sponsors.phone')}</SH>
                     <SH col="_sponsorshipCount" className="text-left">{t('nav.students')}</SH>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-gray-600">{t('payments.title')}</th>
-                    {(canEdit || canDeactivate) && <th className="py-2 px-3 text-sm font-medium text-gray-600 w-20"></th>}
+                    <th className="text-left py-2 px-3 text-sm font-medium text-gray-600 dark:text-gray-300">{t('payments.title')}</th>
+                    {(canEdit || canDeactivate) && <th className="py-2 px-3 text-sm font-medium text-gray-600 dark:text-gray-300 w-20"></th>}
                   </tr>
                 </thead>
                 <tbody>
                   {sorted.map((s) => (
-                    <tr key={s.id} className={`border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 group ${!s.isActive ? 'bg-red-50/50' : ''}`}>
+                    <tr key={s.id} className={`border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 group ${!s.isActive ? 'bg-red-50/50 dark:bg-red-900/10' : ''}`}>
                       {editingId === s.id ? (
                         <>
                           <td className="py-2 px-3">
@@ -321,23 +321,23 @@ export default function SponsorsPage() {
                           <td className="py-2 px-3">
                             <input type="text" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 outline-none text-sm" />
                           </td>
-                          <td className="py-2 px-3 text-sm text-gray-500" colSpan={2}>-</td>
+                          <td className="py-2 px-3 text-sm text-gray-500 dark:text-gray-400" colSpan={2}>-</td>
                           <td className="py-2 px-3">
                             <div className="flex gap-1">
-                              <button aria-label="Potvrdit" onClick={() => saveSponsor(s.id)} className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg"><Check className="w-4 h-4" /></button>
-                              <button aria-label="Zrušit" onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg"><X className="w-4 h-4" /></button>
+                              <button aria-label="Potvrdit" onClick={() => saveSponsor(s.id)} className="p-1.5 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg"><Check className="w-4 h-4" /></button>
+                              <button aria-label="Zrušit" onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><X className="w-4 h-4" /></button>
                             </div>
                           </td>
                         </>
                       ) : (
                         <>
-                          <td className="py-3 px-3 text-sm font-medium text-gray-900">
+                          <td className="py-3 px-3 text-sm font-medium text-gray-900 dark:text-gray-100">
                             {s.lastName}
-                            {!s.isActive && <span className="ml-2 inline-block text-xs px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">{t('sponsorPage.inactive')}</span>}
+                            {!s.isActive && <span className="ml-2 inline-block text-xs px-1.5 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 font-medium">{t('sponsorPage.inactive')}</span>}
                           </td>
-                          <td className="py-3 px-3 text-sm text-gray-900">{s.firstName}</td>
-                          <td className="py-3 px-3 text-sm text-gray-600">{s.email}</td>
-                          <td className="py-3 px-3 text-sm text-gray-600">{s.phone || '-'}</td>
+                          <td className="py-3 px-3 text-sm text-gray-900 dark:text-gray-100">{s.firstName}</td>
+                          <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-300">{s.email}</td>
+                          <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-300">{s.phone || '-'}</td>
                           <td className="py-2 px-3 text-sm">
                             {s.sponsorships.length > 0 ? (
                               <div className="flex flex-nowrap gap-1 overflow-hidden max-h-6">
@@ -347,17 +347,17 @@ export default function SponsorsPage() {
                                     href={`/students/${sp.student.id}?from=${encodeURIComponent(buildStudentFromUrl())}`}
                                     className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
                                       sp.isActive
-                                        ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
-                                        : 'bg-gray-100 text-gray-500 line-through'
+                                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/50'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 line-through'
                                     }`}
                                   >
                                     {sp.student.lastName} {sp.student.firstName}
                                   </Link>
                                 ))}
                               </div>
-                            ) : <span className="text-gray-400">-</span>}
+                            ) : <span className="text-gray-400 dark:text-gray-500">-</span>}
                           </td>
-                          <td className="py-3 px-3 text-sm text-gray-600">
+                          <td className="py-3 px-3 text-sm text-gray-600 dark:text-gray-300">
                             {Object.keys(s.paymentsByCurrency).length > 0 ? (
                               Object.entries(s.paymentsByCurrency).map(([currency, amount], i) => (
                                 <span key={currency}>
@@ -365,18 +365,18 @@ export default function SponsorsPage() {
                                   <span className="font-medium">{formatNumber(amount)} {currency}</span>
                                 </span>
                               ))
-                            ) : <span className="text-gray-400">-</span>}
+                            ) : <span className="text-gray-400 dark:text-gray-500">-</span>}
                           </td>
                           {(canEdit || canDeactivate) && (
                             <td className="py-1 px-3">
                               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 {canEdit && (
-                                  <button aria-label="Upravit" onClick={() => startEdit(s)} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-gray-100">
+                                  <button aria-label="Upravit" onClick={() => startEdit(s)} className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                                     <Pencil className="w-4 h-4" />
                                   </button>
                                 )}
                                 {canDeactivate && (
-                                  <button aria-label={s.isActive ? 'Deaktivovat' : 'Aktivovat'} onClick={() => toggleActive(s.id, s.isActive)} className="p-1.5 text-gray-400 hover:text-amber-600 rounded-lg hover:bg-gray-100" title={s.isActive ? t('sponsorPage.deactivate') : t('sponsorPage.reactivate')}>
+                                  <button aria-label={s.isActive ? 'Deaktivovat' : 'Aktivovat'} onClick={() => toggleActive(s.id, s.isActive)} className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-amber-600 dark:hover:text-amber-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title={s.isActive ? t('sponsorPage.deactivate') : t('sponsorPage.reactivate')}>
                                     {s.isActive ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                                   </button>
                                 )}
@@ -393,7 +393,7 @@ export default function SponsorsPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-600 text-sm">{search ? t('sponsorPage.noResults') : t('sponsors.noSponsors')}</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">{search ? t('sponsorPage.noResults') : t('sponsors.noSponsors')}</p>
         </div>
       )}
     </div>

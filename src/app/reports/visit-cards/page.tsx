@@ -175,8 +175,8 @@ export default function VisitCardsPage() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <Link href="/reports" className="text-sm text-primary-600 hover:text-primary-700 font-medium">← {t('nav.reports')}</Link>
-          <h1 className="text-2xl font-bold text-gray-900">{t('visitCards.title')}</h1>
+          <Link href="/reports" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">← {t('nav.reports')}</Link>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('visitCards.title')}</h1>
         </div>
       </div>
 
@@ -186,7 +186,7 @@ export default function VisitCardsPage() {
         <select
           value={classFilter}
           onChange={e => { setClassFilter(e.target.value); setCurrentPage(1) }}
-          className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white"
+          className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
         >
           <option value="">{t('visitCards.allClasses')}</option>
           {classNames.map(cn => (
@@ -203,25 +203,25 @@ export default function VisitCardsPage() {
             value={search}
             onChange={e => { setSearch(e.target.value); setCurrentPage(1) }}
             placeholder={t('app.search')}
-            className="pl-8 pr-8 py-2 border border-gray-200 rounded-lg text-sm bg-white w-48 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400"
+            className="pl-8 pr-8 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 w-48 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-400 focus:border-primary-400"
           />
           {search && (
-            <button onClick={() => { setSearch(''); setCurrentPage(1); searchRef.current?.focus() }} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button onClick={() => { setSearch(''); setCurrentPage(1); searchRef.current?.focus() }} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
         {/* Select all / deselect */}
-        <button onClick={selectAll} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
+        <button onClick={selectAll} className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600">
           {t('visitCards.selectAll')}
         </button>
-        <button onClick={deselectAll} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
+        <button onClick={deselectAll} className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600">
           {t('visitCards.deselectAll')}
         </button>
 
         {/* CSV upload */}
-        <label className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer flex items-center gap-2">
+        <label className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer flex items-center gap-2">
           <Upload className="w-4 h-4" />
           {t('visitCards.uploadCsv')}
           <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" onChange={handleCsvUpload} />
@@ -230,8 +230,8 @@ export default function VisitCardsPage() {
         <div className="flex-1" />
 
         {/* Selected count */}
-        <span className="text-sm text-gray-500">
-          {t('visitCards.selectedCount')}: <span className="font-bold text-primary-600">{formatNumber(selected.size)}</span> / {formatNumber(filtered.length)}
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          {t('visitCards.selectedCount')}: <span className="font-bold text-primary-600 dark:text-primary-400">{formatNumber(selected.size)}</span> / {formatNumber(filtered.length)}
         </span>
 
         {/* Generate button */}
@@ -247,24 +247,24 @@ export default function VisitCardsPage() {
 
       {/* CSV match result */}
       {csvMatchCount !== null && (
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200 relative">
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 relative">
           <button
             onClick={() => { setCsvMatchCount(null); setCsvNotFound([]) }}
             aria-label={t('app.close')}
-            className="absolute top-2 right-2 p-1 text-blue-400 hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+            className="absolute top-2 right-2 p-1 text-blue-400 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-100 focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
           >
             <X className="w-4 h-4" />
           </button>
-          <p className="text-sm text-blue-700 pr-6">
+          <p className="text-sm text-blue-700 dark:text-blue-300 pr-6">
             {t('visitCards.csvMatched')}: <span className="font-bold">{csvMatchCount}</span>
-            {csvNotFound.length > 0 && <> | {t('visitCards.csvNotFound')}: <span className="font-bold text-red-600">{csvNotFound.length}</span></>}
+            {csvNotFound.length > 0 && <> | {t('visitCards.csvNotFound')}: <span className="font-bold text-red-600 dark:text-red-400">{csvNotFound.length}</span></>}
           </p>
           {csvNotFound.length > 0 && (
             <div className="mt-2">
-              <p className="text-xs font-medium text-red-600 mb-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {t('visitCards.csvNotFoundList')}:</p>
+              <p className="text-xs font-medium text-red-600 dark:text-red-400 mb-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {t('visitCards.csvNotFoundList')}:</p>
               <div className="flex flex-wrap gap-1">
                 {csvNotFound.map((name, i) => (
-                  <span key={i} className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">{name}</span>
+                  <span key={i} className="text-xs bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 px-2 py-0.5 rounded">{name}</span>
                 ))}
               </div>
             </div>
@@ -273,17 +273,17 @@ export default function VisitCardsPage() {
       )}
 
       {/* Student table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100">
+              <tr className="border-b border-gray-100 dark:border-gray-700">
                 <th className="py-2 px-3 w-10">
                   <input
                     type="checkbox"
                     checked={filtered.length > 0 && filtered.every(s => selected.has(s.id))}
                     onChange={e => e.target.checked ? selectAll() : deselectAll()}
-                    className="rounded border-gray-300"
+                    className="rounded border-gray-300 dark:border-gray-600"
                   />
                 </th>
                 <SH col="studentNo" className="text-left">{t('student.studentNo')}</SH>
@@ -291,15 +291,15 @@ export default function VisitCardsPage() {
                 <SH col="firstName" className="text-left">{t('student.firstName')}</SH>
                 <SH col="className" className="text-left">{t('student.className')}</SH>
                 <SH col="school" className="text-left">{t('equipment.type')}</SH>
-                <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('needs.title')}</th>
-                <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">{t('equipment.title')}</th>
+                <th className="text-right py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('needs.title')}</th>
+                <th className="text-right py-2 px-3 text-sm font-medium text-gray-500 dark:text-gray-400">{t('equipment.title')}</th>
               </tr>
             </thead>
             <tbody>
               {paged.map((s: any) => (
                 <tr
                   key={s.id}
-                  className={`border-b border-gray-50 hover:bg-gray-50 cursor-pointer ${selected.has(s.id) ? 'bg-primary-50' : ''}`}
+                  className={`border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer ${selected.has(s.id) ? 'bg-primary-50 dark:bg-primary-900/30' : ''}`}
                   onClick={() => toggleStudent(s.id)}
                 >
                   <td className="py-2.5 px-3" onClick={e => e.stopPropagation()}>
@@ -307,19 +307,19 @@ export default function VisitCardsPage() {
                       type="checkbox"
                       checked={selected.has(s.id)}
                       onChange={() => toggleStudent(s.id)}
-                      className="rounded border-gray-300"
+                      className="rounded border-gray-300 dark:border-gray-600"
                     />
                   </td>
-                  <td className="py-2.5 px-3 text-sm text-gray-500">{s.studentNo}</td>
-                  <td className="py-2.5 px-3 text-sm font-medium text-gray-900">{s.lastName}</td>
-                  <td className="py-2.5 px-3 text-sm text-gray-900">{s.firstName}</td>
-                  <td className="py-2.5 px-3 text-sm text-gray-900">{s.className || '-'}</td>
-                  <td className="py-2.5 px-3 text-sm text-gray-600">{s.school || '-'}</td>
+                  <td className="py-2.5 px-3 text-sm text-gray-500 dark:text-gray-400">{s.studentNo}</td>
+                  <td className="py-2.5 px-3 text-sm font-medium text-gray-900 dark:text-gray-100">{s.lastName}</td>
+                  <td className="py-2.5 px-3 text-sm text-gray-900 dark:text-gray-100">{s.firstName}</td>
+                  <td className="py-2.5 px-3 text-sm text-gray-900 dark:text-gray-100">{s.className || '-'}</td>
+                  <td className="py-2.5 px-3 text-sm text-gray-600 dark:text-gray-300">{s.school || '-'}</td>
                   <td className="py-2.5 px-3 text-sm text-right">
-                    {s.needs?.length > 0 ? <span className="badge badge-red">{s.needs.length}</span> : <span className="text-gray-400">0</span>}
+                    {s.needs?.length > 0 ? <span className="badge badge-red">{s.needs.length}</span> : <span className="text-gray-400 dark:text-gray-500">0</span>}
                   </td>
                   <td className="py-2.5 px-3 text-sm text-right">
-                    {s.equipment?.length > 0 ? <span className="badge badge-green">{s.equipment.length}</span> : <span className="text-gray-400">0</span>}
+                    {s.equipment?.length > 0 ? <span className="badge badge-green">{s.equipment.length}</span> : <span className="text-gray-400 dark:text-gray-500">0</span>}
                   </td>
                 </tr>
               ))}
