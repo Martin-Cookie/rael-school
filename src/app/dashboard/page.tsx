@@ -128,9 +128,11 @@ export default function DashboardPage() {
 
   const maleCount = students.filter((s: any) => s.gender === 'M').length
   const femaleCount = students.filter((s: any) => s.gender === 'F').length
+  const noSponsorCount = students.filter((s: any) => (s._count?.sponsorships ?? 0) === 0).length
+  const studentsSubtitle = `${formatNumber(maleCount)} ${t('student.male')} / ${formatNumber(femaleCount)} ${t('student.female')}${noSponsorCount > 0 ? ` · ${formatNumber(noSponsorCount)} ${t('student.filterNoSponsor').toLowerCase()}` : ''}`
 
   const statCards = [
-    { key: 'students' as DashTab, label: t('dashboard.totalStudents'), value: formatNumber(stats?.totalStudents || 0), subtitle: `${formatNumber(maleCount)} ${t('student.male')} / ${formatNumber(femaleCount)} ${t('student.female')}`, icon: Users, color: 'bg-primary-50 text-primary-600', borderColor: 'border-primary-200' },
+    { key: 'students' as DashTab, label: t('dashboard.totalStudents'), value: formatNumber(stats?.totalStudents || 0), subtitle: studentsSubtitle, icon: Users, color: 'bg-primary-50 text-primary-600', borderColor: 'border-primary-200' },
     { key: 'sponsors' as DashTab, label: t('dashboard.activeSponsors'), value: formatNumber(stats?.activeSponsors || 0), icon: HandHeart, color: 'bg-accent-50 text-accent-600', borderColor: 'border-accent-200' },
     { key: 'payments' as DashTab, label: t('sponsorPayments.title'), value: paymentSummary, icon: CreditCard, color: 'bg-blue-50 text-blue-600', borderColor: 'border-blue-200' },
     { key: 'needs' as DashTab, label: t('dashboard.studentsNeedingAttention'), value: formatNumber(stats?.unfulfilledNeeds || 0), icon: AlertCircle, color: 'bg-red-50 text-red-600', borderColor: 'border-red-200' },

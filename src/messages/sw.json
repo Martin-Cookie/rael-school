@@ -91,7 +91,9 @@
       "fatherAlive": "Baba yuko hai",
       "siblings": "Ndugu"
     },
-    "profilePhoto": "Picha ya wasifu"
+    "profilePhoto": "Picha ya wasifu",
+    "filterNoSponsor": "Bila mfadhili",
+    "filterNoSponsorTitle": "Onyesha wanafunzi bila mfadhili wa sasa tu"
   },
   "equipment": {
     "title": "Vifaa",

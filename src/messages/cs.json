@@ -91,7 +91,9 @@
       "fatherAlive": "Otec žije",
       "siblings": "Sourozenci"
     },
-    "profilePhoto": "Profilová fotka"
+    "profilePhoto": "Profilová fotka",
+    "filterNoSponsor": "Bez sponzora",
+    "filterNoSponsorTitle": "Zobrazit jen studenty bez aktivního sponzora"
   },
   "equipment": {
     "title": "Vybavení",

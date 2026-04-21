@@ -91,7 +91,9 @@
       "fatherAlive": "Father alive",
       "siblings": "Siblings"
     },
-    "profilePhoto": "Profile photo"
+    "profilePhoto": "Profile photo",
+    "filterNoSponsor": "No sponsor",
+    "filterNoSponsorTitle": "Show only students without an active sponsor"
   },
   "equipment": {
     "title": "Equipment",

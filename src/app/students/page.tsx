@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Search, Plus, User, Download } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Search, Plus, User, Download, UserX } from 'lucide-react'
 import { calculateAge } from '@/lib/format'
 import { downloadCSV } from '@/lib/csv'
 import { useLocale } from '@/hooks/useLocale'
@@ -12,9 +13,12 @@ import { SortHeader } from '@/components/SortHeader'
 import type { StudentListItem } from '@/types/api'
 
 export default function StudentsPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [students, setStudents] = useState<StudentListItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(searchParams.get('search') || '')
+  const [noSponsorOnly, setNoSponsorOnly] = useState(searchParams.get('noSponsor') === 'true')
   const { locale, t } = useLocale()
   const { sortCol, sortDir, handleSort, sortData } = useSorting()
   const { stickyRef, theadTop } = useStickyTop([])
@@ -28,7 +32,20 @@ export default function StudentsPage() {
     return () => clearTimeout(timer)
   }, [search])
 
-  const sorted = sortData(students, sortCol)
+  // Sync filter state → URL
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (search) params.set('search', search)
+    if (noSponsorOnly) params.set('noSponsor', 'true')
+    const qs = params.toString()
+    router.replace(qs ? `/students?${qs}` : '/students', { scroll: false })
+  }, [search, noSponsorOnly, router])
+
+  const filtered = noSponsorOnly
+    ? students.filter((s: StudentListItem) => (s._count?.sponsorships ?? 0) === 0)
+    : students
+  const sorted = sortData(filtered, sortCol)
+  const noSponsorCount = students.filter((s: StudentListItem) => (s._count?.sponsorships ?? 0) === 0).length
 
   function SH({ col, children, className = '' }: { col: string; children: React.ReactNode; className?: string }) {
     return <SortHeader col={col} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} className={className}>{children}</SortHeader>
@@ -53,9 +70,9 @@ export default function StudentsPage() {
     <div>
       <div ref={stickyRef} className="sticky top-16 lg:top-0 z-30 bg-[#fafaf8] dark:bg-gray-900 pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8 pt-1">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">{t('student.list')} <span className="text-sm font-normal text-gray-500">({students.length})</span></h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('student.list')} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">({noSponsorOnly ? `${filtered.length}/${students.length}` : students.length})</span></h1>
           <div className="flex items-center gap-2">
-            <button onClick={exportStudents} className="inline-flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary-500">
+            <button onClick={exportStudents} className="inline-flex items-center gap-2 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary-500">
               <Download className="w-4 h-4" /> {t('app.exportCSV')}
             </button>
             <Link href="/students/new" className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
@@ -63,15 +80,30 @@ export default function StudentsPage() {
             </Link>
           </div>
         </div>
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('app.search')} className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 outline-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700" />
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('app.search')} className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 outline-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700" />
+          </div>
+          <button
+            onClick={() => setNoSponsorOnly(v => !v)}
+            aria-pressed={noSponsorOnly}
+            className={`inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors border focus-visible:ring-2 focus-visible:ring-primary-500 ${
+              noSponsorOnly
+                ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300'
+                : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600'
+            }`}
+            title={t('student.filterNoSponsorTitle')}
+          >
+            <UserX className="w-4 h-4" />
+            {t('student.filterNoSponsor')} {noSponsorCount > 0 && <span className="ml-1 px-1.5 py-0.5 rounded-md text-xs bg-white/70 dark:bg-black/20">{noSponsorCount}</span>}
+          </button>
         </div>
       </div>
       {loading ? (
         <div className="flex items-center justify-center h-40"><div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" /></div>
-      ) : students.length === 0 ? (
-        <div className="text-center py-12 text-gray-500"><User className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p>{t('app.noData')}</p></div>
+      ) : sorted.length === 0 ? (
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400"><User className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" /><p>{t('app.noData')}</p></div>
       ) : (
         <div>
           <div className="bg-white rounded-xl border border-gray-200">
